@@ -1,0 +1,79 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  // Config độc lập cho app Expo (repo riêng, lockfile riêng). Không extend config của repo cha:
+  // bên đó bật plugin `vue` và scope override vào các đường dẫn không tồn tại ở đây.
+  "plugins": ["typescript", "unicorn", "import", "promise", "react"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn",
+    "style": "off",
+    "pedantic": "off",
+    "restriction": "off",
+    "nursery": "off",
+  },
+  "rules": {
+    // ── REACT HOOKS ───────────────────────────────────────────────
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    // ── REACT RULES GIẢ ĐỊNH REACT-DOM (TẮT CHO EXPO/RN) ───────────
+    // babel-preset-expo dùng automatic JSX runtime — không cần import React ở mỗi file.
+    "react/react-in-jsx-scope": "off",
+    // expo-status-bar nhận `style="auto" | "light" | …`; rule này giả định `style={object}` của RN/DOM.
+    "react/style-prop-object": "off",
+    // `tabBar={(props) => <TabBar {...props} />}` là render-prop chính thức của React Navigation.
+    "react/no-unstable-nested-components": ["warn", { "allowAsProps": true }],
+    // ── TYPESCRIPT (HARD#9) ───────────────────────────────────────
+    "typescript/no-explicit-any": "error",
+    "typescript/consistent-type-imports": "error",
+    "typescript/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_",
+      },
+    ],
+    // ── HERMES RUNTIME ────────────────────────────────────────────
+    // Rule đòi `.toSorted()`, nhưng Hermes chưa có change-array-by-copy trong khi `lib: ESNext` của
+    // expo/tsconfig.base khai là có — `tsc` im lặng và lỗi chỉ nổ trên máy thật.
+    "unicorn/no-array-sort": "off",
+    // ── CORRECTNESS ───────────────────────────────────────────────
+    "no-var": "error",
+    "prefer-const": "error",
+    "eqeqeq": ["error", "always", { "null": "ignore" }],
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "import/no-duplicates": "error",
+    // ── ALIAS (HARD#7) ────────────────────────────────────────────
+    // tsconfig paths map `@/*` -> `./src/*`. Cùng thư mục `./x` hợp lệ; chỉ cấm đi ngược lên cha.
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["../*"],
+            "message": "Dùng alias '@/' (tsconfig paths: '@/*' -> './src/*'). Cùng thư mục './x' thì được.",
+          },
+        ],
+      },
+    ],
+  },
+  "overrides": [
+    {
+      "files": ["**/*.test.ts", "**/*.test.tsx", "jest.setup.ts"],
+      "env": { "jest": true },
+    },
+  ],
+  // `src/api/generated/**` là output của `npm run api:sync`, không sửa tay: nó import `../core/*.gen`
+  // giữa các file của chính nó nên vi phạm no-restricted-imports ở trên.
+  "ignorePatterns": [
+    "node_modules/**",
+    ".expo/**",
+    "android/**",
+    "ios/**",
+    "dist/**",
+    "coverage/**",
+    "expo-env.d.ts",
+    "src/api/generated/**",
+  ],
+}

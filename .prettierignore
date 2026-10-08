@@ -1,0 +1,10 @@
+node_modules
+.expo
+dist
+coverage
+android
+ios
+package-lock.json
+expo-env.d.ts
+# Output của `npm run api:sync` — định dạng lại là tạo diff ồn ở lượt regenerate sau.
+src/api/generated

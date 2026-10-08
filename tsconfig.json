@@ -1,0 +1,13 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    // Chặt hơn VueSer một nấc: `arr[i]` là `T | undefined`. Lỗi index ngoài mảng là lỗi im lặng phổ biến
+    // nhất của code port từ prototype (TILTS[index % TILTS.length]), bật từ đầu rẻ hơn bật sau.
+    "noUncheckedIndexedAccess": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
+}

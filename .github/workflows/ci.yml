@@ -1,0 +1,24 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # Cùng thứ tự với `npm run check` ở máy dev: typecheck → lint → format → test.
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm run test -- --ci
+      # Bắt phiên bản gói lệch SDK và cấu hình app.json sai — thứ chỉ nổ lúc build EAS nếu không kiểm ở đây.
+      - run: npx expo-doctor
