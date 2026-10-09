@@ -4,11 +4,12 @@ import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import {
-  Manrope_500Medium,
-  Manrope_600SemiBold,
-  Manrope_700Bold,
-  Manrope_800ExtraBold,
-} from '@expo-google-fonts/manrope';
+  BeVietnamPro_400Regular,
+  BeVietnamPro_500Medium,
+  BeVietnamPro_600SemiBold,
+  BeVietnamPro_700Bold,
+  BeVietnamPro_800ExtraBold,
+} from '@expo-google-fonts/be-vietnam-pro';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -47,10 +48,11 @@ export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
 
 export default function RootLayout() {
   const [fontsLoaded, fontsError] = useFonts({
-    Manrope_500Medium,
-    Manrope_600SemiBold,
-    Manrope_700Bold,
-    Manrope_800ExtraBold,
+    BeVietnamPro_400Regular,
+    BeVietnamPro_500Medium,
+    BeVietnamPro_600SemiBold,
+    BeVietnamPro_700Bold,
+    BeVietnamPro_800ExtraBold,
   });
   const isAuthenticated = useIsAuthenticated();
   const authHydrated = useAuthHydrated();
@@ -85,7 +87,12 @@ export default function RootLayout() {
                * Route cần đăng nhập khai trong khối này (HARD#17). Screen không nằm đây vẫn được
                * expo-router đăng ký theo file path và mở được bằng deep link — tức không hề được bảo vệ.
                */}
-              <Stack.Protected guard={isAuthenticated}>{null}</Stack.Protected>
+              <Stack.Protected guard={isAuthenticated}>
+                <Stack.Screen name="chat/[id]" />
+                <Stack.Screen name="help" />
+                {/* Luồng đăng tin là một stack con; đóng bằng nút X ở bước 1 như thiết kế. */}
+                <Stack.Screen name="post" options={{ presentation: 'fullScreenModal' }} />
+              </Stack.Protected>
             </Stack>
           </ToastProvider>
         </QueryClientProvider>

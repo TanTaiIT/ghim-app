@@ -7,10 +7,14 @@ trạng thái rỗng/đang tải, LOC caps, test.
 
 ## 1. Thứ tự quyết định khi cần một mảnh UI
 
-1. Có sẵn trong `@/components/ui` chưa? (`PinButton`, `GhostButton`, `Field`, `ScreenHeader`, `EmptyState`,
-   `Loading`) hoặc component riêng (`Toast`, `GuestGate`, `ErrorScreen`).
+1. Có sẵn trong `@/components/ui` chưa? (`PinButton`, `OutlineButton`, `GhostButton`, `IconButton`, `Tag`,
+   `Price`, `SectionTitle`, `SafetyNote`, `ScreenHeader`, `EmptyState`, `Loading`) hoặc file riêng (`Field`,
+   `Avatar`/`Verified`, `Chip`/`Choice`/`Check`, `Photo`, `ListingCard`, `PickerSheet`, `TabStrip`, `Toast`,
+   `GuestGate`, `ErrorScreen`).
 2. Chưa có nhưng ≥2 màn sẽ dùng → thêm vào `ui.tsx` (nếu nhỏ) hoặc file PascalCase riêng (nếu có state/animation).
-3. Chỉ một màn dùng → viết inline ngay trong route.
+3. Chỉ một màn dùng → viết inline ngay trong route — trừ khi route vượt cap 250 dòng (HARD#11): khi đó tách khối
+   thành file PascalCase trong `src/components/` (`GroupHeader`, `ListingInfo`, `PhotoGrid`), hành động vẫn đi ra
+   bằng callback để mutation ở lại route.
 
 **Không dựng raw `<TextInput>`/`<Pressable>` cho nút và ô nhập khi đã có primitive tương ứng.**
 
@@ -88,7 +92,7 @@ Một màn chỉ có ba nhánh, dùng đúng primitive có sẵn:
 
 ```tsx
 if (isLoading || !listing) return <Loading />;                          // chặn cả màn
-ListEmptyComponent={isLoading ? <Loading /> : <EmptyState icon="📌" text="…" />}
+ListEmptyComponent={isLoading ? <Loading /> : <EmptyState icon="inbox" text="…" />}
 ```
 
 - Lỗi của query **không** toast (`query.convention.md` §5) — rơi về `EmptyState`.

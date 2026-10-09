@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
-import { unwrap } from './client';
+import { toCategoryId, unwrap } from './client';
 import { ApiError } from './http';
 
 const response = (status: number) => ({ status }) as Response;
@@ -52,5 +52,13 @@ describe('unwrap', () => {
   it('không có vỏ (mạng đứt, proxy trả HTML) thì là NETWORK_ERROR', async () => {
     const result = unwrap(Promise.resolve({ error: new TypeError('Network request failed') }));
     await expect(result).rejects.toMatchObject({ code: 'NETWORK_ERROR', status: 0 });
+  });
+});
+
+describe('toCategoryId', () => {
+  it('nhận id hợp lệ, trả null cho chuỗi lạ hoặc thiếu', () => {
+    expect(toCategoryId('laptop')).toBe('laptop');
+    expect(toCategoryId('khong-co')).toBeNull();
+    expect(toCategoryId(undefined)).toBeNull();
   });
 });

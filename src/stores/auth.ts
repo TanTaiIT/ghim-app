@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { create } from 'zustand';
 import { createJSONStorage, persist, type StateStorage } from 'zustand/middleware';
@@ -9,12 +10,19 @@ import { createJSONStorage, persist, type StateStorage } from 'zustand/middlewar
  *
  * Giới hạn cần biết: SecureStore cảnh báo với giá trị trên ~2KB. `partialize` chỉ giữ `session`
  * (hai JWT + hai chuỗi ngắn, dưới 1KB); nhét thêm vào đó thì phải kiểm lại con số này.
+ *
+ * Web: `expo-secure-store` là module rỗng (mọi lệnh ném `TypeError`), và trình duyệt không có kho tương
+ * đương — `localStorage` thì script nào trên trang cũng đọc được refresh token. Nên web không ghi phiên
+ * xuống đâu cả: phiên chỉ sống trong bộ nhớ, tải lại trang là đăng nhập lại.
  */
-const secureStorage: StateStorage = {
-  getItem: (name) => SecureStore.getItemAsync(name),
-  setItem: (name, value) => SecureStore.setItemAsync(name, value),
-  removeItem: (name) => SecureStore.deleteItemAsync(name),
-};
+const secureStorage: StateStorage =
+  Platform.OS === 'web'
+    ? { getItem: () => null, setItem: () => {}, removeItem: () => {} }
+    : {
+        getItem: (name) => SecureStore.getItemAsync(name),
+        setItem: (name, value) => SecureStore.setItemAsync(name, value),
+        removeItem: (name) => SecureStore.deleteItemAsync(name),
+      };
 
 /**
  * Danh tính của phiên đăng nhập — thứ duy nhất cần sống lâu hơn một màn hình (store.convention §1).

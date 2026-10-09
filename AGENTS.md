@@ -58,7 +58,7 @@ app/**  (routes, expo-router)
    ↓
 src/components/**  ──┐
    ↓                 │
-src/queries/**  ─────┤→  src/theme · src/stores  (lá, chỉ import thư viện ngoài)
+src/queries/**  ─────┤→  src/theme · src/stores · src/utils  (lá, chỉ import thư viện ngoài)
    ↓                 │
 src/api/**  ─────────┘
 ```
@@ -70,6 +70,9 @@ src/api/**  ─────────┘
   `ghim-server` đang chạy bằng `npm run api:sync`), `http.ts` giữ base URL + Bearer token + `ApiError`.
   Backend trả vỏ `{ success, data | error: { code, message, details } }`; `unwrap()` trong `client.ts` là chỗ
   duy nhất bóc vỏ và ném `ApiError`.
+- **Dữ liệu mẫu**: phần backend chưa có endpoint (tin đăng, nhóm, chat, thông báo, đăng nhập) chạy trên
+  `mockApi` (`src/api/mock.ts`) — cùng chữ ký và domain type với `api`. Nối backend = đổi `mockApi.x` → `api.x`
+  trong `src/queries/**`; route và component không đổi. Không import `mock*.ts` từ ngoài `src/queries/**`.
 
 ---
 
@@ -85,13 +88,13 @@ Không có dòng nào khớp và hub không đủ → hỏi user trước khi đ
 
 ## Khác với VueSer
 
-| Chủ đề         | VueSer (`docs/VueSer`)                          | Repo này                                                                   |
-| -------------- | ----------------------------------------------- | -------------------------------------------------------------------------- |
-| Backend        | `docs/market` (Express + Mongo), id là ObjectId | `../ghim-server` (Fastify + Prisma), id là uuid v7, vỏ response `success`  |
-| Upload ảnh     | Cloudinary unsigned preset                      | Chữ ký do backend cấp theo người (TK 25) — chưa có, chờ `add-media`        |
-| Realtime       | socket.io                                       | Chưa chọn (ghim-server CLAUDE.md "(chưa có)")                              |
-| Token          | `AsyncStorage` → di cư sang SecureStore         | SecureStore ngay từ đầu, không có bước di cư                               |
-| Lint/format    | oxlint mượn từ repo cha, không formatter        | oxlint + Prettier cục bộ; `format:check` nằm trong `check` và CI           |
-| Test           | Không có                                        | jest-expo + Testing Library; test cạnh file (`x.test.ts`)                  |
-| React Compiler | Tắt                                             | Bật (`experiments.reactCompiler`) → không `useMemo`/`useCallback` phòng xa |
-| Tab bar        | `TabBar` tự vẽ                                  | Tab bar mặc định của expo-router tới khi thiết kế có lý do đổi             |
+| Chủ đề         | VueSer (`docs/VueSer`)                          | Repo này                                                                     |
+| -------------- | ----------------------------------------------- | ---------------------------------------------------------------------------- |
+| Backend        | `docs/market` (Express + Mongo), id là ObjectId | `../ghim-server` (Fastify + Prisma), id là uuid v7, vỏ response `success`    |
+| Upload ảnh     | Cloudinary unsigned preset                      | Chữ ký do backend cấp theo người (TK 25) — chưa có, chờ `add-media`          |
+| Realtime       | socket.io                                       | Chưa chọn (ghim-server CLAUDE.md "(chưa có)")                                |
+| Token          | `AsyncStorage` → di cư sang SecureStore         | SecureStore ngay từ đầu, không có bước di cư; web chỉ giữ phiên trong bộ nhớ |
+| Lint/format    | oxlint mượn từ repo cha, không formatter        | oxlint + Prettier cục bộ; `format:check` nằm trong `check` và CI             |
+| Test           | Không có                                        | jest-expo + Testing Library; test cạnh file (`x.test.ts`)                    |
+| React Compiler | Tắt                                             | Bật (`experiments.reactCompiler`) → không `useMemo`/`useCallback` phòng xa   |
+| Tab bar        | `TabBar` tự vẽ                                  | `TabBar` tự vẽ (`src/components/TabBar.tsx`): nút Đăng tin nổi giữa + badge  |

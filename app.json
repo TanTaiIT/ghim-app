@@ -38,7 +38,8 @@
       ],
       "expo-font",
       "expo-secure-store",
-      "expo-image"
+      "expo-image",
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true,

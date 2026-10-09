@@ -1,6 +1,7 @@
 import { describe, expect, it, jest } from '@jest/globals';
 import { fireEvent, render, screen } from '@testing-library/react-native';
-import { Field, PinButton } from './ui';
+import { Field } from './Field';
+import { PinButton } from './ui';
 
 /*
  * `render` của Testing Library 14 chạy bất đồng bộ với React 19 (concurrent root), nên phải `await`

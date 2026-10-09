@@ -12,11 +12,13 @@ Chỉ tồn tại hai gốc, không thêm gốc thứ ba:
 ```text
 app/            — routes. expo-router resolve theo file path. KHÔNG chứa gì ngoài route + layout.
 src/
-├── api/        — http.ts (base URL, token, ApiError) · client.ts (gọi SDK, unwrap, mapper) · generated/ (sinh)
+├── api/        — http.ts (base URL, token, ApiError) · client.ts (gọi SDK, unwrap, mapper, domain type)
+│                 · generated/ (sinh) · mock*.ts (dữ liệu mẫu tới khi backend có endpoint — xem README §4)
 ├── queries/    — TanStack hook + key factory (keys.ts)
 ├── stores/     — Zustand store cho client state sống lâu hơn màn hình
 ├── components/ — UI dùng lại, không gắn với một route cụ thể
-└── theme/      — token màu / font / bóng / bo góc / khoảng cách
+├── theme/      — token màu / font / bóng / bo góc / khoảng cách
+└── utils/      — hàm thuần dùng chung (định dạng giá, thời gian) — lá, không import layer nào
 ```
 
 Tên layer con **không được lặp lại lồng nhau**: cấm `src/components/components/`, `src/api/api/`.
@@ -45,8 +47,8 @@ Quy tắc:
   đã chạy `expo start`** — type sinh vào `.expo/types/router.d.ts` lúc đó (gitignore). Chưa có file đó thì `Href`
   rộng hơn và `tsc` vẫn qua, nên CI không bắt được sai đường; đây là kiểm tra cục bộ, chạy `expo start` trước
   khi báo xong một route mới.
-- Route mới có tab → thêm file trong `app/(tabs)/` **và** một dòng `ICONS` + `<Tabs.Screen>` trong
-  `app/(tabs)/_layout.tsx`.
+- Route mới có tab → thêm file trong `app/(tabs)/` **và** một dòng `TABS` trong `src/components/TabBar.tsx`
+  **và** `<Tabs.Screen>` trong `app/(tabs)/_layout.tsx`.
 - Route cần option riêng (modal, animation) → khai `<Stack.Screen name="…" options={…}>` trong `app/_layout.tsx`,
   không đặt option rải rác trong từng màn.
 
@@ -61,11 +63,12 @@ Quy tắc:
 | `stores/`     | lowercase  | Một store một domain (`auth.ts`)                           |
 | `api/`        | lowercase  | `http.ts`, `client.ts`, `generated/` (sinh, không sửa tay) |
 | `theme/`      | lowercase  | `index.ts`                                                 |
+| `utils/`      | lowercase  | Hàm thuần theo chủ đề (`format.ts`)                        |
 
 - Tên file PascalCase **là tên tính năng**, không bắt buộc là tên export duy nhất: `Toast.tsx` export
   `ToastProvider` + `useToast`.
-- Ngoại lệ có chủ đích: `ui.tsx` là **barrel các primitive nhỏ** (`PinButton`, `GhostButton`, `Field`,
-  `ScreenHeader`, `EmptyState`, `Loading`), đặt lowercase để phân biệt với file-một-component. Không tạo barrel
+- Ngoại lệ có chủ đích: `ui.tsx` là **barrel các primitive nhỏ** (`PinButton`, `OutlineButton`, `GhostButton`,
+  `IconButton`, `Tag`, `Price`, `SectionTitle`, `SafetyNote`, `ScreenHeader`, `EmptyState`, `Loading`), đặt lowercase để phân biệt với file-một-component. Không tạo barrel
   thứ hai; primitive mới vào chính `ui.tsx`.
 - Tách khỏi `ui.tsx` khi component đạt **một trong hai**: cần state/animation riêng đáng kể, hoặc >60 dòng.
 - Test đặt **cạnh** file nó kiểm, cùng tên, đuôi `.test.ts(x)`: `http.test.ts` bên `http.ts`. Không có

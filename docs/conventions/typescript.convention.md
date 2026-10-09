@@ -11,7 +11,7 @@ Gate: `npm run typecheck` (`tsc --noEmit`, baseline sạch) + `npm run lint`.
 thêm `strictNullChecks: false`, `noImplicitAny: false`, hay `skipLibCheck` để né lỗi thật.
 
 `noUncheckedIndexedAccess` nghĩa là `arr[i]` và `record[key]` là `T | undefined`. Viết fallback có nghĩa ngay
-tại chỗ (`TILTS[i % TILTS.length] ?? 0`, `ICONS[route.name] ?? 'ellipse'`), đừng `!`.
+tại chỗ (`TILTS[i % TILTS.length] ?? 0`, `TABS[route.name]` rồi `if (!tab) return null`), đừng `!`.
 
 `jsx` đến từ `expo/tsconfig.base` **bên trong `node_modules`**. Typecheck bỗng tuôn ra hàng loạt `ts(17004)` là
 thiếu dependency chứ không phải hỏng type — chạy `npm install` trước khi sửa gì.
@@ -41,7 +41,7 @@ export function GuestGate({ text }: { text: string }) { … }
 Mở rộng props của primitive RN thì giao với type gốc, không chép lại field:
 
 ```ts
-export function Field({ label, style, ...props }: TextInputProps & { label: string }) { … }
+export function Field({ label, hint, style, ...props }: TextInputProps & { label: string; hint?: string }) { … }
 ```
 
 Props tuỳ chọn có default → khai `?` rồi default ở destructure (`disabled = false`), **không** `defaultProps`.
@@ -56,7 +56,9 @@ Kiểu wire đến từ `src/api/generated/types.gen.ts` (sinh từ OpenAPI). Ch
 khác `import type` từ đó.
 
 - Union literal cho trạng thái hữu hạn: `status: 'live' | 'held'`. Không `string` cho tập đóng, không runtime `enum`.
-- Tuple readonly khi độ dài cố định: `export type Grad = readonly [string, string]`.
+- Tập đóng cần cả giá trị lẫn type: khai mảng `as const` rồi suy type từ nó — `CONDITIONS = ['new', …] as const`,
+  `type Condition = (typeof CONDITIONS)[number]`. Chuỗi từ ngoài vào (route param) qua hàm thu hẹp như
+  `toCategoryId()`, không `as`.
 - Id của backend là uuid v7 dạng chuỗi; không ép sang số.
 
 ---
@@ -72,7 +74,7 @@ export const qk = { health: () => ['health'] as const };              // queries
 
 `as const` trên return của `qk.*` là bắt buộc — TanStack cần key là readonly tuple để suy luận đúng.
 Mảng thuần dữ liệu hiển thị (`TILTS`) **không** cần `as const`. Bảng tra theo khoá union thì khai
-`Record<K, V>` tường minh (`ICONS: Record<string, keyof typeof Ionicons.glyphMap>`).
+`Record<K, V>` tường minh (`TABS: Record<string, { label: string; icon: IconName }>`).
 
 ---
 

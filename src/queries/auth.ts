@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { setHttpAccessToken } from '@/api/http';
+import { mockApi } from '@/api/mock';
 import { useAuthStore } from '@/stores/auth';
 
 /**
@@ -15,6 +16,21 @@ export function useSyncAccessToken(): void {
     setHttpAccessToken(useAuthStore.getState().session?.accessToken ?? null);
     return useAuthStore.subscribe((s) => setHttpAccessToken(s.session?.accessToken ?? null));
   }, []);
+}
+
+/**
+ * Đăng nhập. Đang dùng `mockApi.login` (mọi email, mật khẩu từ 8 ký tự) để mở được các màn cần phiên
+ * khi backend chưa có `identity/sessions`; đổi sang `api.login` khi ghim-server archive `add-identity`.
+ * Token giả không tới backend nào: chưa endpoint nào khai `bearerAuth`.
+ *
+ * Không điều hướng sau khi `signIn` (HARD#18): `Stack.Protected` gỡ màn login khỏi stack.
+ */
+export function useLogin() {
+  return useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
+      mockApi.login(email.trim(), password),
+    onSuccess: (session) => useAuthStore.getState().signIn(session),
+  });
 }
 
 /**

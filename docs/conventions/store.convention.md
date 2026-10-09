@@ -80,6 +80,8 @@ Ngoài React thì `useAuthStore.getState()` / `useAuthStore.subscribe()` — xem
 - Callback `onRehydrateStorage` chạy **cả khi đọc đĩa lỗi** — luôn bật `hydrated` trong mọi nhánh.
 - Token **chỉ** ở SecureStore. State không nhạy cảm cần persist (lịch sử tìm kiếm…) thì mới cân nhắc AsyncStorage,
   và là một store riêng.
+- Web không có SecureStore (module rỗng) và không có kho tương đương: phiên trên web **chỉ ở bộ nhớ**, tải lại trang
+  là đăng nhập lại. Không lùi về `localStorage` — script nào trên trang cũng đọc được refresh token ở đó.
 
 ---
 
