@@ -4,6 +4,7 @@ import {
   formatAgo,
   formatDay,
   formatMillionRange,
+  formatPlace,
   formatVnd,
   groupThousands,
   parseDigits,
@@ -58,6 +59,16 @@ describe('formatDay', () => {
     // 23:50 hôm trước mới cách 40 phút nhưng đã là "Hôm qua".
     expect(formatDay(new Date(2026, 9, 8, 23, 50).toISOString(), now)).toBe('Hôm qua');
     expect(formatDay(new Date(2026, 9, 1, 12, 0).toISOString(), now)).toBe('01/10/2026');
+  });
+});
+
+describe('formatPlace', () => {
+  it('ghép phường và tỉnh; bản rút gọn giữ cấp gần nhất; thiếu phường thì rơi về tỉnh', () => {
+    const place = { ward: 'Phường Ba Đình', province: 'Hà Nội' };
+    expect(formatPlace(place)).toBe('Phường Ba Đình, Hà Nội');
+    expect(formatPlace(place, true)).toBe('Phường Ba Đình');
+    expect(formatPlace({ ward: null, province: 'Hà Nội' })).toBe('Hà Nội');
+    expect(formatPlace({ ward: null, province: 'Hà Nội' }, true)).toBe('Hà Nội');
   });
 });
 

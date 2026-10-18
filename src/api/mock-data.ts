@@ -1,7 +1,5 @@
 import type {
   BoostPlan,
-  Category,
-  CategoryId,
   Conversation,
   Group,
   GroupMember,
@@ -12,6 +10,8 @@ import type {
   Notice,
   Peer,
   Person,
+  PostCategory,
+  PostCategoryId,
   Seller,
 } from './client';
 import { ART, zoom } from './mock-art';
@@ -40,6 +40,7 @@ const anhTuan: Seller = {
   deals: 38,
   replyMinutes: 10,
   phone: '0909123456',
+  joinedAt: null,
 };
 const minhThu = person('u-minh-thu', 'Minh Thư', false);
 const hoangLong = person('u-hoang-long', 'Hoàng Long', true);
@@ -58,6 +59,7 @@ const asSeller = (p: Person): Seller => ({
   deals: 6,
   replyMinutes: 30,
   phone: null,
+  joinedAt: null,
 });
 
 export const SUPPORT: Peer = { ...person('u-support', 'Hỗ trợ Ghim', true), online: true };
@@ -67,7 +69,7 @@ export const ME: Omit<Me, 'stats'> = {
   idVerified: true,
   memberSince: 2023,
   rating: 4.9,
-  place: { district: 'Thủ Đức', city: HCM },
+  place: { ward: 'Thủ Đức', province: HCM },
   groups: [
     { id: 'g-na', name: 'Hội Nhiếp ảnh Sài Gòn', initials: 'NA', visibility: 'public' },
     { id: 'g-hv', name: 'THPT Hùng Vương', initials: 'HV', visibility: 'private' },
@@ -77,7 +79,7 @@ export const ME: Omit<Me, 'stats'> = {
 
 /* ─── DANH MỤC ────────────────────────────────────────────────────── */
 
-export const CATEGORIES: Category[] = [
+export const CATEGORIES: PostCategory[] = [
   { id: 'phone', name: 'Điện thoại', specKeys: ['Bộ nhớ', 'Pin'] },
   { id: 'laptop', name: 'Laptop', specKeys: ['RAM', 'Ổ cứng'] },
   { id: 'fashion', name: 'Thời trang', specKeys: ['Size'] },
@@ -105,18 +107,18 @@ export const DISTRICTS = [
 
 type Seed = Pick<ListingDetail, 'id' | 'title' | 'price' | 'cover' | 'condition'> &
   Partial<Omit<ListingDetail, 'category' | 'seller'>> & {
-    categoryId: CategoryId;
+    categoryId: PostCategoryId;
     minutesAgo: number;
-    district: string;
+    ward: string;
     sellerOf: Person | Seller;
   };
 
 const CATEGORY_NAME = Object.fromEntries(CATEGORIES.map((c) => [c.id, c.name]));
 
 function listing(s: Seed): ListingDetail {
-  const { categoryId, minutesAgo, district, sellerOf, ...rest } = s;
+  const { categoryId, minutesAgo, ward, sellerOf, ...rest } = s;
   return {
-    place: { district, city: HCM },
+    place: { ward, province: HCM },
     postedAt: ago(minutesAgo),
     boosted: false,
     groupName: null,
@@ -144,7 +146,7 @@ export const LISTINGS: ListingDetail[] = [
     cover: { svg: ART.iphone13ProBlue },
     condition: 'like-new',
     minutesAgo: 10,
-    district: 'Quận 1',
+    ward: 'Quận 1',
     sellerOf: anhTuan,
     boosted: true,
     categoryId: 'phone',
@@ -162,7 +164,7 @@ export const LISTINGS: ListingDetail[] = [
     cover: { svg: mba },
     condition: 'like-new',
     minutesAgo: 120,
-    district: 'Thủ Đức',
+    ward: 'Thủ Đức',
     sellerOf: anhTuan,
     boosted: true,
     categoryId: 'laptop',
@@ -196,7 +198,7 @@ export const LISTINGS: ListingDetail[] = [
     cover: { svg: ART.headphones },
     condition: 'like-new',
     minutesAgo: 60 * 26,
-    district: 'Quận 3',
+    ward: 'Quận 3',
     sellerOf: me,
     boosted: true,
     views: 142,
@@ -208,7 +210,7 @@ export const LISTINGS: ListingDetail[] = [
     cover: { svg: ART.scooter },
     condition: 'used',
     minutesAgo: 15,
-    district: 'Quận 7',
+    ward: 'Quận 7',
     sellerOf: quocBao,
     categoryId: 'vehicle',
     brand: 'Honda',
@@ -221,7 +223,7 @@ export const LISTINGS: ListingDetail[] = [
     cover: { svg: ART.desk },
     condition: 'like-new',
     minutesAgo: 60,
-    district: 'Bình Thạnh',
+    ward: 'Bình Thạnh',
     sellerOf: me,
     categoryId: 'furniture',
     views: 58,
@@ -234,7 +236,7 @@ export const LISTINGS: ListingDetail[] = [
     cover: { svg: ART.camera },
     condition: 'used',
     minutesAgo: 180,
-    district: 'Quận 10',
+    ward: 'Quận 10',
     sellerOf: minhKhoa,
     groupName: NA,
     brand: 'Fujifilm',
@@ -248,7 +250,7 @@ export const LISTINGS: ListingDetail[] = [
     cover: { svg: ART.lens },
     condition: 'like-new',
     minutesAgo: 300,
-    district: 'Quận 5',
+    ward: 'Quận 5',
     sellerOf: baoNgoc,
     groupName: NA,
     brand: 'Canon',
@@ -261,7 +263,7 @@ export const LISTINGS: ListingDetail[] = [
     cover: { svg: ART.tripod },
     condition: 'used',
     minutesAgo: 60 * 26,
-    district: 'Phú Nhuận',
+    ward: 'Phú Nhuận',
     sellerOf: ducHuy,
     groupName: NA,
   }),
@@ -272,7 +274,7 @@ export const LISTINGS: ListingDetail[] = [
     cover: { svg: ART.iphone13Pink },
     condition: 'used',
     minutesAgo: 60,
-    district: 'Gò Vấp',
+    ward: 'Gò Vấp',
     sellerOf: minhThu,
     categoryId: 'phone',
     brand: 'Apple',
@@ -284,7 +286,7 @@ export const LISTINGS: ListingDetail[] = [
     cover: { svg: ART.iphone13MiniBlack },
     condition: 'like-new',
     minutesAgo: 120,
-    district: 'Quận 3',
+    ward: 'Quận 3',
     sellerOf: hoangLong,
     categoryId: 'phone',
     brand: 'Apple',
@@ -296,7 +298,7 @@ export const LISTINGS: ListingDetail[] = [
     cover: { svg: ART.iphone13ProMaxGold },
     condition: 'like-new',
     minutesAgo: 180,
-    district: 'Thủ Đức',
+    ward: 'Thủ Đức',
     sellerOf: kimNgan,
     boosted: true,
     categoryId: 'phone',
@@ -309,7 +311,7 @@ export const LISTINGS: ListingDetail[] = [
     cover: { svg: ART.iphone13White },
     condition: 'new',
     minutesAgo: 300,
-    district: 'Tân Bình',
+    ward: 'Tân Bình',
     sellerOf: quocBao,
     categoryId: 'phone',
     brand: 'Apple',
@@ -321,7 +323,7 @@ export const LISTINGS: ListingDetail[] = [
     cover: { svg: ART.iphone13Blue },
     condition: 'used',
     minutesAgo: 60 * 26,
-    district: 'Quận 7',
+    ward: 'Quận 7',
     sellerOf: thanhHa,
     categoryId: 'phone',
     brand: 'Apple',
@@ -333,7 +335,7 @@ export const LISTINGS: ListingDetail[] = [
     cover: { svg: ART.macbookAirM1Teal },
     condition: 'like-new',
     minutesAgo: 240,
-    district: 'Quận 1',
+    ward: 'Quận 1',
     sellerOf: kimNgan,
     categoryId: 'laptop',
     brand: 'Apple',
@@ -345,7 +347,7 @@ export const LISTINGS: ListingDetail[] = [
     cover: { svg: ART.macbookProM1 },
     condition: 'used',
     minutesAgo: 400,
-    district: 'Quận 3',
+    ward: 'Quận 3',
     sellerOf: hoangLong,
     categoryId: 'laptop',
     brand: 'Apple',
@@ -357,7 +359,7 @@ export const LISTINGS: ListingDetail[] = [
     cover: { svg: ART.macbookAirM2 },
     condition: 'new',
     minutesAgo: 600,
-    district: 'Tân Bình',
+    ward: 'Tân Bình',
     sellerOf: thanhHa,
     categoryId: 'laptop',
     brand: 'Apple',

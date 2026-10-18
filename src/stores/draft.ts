@@ -24,7 +24,7 @@ export type Draft = {
   specs: Record<string, string>;
   description: string;
   /** null = dùng khu vực mặc định của tài khoản. */
-  place: { district: string; city: string } | null;
+  place: { ward: string | null; province: string } | null;
   groupIds: string[];
   boostId: string | null;
 };

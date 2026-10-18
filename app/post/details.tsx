@@ -12,11 +12,11 @@ import { Check } from '@/components/Chip';
 import { PinButton } from '@/components/ui';
 import { useMe } from '@/queries/account';
 import { useMyGroups } from '@/queries/groups';
-import { useCategories, useDistricts, usePriceHint } from '@/queries/selling';
-import { DEFAULT_CITY, toCategoryId } from '@/api/client';
+import { useDistricts, usePostCategories, usePriceHint } from '@/queries/selling';
+import { DEFAULT_CITY, toPostCategoryId } from '@/api/client';
 import { useDraftStore } from '@/stores/draft';
 import { C, F, R, S } from '@/theme';
-import { formatMillionRange, groupThousands, parseDigits } from '@/utils/format';
+import { formatMillionRange, formatPlace, groupThousands, parseDigits } from '@/utils/format';
 
 /** Bước 2 — giá, thông số, mô tả, khu vực, nơi hiển thị. */
 export default function PostDetails() {
@@ -28,9 +28,9 @@ export default function PostDetails() {
   const d = useDraftStore();
   const me = useMe();
   const groups = useMyGroups();
-  const categories = useCategories();
+  const categories = usePostCategories();
   const districts = useDistricts();
-  const hint = usePriceHint(toCategoryId(d.categoryId));
+  const hint = usePriceHint(toPostCategoryId(d.categoryId));
 
   const specKeys = categories.data?.find((c) => c.id === d.categoryId)?.specKeys ?? [];
   const place = d.place ?? me.data?.place;
@@ -106,9 +106,7 @@ export default function PostDetails() {
             style={styles.select}
           >
             <Feather name="map-pin" size={18} color={C.brand} />
-            <Text style={styles.selectText}>
-              {place ? `${place.district}, ${place.city}` : 'Chọn khu vực'}
-            </Text>
+            <Text style={styles.selectText}>{place ? formatPlace(place) : 'Chọn khu vực'}</Text>
             <Feather name="chevron-down" size={18} color={C.ink} />
           </Pressable>
         </View>
@@ -163,8 +161,8 @@ export default function PostDetails() {
         visible={picking}
         title="Khu vực"
         options={(districts.data ?? []).map((x) => ({ value: x, label: `${x}, ${DEFAULT_CITY}` }))}
-        value={place?.district ?? null}
-        onSelect={(district) => d.patch({ place: { district, city: DEFAULT_CITY } })}
+        value={place?.ward ?? null}
+        onSelect={(ward) => d.patch({ place: { ward, province: DEFAULT_CITY } })}
         onClose={() => setPicking(false)}
       />
     </SafeAreaView>

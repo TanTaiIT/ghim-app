@@ -1,43 +1,82 @@
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { SearchFilters } from '@/api/client';
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+  type QueryClient,
+} from '@tanstack/react-query';
+import { api, NO_FILTERS, type ListingCard, type SearchFilters } from '@/api/client';
 import { mockApi } from '@/api/mock';
 import { useIsAuthenticated } from '@/stores/auth';
+import { loadLookups } from './catalog';
 import { qk } from './keys';
 
 /* Phía người xem: bảng tin, tìm kiếm, chi tiết, tin đã lưu. Phía người bán nằm ở `./selling`. */
 
-export function useFeatured() {
-  return useQuery({ queryKey: qk.listings.featured(), queryFn: mockApi.getFeatured });
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Tin trong nhóm, tin đã lưu, tin của tôi, tin trong chat vẫn là dữ liệu mẫu (id dạng `l-…`) và vẫn mở màn
+ * chi tiết — id không phải uuid thì đọc từ mock. Xoá nhánh này khi các domain đó nối backend.
+ */
+const fromServer = (id: string) => UUID.test(id);
+
+const lookupsVia = (qc: QueryClient) => (codes: number[]) => loadLookups(qc, codes);
+
+/**
+ * Trang chủ đọc chung request của màn tìm kiếm không bộ lọc: bấm "Xem tất cả" mở ra đúng các tin vừa thấy,
+ * không tải lại. Chưa biết khu vực của người dùng (`/me` chưa có) nên "Gần bạn" là toàn sàn.
+ */
+function useFeed<T>(select: (cards: ListingCard[]) => T) {
+  const qc = useQueryClient();
+  return useQuery({
+    queryKey: qk.listings.search(NO_FILTERS),
+    queryFn: () => api.searchListings(NO_FILTERS, lookupsVia(qc)),
+    select,
+  });
 }
 
-export function useNearby() {
-  return useQuery({ queryKey: qk.listings.nearby(), queryFn: mockApi.getNearby });
-}
+const everything = (cards: ListingCard[]) => cards;
+const boostedOnly = (cards: ListingCard[]) => cards.filter((c) => c.boosted);
+
+export const useNearby = () => useFeed(everything);
+
+/** Tin còn hạn "nổi bật" — server mới có chỗ (`featuredUntil`), gói đẩy tin chưa có nên hiện đang rỗng. */
+export const useFeatured = () => useFeed(boostedOnly);
 
 /**
  * Không có `enabled`: bộ lọc rỗng là một truy vấn hợp lệ (xem mọi tin), không phải tham số thiếu.
  * `keepPreviousData` giữ lưới kết quả cũ khi đổi bộ lọc — lưới trống nháy lên rồi đầy lại trông như lỗi.
  */
 export function useSearch(filters: SearchFilters) {
+  const qc = useQueryClient();
   return useQuery({
     queryKey: qk.listings.search(filters),
-    queryFn: () => mockApi.search(filters),
+    queryFn: () => api.searchListings(filters, lookupsVia(qc)),
     placeholderData: keepPreviousData,
   });
 }
 
 export function useListing(id: string | undefined) {
+  const qc = useQueryClient();
   return useQuery({
     queryKey: qk.listings.detail(id ?? ''),
-    queryFn: () => mockApi.getListing(id ?? ''),
+    queryFn: () => {
+      const key = id ?? '';
+      return fromServer(key) ? api.getListing(key, lookupsVia(qc)) : mockApi.getListing(key);
+    },
     enabled: Boolean(id),
   });
 }
 
 export function useSimilar(id: string | undefined) {
+  const qc = useQueryClient();
   return useQuery({
     queryKey: qk.listings.similar(id ?? ''),
-    queryFn: () => mockApi.getSimilar(id ?? ''),
+    queryFn: () => {
+      const key = id ?? '';
+      return fromServer(key) ? api.getSimilar(key, lookupsVia(qc)) : mockApi.getSimilar(key);
+    },
     enabled: Boolean(id),
   });
 }

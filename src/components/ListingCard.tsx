@@ -6,7 +6,7 @@ import { Photo } from './Photo';
 import { Avatar, Verified } from './Avatar';
 import { Price, Tag } from './ui';
 import { C, F, R, S } from '@/theme';
-import { formatAgo } from '@/utils/format';
+import { formatAgo, formatPlace } from '@/utils/format';
 
 /**
  * Thẻ tin dạng ô: `featured` (dải ngang Tin nổi bật, luôn mang nhãn), `grid` (lưới hai cột kết quả
@@ -29,8 +29,8 @@ export function ListingTile({
   const featured = variant === 'featured';
   const mini = variant === 'mini';
   const meta = featured
-    ? `${item.place.district}, ${item.place.city}`
-    : `${item.place.district} · ${formatAgo(item.postedAt, undefined, true)}`;
+    ? formatPlace(item.place)
+    : `${formatPlace(item.place, true)} · ${formatAgo(item.postedAt, undefined, true)}`;
   return (
     <Pressable
       accessibilityRole="link"
@@ -78,7 +78,7 @@ export function ListingTile({
             {meta}
           </Text>
         )}
-        {variant === 'grid' && (
+        {variant === 'grid' && item.seller && (
           <View style={styles.seller}>
             <Avatar name={item.seller.name} />
             <Text style={styles.sellerName} numberOfLines={1}>
@@ -118,7 +118,7 @@ export function ListingRow({
           {item.title}
         </Text>
         <Price value={item.price} />
-        {by === 'seller' ? (
+        {by === 'seller' && item.seller ? (
           <View style={styles.seller}>
             <Avatar name={item.seller.name} />
             <Text style={styles.meta} numberOfLines={1}>
@@ -127,7 +127,7 @@ export function ListingRow({
           </View>
         ) : (
           <Text style={styles.meta} numberOfLines={1}>
-            {item.place.district} · {ago}
+            {formatPlace(item.place, true)} · {ago}
           </Text>
         )}
         {by === 'place' && item.groupName && (

@@ -1,17 +1,21 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { Category, CategoryId, NewListing, Place } from '@/api/client';
+import type { NewListing, Place, PostCategory, PostCategoryId } from '@/api/client';
 import { ApiError } from '@/api/http';
 import { mockApi } from '@/api/mock';
 import { useIsAuthenticated } from '@/stores/auth';
 import type { Draft } from '@/stores/draft';
 import { qk } from './keys';
 
-/* Phía người bán: dữ liệu cho luồng đăng tin, tin của tôi, đánh dấu đã bán. */
+/*
+ * Phía người bán: dữ liệu cho luồng đăng tin, tin của tôi, đánh dấu đã bán. Cả luồng vẫn chạy trên dữ liệu
+ * mẫu — danh mục, khu vực, gợi ý giá của nó là của mock, tách khỏi danh mục thật của phía xem (`./catalog`)
+ * để nháp không lẫn uuid của server với slug của mock.
+ */
 
-export function useCategories() {
+export function usePostCategories() {
   return useQuery({
-    queryKey: qk.categories(),
-    queryFn: mockApi.getCategories,
+    queryKey: qk.postCategories(),
+    queryFn: mockApi.getPostCategories,
     staleTime: Infinity,
   });
 }
@@ -30,7 +34,7 @@ export function useCategorySuggestion(title: string) {
   });
 }
 
-export function usePriceHint(categoryId: CategoryId | null) {
+export function usePriceHint(categoryId: PostCategoryId | null) {
   return useQuery({
     queryKey: qk.priceHint(categoryId ?? 'phone'),
     queryFn: () => mockApi.getPriceHint(categoryId ?? 'phone'),
@@ -72,9 +76,9 @@ export function useMarkSold() {
 
 /**
  * Nháp (store) → payload. Danh mục tra lại trong danh sách thật thay vì tin chuỗi trong nháp: store là
- * lá nên giữ `categoryId` dạng chuỗi, còn payload cần đúng `CategoryId`.
+ * lá nên giữ `categoryId` dạng chuỗi, còn payload cần đúng `PostCategoryId`.
  */
-function toNewListing(d: Draft, categories: Category[], fallback: Place): NewListing {
+function toNewListing(d: Draft, categories: PostCategory[], fallback: Place): NewListing {
   const category = categories.find((c) => c.id === d.categoryId);
   if (!category || !d.condition) {
     throw new ApiError('VALIDATION_ERROR', 'Chọn danh mục và tình trạng trước khi đăng', 400);
@@ -101,7 +105,7 @@ export function usePublishListing() {
   return useMutation({
     mutationFn: async (draft: Draft) => {
       const [categories, me] = await Promise.all([
-        qc.ensureQueryData({ queryKey: qk.categories(), queryFn: mockApi.getCategories }),
+        qc.ensureQueryData({ queryKey: qk.postCategories(), queryFn: mockApi.getPostCategories }),
         qc.ensureQueryData({ queryKey: qk.me(), queryFn: mockApi.getMe }),
       ]);
       return mockApi.publishListing(toNewListing(draft, categories, me.place));

@@ -5,7 +5,6 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGuarded } from '@/components/GuestGate';
 import { ListingTile } from '@/components/ListingCard';
-import { PickerSheet } from '@/components/PickerSheet';
 import { SearchFilterBar } from '@/components/SearchFilterBar';
 import { useToast } from '@/components/Toast';
 import { EmptyState, IconButton, Loading, useBack } from '@/components/ui';
@@ -16,15 +15,14 @@ import {
   useSearch,
   useToggleSaved,
 } from '@/queries/listings';
-import { DEFAULT_CITY, toCategoryId, type SearchFilters, type SortOrder } from '@/api/client';
+import { NO_FILTERS, type SearchFilters } from '@/api/client';
 import { C, F, R, S } from '@/theme';
 
-const SORTS: { value: SortOrder; label: string }[] = [
-  { value: 'newest', label: 'Mới nhất' },
-  { value: 'price-asc', label: 'Giá thấp trước' },
-  { value: 'price-desc', label: 'Giá cao trước' },
-];
-
+/**
+ * Kết quả tìm kiếm. Thiết kế có nút sắp xếp (mới nhất / theo giá) nhưng `GET /listings` chưa nhận tham số
+ * sắp xếp — server tự xếp, nên màn này chưa hiện nút đó. Khu vực mặc định là toàn quốc vì chưa biết người
+ * dùng ở đâu (`/me` chưa có khu vực).
+ */
 export default function Search() {
   const router = useRouter();
   const back = useBack();
@@ -32,15 +30,10 @@ export default function Search() {
   const guarded = useGuarded();
   const params = useLocalSearchParams<{ q?: string; category?: string }>();
   const [text, setText] = useState(params.q ?? '');
-  const [sortOpen, setSortOpen] = useState(false);
   const [filters, setFilters] = useState<SearchFilters>({
+    ...NO_FILTERS,
     q: params.q ?? '',
-    categoryId: toCategoryId(params.category),
-    city: DEFAULT_CITY,
-    minPrice: null,
-    maxPrice: null,
-    condition: null,
-    sort: 'newest',
+    categoryId: params.category ?? null,
   });
 
   const results = useSearch(filters);
@@ -51,7 +44,6 @@ export default function Search() {
 
   const q = filters.q.trim();
   const searchSaved = savedSearches.data?.includes(q.toLowerCase()) ?? false;
-  const sortLabel = SORTS.find((s) => s.value === filters.sort)?.label ?? '';
   // Lưới hai cột: số tin lẻ thì ô cuối giãn hết bề ngang — chèn một ô trống để nó giữ nửa hàng.
   const hits = results.data ?? [];
   const cells = hits.length % 2 === 1 ? [...hits, null] : hits;
@@ -96,10 +88,6 @@ export default function Search() {
           {q ? 'Kết quả cho ' : 'Tất cả tin'}
           {q !== '' && <Text style={styles.resultQ}>“{q}”</Text>}
         </Text>
-        <Pressable accessibilityRole="button" onPress={() => setSortOpen(true)} style={styles.sort}>
-          <Text style={styles.sortText}>{sortLabel}</Text>
-          <Feather name="chevron-down" size={14} color={C.ink} />
-        </Pressable>
       </View>
     </View>
   );
@@ -159,15 +147,6 @@ export default function Search() {
             />
           )
         }
-      />
-
-      <PickerSheet
-        visible={sortOpen}
-        title="Sắp xếp"
-        options={SORTS}
-        value={filters.sort}
-        onSelect={(sort) => setFilters((f) => ({ ...f, sort }))}
-        onClose={() => setSortOpen(false)}
       />
     </SafeAreaView>
   );
@@ -231,6 +210,4 @@ const styles = StyleSheet.create({
   resultBar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   resultText: { flex: 1, fontFamily: F.ui, fontSize: 14, color: C.inkSoft },
   resultQ: { fontFamily: F.uiBold, color: C.ink },
-  sort: { flexDirection: 'row', alignItems: 'center', gap: S.xs, height: 36, paddingLeft: S.sm },
-  sortText: { fontFamily: F.uiSemi, fontSize: 13, color: C.ink },
 });

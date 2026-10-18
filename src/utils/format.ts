@@ -32,6 +32,15 @@ export function parseDigits(text: string): number {
   return digits === '' ? 0 : Number(digits);
 }
 
+/**
+ * Khu vực trên thẻ và màn chi tiết: "Phường Ba Đình, Hà Nội". `short` (hàng tin, chỗ hẹp) chỉ giữ cấp gần
+ * nhất. Tin không có phường thì rơi về tỉnh, không để trống.
+ */
+export function formatPlace(p: { ward: string | null; province: string }, short = false): string {
+  if (short) return p.ward ?? p.province;
+  return [p.ward, p.province].filter(Boolean).join(', ');
+}
+
 /** 13000000, 15000000 → "13 – 15 triệu" (gợi ý khoảng giá, chip lọc giá). */
 export function formatMillionRange(min: number, max: number): string {
   return `${millions(min)} – ${millions(max)} triệu`;

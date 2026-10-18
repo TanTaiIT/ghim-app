@@ -1,8 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SvgXml } from 'react-native-svg';
-import { useCategories } from '@/queries/selling';
-import type { CategoryId } from '@/api/client';
+import { useCategories } from '@/queries/catalog';
 import { C, F, S } from '@/theme';
 
 const ICON = 60;
@@ -19,15 +18,15 @@ function frame(body: string, defs = ''): string {
 }
 
 /**
- * Bảy ô danh mục của thiết kế + "Tất cả". Tranh là chuyện giao diện nên nằm ở đây; tên lấy từ danh sách
- * danh mục (backend đổi tên thì lưới đổi theo). Danh mục không có ô vẫn tìm được qua "Tất cả".
+ * Tranh của bảy ô danh mục trong thiết kế, tra theo TÊN danh mục: server dùng uuid do master tạo lúc chạy,
+ * không có khoá cố định nào khác để gắn tranh. Danh mục không có ô vẫn tìm được qua "Tất cả".
  * Mã màu trong tranh là điểm ảnh, không phải màu giao diện — không thuộc `@/theme` (cùng lý do với
  * `@/api/mock-art`). Mỗi tranh giữ id gradient riêng: trên web mọi `<svg>` inline chung một không gian
  * id, trùng tên thì ô sau tô bằng gradient của ô trước.
  */
-const CELLS: { id: CategoryId; art: string }[] = [
+const ART: { name: string; art: string }[] = [
   {
-    id: 'phone',
+    name: 'Điện thoại',
     art: frame(
       `<g transform="rotate(-9 32 32)">
         <rect x="45.5" y="17" width="2" height="8" rx="1" fill="#475569"/>
@@ -47,7 +46,7 @@ const CELLS: { id: CategoryId; art: string }[] = [
     ),
   },
   {
-    id: 'laptop',
+    name: 'Laptop',
     art: frame(
       `<rect x="12" y="11" width="40" height="31" rx="3.5" fill="#334155"/>
       <rect x="14.5" y="13.5" width="35" height="26" rx="1.5" fill="url(#ciLpS)"/>
@@ -61,7 +60,7 @@ const CELLS: { id: CategoryId; art: string }[] = [
     ),
   },
   {
-    id: 'fashion',
+    name: 'Thời trang',
     art: frame(
       `<path d="M29.5 7.5 a2.6 2.6 0 1 1 2.5 3.2 v3" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round"/>
       <path d="M14 21.5 L32 13.5 L50 21.5" fill="none" stroke="#94A3B8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
@@ -74,7 +73,7 @@ const CELLS: { id: CategoryId; art: string }[] = [
     ),
   },
   {
-    id: 'furniture',
+    name: 'Nội thất',
     art: frame(
       `<rect x="10" y="15" width="44" height="23" rx="8" fill="url(#ciSo)"/>
       <rect x="14" y="18.5" width="17" height="16" rx="5" fill="#FCD34D"/>
@@ -90,7 +89,7 @@ const CELLS: { id: CategoryId; art: string }[] = [
     ),
   },
   {
-    id: 'vehicle',
+    name: 'Xe cộ',
     art: frame(
       `<path d="M46 31 L50 48" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
       <circle cx="15" cy="48" r="8" fill="#1E293B"/><circle cx="15" cy="48" r="3.6" fill="#CBD5E1"/>
@@ -106,7 +105,7 @@ const CELLS: { id: CategoryId; art: string }[] = [
     ),
   },
   {
-    id: 'property',
+    name: 'Nhà đất',
     art: frame(
       `<rect x="40" y="10" width="6" height="14" rx="1" fill="#9A3412"/>
       <rect x="12" y="28" width="40" height="27" fill="#FEF3C7"/>
@@ -124,7 +123,7 @@ const CELLS: { id: CategoryId; art: string }[] = [
     ),
   },
   {
-    id: 'jobs',
+    name: 'Việc làm',
     art: frame(
       `<path d="M24 19 V13 Q24 9.5 27.5 9.5 H36.5 Q40 9.5 40 13 V19" fill="none" stroke="#78350F" stroke-width="3.5"/>
       <rect x="7" y="18" width="50" height="35" rx="6" fill="url(#ciBg)"/>
@@ -153,19 +152,41 @@ const ALL_ART = frame(
   <path d="M38 38 Q40 36 44 36.5" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" fill="none" opacity="0.6"/>`,
 );
 
+/** Danh mục master tạo thêm mà bộ UI chưa vẽ tranh. */
+const FALLBACK_ART = frame(
+  `<path d="M10 22 L32 12 L54 22 V46 L32 56 L10 46z" fill="url(#ciBx)"/>
+  <path d="M10 22 L32 32 L54 22 M32 32 V56" fill="none" stroke="#92400E" stroke-width="1.6" opacity="0.45"/>
+  <path d="M21 17 L43 27 V35" fill="none" stroke="#FDE68A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`,
+  grad('ciBx', '#F5C77E', '#C2862F'),
+);
+
+/** Thiết kế: 7 ô danh mục + ô "Tất cả" = hai hàng bốn ô. */
+const MAX_CELLS = 7;
+
+const artIndex = (name: string) => {
+  const i = ART.findIndex((a) => a.name === name);
+  return i === -1 ? ART.length : i;
+};
+
+/**
+ * Danh mục có tranh đứng trước theo thứ tự của thiết kế, danh mục lạ lấp chỗ trống bằng tranh mặc định —
+ * master đổi tên một danh mục thì ô vẫn còn, chỉ mất tranh riêng.
+ */
 export function CategoryGrid() {
   const router = useRouter();
   const categories = useCategories();
-  const nameOf = (id: CategoryId) => categories.data?.find((c) => c.id === id)?.name ?? '';
+  const cells = [...(categories.data ?? [])]
+    .sort((a, b) => artIndex(a.name) - artIndex(b.name))
+    .slice(0, MAX_CELLS);
 
   return (
     <View style={styles.grid}>
-      {CELLS.map((cell) => (
+      {cells.map((c) => (
         <Tile
-          key={cell.id}
-          label={nameOf(cell.id)}
-          art={cell.art}
-          onPress={() => router.push({ pathname: '/search', params: { category: cell.id } })}
+          key={c.id}
+          label={c.name}
+          art={ART.find((a) => a.name === c.name)?.art ?? FALLBACK_ART}
+          onPress={() => router.push({ pathname: '/search', params: { category: c.id } })}
         />
       ))}
       <Tile label="Tất cả" art={ALL_ART} onPress={() => router.push('/search')} />

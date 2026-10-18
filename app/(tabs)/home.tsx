@@ -70,17 +70,14 @@ export default function Home() {
           </Pressable>
         </View>
 
-        <View style={styles.section}>
-          <SectionTitle
-            title="Tin nổi bật"
-            action="Xem tất cả"
-            onAction={() => router.push('/search')}
-          />
-          {featured.isPending ? (
-            <Loading />
-          ) : featured.isError ? (
-            <EmptyState icon="wifi-off" text={featured.error.message} />
-          ) : (
+        {/* Chung request với "Gần bạn" nên chờ và lỗi đã hiện ở dưới; chưa có tin nổi bật thì ẩn cả mục. */}
+        {featured.data && featured.data.length > 0 && (
+          <View style={styles.section}>
+            <SectionTitle
+              title="Tin nổi bật"
+              action="Xem tất cả"
+              onAction={() => router.push('/search')}
+            />
             <FlatList
               horizontal
               data={featured.data}
@@ -92,8 +89,8 @@ export default function Home() {
                 <ListingTile item={item} variant="featured" onPress={() => open(item.id)} />
               )}
             />
-          )}
-        </View>
+          </View>
+        )}
 
         <View style={styles.section}>
           <SectionTitle title="Gần bạn" />

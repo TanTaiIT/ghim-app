@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { PickerSheet } from './PickerSheet';
 import { Chip } from './Chip';
-import { CONDITIONS, CONDITION_LABEL, type Condition, type SearchFilters } from '@/api/client';
-import { useCategories } from '@/queries/selling';
+import { NO_FILTERS, type SearchFilters } from '@/api/client';
+import { useCategories, useProvinces } from '@/queries/catalog';
 import { S } from '@/theme';
 import { formatMillionRange } from '@/utils/format';
 
@@ -20,14 +20,14 @@ const PRICES = [
 
 type PriceKey = (typeof PRICES)[number]['value'];
 
-const CITIES = ['TP.HCM', 'Hà Nội', 'Đà Nẵng'];
-const ANYWHERE = 'Toàn quốc';
+const ANYWHERE = 'all';
 
-type Sheet = 'city' | 'price' | 'condition' | 'category' | null;
+type Sheet = 'province' | 'price' | 'category' | null;
 
 /**
  * Hàng chip lọc của màn tìm kiếm cùng các bảng chọn của nó. Chip đầu tối màu đếm số bộ lọc đang bật;
  * bấm vào thì xoá hết — thiết kế chưa có màn bộ lọc đầy đủ, mỗi chip sau đã là một bộ lọc riêng.
+ * Thiết kế có thêm chip "Tình trạng", nhưng `GET /listings` chưa lọc được theo đó nên chưa hiện.
  */
 export function SearchFilterBar({
   filters,
@@ -38,13 +38,15 @@ export function SearchFilterBar({
 }) {
   const [sheet, setSheet] = useState<Sheet>(null);
   const categories = useCategories();
+  const provinces = useProvinces();
   const set = (patch: Partial<SearchFilters>) => onChange({ ...filters, ...patch });
   const close = () => setSheet(null);
 
   const price = PRICES.find((p) => p.min === filters.minPrice && p.max === filters.maxPrice);
   const priceOn = filters.minPrice !== null || filters.maxPrice !== null;
   const category = categories.data?.find((c) => c.id === filters.categoryId);
-  const active = [filters.city, filters.condition, filters.categoryId].filter(Boolean).length;
+  const province = provinces.data?.find((p) => p.code === filters.provinceCode);
+  const active = [filters.provinceCode, filters.categoryId].filter((v) => v !== null).length;
   const count = active + (priceOn ? 1 : 0);
 
   return (
@@ -55,18 +57,16 @@ export function SearchFilterBar({
             dark
             icon="sliders"
             label={count > 0 ? `Bộ lọc · ${count}` : 'Bộ lọc'}
-            onPress={() =>
-              set({ city: null, minPrice: null, maxPrice: null, condition: null, categoryId: null })
-            }
+            onPress={() => onChange({ ...NO_FILTERS, q: filters.q })}
           />
           {category && (
             <Chip selected chevron label={category.name} onPress={() => setSheet('category')} />
           )}
           <Chip
             chevron
-            selected={filters.city !== null}
-            label={filters.city ?? ANYWHERE}
-            onPress={() => setSheet('city')}
+            selected={province !== undefined}
+            label={province?.name ?? 'Toàn quốc'}
+            onPress={() => setSheet('province')}
           />
           <Chip
             chevron
@@ -74,21 +74,18 @@ export function SearchFilterBar({
             label={priceOn ? (price?.label ?? 'Giá') : 'Giá'}
             onPress={() => setSheet('price')}
           />
-          <Chip
-            chevron
-            selected={filters.condition !== null}
-            label={filters.condition ? CONDITION_LABEL[filters.condition] : 'Tình trạng'}
-            onPress={() => setSheet('condition')}
-          />
         </View>
       </ScrollView>
 
       <PickerSheet
-        visible={sheet === 'city'}
+        visible={sheet === 'province'}
         title="Khu vực"
-        options={[...CITIES, ANYWHERE].map((c) => ({ value: c, label: c }))}
-        value={filters.city ?? ANYWHERE}
-        onSelect={(c) => set({ city: c === ANYWHERE ? null : c })}
+        options={[
+          { value: ANYWHERE, label: 'Toàn quốc' },
+          ...(provinces.data ?? []).map((p) => ({ value: String(p.code), label: p.name })),
+        ]}
+        value={filters.provinceCode === null ? ANYWHERE : String(filters.provinceCode)}
+        onSelect={(code) => set({ provinceCode: code === ANYWHERE ? null : Number(code) })}
         onClose={close}
       />
       <PickerSheet<PriceKey>
@@ -100,17 +97,6 @@ export function SearchFilterBar({
           const p = PRICES.find((x) => x.value === key);
           if (p) set({ minPrice: p.min, maxPrice: p.max });
         }}
-        onClose={close}
-      />
-      <PickerSheet<Condition | 'any'>
-        visible={sheet === 'condition'}
-        title="Tình trạng"
-        options={[
-          ...CONDITIONS.map((c) => ({ value: c, label: CONDITION_LABEL[c] })),
-          { value: 'any', label: 'Mọi tình trạng' },
-        ]}
-        value={filters.condition ?? 'any'}
-        onSelect={(c) => set({ condition: c === 'any' ? null : c })}
         onClose={close}
       />
       <PickerSheet

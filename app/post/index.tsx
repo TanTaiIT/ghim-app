@@ -10,7 +10,7 @@ import { StepHeader, useClosePost } from '@/components/StepHeader';
 import { useToast } from '@/components/Toast';
 import { Choice } from '@/components/Chip';
 import { PinButton } from '@/components/ui';
-import { useCategories, useCategorySuggestion, useSamplePhotos } from '@/queries/selling';
+import { useCategorySuggestion, usePostCategories, useSamplePhotos } from '@/queries/selling';
 import { CONDITIONS, CONDITION_LABEL } from '@/api/client';
 import { MAX_PHOTOS, MAX_TITLE, useDraftStore } from '@/stores/draft';
 import { C, F, R, S } from '@/theme';
@@ -33,7 +33,7 @@ export default function PostPhotos() {
   const addPhoto = useDraftStore((s) => s.addPhoto);
   const removePhoto = useDraftStore((s) => s.removePhoto);
 
-  const categories = useCategories();
+  const categories = usePostCategories();
   const suggestion = useCategorySuggestion(title);
   const samples = useSamplePhotos();
 

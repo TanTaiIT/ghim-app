@@ -1,9 +1,18 @@
 import {
+  getApiV1Categories,
+  getApiV1CategoriesByIdTemplateVersionsByVersion,
+  getApiV1Listings,
+  getApiV1ListingsById,
+  getApiV1ListingsByIdSuggestions,
+  getApiV1RegionsProvinces,
+  getApiV1RegionsProvincesByCodeWards,
+  getApiV1UsersById,
   getHealthReady,
   postApiV1AuthLogin,
   postApiV1AuthLogout,
   postApiV1AuthRefresh,
 } from './generated/sdk.gen';
+import type { GetApiV1ListingsResponses, GetApiV1UsersByIdResponses } from './generated/types.gen';
 import { ApiError } from './http';
 
 /*
@@ -92,7 +101,14 @@ export const CONDITION_LABEL: Record<Condition, string> = {
   used: 'Đã dùng',
 };
 
-const CATEGORY_IDS = [
+/** Danh mục của server: uuid do master tạo lúc chạy — không có bộ khoá cố định nào để app dựa vào. */
+export type Category = { id: string; name: string };
+
+/*
+ * Danh mục của luồng đăng tin vẫn là dữ liệu mẫu tới khi nối đăng tin thật: slug cố định, mỗi danh mục một
+ * bộ ô thông số. Server thay bộ ô đó bằng mẫu thông số theo phiên bản (`/categories/{id}/template`).
+ */
+const POST_CATEGORY_IDS = [
   'phone',
   'laptop',
   'fashion',
@@ -104,21 +120,25 @@ const CATEGORY_IDS = [
   'electronics',
 ] as const;
 
-export type CategoryId = (typeof CATEGORY_IDS)[number];
+export type PostCategoryId = (typeof POST_CATEGORY_IDS)[number];
 
-/** Route param / chuỗi trong nháp → `CategoryId`. Chuỗi lạ (deep link sai) thành null, không ép kiểu. */
-export function toCategoryId(value: string | null | undefined): CategoryId | null {
-  return CATEGORY_IDS.find((id) => id === value) ?? null;
+/** Chuỗi trong nháp → `PostCategoryId`. Chuỗi lạ thành null, không ép kiểu. */
+export function toPostCategoryId(value: string | null | undefined): PostCategoryId | null {
+  return POST_CATEGORY_IDS.find((id) => id === value) ?? null;
 }
 
-export type Category = {
-  id: CategoryId;
+export type PostCategory = {
+  id: PostCategoryId;
   name: string;
   /** Ô thông số người đăng điền ở bước 2 — mỗi danh mục hỏi một bộ khác. */
   specKeys: string[];
 };
 
-export type Place = { district: string; city: string };
+/** Hai cấp như dữ liệu hành chính từ 01/07/2025 mà server dùng: phường/xã thuộc tỉnh/thành. */
+export type Place = { ward: string | null; province: string };
+
+export type Province = { code: number; name: string };
+export type Ward = { code: number; name: string };
 
 /** Khu vực khi chưa biết người dùng ở đâu (khách, tài khoản chưa đặt khu vực). */
 export const DEFAULT_CITY = 'TP.HCM';
@@ -133,43 +153,55 @@ export type ListingCard = {
   place: Place;
   postedAt: string;
   boosted: boolean;
-  seller: Person;
+  /** null khi danh sách của server chỉ mang `ownerId` — hồ sơ người bán chỉ tải ở màn chi tiết. */
+  seller: Person | null;
   /** Nhóm mà tin được đăng vào — mục "Gần bạn" gắn nhãn để người xem biết tin đến từ đâu. */
   groupName: string | null;
 };
 
+/*
+ * Các trường nullable dưới đây là thứ thiết kế có mà server chưa trả (đánh giá, số giao dịch, thời gian phản
+ * hồi, tình trạng, lượt xem): màn hình ẩn phần đó khi null thay vì bịa số. Dữ liệu mẫu vẫn điền đủ.
+ */
+
 export type Seller = Person & {
-  rating: number;
-  deals: number;
-  replyMinutes: number;
-  /** Tuỳ chọn và chưa xác minh (add-identity: identity/profile). */
+  rating: number | null;
+  deals: number | null;
+  replyMinutes: number | null;
+  /** Chỉ có khi người bán bật hiện số trên tin (`showPhone`); chưa xác minh. */
   phone: string | null;
+  joinedAt: string | null;
 };
 
-export type ListingDetail = ListingCard & {
+export type ListingDetail = Omit<ListingCard, 'seller'> & {
   seller: Seller;
-  condition: Condition;
-  category: { id: CategoryId; name: string };
+  condition: Condition | null;
+  category: Category;
   brand: string | null;
   photos: Picture[];
   specs: { label: string; value: string }[];
   description: string;
-  views: number;
+  views: number | null;
   allowOffers: boolean;
 };
 
-export type CategorySuggestion = { category: Category; brand: string | null };
+export type CategorySuggestion = { category: PostCategory; brand: string | null };
 
-export type SortOrder = 'newest' | 'price-asc' | 'price-desc';
-
+/** Đúng bộ lọc mà `GET /listings` nhận — server chưa có sắp xếp hay lọc theo tình trạng. */
 export type SearchFilters = {
   q: string;
-  categoryId: CategoryId | null;
-  city: string | null;
+  categoryId: string | null;
+  provinceCode: number | null;
   minPrice: number | null;
   maxPrice: number | null;
-  condition: Condition | null;
-  sort: SortOrder;
+};
+
+export const NO_FILTERS: SearchFilters = {
+  q: '',
+  categoryId: null,
+  provinceCode: null,
+  minPrice: null,
+  maxPrice: null,
 };
 
 type MyListingState = 'pending' | 'active' | 'sold';
@@ -193,7 +225,7 @@ export type BoostPlan = {
 
 export type NewListing = {
   title: string;
-  categoryId: CategoryId;
+  categoryId: PostCategoryId;
   condition: Condition;
   price: number;
   allowOffers: boolean;
@@ -294,10 +326,145 @@ function toSession(d: { accessToken: string; refreshToken: string | null }): Ses
   return { accessToken: d.accessToken, refreshToken: d.refreshToken };
 }
 
+/* ------------------------------ wire → domain ------------------------------ */
+
+/**
+ * Tên cho những mã mà tin đăng chỉ mang id (danh mục, tỉnh, phường). `queries/` dựng từ cache dữ liệu tham
+ * chiếu, nên một trang 30 tin không kéo theo 30 lượt hỏi tên tỉnh.
+ */
+export type Lookups = {
+  category: (id: string) => Category | null;
+  place: (provinceCode: number | null, wardCode: number | null) => Place;
+};
+
+/** Nhận các mã tỉnh có trên trang (danh sách phường tải theo tỉnh) và trả bộ tra tên đã sẵn sàng. */
+export type LoadLookups = (provinceCodes: number[]) => Promise<Lookups>;
+
+type WireListing = GetApiV1ListingsResponses[200]['data']['items'][number];
+type WireUser = GetApiV1UsersByIdResponses[200]['data'];
+
+/** Trang đầu đủ cho trang chủ và một màn kết quả; cuộn tải thêm (`nextCursor`) chưa làm. */
+const PAGE_SIZE = 30;
+
+const toPicture = (img: { url: string }): Picture => ({ uri: img.url });
+
+/**
+ * Tiêu đề, giá và ảnh là bắt buộc khi gửi duyệt (server `MISSING_LABELS`), nên tin công khai luôn có đủ —
+ * null chỉ có ở nháp. Phần dự phòng dưới đây chỉ để type đủ, không phải một trạng thái màn hình phải vẽ.
+ */
+function toCard(w: WireListing, lookups: Lookups): ListingCard {
+  return {
+    id: w.id,
+    title: w.title ?? '',
+    price: w.price ?? 0,
+    cover: w.images[0] ? toPicture(w.images[0]) : { uri: '' },
+    place: lookups.place(w.provinceCode, w.wardCode),
+    postedAt: w.firstLiveAt ?? w.createdAt,
+    boosted: w.featuredUntil !== null && Date.parse(w.featuredUntil) > Date.now(),
+    seller: null,
+    groupName: w.badge?.name ?? null,
+  };
+}
+
+async function toCards(items: WireListing[], load: LoadLookups): Promise<ListingCard[]> {
+  const provinces = [
+    ...new Set(items.flatMap((w) => (w.provinceCode === null ? [] : [w.provinceCode]))),
+  ];
+  const lookups = await load(provinces);
+  return items.map((w) => toCard(w, lookups));
+}
+
+/** Thông số = các ô của đúng phiên bản mẫu mà tin đã dùng, theo thứ tự của mẫu; ô bỏ trống thì không hiện. */
+function toSpecs(fields: { name: string; label: string }[], attributes: Record<string, unknown>) {
+  return fields.flatMap((f) => {
+    const raw = attributes[f.name];
+    const value = Array.isArray(raw)
+      ? raw.join(', ')
+      : typeof raw === 'string' || typeof raw === 'number'
+        ? String(raw)
+        : '';
+    return value.trim() === '' ? [] : [{ label: f.label, value }];
+  });
+}
+
+/** Hồ sơ công khai mới có tên, ảnh, ngày tham gia — chưa có xác minh, đánh giá hay số giao dịch. */
+function toSeller(u: WireUser, showPhone: boolean): Seller {
+  return {
+    id: u.id,
+    name: u.displayName,
+    verified: false,
+    rating: null,
+    deals: null,
+    replyMinutes: null,
+    phone: showPhone ? (u.phone?.number ?? null) : null,
+    joinedAt: u.joinedAt,
+  };
+}
+
 /* ---------------------------------- api ----------------------------------- */
 
 export const api = {
   getReadiness: (): Promise<Readiness> => unwrap(getHealthReady()),
+
+  getCategories: async (): Promise<Category[]> =>
+    (await unwrap(getApiV1Categories())).map(({ id, name }) => ({ id, name })),
+
+  getProvinces: async (): Promise<Province[]> =>
+    (await unwrap(getApiV1RegionsProvinces())).map(({ code, name }) => ({ code, name })),
+
+  getWards: async (provinceCode: number): Promise<Ward[]> =>
+    (await unwrap(getApiV1RegionsProvincesByCodeWards({ path: { code: provinceCode } }))).map(
+      ({ code, name }) => ({ code, name }),
+    ),
+
+  searchListings: async (f: SearchFilters, load: LoadLookups): Promise<ListingCard[]> => {
+    const page = await unwrap(
+      getApiV1Listings({
+        query: {
+          q: f.q.trim() || undefined,
+          categoryId: f.categoryId ?? undefined,
+          provinceCode: f.provinceCode ?? undefined,
+          priceMin: f.minPrice ?? undefined,
+          priceMax: f.maxPrice ?? undefined,
+          limit: PAGE_SIZE,
+        },
+      }),
+    );
+    return toCards(page.items, load);
+  },
+
+  getListing: async (id: string, load: LoadLookups): Promise<ListingDetail> => {
+    const w = await unwrap(getApiV1ListingsById({ path: { id } }));
+    const [lookups, owner, template] = await Promise.all([
+      load(w.provinceCode === null ? [] : [w.provinceCode]),
+      unwrap(getApiV1UsersById({ path: { id: w.ownerId } })),
+      w.categoryId !== null && w.templateVersion !== null
+        ? unwrap(
+            getApiV1CategoriesByIdTemplateVersionsByVersion({
+              path: { id: w.categoryId, version: w.templateVersion },
+            }),
+          )
+        : null,
+    ]);
+    return {
+      ...toCard(w, lookups),
+      seller: toSeller(owner, w.showPhone),
+      condition: null,
+      category: (w.categoryId ? lookups.category(w.categoryId) : null) ?? {
+        id: w.categoryId ?? '',
+        name: '',
+      },
+      brand: null,
+      photos: w.images.map(toPicture),
+      specs: template ? toSpecs(template.fields, w.attributes) : [],
+      description: w.description ?? '',
+      views: null,
+      allowOffers: w.negotiable,
+    };
+  },
+
+  getSimilar: async (id: string, load: LoadLookups): Promise<ListingCard[]> =>
+    toCards(await unwrap(getApiV1ListingsByIdSuggestions({ path: { id } })), load),
 
   login: (email: string, password: string): Promise<Session> =>
     unwrap(postApiV1AuthLogin({ body: { email, password, client: 'app' } })).then(toSession),

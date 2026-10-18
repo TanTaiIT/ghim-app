@@ -8,11 +8,11 @@ import { useToast } from '@/components/Toast';
 import { PinButton, Price, Tag } from '@/components/ui';
 import { useMe } from '@/queries/account';
 import { useMyGroups } from '@/queries/groups';
-import { useBoostPlans, useCategories, usePublishListing } from '@/queries/selling';
+import { useBoostPlans, usePostCategories, usePublishListing } from '@/queries/selling';
 import { CONDITION_LABEL } from '@/api/client';
 import { snapshotDraft, useDraftStore } from '@/stores/draft';
 import { C, F, R, S } from '@/theme';
-import { formatVnd } from '@/utils/format';
+import { formatPlace, formatVnd } from '@/utils/format';
 
 /** Thiết kế để trống giá gói (chưa chốt) — giữ nguyên chỗ trống thay vì bịa một con số. */
 const PRICE_TBD = '[Giá gói]';
@@ -26,7 +26,7 @@ export default function PostPreview() {
   const d = useDraftStore();
   const me = useMe();
   const groups = useMyGroups();
-  const categories = useCategories();
+  const categories = usePostCategories();
   const plans = useBoostPlans();
   const publish = usePublishListing();
 
@@ -70,7 +70,7 @@ export default function PostPreview() {
             <View style={styles.cardBody}>
               <Text style={styles.title}>{d.title}</Text>
               <Price value={d.price} size={16} />
-              <Text style={styles.meta}>{place?.district ?? ''} · Vừa xong</Text>
+              <Text style={styles.meta}>{place ? formatPlace(place, true) : ''} · Vừa xong</Text>
               {d.condition && <Tag label={CONDITION_LABEL[d.condition]} tone="brand" />}
             </View>
           </View>

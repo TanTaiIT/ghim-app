@@ -1,7 +1,5 @@
 import type {
   BoostPlan,
-  Category,
-  CategoryId,
   CategorySuggestion,
   Conversation,
   ConversationSummary,
@@ -18,8 +16,9 @@ import type {
   Notice,
   OfferStatus,
   Picture,
+  PostCategory,
+  PostCategoryId,
   PriceHint,
-  SearchFilters,
 } from './client';
 import { ApiError } from './http';
 import * as D from './mock-data';
@@ -79,18 +78,6 @@ const publicListings = () =>
 
 const byNewest = (a: ListingCard, b: ListingCard) => b.postedAt.localeCompare(a.postedAt);
 
-function matches(l: ListingDetail, f: SearchFilters): boolean {
-  const q = f.q.trim().toLowerCase();
-  return (
-    (q === '' || l.title.toLowerCase().includes(q)) &&
-    (f.categoryId === null || l.category.id === f.categoryId) &&
-    (f.city === null || l.place.city === f.city) &&
-    (f.minPrice === null || l.price >= f.minPrice) &&
-    (f.maxPrice === null || l.price <= f.maxPrice) &&
-    (f.condition === null || l.condition === f.condition)
-  );
-}
-
 function preview(m: Message | undefined): string {
   if (!m) return '';
   if (m.kind === 'text') return m.text;
@@ -120,7 +107,7 @@ const toMine = (l: ListingDetail): MyListing | null => {
 };
 
 /** Từ khoá → danh mục. Backend thật sẽ phân loại bằng máy duyệt; đây chỉ đủ cho luồng đăng tin chạy. */
-const KEYWORDS: { re: RegExp; id: CategoryId; brand: string | null }[] = [
+const KEYWORDS: { re: RegExp; id: PostCategoryId; brand: string | null }[] = [
   { re: /iphone/i, id: 'phone', brand: 'Apple' },
   { re: /samsung|xiaomi|oppo|điện thoại/i, id: 'phone', brand: null },
   { re: /macbook/i, id: 'laptop', brand: 'Apple' },
@@ -131,7 +118,7 @@ const KEYWORDS: { re: RegExp; id: CategoryId; brand: string | null }[] = [
   { re: /áo|quần|giày|váy|túi/i, id: 'fashion', brand: null },
 ];
 
-const PRICE_HINTS: Partial<Record<CategoryId, PriceHint>> = {
+const PRICE_HINTS: Partial<Record<PostCategoryId, PriceHint>> = {
   phone: { min: 10_000_000, max: 15_000_000 },
   laptop: { min: 13_000_000, max: 15_000_000 },
   camera: { min: 2_000_000, max: 12_000_000 },
@@ -147,7 +134,7 @@ export const mockApi = {
     });
   },
 
-  getCategories: (): Promise<Category[]> => wait(D.CATEGORIES),
+  getPostCategories: (): Promise<PostCategory[]> => wait(D.CATEGORIES),
   getDistricts: (): Promise<string[]> => wait(D.DISTRICTS),
 
   suggestCategory: (title: string): Promise<CategorySuggestion | null> => {
@@ -156,7 +143,7 @@ export const mockApi = {
     return wait(hit && category ? { category, brand: hit.brand } : null);
   },
 
-  getPriceHint: (categoryId: CategoryId): Promise<PriceHint | null> =>
+  getPriceHint: (categoryId: PostCategoryId): Promise<PriceHint | null> =>
     wait(PRICE_HINTS[categoryId] ?? null),
 
   getBoostPlans: (): Promise<BoostPlan[]> => wait(D.BOOST_PLANS),
@@ -164,26 +151,6 @@ export const mockApi = {
   /** Thay cho thư viện ảnh của máy: chọn ảnh thật cần `expo-image-picker` + chữ ký upload (`add-media`). */
   getSamplePhotos: (): Promise<Picture[]> =>
     wait(D.LISTINGS.flatMap((l) => l.photos).slice(0, 12), 0),
-
-  getFeatured: (): Promise<ListingCard[]> =>
-    wait(
-      publicListings()
-        .filter((l) => l.boosted)
-        .sort(byNewest),
-    ),
-
-  getNearby: (): Promise<ListingCard[]> =>
-    wait(publicListings().filter((l) => ['l-vision', 'l-desk', 'l-xt30'].includes(l.id))),
-
-  search: (f: SearchFilters): Promise<ListingCard[]> => {
-    const hits = listings.filter((l) => matches(l, f)).map(toCard);
-    const ids = new Set(publicListings().map((l) => l.id));
-    const visible = hits.filter((l) => ids.has(l.id));
-    if (f.sort === 'price-asc') visible.sort((a, b) => a.price - b.price);
-    else if (f.sort === 'price-desc') visible.sort((a, b) => b.price - a.price);
-    else visible.sort(byNewest);
-    return wait(visible);
-  },
 
   getListing: async (id: string): Promise<ListingDetail> => {
     const l = listings.find((x) => x.id === id);
@@ -259,6 +226,7 @@ export const mockApi = {
         deals: 0,
         replyMinutes: 10,
         phone: null,
+        joinedAt: null,
       },
       groupName: null,
       condition: input.condition,
@@ -336,13 +304,17 @@ export const mockApi = {
       const found = conversations.find((c) => c.listing?.id === to.id);
       if (found) return wait(found.id);
       const l = listings.find((x) => x.id === to.id);
-      if (!l) throw notFound('tin đăng');
+      // Tin thật của server (màn chi tiết đã nối backend) chưa mở chat được: tin nhắn vẫn là dữ liệu mẫu.
+      if (!l) {
+        throw new ApiError('NOT_AVAILABLE', 'Chat với người bán sẽ có khi nối phần tin nhắn', 501);
+      }
       const id = nextId('c');
       const { id: lid, title, price, cover } = l;
+      const { id: sellerId, name, verified } = l.seller;
       conversations = [
         {
           id,
-          peer: { ...toCard(l).seller, online: false },
+          peer: { id: sellerId, name, verified, online: false },
           listing: { id: lid, title, price, cover },
           unread: 0,
           messages: [],

@@ -5,22 +5,23 @@ import { Avatar, Verified } from './Avatar';
 import { PickerSheet } from './PickerSheet';
 import { OutlineButton, Price, Tag, type IconName } from './ui';
 import { C, F, R, S } from '@/theme';
-import { formatAgo } from '@/utils/format';
+import { formatAgo, formatPlace } from '@/utils/format';
 
 /* Các khối nội dung của màn chi tiết tin — tách khỏi route để route chỉ còn bố cục và hành động. */
 
 /** Nhãn tình trạng/danh mục, tên, giá, khu vực · thời gian · lượt xem. */
 export function ListingSummary({ listing: l }: { listing: ListingDetail }) {
   const meta: { icon: IconName; text: string }[] = [
-    { icon: 'map-pin', text: `${l.place.district}, ${l.place.city}` },
+    { icon: 'map-pin', text: formatPlace(l.place) },
     { icon: 'clock', text: formatAgo(l.postedAt) },
-    { icon: 'eye', text: `${l.views} lượt xem` },
+    ...(l.views === null ? [] : [{ icon: 'eye' as const, text: `${l.views} lượt xem` }]),
   ];
+  const categoryLabel = [l.category.name, l.brand].filter(Boolean).join(' · ');
   return (
     <View style={styles.block}>
       <View style={styles.tags}>
-        <Tag label={CONDITION_LABEL[l.condition]} tone="brand" />
-        <Tag label={[l.category.name, l.brand].filter(Boolean).join(' · ')} />
+        {l.condition && <Tag label={CONDITION_LABEL[l.condition]} tone="brand" />}
+        {categoryLabel !== '' && <Tag label={categoryLabel} />}
       </View>
       <Text style={styles.title}>{l.title}</Text>
       <Price value={l.price} size={24} />
@@ -36,7 +37,19 @@ export function ListingSummary({ listing: l }: { listing: ListingDetail }) {
   );
 }
 
+/** Số liệu uy tín khi có; hồ sơ công khai chưa có thì ít nhất cho biết tài khoản đã bao lâu. */
+function sellerLine(s: Seller): string | null {
+  const stats = [
+    s.rating === null ? null : `${s.rating} ★`,
+    s.deals === null ? null : `${s.deals} giao dịch`,
+    s.replyMinutes === null ? null : `Phản hồi trong ${s.replyMinutes} phút`,
+  ].filter(Boolean);
+  if (stats.length > 0) return stats.join(' · ');
+  return s.joinedAt ? `Thành viên từ ${new Date(s.joinedAt).getFullYear()}` : null;
+}
+
 export function SellerCard({ seller, onOpen }: { seller: Seller; onOpen: () => void }) {
+  const line = sellerLine(seller);
   return (
     <View style={styles.seller}>
       <Avatar name={seller.name} size={48} tone="solid" />
@@ -45,9 +58,7 @@ export function SellerCard({ seller, onOpen }: { seller: Seller; onOpen: () => v
           <Text style={styles.name}>{seller.name}</Text>
           {seller.verified && <Verified />}
         </View>
-        <Text style={styles.small}>
-          {seller.rating} ★ · {seller.deals} giao dịch · Phản hồi trong {seller.replyMinutes} phút
-        </Text>
+        {line && <Text style={styles.small}>{line}</Text>}
       </View>
       <OutlineButton compact label="Xem trang" onPress={onOpen} />
     </View>
