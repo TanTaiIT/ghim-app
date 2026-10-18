@@ -1,19 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { Conversation, Message, OfferStatus } from '@/api/client';
-import { mockApi } from '@/api/mock';
+import { api, type Conversation, type ConversationTarget, type Message } from '@/api/client';
 import { useIsAuthenticated } from '@/stores/auth';
 import { qk } from './keys';
 
 /*
- * Chưa có realtime (backend chưa chọn thư viện): tin nhắn mới của người kia chỉ hiện khi refetch —
- * kéo để làm mới hoặc mở lại màn. Khi có realtime, sự kiện đẩy về sẽ `invalidateQueries` các key dưới.
+ * Tin mới của người kia tới qua realtime (`queries/realtime.ts`): sự kiện `message:new` / `message:updated` chỉ báo
+ * hiệu, hook ở đây invalidate đúng key rồi tải lại qua HTTP — dữ liệu vẫn chỉ có một nguồn là server.
  */
 
 export function useConversations() {
   const authed = useIsAuthenticated();
   return useQuery({
     queryKey: qk.conversations.list(),
-    queryFn: mockApi.getConversations,
+    queryFn: api.getConversations,
     enabled: authed,
   });
 }
@@ -28,7 +27,7 @@ export function useConversation(id: string | undefined) {
   const authed = useIsAuthenticated();
   return useQuery({
     queryKey: qk.conversations.detail(id ?? ''),
-    queryFn: () => mockApi.getConversation(id ?? ''),
+    queryFn: () => api.getConversation(id ?? ''),
     enabled: authed && Boolean(id),
   });
 }
@@ -36,7 +35,7 @@ export function useConversation(id: string | undefined) {
 export function useMarkConversationRead() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => mockApi.markConversationRead(id),
+    mutationFn: (id: string) => api.markConversationRead(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: qk.conversations.list() }),
   });
 }
@@ -46,7 +45,7 @@ export function useSendMessage(conversationId: string) {
   const qc = useQueryClient();
   const key = qk.conversations.detail(conversationId);
   return useMutation({
-    mutationFn: (text: string) => mockApi.sendMessage(conversationId, text),
+    mutationFn: (text: string) => api.sendMessage(conversationId, text),
     onMutate: async (text) => {
       await qc.cancelQueries({ queryKey: key });
       const prev = qc.getQueryData<Conversation>(key);
@@ -71,32 +70,43 @@ export function useSendMessage(conversationId: string) {
 export function useSendOffer(conversationId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (amount: number) => mockApi.sendOffer(conversationId, amount),
-    onSuccess: () => qc.invalidateQueries({ queryKey: qk.conversations.all() }),
+    mutationFn: (amount: number) => api.sendOffer(conversationId, amount),
+    onSettled: () => qc.invalidateQueries({ queryKey: qk.conversations.all() }),
   });
 }
 
+/** Lạc quan: nút Chấp nhận / Từ chối đổi ngay; server từ chối (đã có giá mới, tin đã bán) thì trả lại như cũ. */
 export function useRespondOffer(conversationId: string) {
   const qc = useQueryClient();
+  const key = qk.conversations.detail(conversationId);
   return useMutation({
-    mutationFn: ({
-      messageId,
-      status,
-    }: {
-      messageId: string;
-      status: Exclude<OfferStatus, 'superseded'>;
-    }) => mockApi.respondOffer(conversationId, messageId, status),
-    onSuccess: () => qc.invalidateQueries({ queryKey: qk.conversations.all() }),
+    mutationFn: ({ messageId, status }: { messageId: string; status: 'accepted' | 'declined' }) =>
+      api.respondOffer(conversationId, messageId, status),
+    onMutate: async ({ messageId, status }) => {
+      await qc.cancelQueries({ queryKey: key });
+      const prev = qc.getQueryData<Conversation>(key);
+      qc.setQueryData<Conversation>(
+        key,
+        (c) =>
+          c && {
+            ...c,
+            messages: c.messages.map((m) =>
+              m.id === messageId && m.kind === 'offer' ? { ...m, status } : m,
+            ),
+          },
+      );
+      return { prev };
+    },
+    onError: (_e, _v, ctx) => qc.setQueryData(key, ctx?.prev),
+    onSettled: () => qc.invalidateQueries({ queryKey: qk.conversations.all() }),
   });
 }
 
-type ConversationTarget = Parameters<typeof mockApi.openConversation>[0];
-
-/** Mở (hoặc tạo) hội thoại theo ngữ cảnh — trả id để route điều hướng tới `/chat/[id]`. */
+/** Mở (hoặc mở lại) hội thoại theo ngữ cảnh — trả id để route điều hướng tới `/chat/[id]`. */
 export function useOpenConversation() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (to: ConversationTarget) => mockApi.openConversation(to),
+    mutationFn: (to: ConversationTarget) => api.openConversation(to),
     onSuccess: () => qc.invalidateQueries({ queryKey: qk.conversations.list() }),
   });
 }

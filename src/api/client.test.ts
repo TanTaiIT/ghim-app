@@ -198,6 +198,166 @@ function record() {
   return calls;
 }
 
+/** Đúng hình dạng một hội thoại của `GET /me/conversations/{id}` (ghim-server `89c7daa`). */
+const wireConversation = (overrides: Record<string, unknown> = {}) => ({
+  id: 'c-1',
+  kind: 'listing',
+  listing: {
+    id: wireListing.id,
+    title: 'Bàn học gỗ sồi',
+    price: 300000,
+    negotiable: true,
+    state: 'live',
+    cover: { id: 'i-1', url: 'https://img.test/1.jpg' },
+  },
+  group: null,
+  role: 'buyer',
+  counterpart: {
+    kind: 'account',
+    accountId: 'u-1',
+    displayName: 'Anh Tuấn',
+    avatarUrl: null,
+    gone: false,
+    activity: { online: true, lastActiveAt: '2026-10-18T10:41:00.000Z' },
+  },
+  lastMessage: null,
+  unreadCount: 0,
+  locked: false,
+  canSend: true,
+  canOffer: true,
+  createdAt: '2026-10-18T10:00:00.000Z',
+  lastActivityAt: '2026-10-18T10:00:00.000Z',
+  ...overrides,
+});
+const wireMessage = (id: string, overrides: Record<string, unknown> = {}) => ({
+  id,
+  conversationId: 'c-1',
+  senderId: 'u-me',
+  fromMe: true,
+  kind: 'text',
+  body: `Tin ${id}`,
+  offer: null,
+  createdAt: '2026-10-18T10:00:00.000Z',
+  ...overrides,
+});
+
+describe('tin nhắn', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('hội thoại về tin: tin nhắn theo thứ tự gửi, đề nghị giá, trạng thái hoạt động, trả giá được', async () => {
+    serve({
+      '/api/v1/me/conversations/c-1': wireConversation(),
+      // Server trả mới trước.
+      '/api/v1/me/conversations/c-1/messages': {
+        items: [
+          wireMessage('m2', {
+            fromMe: false,
+            senderId: 'u-1',
+            kind: 'offer',
+            body: '',
+            offer: { amount: 250000, status: 'pending', respondedAt: null },
+          }),
+          wireMessage('m1'),
+        ],
+        nextCursor: null,
+      },
+    });
+
+    const c = await api.getConversation('c-1');
+
+    expect(c.messages).toEqual([
+      { id: 'm1', kind: 'text', mine: true, text: 'Tin m1', at: '2026-10-18T10:00:00.000Z' },
+      {
+        id: 'm2',
+        kind: 'offer',
+        mine: false,
+        amount: 250000,
+        status: 'pending',
+        at: '2026-10-18T10:00:00.000Z',
+      },
+    ]);
+    expect(c).toMatchObject({
+      kind: 'listing',
+      peer: { id: 'u-1', name: 'Anh Tuấn', activity: { online: true } },
+      listing: { title: 'Bàn học gỗ sồi', price: 300000, cover: { uri: 'https://img.test/1.jpg' } },
+      isSeller: false,
+      canOffer: true,
+      readOnly: null,
+    });
+  });
+
+  it('hội thoại với Hỗ trợ Ghim: bên kia là đội, không gắn tin; có chặn thì chỉ còn để đọc', async () => {
+    serve({
+      '/api/v1/me/conversations': {
+        items: [
+          wireConversation({
+            id: 'c-2',
+            kind: 'support',
+            listing: null,
+            counterpart: {
+              kind: 'support',
+              accountId: null,
+              displayName: 'Hỗ trợ Ghim',
+              avatarUrl: null,
+              gone: false,
+              activity: null,
+            },
+            lastMessage: wireMessage('m9', { fromMe: false, senderId: null, body: 'Chào bạn' }),
+            unreadCount: 2,
+            canOffer: false,
+          }),
+          wireConversation({
+            id: 'c-3',
+            locked: true,
+            canSend: false,
+            lastMessage: wireMessage('m8', {
+              kind: 'offer',
+              body: '',
+              offer: { amount: 250000, status: 'declined', respondedAt: null },
+            }),
+          }),
+        ],
+        nextCursor: null,
+      },
+    });
+
+    const [support, locked] = await api.getConversations();
+
+    expect(support).toMatchObject({
+      kind: 'support',
+      peer: { id: 'support', name: 'Hỗ trợ Ghim', activity: null },
+      listing: null,
+      lastMessage: 'Chào bạn',
+      unread: 2,
+    });
+    expect(locked?.lastMessage).toBe('Bạn: Trả giá 250.000 đ');
+  });
+
+  it('chỉ còn để đọc: câu theo lý do, không nói ai chặn', async () => {
+    serve({
+      '/api/v1/me/conversations/c-1': wireConversation({
+        locked: true,
+        canSend: false,
+        canOffer: false,
+      }),
+      '/api/v1/me/conversations/c-1/messages': { items: [], nextCursor: null },
+    });
+    await expect(api.getConversation('c-1')).resolves.toMatchObject({
+      readOnly: 'Hội thoại này không nhận tin nhắn',
+    });
+  });
+
+  it('nhắn quản trị một nhóm mẫu (mã không phải uuid): báo chưa có, không gọi server', async () => {
+    const urls = serve({});
+    await expect(api.openConversation({ kind: 'group', id: 'g-na' })).rejects.toMatchObject({
+      code: 'NOT_AVAILABLE',
+    });
+    expect(urls).toEqual([]);
+  });
+});
+
 describe('lưu và gửi tin', () => {
   afterEach(() => {
     jest.restoreAllMocks();

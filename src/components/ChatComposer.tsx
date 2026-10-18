@@ -11,13 +11,20 @@ const VIEWING = 'Mình hẹn qua xem hàng được không ạ?';
 /**
  * Ô soạn tin + hàng gợi ý nhanh. Hai chế độ: `text` gửi tin nhắn, `offer` gửi đề xuất giá (ô nhập chỉ
  * nhận số, tự chấm hàng nghìn). Gửi đi bằng callback — mutation do route khởi phát (folder §6).
+ *
+ * `canOffer` theo cờ của server (người mua, tin đang hiển thị, cho thương lượng, giá > 0): app không tự đoán luật
+ * trả giá. `asBuyer`: câu "Hẹn xem hàng" là của người mua hỏi về một tin — người bán hay hội thoại với đội không có.
+ * Không có nút gửi ảnh — server chưa nhận ảnh trong tin nhắn. `readOnly`: server không cho gửi (có chặn, bên kia đã
+ * rời, nhóm đóng…) — thay ô soạn bằng đúng câu giải thích, không để người dùng gõ rồi mới nhận lỗi.
  */
 export function ChatComposer({
   mode,
   onModeChange,
   onSendText,
   onSendOffer,
-  onAttach,
+  canOffer,
+  asBuyer,
+  readOnly,
   sending,
   bottomInset,
 }: {
@@ -25,12 +32,14 @@ export function ChatComposer({
   onModeChange: (mode: 'text' | 'offer') => void;
   onSendText: (text: string) => void;
   onSendOffer: (amount: number) => void;
-  onAttach: () => void;
+  canOffer: boolean;
+  asBuyer: boolean;
+  readOnly: string | null;
   sending: boolean;
   bottomInset: number;
 }) {
   const [text, setText] = useState('');
-  const offer = mode === 'offer';
+  const offer = canOffer && mode === 'offer';
   const amount = parseDigits(text);
   const canSend = !sending && (offer ? amount > 0 : text.trim() !== '');
 
@@ -45,31 +54,34 @@ export function ChatComposer({
     setText('');
   };
 
+  if (readOnly) {
+    return (
+      <View style={[styles.closed, { paddingBottom: bottomInset + S.md }]}>
+        <Text style={styles.closedText}>{readOnly}</Text>
+      </View>
+    );
+  }
+
   return (
     <View>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.quick}>
-        <View style={styles.quickRow}>
-          <Chip label="Hẹn xem hàng" onPress={() => onSendText(VIEWING)} />
-          <Chip
-            label={offer ? 'Huỷ trả giá' : 'Trả giá khác'}
-            selected={offer}
-            onPress={() => {
-              setText('');
-              onModeChange(offer ? 'text' : 'offer');
-            }}
-          />
-          <Chip label="Gửi thêm ảnh" onPress={onAttach} />
-        </View>
-      </ScrollView>
+      {(asBuyer || canOffer) && (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.quick}>
+          <View style={styles.quickRow}>
+            {asBuyer && <Chip label="Hẹn xem hàng" onPress={() => onSendText(VIEWING)} />}
+            {canOffer && (
+              <Chip
+                label={offer ? 'Huỷ trả giá' : 'Trả giá'}
+                selected={offer}
+                onPress={() => {
+                  setText('');
+                  onModeChange(offer ? 'text' : 'offer');
+                }}
+              />
+            )}
+          </View>
+        </ScrollView>
+      )}
       <View style={[styles.bar, { paddingBottom: bottomInset + S.sm }]}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Đính kèm"
-          onPress={onAttach}
-          style={styles.attach}
-        >
-          <Feather name="plus" size={20} color={C.brand} />
-        </Pressable>
         <View style={[styles.input, offer && styles.inputOffer]}>
           <TextInput
             accessibilityLabel={offer ? 'Nhập giá muốn trả' : 'Nhập tin nhắn'}
@@ -100,6 +112,14 @@ export function ChatComposer({
 }
 
 const styles = StyleSheet.create({
+  closed: {
+    paddingTop: S.md,
+    paddingHorizontal: S.lg,
+    borderTopWidth: 1,
+    borderTopColor: C.line,
+    backgroundColor: C.paperWarm,
+  },
+  closedText: { fontFamily: F.uiMedium, fontSize: 13, color: C.inkSoft, textAlign: 'center' },
   quick: { flexGrow: 0, backgroundColor: C.paper },
   quickRow: { flexDirection: 'row', gap: S.sm, paddingVertical: S.sm, paddingHorizontal: S.lg },
   bar: {
@@ -111,14 +131,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: C.line,
     backgroundColor: C.paperWarm,
-  },
-  attach: {
-    width: 44,
-    height: 44,
-    borderRadius: R.full,
-    backgroundColor: C.brandLt,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   input: {
     flex: 1,

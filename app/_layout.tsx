@@ -16,6 +16,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorScreen } from '@/components/ErrorScreen';
 import { ToastProvider } from '@/components/Toast';
 import { useAuthBridge } from '@/queries/auth';
+import { useRealtimeBridge } from '@/queries/realtime';
 import { useAuthHydrated, useIsAuthenticated } from '@/stores/auth';
 import { C } from '@/theme';
 
@@ -57,6 +58,7 @@ export default function RootLayout() {
   const isAuthenticated = useIsAuthenticated();
   const authHydrated = useAuthHydrated();
   useAuthBridge(queryClient);
+  useRealtimeBridge(queryClient);
 
   // Font lỗi vẫn chạy tiếp, rơi về font hệ thống. Phiên phải đọc xong mới dựng Stack: guard chạy sớm
   // sẽ nháy qua màn login rồi mới nhảy vào đúng chỗ.

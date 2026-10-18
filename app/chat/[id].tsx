@@ -10,11 +10,12 @@ import {
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import type { Activity } from '@/api/client';
 import { ChatComposer } from '@/components/ChatComposer';
 import { OfferBubble } from '@/components/OfferBubble';
 import { Photo } from '@/components/Photo';
 import { useToast } from '@/components/Toast';
-import { Avatar, Verified } from '@/components/Avatar';
+import { Avatar } from '@/components/Avatar';
 import { EmptyState, IconButton, Loading, Price, SafetyNote, useBack } from '@/components/ui';
 import {
   useConversation,
@@ -24,9 +25,14 @@ import {
   useSendOffer,
 } from '@/queries/messages';
 import { C, F, R, S } from '@/theme';
-import { formatDay } from '@/utils/format';
+import { formatAgo, formatDay } from '@/utils/format';
 
-const SOON = 'Tính năng này sẽ có khi nối backend';
+/** Không có trạng thái (đội, có chặn, ai đó tắt) thì không viết gì — "Ngoại tuyến" là đoán, không phải dữ kiện. */
+const activityText = (activity: Activity | null): string | null => {
+  if (!activity) return null;
+  if (activity.online) return 'Đang hoạt động';
+  return activity.lastActiveAt ? `Hoạt động ${formatAgo(activity.lastActiveAt)}` : null;
+};
 
 export default function Chat() {
   const { id = '', offer } = useLocalSearchParams<{ id: string; offer?: string }>();
@@ -42,11 +48,12 @@ export default function Chat() {
   const sendOffer = useSendOffer(id);
   const respond = useRespondOffer(id);
   const { mutate: markRead } = useMarkConversationRead();
+  const latest = conversation.data?.messages.at(-1)?.id;
 
-  // Mở hội thoại = đã đọc; badge ở thanh điều hướng đếm lại khi danh sách hội thoại refetch.
+  // Đang mở là đã đọc — cả tin tới qua realtime khi màn còn mở; badge đếm lại khi danh sách refetch.
   useEffect(() => {
-    if (id) markRead(id);
-  }, [id, markRead]);
+    if (id && latest) markRead(id);
+  }, [id, latest, markRead]);
 
   if (conversation.isPending) return <Loading />;
   if (conversation.isError) {
@@ -58,8 +65,9 @@ export default function Chat() {
     );
   }
 
-  const { peer, listing, messages } = conversation.data;
+  const { kind, peer, listing, messages, isSeller, canOffer, readOnly } = conversation.data;
   const first = messages[0];
+  const activity = activityText(peer.activity);
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
@@ -67,21 +75,18 @@ export default function Chat() {
         <IconButton icon="chevron-left" label="Quay lại" onPress={back} />
         <View>
           <Avatar name={peer.name} size={42} tone="solid" />
-          {peer.online && <View style={styles.online} />}
+          {peer.activity?.online && <View style={styles.online} />}
         </View>
         <View style={styles.peer}>
-          <View style={styles.peerName}>
-            <Text style={styles.name} numberOfLines={1}>
-              {peer.name}
-            </Text>
-            {peer.verified && <Verified size={14} />}
-          </View>
-          <Text style={[styles.status, peer.online && styles.statusOn]}>
-            {peer.online ? 'Đang hoạt động' : 'Ngoại tuyến'}
+          <Text style={styles.name} numberOfLines={1}>
+            {peer.name}
           </Text>
+          {activity && (
+            <Text style={[styles.status, peer.activity?.online && styles.statusOn]}>
+              {activity}
+            </Text>
+          )}
         </View>
-        <IconButton icon="phone" label="Gọi" onPress={() => toast(SOON)} />
-        <IconButton icon="more-vertical" label="Tuỳ chọn khác" onPress={() => toast(SOON)} />
       </View>
 
       {listing && (
@@ -95,7 +100,7 @@ export default function Chat() {
             <Text style={styles.stripTitle} numberOfLines={1}>
               {listing.title}
             </Text>
-            <Price value={listing.price} size={14} />
+            {listing.price !== null && <Price value={listing.price} size={14} />}
           </View>
           <View style={styles.stripCta}>
             <Text style={styles.stripCtaText}>Xem tin</Text>
@@ -123,6 +128,7 @@ export default function Chat() {
             item.kind === 'offer' ? (
               <OfferBubble
                 offer={item}
+                canReply={isSeller && readOnly === null}
                 busy={respond.isPending}
                 onReply={(status) =>
                   respond.mutate(
@@ -141,9 +147,11 @@ export default function Chat() {
         <ChatComposer
           mode={mode}
           onModeChange={setMode}
+          canOffer={canOffer}
+          asBuyer={kind === 'listing' && !isSeller}
+          readOnly={readOnly}
           sending={send.isPending || sendOffer.isPending}
           bottomInset={insets.bottom}
-          onAttach={() => toast('Gửi ảnh cần add-media ở backend')}
           onSendText={(text) => send.mutate(text, { onError: (e) => toast(e.message) })}
           onSendOffer={(amount) => sendOffer.mutate(amount, { onError: (e) => toast(e.message) })}
         />
@@ -179,7 +187,6 @@ const styles = StyleSheet.create({
     backgroundColor: C.brandBright,
   },
   peer: { flex: 1, gap: 1 },
-  peerName: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   name: { flexShrink: 1, fontFamily: F.uiBold, fontSize: 15, color: C.ink },
   status: { fontFamily: F.uiMedium, fontSize: 12, color: C.muted },
   statusOn: { color: C.brandTx },

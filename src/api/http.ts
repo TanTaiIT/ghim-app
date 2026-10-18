@@ -6,13 +6,16 @@
  */
 
 /** Không có `/api/v1` ở đây: đường dẫn đầy đủ nằm trong SDK, vì OpenAPI của server khai đủ tiền tố. */
-const BASE_URL: string = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3100';
+export const BASE_URL: string = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:3100';
 
 let accessToken: string | null = null;
 
 export function setHttpAccessToken(next: string | null): void {
   accessToken = next;
 }
+
+/** Kênh realtime (`./realtime`) xin token ở mỗi lượt nối lại — phải là token mới nhất, không phải lúc mở app. */
+export const currentAccessToken = (): string | null => accessToken;
 
 let deviceId: string | null = null;
 
@@ -40,6 +43,10 @@ export function setSessionRefresher(next: SessionRefresher | null): void {
  * cầm token vừa bị xoay nhận 409 `REFRESH_CONFLICT` trong 30 giây ân hạn, quá hạn thì cả phiên bị thu hồi như
  * token bị đánh cắp.
  */
+/** Kênh realtime bị server cắt vì access token hết hạn: làm mới chung lượt với các request HTTP đang chờ. */
+export const refreshAccessToken = (): Promise<string | null> =>
+  refresher ? refreshOnce(refresher) : Promise.resolve(null);
+
 function refreshOnce(run: SessionRefresher): Promise<string | null> {
   refreshing ??= run().finally(() => {
     refreshing = null;

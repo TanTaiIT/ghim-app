@@ -9,27 +9,42 @@ import {
   getApiV1ListingsById,
   getApiV1ListingsByIdSuggestions,
   getApiV1Me,
+  getApiV1MeConversations,
+  getApiV1MeConversationsByConversationId,
+  getApiV1MeConversationsByConversationIdMessages,
   getApiV1MeListings,
   getApiV1RegionsProvinces,
   getApiV1RegionsProvincesByCodeWards,
   getApiV1UsersById,
   getHealthReady,
   patchApiV1ListingsById,
+  patchApiV1Me,
   postApiV1AuthLogin,
   postApiV1AuthLogout,
   postApiV1AuthRefresh,
+  postApiV1GroupsByGroupIdConversation,
   postApiV1Listings,
   postApiV1ListingsByIdSold,
   postApiV1ListingsByIdSubmit,
+  postApiV1ListingsByListingIdConversation,
+  postApiV1MeConversationsByConversationIdMessages,
+  postApiV1MeConversationsByConversationIdOffers,
+  postApiV1MeConversationsByConversationIdOffersByMessageIdAccept,
+  postApiV1MeConversationsByConversationIdOffersByMessageIdDecline,
+  postApiV1MeConversationsByConversationIdRead,
   postApiV1MediaUploads,
+  postApiV1MeSupportConversation,
 } from './generated/sdk.gen';
 import type {
   GetApiV1ListingsByIdResponses,
   GetApiV1ListingsResponses,
+  GetApiV1MeConversationsByConversationIdMessagesResponses,
+  GetApiV1MeConversationsByConversationIdResponses,
   GetApiV1MeResponses,
   GetApiV1UsersByIdResponses,
 } from './generated/types.gen';
 import { ApiError, deviceHeaders } from './http';
+import { formatVnd } from '@/utils/format';
 
 /*
  * Lớp gọi dữ liệu DUY NHẤT của app (HARD#20): mọi hàm ở đây gọi SDK trong `./generated` và đi qua
@@ -264,23 +279,41 @@ export type Message =
   | { id: string; kind: 'text'; mine: boolean; text: string; at: string }
   | { id: string; kind: 'offer'; mine: boolean; amount: number; status: OfferStatus; at: string };
 
-export type Peer = Person & { online: boolean };
+/**
+ * `null` = server không cho biết: bên kia là đội, có chặn, đã rời Ghim, hay một trong hai bên tắt trạng thái hoạt
+ * động (tắt là hai chiều). `lastActiveAt` đã làm tròn phút và chỉ có trong 7 ngày gần nhất.
+ */
+export type Activity = { online: boolean; lastActiveAt: string | null };
 
-type ListingRef = Pick<ListingCard, 'id' | 'title' | 'price' | 'cover'>;
+export type Peer = Person & { activity: Activity | null };
+
+/** `support`, `group`: bên kia là cả đội — "Hỗ trợ Ghim", "Quản trị nhóm «tên»" — không gắn tin nào. */
+export type ConversationKind = 'listing' | 'support' | 'group';
+
+/** Giá `null` khi người đăng đã xoá tin. */
+type ListingRef = Pick<ListingCard, 'id' | 'title' | 'cover'> & { price: number | null };
 
 export type ConversationSummary = {
   id: string;
+  kind: ConversationKind;
   peer: Peer;
-  /** null với hội thoại không gắn tin nào — nhắn admin nhóm, nhắn hỗ trợ. */
   listing: ListingRef | null;
   lastMessage: string;
   at: string;
   unread: number;
 };
 
-export type Conversation = Pick<ConversationSummary, 'id' | 'peer' | 'listing'> & {
+export type Conversation = Pick<ConversationSummary, 'id' | 'kind' | 'peer' | 'listing'> & {
   messages: Message[];
+  /** Người bán của hội thoại về tin: người duy nhất trả lời được đề nghị giá. */
+  isSeller: boolean;
+  canOffer: boolean;
+  /** `null` = gửi được; còn lại là câu giải thích vì sao hội thoại chỉ còn để đọc. */
+  readOnly: string | null;
 };
+
+export type ConversationTarget =
+  { kind: 'listing'; id: string } | { kind: 'group'; id: string } | { kind: 'support' };
 
 export type NoticeTab = 'deal' | 'promo' | 'system';
 
@@ -314,6 +347,8 @@ export type Me = Person & {
   /** Khu vực mặc định khi đăng tin và khi tìm kiếm — server chưa lưu, nên null với tài khoản thật. */
   place: Place | null;
   rating: number | null;
+  /** Hiện trạng thái hoạt động trong chat — tắt là hai chiều: mình cũng không thấy của ai. */
+  showActivity: boolean;
 };
 
 export type HelpTopic = { id: string; label: string; faqs: { q: string; a: string }[] };
@@ -345,6 +380,9 @@ export type LoadLookups = (provinceCodes: number[]) => Promise<Lookups>;
 type WireListing = GetApiV1ListingsResponses[200]['data']['items'][number];
 type WireUser = GetApiV1UsersByIdResponses[200]['data'];
 type WireMe = GetApiV1MeResponses[200]['data'];
+type WireConversation = GetApiV1MeConversationsByConversationIdResponses[200]['data'];
+type WireMessage =
+  GetApiV1MeConversationsByConversationIdMessagesResponses[200]['data']['items'][number];
 
 /** Trang đầu đủ cho trang chủ và một màn kết quả; cuộn tải thêm (`nextCursor`) chưa làm. */
 const PAGE_SIZE = 30;
@@ -408,6 +446,7 @@ function toMe(u: WireMe): Me {
     memberSince: new Date(u.joinedAt).getFullYear(),
     place: null,
     rating: null,
+    showActivity: u.showActivity,
   };
 }
 
@@ -521,6 +560,73 @@ async function fileOf(uri: string): Promise<{ body: Blob; size: number }> {
   return { body: file as unknown as Blob, size: file.size ?? 0 };
 }
 
+/* --------------------------------- tin nhắn -------------------------------- */
+
+/** Đủ cho một hội thoại đang mở; cũ hơn nữa thì chưa có nút tải thêm (server phân trang bằng con trỏ). */
+const MESSAGE_PAGE = 100;
+/** Trần một trang của server (`MAX_LIMIT`). */
+const CONVERSATION_PAGE = 100;
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+const toMessage = (w: WireMessage): Message =>
+  w.kind === 'offer' && w.offer
+    ? {
+        id: w.id,
+        kind: 'offer',
+        mine: w.fromMe,
+        amount: w.offer.amount,
+        status: w.offer.status,
+        at: w.createdAt,
+      }
+    : { id: w.id, kind: 'text', mine: w.fromMe, text: w.body, at: w.createdAt };
+
+function toPeer({ counterpart }: WireConversation): Peer {
+  const fallback = counterpart.gone ? 'Tài khoản đã xoá' : 'Người dùng Ghim';
+  return {
+    // Bên kia là đội thì không có tài khoản nào — mã của đội đủ để Avatar và danh sách phân biệt.
+    id: counterpart.accountId ?? counterpart.kind,
+    name: counterpart.displayName ?? fallback,
+    verified: false,
+    activity: counterpart.activity,
+  };
+}
+
+const toListingRef = (listing: WireConversation['listing']): ListingRef | null =>
+  listing && {
+    id: listing.id,
+    title: listing.title ?? 'Tin đã bị xoá',
+    price: listing.price,
+    cover: listing.cover ? toPicture(listing.cover) : { uri: '' },
+  };
+
+const previewOf = (last: WireMessage | null): string => {
+  if (!last) return 'Chưa có tin nhắn';
+  const text =
+    last.kind === 'offer' && last.offer ? `Trả giá ${formatVnd(last.offer.amount)}` : last.body;
+  return last.fromMe ? `Bạn: ${text}` : text;
+};
+
+function toSummary(w: WireConversation): ConversationSummary {
+  return {
+    id: w.id,
+    kind: w.kind,
+    peer: toPeer(w),
+    listing: toListingRef(w.listing),
+    lastMessage: previewOf(w.lastMessage),
+    at: w.lastMessage?.createdAt ?? w.lastActivityAt,
+    unread: w.unreadCount,
+  };
+}
+
+/** Câu cho ô soạn khi server không cho gửi — đúng lý do mà không lộ ai chặn ai (spec messaging/blocking). */
+const readOnlyOf = (w: WireConversation): string | null => {
+  if (w.canSend) return null;
+  if (w.locked) return 'Hội thoại này không nhận tin nhắn';
+  if (w.counterpart.gone) return 'Người kia đã rời Ghim — hội thoại chỉ còn để đọc';
+  return 'Hội thoại này chỉ còn để đọc';
+};
+
 /* ---------------------------------- api ----------------------------------- */
 
 export const api = {
@@ -587,6 +693,9 @@ export const api = {
     toCards(await unwrap(getApiV1ListingsByIdSuggestions({ path: { id } })), load),
 
   getMe: async (): Promise<Me> => toMe(await unwrap(getApiV1Me())),
+
+  setShowActivity: async (showActivity: boolean): Promise<Me> =>
+    toMe(await unwrap(patchApiV1Me({ body: { showActivity } }))),
 
   /** Mọi trạng thái trong một lượt — hai ngăn "Đang đăng" / "Đã bán" lọc từ cùng một danh sách. */
   getMyListings: async (load: LoadLookups): Promise<MyListing[]> => {
@@ -673,6 +782,87 @@ export const api = {
     }
     if (!res.ok) throw new ApiError('UPLOAD_FAILED', 'Không tải được ảnh lên, thử lại', res.status);
     return grant.imageId;
+  },
+
+  getConversations: async (): Promise<ConversationSummary[]> =>
+    (await unwrap(getApiV1MeConversations({ query: { limit: CONVERSATION_PAGE } }))).items.map(
+      toSummary,
+    ),
+
+  /** Hội thoại + trang tin nhắn mới nhất; server trả mới trước, màn chat đọc theo thứ tự gửi. */
+  getConversation: async (id: string): Promise<Conversation> => {
+    const path = { conversationId: id };
+    const [w, page] = await Promise.all([
+      unwrap(getApiV1MeConversationsByConversationId({ path })),
+      unwrap(
+        getApiV1MeConversationsByConversationIdMessages({ path, query: { limit: MESSAGE_PAGE } }),
+      ),
+    ]);
+    return {
+      ...toSummary(w),
+      messages: page.items.map(toMessage).toReversed(),
+      isSeller: w.role === 'seller',
+      canOffer: w.canOffer,
+      readOnly: readOnlyOf(w),
+    };
+  },
+
+  markConversationRead: (id: string): Promise<void> =>
+    unwrapEmpty(postApiV1MeConversationsByConversationIdRead({ path: { conversationId: id } })),
+
+  sendMessage: async (conversationId: string, text: string): Promise<Message> =>
+    toMessage(
+      await unwrap(
+        postApiV1MeConversationsByConversationIdMessages({
+          path: { conversationId },
+          body: { body: text },
+        }),
+      ),
+    ),
+
+  sendOffer: async (conversationId: string, amount: number): Promise<Message> =>
+    toMessage(
+      await unwrap(
+        postApiV1MeConversationsByConversationIdOffers({
+          path: { conversationId },
+          body: { amount },
+        }),
+      ),
+    ),
+
+  /** Người bán trả lời đúng một lần mỗi đề nghị đang chờ (spec messaging/price-offers). */
+  respondOffer: async (
+    conversationId: string,
+    messageId: string,
+    decision: 'accepted' | 'declined',
+  ): Promise<Message> => {
+    const path = { conversationId, messageId };
+    return toMessage(
+      await unwrap(
+        decision === 'accepted'
+          ? postApiV1MeConversationsByConversationIdOffersByMessageIdAccept({ path })
+          : postApiV1MeConversationsByConversationIdOffersByMessageIdDecline({ path }),
+      ),
+    );
+  },
+
+  /** Mở (hoặc mở lại) hội thoại theo ngữ cảnh — trả mã để route điều hướng tới `/chat/[id]`. */
+  openConversation: async (to: ConversationTarget): Promise<string> => {
+    if (to.kind === 'support') return (await unwrap(postApiV1MeSupportConversation())).id;
+    if (to.kind === 'listing') {
+      return (
+        await unwrap(postApiV1ListingsByListingIdConversation({ path: { listingId: to.id } }))
+      ).id;
+    }
+    // Trang nhóm còn chạy dữ liệu mẫu: mã nhóm mẫu không có trên server.
+    if (!UUID.test(to.id)) {
+      throw new ApiError(
+        'NOT_AVAILABLE',
+        'Nhắn quản trị nhóm sẽ có khi trang nhóm nối server',
+        501,
+      );
+    }
+    return (await unwrap(postApiV1GroupsByGroupIdConversation({ path: { groupId: to.id } }))).id;
   },
 
   login: (email: string, password: string): Promise<Session> =>

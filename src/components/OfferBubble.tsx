@@ -5,19 +5,28 @@ import { C, F, R, S } from '@/theme';
 import { formatVnd } from '@/utils/format';
 
 type Offer = Extract<Message, { kind: 'offer' }>;
-type Reply = Exclude<OfferStatus, 'superseded'>;
+type Reply = 'accepted' | 'declined';
+
+const MINE_CAPTION: Record<OfferStatus, string> = {
+  pending: 'Bạn đã trả giá',
+  accepted: 'Người bán đã chấp nhận giá',
+  declined: 'Người bán đã từ chối giá này',
+  superseded: 'Bạn đã trả giá khác',
+};
 
 /**
- * Thẻ đề xuất giá trong chat. Đề xuất của mình: viền đứt, gạch giá khi đã bị đề xuất mới thay thế.
- * Đề xuất của người kia: Chấp nhận / Từ chối khi còn treo, kèm "Hoàn tác" sau khi từ chối — từ chối nhầm
- * một mức giá tốt là lỗi khó gỡ nhất trong cả cuộc mặc cả.
+ * Thẻ đề nghị giá trong chat. Chỉ người mua trả giá (ghim-server spec messaging/price-offers): người mua thấy giá
+ * của mình — viền đứt, gạch khi đã có giá mới hay bị từ chối; người bán thấy Chấp nhận / Từ chối khi đề nghị còn
+ * chờ. Mỗi đề nghị chỉ trả lời được một lần, nên không có "Hoàn tác" — đổi ý thì người mua gửi giá mới.
  */
 export function OfferBubble({
   offer,
+  canReply,
   onReply,
   busy,
 }: {
   offer: Offer;
+  canReply: boolean;
   onReply: (status: Reply) => void;
   busy: boolean;
 }) {
@@ -27,9 +36,7 @@ export function OfferBubble({
     const struck = offer.status === 'superseded' || offer.status === 'declined';
     return (
       <View style={[styles.mine, styles.right]}>
-        <Text style={styles.caption}>
-          {offer.status === 'accepted' ? 'Người bán đã chấp nhận giá' : 'Bạn đã trả giá'}
-        </Text>
+        <Text style={styles.caption}>{MINE_CAPTION[offer.status]}</Text>
         <Text style={[styles.mineAmount, struck && styles.struck]}>{amount}</Text>
       </View>
     );
@@ -38,10 +45,12 @@ export function OfferBubble({
   return (
     <View style={[styles.theirs, styles.left]}>
       <View style={styles.head}>
-        <Text style={styles.theirCaption}>Người bán đề xuất giá mới</Text>
-        <Text style={styles.theirAmount}>{amount}</Text>
+        <Text style={styles.theirCaption}>Người mua trả giá</Text>
+        <Text style={[styles.theirAmount, offer.status === 'superseded' && styles.struck]}>
+          {amount}
+        </Text>
       </View>
-      {offer.status === 'pending' && (
+      {offer.status === 'pending' && canReply && (
         <View style={styles.actions}>
           <Pressable
             accessibilityRole="button"
@@ -68,16 +77,13 @@ export function OfferBubble({
         </View>
       )}
       {offer.status === 'declined' && (
-        <View style={[styles.result, styles.spread]}>
-          <Text style={styles.declined}>Bạn đã từ chối đề xuất này</Text>
-          <Pressable
-            accessibilityRole="button"
-            disabled={busy}
-            onPress={() => onReply('pending')}
-            style={styles.undo}
-          >
-            <Text style={styles.undoText}>Hoàn tác</Text>
-          </Pressable>
+        <View style={styles.result}>
+          <Text style={styles.declined}>Bạn đã từ chối đề nghị này</Text>
+        </View>
+      )}
+      {offer.status === 'superseded' && (
+        <View style={styles.result}>
+          <Text style={styles.declined}>Người mua đã trả giá khác</Text>
         </View>
       )}
     </View>
@@ -128,15 +134,6 @@ const styles = StyleSheet.create({
     borderRadius: R.sm,
     backgroundColor: C.paperWarm,
   },
-  spread: { justifyContent: 'space-between' },
   accepted: { fontFamily: F.uiBold, fontSize: 13, color: C.brandDark },
   declined: { flex: 1, fontFamily: F.uiSemi, fontSize: 13, color: C.inkSoft },
-  undo: {
-    height: 32,
-    paddingHorizontal: 10,
-    borderRadius: R.sm,
-    backgroundColor: C.sand,
-    justifyContent: 'center',
-  },
-  undoText: { fontFamily: F.uiBold, fontSize: 12, color: C.ink },
 });

@@ -10,7 +10,7 @@ import { SegmentedTabs } from '@/components/TabStrip';
 import { useToast } from '@/components/Toast';
 import { Avatar, Verified } from '@/components/Avatar';
 import { EmptyState, GhostButton, IconButton, Loading, type IconName } from '@/components/ui';
-import { useMe } from '@/queries/account';
+import { useMe, useSetShowActivity } from '@/queries/account';
 import { useSignOut } from '@/queries/auth';
 import { useMyGroups } from '@/queries/groups';
 import { useSavedListings } from '@/queries/listings';
@@ -29,6 +29,7 @@ export default function Profile() {
   const [shelf, setShelf] = useState<Shelf>('active');
 
   const me = useMe();
+  const showActivity = useSetShowActivity();
   const groups = useMyGroups();
   const active = useMyListings('active');
   const sold = useMyListings('sold');
@@ -75,9 +76,10 @@ export default function Profile() {
     },
     { icon: 'help-circle', label: 'Trợ giúp & hỗ trợ', onPress: () => router.push('/help') },
     {
-      icon: 'settings',
-      label: 'Cài đặt ứng dụng',
-      onPress: () => toast('Cài đặt sẽ có ở bản sau'),
+      icon: 'activity',
+      label: `Hiện trạng thái hoạt động: ${me.data.showActivity ? 'Bật' : 'Tắt'}`,
+      onPress: () =>
+        showActivity.mutate(!me.data.showActivity, { onError: (e) => toast(e.message) }),
     },
   ];
   const mine = shelf === 'sold' ? sold : active;

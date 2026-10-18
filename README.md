@@ -28,8 +28,8 @@ Backend: `cd ../ghim-server && pnpm dev` (cổng 3100). Bản dev hiện một �
 `/health/ready` để cho thấy đường ống app → SDK → backend → Postgres đang thông.
 
 **Dữ liệu mẫu.** Giao diện theo bộ UI "Chợ Đồ Cũ – bản làm mới" (10 màn + thanh điều hướng) đang chạy trên
-`mockApi` vì backend chưa có tin đăng/nhóm/chat/thông báo/đăng nhập. Đăng nhập bằng email bất kỳ, mật khẩu từ 8
-ký tự. Dữ liệu sống trong bộ nhớ: reload app là về lại bản gốc.
+`mockApi` ở những phần chưa nối server: nhóm, thông báo, trợ giúp, tin đã lưu. Đăng nhập, tin đăng, đăng tin, tin của
+tôi và chat (cả trả giá, Hỗ trợ Ghim) đã gọi ghim-server thật.
 
 ## 2. Lệnh
 
@@ -96,6 +96,7 @@ Không có secret nào trong repo (HARD#19); credential push/ảnh đặt ở EA
 - Đăng nhập, đăng ký, xác nhận email: `useLogin` đã có, đang gọi `mockApi.login`; đổi sang `api.login` khi
   ghim-server archive `add-identity` (refresh token đơn lượt ở `http.ts`). Phiên mẫu lưu trong SecureStore mang
   token giả — đăng xuất một lần sau khi nối backend thật.
-- Ảnh: chờ `add-media` (chữ ký do backend cấp). Push, realtime: chưa chọn thư viện ở backend.
+- Push: chưa xin token Expo. Realtime: socket.io (`src/api/realtime.ts`), chỉ để báo hiệu — dữ liệu luôn tải lại qua
+  HTTP.
 - Chưa có trong thiết kế nên đang báo "sẽ có": trang người bán, sửa tin, đẩy tin (chờ giá gói), gọi trong app,
   gửi ảnh trong chat, cài đặt. Hộp thư (tab Tin nhắn) không có trong bộ UI gốc — dựng theo thẻ của các màn khác.

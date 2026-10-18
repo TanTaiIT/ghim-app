@@ -11,6 +11,18 @@ export function useMe() {
   return useQuery({ queryKey: qk.me(), queryFn: api.getMe, enabled: authed });
 }
 
+/** Công tắc trạng thái hoạt động: server trả lại hồ sơ mới, ghi thẳng vào cache thay vì tải lại. */
+export function useSetShowActivity() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (value: boolean) => api.setShowActivity(value),
+    onSuccess: (me) => {
+      qc.setQueryData(qk.me(), me);
+      void qc.invalidateQueries({ queryKey: qk.conversations.all() });
+    },
+  });
+}
+
 export function useNotices() {
   const authed = useIsAuthenticated();
   return useQuery({ queryKey: qk.notices(), queryFn: mockApi.getNotices, enabled: authed });

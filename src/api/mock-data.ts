@@ -1,11 +1,9 @@
 import type {
-  Conversation,
   Group,
   GroupMember,
   HelpTopic,
   ListingDetail,
   Notice,
-  Peer,
   Person,
   Seller,
 } from './client';
@@ -55,8 +53,6 @@ const asSeller = (p: Person): Seller => ({
   phone: null,
   joinedAt: null,
 });
-
-export const SUPPORT: Peer = { ...person('u-support', 'Hỗ trợ Ghim', true), online: true };
 
 /* ─── TIN ĐĂNG ────────────────────────────────────────────────────── */
 
@@ -380,55 +376,6 @@ export const GROUP_MEMBERS: GroupMember[] = [
   { ...me, role: 'member' },
 ];
 
-/* ─── HỘI THOẠI ───────────────────────────────────────────────────── */
-
-const ref = (l: ListingDetail | undefined) =>
-  l ? { id: l.id, title: l.title, price: l.price, cover: l.cover } : null;
-
-export const CONVERSATIONS: (Conversation & { unread: number })[] = [
-  {
-    id: 'c-mba',
-    peer: { ...anhTuan, online: true },
-    listing: ref(LISTINGS[1]),
-    unread: 1,
-    messages: [
-      {
-        id: 'm1',
-        kind: 'text',
-        mine: true,
-        text: 'Chào anh, máy còn đủ phụ kiện không ạ?',
-        at: ago(40),
-      },
-      {
-        id: 'm2',
-        kind: 'text',
-        mine: false,
-        text: 'Còn đủ sạc zin và hộp nhé bạn. Pin 92%, bạn qua xem máy thoải mái.',
-        at: ago(35),
-      },
-      {
-        id: 'm3',
-        kind: 'offer',
-        mine: true,
-        amount: 13_000_000,
-        status: 'superseded',
-        at: ago(20),
-      },
-      { id: 'm4', kind: 'offer', mine: false, amount: 13_500_000, status: 'pending', at: ago(5) },
-    ],
-  },
-  {
-    id: 'c-vision',
-    peer: { ...quocBao, online: false },
-    listing: ref(LISTINGS[3]),
-    unread: 1,
-    messages: [
-      { id: 'm5', kind: 'text', mine: true, text: 'Xe còn không bạn?', at: ago(90) },
-      { id: 'm6', kind: 'text', mine: false, text: 'Xe còn bạn nhé, giấy tờ đầy đủ.', at: ago(70) },
-    ],
-  },
-];
-
 /* ─── THÔNG BÁO ───────────────────────────────────────────────────── */
 
 export const NOTICES: Notice[] = [
@@ -441,7 +388,7 @@ export const NOTICES: Notice[] = [
     at: ago(5),
     read: false,
     action: 'Xem đề xuất',
-    target: { screen: 'chat', id: 'c-mba' },
+    target: { screen: 'listing', id: 'l-mba16' },
   },
   {
     id: 'n2',
