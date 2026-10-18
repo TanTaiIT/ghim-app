@@ -5,14 +5,14 @@ import type { IconName } from './ui';
 import { C, F, R, S } from '@/theme';
 import { formatAgo } from '@/utils/format';
 
-/** Loại "nóng" (giá, hạn, khuyến mãi) mang tông cam; còn lại tông xanh — đọc lướt cũng phân được. */
+/** Loại "nóng" (giá, hạn, tài khoản) mang tông cam; còn lại tông xanh — đọc lướt cũng phân được. */
 const KIND: Record<NoticeKind, { icon: IconName; warm: boolean }> = {
+  message: { icon: 'message-circle', warm: false },
   offer: { icon: 'tag', warm: true },
-  search: { icon: 'search', warm: false },
+  listing: { icon: 'file-text', warm: false },
   expiring: { icon: 'clock', warm: true },
-  approved: { icon: 'check-circle', warm: false },
   group: { icon: 'users', warm: false },
-  promo: { icon: 'zap', warm: true },
+  account: { icon: 'shield', warm: true },
 };
 
 export function NoticeCard({ notice, onPress }: { notice: Notice; onPress: () => void }) {
@@ -20,7 +20,7 @@ export function NoticeCard({ notice, onPress }: { notice: Notice; onPress: () =>
   const unread = !notice.read;
   return (
     <Pressable
-      accessibilityRole="link"
+      accessibilityRole={notice.target ? 'link' : 'button'}
       onPress={onPress}
       style={({ pressed }) => [
         styles.card,
@@ -38,11 +38,6 @@ export function NoticeCard({ notice, onPress }: { notice: Notice; onPress: () =>
         </View>
         <Text style={styles.text}>{notice.body}</Text>
         <Text style={styles.time}>{formatAgo(notice.at)}</Text>
-        {notice.action && (
-          <View style={styles.action}>
-            <Text style={styles.actionText}>{notice.action}</Text>
-          </View>
-        )}
       </View>
     </Pressable>
   );
@@ -72,14 +67,4 @@ const styles = StyleSheet.create({
   dot: { width: 8, height: 8, borderRadius: R.full, backgroundColor: C.brand },
   text: { fontFamily: F.ui, fontSize: 13, lineHeight: 19, color: C.inkMid },
   time: { fontFamily: F.ui, fontSize: 12, color: C.muted },
-  action: {
-    alignSelf: 'flex-start',
-    marginTop: S.xs,
-    height: 32,
-    paddingHorizontal: S.md,
-    borderRadius: R.sm,
-    backgroundColor: C.brand,
-    justifyContent: 'center',
-  },
-  actionText: { fontFamily: F.uiBold, fontSize: 12, color: C.paperWarm },
 });

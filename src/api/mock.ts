@@ -5,7 +5,6 @@ import type {
   HelpTopic,
   ListingCard,
   ListingDetail,
-  Notice,
 } from './client';
 import { ApiError } from './http';
 import * as D from './mock-data';
@@ -31,7 +30,6 @@ const listings = D.LISTINGS;
 let savedIds = D.SAVED_IDS;
 let savedSearches: string[] = [];
 let groups = D.GROUPS;
-let notices = D.NOTICES;
 
 function toCard(l: ListingDetail): ListingCard {
   const { id, title, price, cover, place, postedAt, boosted, seller, groupName } = l;
@@ -119,13 +117,6 @@ export const mockApi = {
     groups = groups.map((g) =>
       g.id === id ? { ...g, joined, memberCount: g.memberCount + (joined ? 1 : -1) } : g,
     );
-    return wait(undefined);
-  },
-
-  getNotices: (): Promise<Notice[]> => wait(notices),
-
-  markAllNoticesRead: (): Promise<void> => {
-    notices = notices.map((n) => ({ ...n, read: true }));
     return wait(undefined);
   },
 

@@ -37,6 +37,10 @@ export const qk = {
     list: () => ['conversations', 'list'] as const,
     detail: (id: string) => ['conversations', 'detail', id] as const,
   },
-  notices: () => ['notices'] as const,
+  notices: {
+    all: () => ['notices'] as const,
+    list: () => ['notices', 'list'] as const,
+    unread: () => ['notices', 'unread'] as const,
+  },
   help: () => ['help'] as const,
 };

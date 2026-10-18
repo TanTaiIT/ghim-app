@@ -13,6 +13,8 @@ import {
   getApiV1MeConversationsByConversationId,
   getApiV1MeConversationsByConversationIdMessages,
   getApiV1MeListings,
+  getApiV1MeNotifications,
+  getApiV1MeNotificationsUnreadCount,
   getApiV1RegionsProvinces,
   getApiV1RegionsProvincesByCodeWards,
   getApiV1UsersById,
@@ -33,6 +35,7 @@ import {
   postApiV1MeConversationsByConversationIdOffersByMessageIdDecline,
   postApiV1MeConversationsByConversationIdRead,
   postApiV1MediaUploads,
+  postApiV1MeNotificationsRead,
   postApiV1MeSupportConversation,
 } from './generated/sdk.gen';
 import type {
@@ -40,6 +43,7 @@ import type {
   GetApiV1ListingsResponses,
   GetApiV1MeConversationsByConversationIdMessagesResponses,
   GetApiV1MeConversationsByConversationIdResponses,
+  GetApiV1MeNotificationsResponses,
   GetApiV1MeResponses,
   GetApiV1UsersByIdResponses,
 } from './generated/types.gen';
@@ -315,17 +319,13 @@ export type Conversation = Pick<ConversationSummary, 'id' | 'kind' | 'peer' | 'l
 export type ConversationTarget =
   { kind: 'listing'; id: string } | { kind: 'group'; id: string } | { kind: 'support' };
 
-export type NoticeTab = 'deal' | 'promo' | 'system';
+/** `deal` = chuyện mua bán (tin nhắn, tin của bạn, tin mới trong nhóm); `system` = tài khoản, nhóm, báo cáo, gậy, hỗ trợ. */
+export type NoticeTab = 'deal' | 'system';
 
-export type NoticeKind = 'offer' | 'search' | 'expiring' | 'approved' | 'group' | 'promo';
+export type NoticeKind = 'message' | 'offer' | 'listing' | 'expiring' | 'group' | 'account';
 
 export type NoticeTarget =
-  | { screen: 'chat'; id: string }
-  | { screen: 'search'; q: string }
-  | { screen: 'profile' }
-  | { screen: 'listing'; id: string }
-  | { screen: 'group'; id: string }
-  | { screen: 'post' };
+  { screen: 'chat'; id: string } | { screen: 'listing'; id: string } | { screen: 'profile' };
 
 export type Notice = {
   id: string;
@@ -333,11 +333,11 @@ export type Notice = {
   kind: NoticeKind;
   title: string;
   body: string;
+  /** Dòng gộp nổi lên theo lần cập nhật cuối, không theo lúc tạo. */
   at: string;
   read: boolean;
-  /** Nhãn nút hành động trên thông báo; null = cả thẻ là nút. */
-  action: string | null;
-  target: NoticeTarget;
+  /** `null` = chưa có màn để mở (vd trang nhóm còn dữ liệu mẫu) — bấm chỉ đánh dấu đã đọc. */
+  target: NoticeTarget | null;
 };
 
 export type Me = Person & {
@@ -383,6 +383,7 @@ type WireMe = GetApiV1MeResponses[200]['data'];
 type WireConversation = GetApiV1MeConversationsByConversationIdResponses[200]['data'];
 type WireMessage =
   GetApiV1MeConversationsByConversationIdMessagesResponses[200]['data']['items'][number];
+type WireNotice = GetApiV1MeNotificationsResponses[200]['data']['items'][number];
 
 /** Trang đầu đủ cho trang chủ và một màn kết quả; cuộn tải thêm (`nextCursor`) chưa làm. */
 const PAGE_SIZE = 30;
@@ -627,6 +628,65 @@ const readOnlyOf = (w: WireConversation): string | null => {
   return 'Hội thoại này chỉ còn để đọc';
 };
 
+/* -------------------------------- thông báo -------------------------------- */
+
+/** Một trang đủ cho hộp thư trên điện thoại; dòng gộp giữ số dòng nhỏ. Chưa có nút tải thêm. */
+const NOTICE_PAGE = 100;
+
+const DEAL_CATEGORIES: ReadonlySet<WireNotice['category']> = new Set([
+  'messages',
+  'your_listings',
+  'group_new_listings',
+]);
+
+const EXPIRING_TYPES: ReadonlySet<string> = new Set([
+  'listing.expiry.reminder',
+  'listing.purge.reminder',
+]);
+
+/**
+ * Lời trả giá tới dưới `messaging.message.received` như mọi tin, thân "Trả giá …" đã tự nói — không đoán theo câu chữ
+ * của server; chỉ kết quả trả giá có loại riêng.
+ */
+function kindOf(w: WireNotice): NoticeKind {
+  if (w.type === 'messaging.offer.answered') return 'offer';
+  if (w.category === 'messages' || w.category === 'support') return 'message';
+  if (EXPIRING_TYPES.has(w.type)) return 'expiring';
+  if (w.category === 'your_listings' || w.category === 'group_new_listings') return 'listing';
+  if (w.category === 'your_groups' || w.category === 'group_announcements') return 'group';
+  return 'account';
+}
+
+/**
+ * Màn mở theo mã trong `data` (`ghim-server/docs/realtime.md`): hội thoại trước, rồi tin. Tin của chính mình (duyệt,
+ * hết hạn) mở "Tin của tôi" — ở đó có trạng thái và lời giải thích. Chuyện của nhóm chưa mở được: trang nhóm còn
+ * chạy dữ liệu mẫu, mã nhóm thật không có trong đó.
+ */
+function targetOf(w: WireNotice): NoticeTarget | null {
+  const { conversationId, listingId } = w.data;
+  if (conversationId) return { screen: 'chat', id: conversationId };
+  if (w.category === 'group_new_listings' && listingId) return { screen: 'listing', id: listingId };
+  if (
+    w.category === 'your_listings' ||
+    w.category === 'account' ||
+    w.category === 'trust_strikes'
+  ) {
+    return { screen: 'profile' };
+  }
+  return null;
+}
+
+const toNotice = (w: WireNotice): Notice => ({
+  id: w.id,
+  tab: DEAL_CATEGORIES.has(w.category) ? 'deal' : 'system',
+  kind: kindOf(w),
+  title: w.title,
+  body: w.body,
+  at: w.updatedAt,
+  read: w.readAt !== null,
+  target: targetOf(w),
+});
+
 /* ---------------------------------- api ----------------------------------- */
 
 export const api = {
@@ -696,6 +756,17 @@ export const api = {
 
   setShowActivity: async (showActivity: boolean): Promise<Me> =>
     toMe(await unwrap(patchApiV1Me({ body: { showActivity } }))),
+
+  getNotices: async (): Promise<Notice[]> =>
+    (await unwrap(getApiV1MeNotifications({ query: { limit: NOTICE_PAGE } }))).items.map(toNotice),
+
+  unreadNoticeCount: async (): Promise<number> =>
+    (await unwrap(getApiV1MeNotificationsUnreadCount())).count,
+
+  /** `'all'` = mọi dòng của tôi; mã của người khác server trả 404. */
+  markNoticesRead: async (ids: string[] | 'all'): Promise<void> => {
+    await unwrap(postApiV1MeNotificationsRead({ body: ids === 'all' ? { all: true } : { ids } }));
+  },
 
   /** Mọi trạng thái trong một lượt — hai ngăn "Đang đăng" / "Đã bán" lọc từ cùng một danh sách. */
   getMyListings: async (load: LoadLookups): Promise<MyListing[]> => {

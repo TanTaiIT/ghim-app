@@ -10,7 +10,11 @@ import { BASE_URL, currentAccessToken, refreshAccessToken } from './http';
 /** Sự kiện server phát mà app dùng; payload chỉ có mã, nội dung luôn tải lại qua HTTP. */
 export type RealtimeEvent =
   | { type: 'message:new'; conversationId: string }
-  | { type: 'message:updated'; conversationId: string };
+  | { type: 'message:updated'; conversationId: string }
+  /** Dòng hộp thư mới hay dòng gộp vừa cập nhật — tải lại hộp thư. */
+  | { type: 'notification:changed' }
+  /** Số chưa đọc mới, tới mọi máy của tài khoản — kể cả khi đọc trên máy khác. */
+  | { type: 'notification:unread'; count: number };
 
 export interface RealtimeHandlers {
   onEvent(event: RealtimeEvent): void;
@@ -46,6 +50,14 @@ export function connectRealtime(handlers: RealtimeHandlers): RealtimeConnection 
       if (conversationId) handlers.onEvent({ type, conversationId });
     });
   }
+  for (const type of ['notification:new', 'notification:updated']) {
+    socket.on(type, () => handlers.onEvent({ type: 'notification:changed' }));
+  }
+  socket.on('notification:unread', (payload: unknown) => {
+    const count =
+      typeof payload === 'object' && payload !== null && 'count' in payload ? payload.count : null;
+    if (typeof count === 'number') handlers.onEvent({ type: 'notification:unread', count });
+  });
 
   const renew = async (reconnect: boolean): Promise<void> => {
     try {

@@ -358,6 +358,100 @@ describe('tin nhắn', () => {
   });
 });
 
+/** Đúng hình dạng một dòng của `GET /me/notifications` (ghim-server `89c7daa`). */
+const wireNotice = (overrides: Record<string, unknown>) => ({
+  id: 'n-1',
+  category: 'messages',
+  type: 'messaging.message.received',
+  title: 'Bình Người Mua',
+  body: 'Máy còn không anh?',
+  detail: null,
+  data: {},
+  groupId: null,
+  count: 1,
+  readAt: null,
+  createdAt: '2026-10-18T09:00:00.000Z',
+  updatedAt: '2026-10-18T09:05:00.000Z',
+  ...overrides,
+});
+
+describe('thông báo', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('tab, biểu tượng và màn mở theo nhóm, loại và mã của server; dòng gộp theo lần cập nhật cuối', async () => {
+    serve({
+      '/api/v1/me/notifications': {
+        items: [
+          wireNotice({ data: { conversationId: 'c-1', messageId: 'm-1', listingId: 'l-1' } }),
+          wireNotice({
+            id: 'n-2',
+            type: 'messaging.offer.answered',
+            body: 'Đã chấp nhận giá 12.000.000 ₫',
+            data: { conversationId: 'c-1' },
+            readAt: '2026-10-18T09:06:00.000Z',
+          }),
+          wireNotice({
+            id: 'n-3',
+            category: 'your_listings',
+            type: 'listing.expiry.reminder',
+            data: { listingId: 'l-1' },
+          }),
+          wireNotice({
+            id: 'n-4',
+            category: 'group_new_listings',
+            type: 'listing.group.new',
+            data: { listingId: 'l-2', groupId: 'g-1' },
+          }),
+          wireNotice({
+            id: 'n-5',
+            category: 'your_groups',
+            type: 'group.state.locked',
+            data: { groupId: 'g-1' },
+          }),
+          wireNotice({
+            id: 'n-6',
+            category: 'support',
+            type: 'messaging.message.received',
+            data: { conversationId: 'c-9' },
+          }),
+        ],
+        page: 1,
+        limit: 100,
+        total: 6,
+        totalPages: 1,
+      },
+    });
+
+    const notices = await api.getNotices();
+
+    expect(notices.map((n) => [n.id, n.tab, n.kind, n.target, n.read])).toEqual([
+      ['n-1', 'deal', 'message', { screen: 'chat', id: 'c-1' }, false],
+      ['n-2', 'deal', 'offer', { screen: 'chat', id: 'c-1' }, true],
+      ['n-3', 'deal', 'expiring', { screen: 'profile' }, false],
+      ['n-4', 'deal', 'listing', { screen: 'listing', id: 'l-2' }, false],
+      ['n-5', 'system', 'group', null, false],
+      ['n-6', 'system', 'message', { screen: 'chat', id: 'c-9' }, false],
+    ]);
+    expect(notices[0]?.at).toBe('2026-10-18T09:05:00.000Z');
+  });
+
+  it('đánh dấu đã đọc: theo mã, hay tất cả', async () => {
+    const bodies: unknown[] = [];
+    jest.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      bodies.push(JSON.parse(await (input as Request).text()));
+      return new Response(JSON.stringify({ success: true, data: { marked: 1 } }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    });
+    await api.markNoticesRead(['n-1']);
+    await api.markNoticesRead('all');
+    expect(bodies).toEqual([{ ids: ['n-1'] }, { all: true }]);
+  });
+});
+
 describe('lưu và gửi tin', () => {
   afterEach(() => {
     jest.restoreAllMocks();

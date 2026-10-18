@@ -27,11 +27,24 @@ export function useRealtimeBridge(qc: QueryClient): void {
   useEffect(() => {
     if (!authed || !foreground) return undefined;
     const connection = connectRealtime({
-      onConnect: () => void qc.invalidateQueries({ queryKey: qk.conversations.all() }),
+      onConnect: () => {
+        void qc.invalidateQueries({ queryKey: qk.conversations.all() });
+        void qc.invalidateQueries({ queryKey: qk.notices.all() });
+      },
       onEvent: (event) => {
-        void qc.invalidateQueries({ queryKey: qk.conversations.detail(event.conversationId) });
-        if (event.type === 'message:new') {
-          void qc.invalidateQueries({ queryKey: qk.conversations.list() });
+        switch (event.type) {
+          case 'notification:unread':
+            qc.setQueryData(qk.notices.unread(), event.count);
+            return;
+          case 'notification:changed':
+            void qc.invalidateQueries({ queryKey: qk.notices.list() });
+            return;
+          case 'message:new':
+            void qc.invalidateQueries({ queryKey: qk.conversations.list() });
+            void qc.invalidateQueries({ queryKey: qk.conversations.detail(event.conversationId) });
+            return;
+          case 'message:updated':
+            void qc.invalidateQueries({ queryKey: qk.conversations.detail(event.conversationId) });
         }
       },
     });

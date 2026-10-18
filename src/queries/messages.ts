@@ -1,5 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { api, type Conversation, type ConversationTarget, type Message } from '@/api/client';
+import {
+  api,
+  type Conversation,
+  type ConversationTarget,
+  type Message,
+  type Notice,
+} from '@/api/client';
 import { useIsAuthenticated } from '@/stores/auth';
 import { qk } from './keys';
 
@@ -32,11 +38,25 @@ export function useConversation(id: string | undefined) {
   });
 }
 
+/**
+ * Đọc hội thoại cũng là đọc dòng thông báo "tin nhắn mới" của nó: server giữ hai trạng thái đọc riêng, không có thì
+ * chuông vẫn sáng sau khi người dùng đã xem hết tin.
+ */
 export function useMarkConversationRead() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => api.markConversationRead(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: qk.conversations.list() }),
+    mutationFn: async (id: string) => {
+      await api.markConversationRead(id);
+      const notices = qc.getQueryData<Notice[]>(qk.notices.list()) ?? [];
+      const ids = notices
+        .filter((n) => !n.read && n.target?.screen === 'chat' && n.target.id === id)
+        .map((n) => n.id);
+      if (ids.length > 0) await api.markNoticesRead(ids);
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: qk.conversations.list() });
+      void qc.invalidateQueries({ queryKey: qk.notices.all() });
+    },
   });
 }
 

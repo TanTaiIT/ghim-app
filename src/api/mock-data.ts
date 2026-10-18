@@ -1,12 +1,4 @@
-import type {
-  Group,
-  GroupMember,
-  HelpTopic,
-  ListingDetail,
-  Notice,
-  Person,
-  Seller,
-} from './client';
+import type { Group, GroupMember, HelpTopic, ListingDetail, Person, Seller } from './client';
 import { ART, zoom } from './mock-art';
 
 /*
@@ -374,77 +366,6 @@ export const GROUP_MEMBERS: GroupMember[] = [
   { ...baoNgoc, role: 'member' },
   { ...ducHuy, role: 'member' },
   { ...me, role: 'member' },
-];
-
-/* ─── THÔNG BÁO ───────────────────────────────────────────────────── */
-
-export const NOTICES: Notice[] = [
-  {
-    id: 'n1',
-    tab: 'deal',
-    kind: 'offer',
-    title: 'Có đề xuất giá mới',
-    body: 'Anh Tuấn Tech đề xuất 13.500.000 đ cho MacBook Air M1.',
-    at: ago(5),
-    read: false,
-    action: 'Xem đề xuất',
-    target: { screen: 'listing', id: 'l-mba16' },
-  },
-  {
-    id: 'n2',
-    tab: 'deal',
-    kind: 'search',
-    title: '3 tin mới khớp “iphone 13”',
-    body: 'Có tin mới trong khu vực TP.HCM, giá 10 – 20 triệu.',
-    at: ago(60),
-    read: false,
-    action: null,
-    target: { screen: 'search', q: 'iphone 13' },
-  },
-  {
-    id: 'n3',
-    tab: 'deal',
-    kind: 'expiring',
-    title: 'Tin sắp hết hạn',
-    body: '“Tai nghe Sony WH-1000XM4” sẽ hết hạn sau 2 ngày.',
-    at: ago(180),
-    read: true,
-    action: 'Gia hạn tin',
-    target: { screen: 'profile' },
-  },
-  {
-    id: 'n4',
-    tab: 'system',
-    kind: 'approved',
-    title: 'Tin đăng đã được duyệt',
-    body: '“Bàn học gỗ sồi còn mới” đã bắt đầu hiển thị.',
-    at: ago(120),
-    read: true,
-    action: null,
-    target: { screen: 'listing', id: 'l-desk' },
-  },
-  {
-    id: 'n5',
-    tab: 'system',
-    kind: 'group',
-    title: 'Bạn đã tham gia nhóm',
-    body: 'Chào mừng đến với Hội Nhiếp ảnh Sài Gòn.',
-    at: ago(60 * 26),
-    read: true,
-    action: null,
-    target: { screen: 'group', id: 'g-na' },
-  },
-  {
-    id: 'n6',
-    tab: 'promo',
-    kind: 'promo',
-    title: 'Đăng tin miễn phí tháng này',
-    body: 'Không giới hạn số tin đăng đến hết tháng.',
-    at: ago(60 * 50),
-    read: true,
-    action: null,
-    target: { screen: 'post' },
-  },
 ];
 
 /* ─── TRỢ GIÚP ──────────────────────────────────────────────── */

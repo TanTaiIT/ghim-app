@@ -7,14 +7,14 @@ import { NoticeCard } from '@/components/NoticeCard';
 import { UnderlineTabs } from '@/components/TabStrip';
 import { useToast } from '@/components/Toast';
 import { EmptyState, Loading } from '@/components/ui';
-import { useMarkAllNoticesRead, useNotices } from '@/queries/account';
-import type { NoticeTab, NoticeTarget } from '@/api/client';
+import { useMarkNoticesRead, useNotices } from '@/queries/account';
+import type { Notice, NoticeTab } from '@/api/client';
 import { useIsAuthenticated } from '@/stores/auth';
 import { C, F, S } from '@/theme';
 
+/** "Khuyến mãi" của bộ UI vắng cho tới khi server có gói đẩy tin — tab rỗng mãi chỉ làm người dùng đi tìm. */
 const TABS: { id: NoticeTab; label: string }[] = [
   { id: 'deal', label: 'Giao dịch' },
-  { id: 'promo', label: 'Khuyến mãi' },
   { id: 'system', label: 'Hệ thống' },
 ];
 
@@ -24,23 +24,18 @@ export default function Notifications() {
   const authed = useIsAuthenticated();
   const [tab, setTab] = useState<NoticeTab>('deal');
   const notices = useNotices();
-  const markAll = useMarkAllNoticesRead();
+  const markRead = useMarkNoticesRead();
   const items = notices.data?.filter((n) => n.tab === tab) ?? [];
 
-  const open = (t: NoticeTarget) => {
-    switch (t.screen) {
+  const open = ({ id, read, target }: Notice) => {
+    if (!read) markRead.mutate([id], { onError: (e) => toast(e.message) });
+    switch (target?.screen) {
       case 'chat':
-        return router.push(`/chat/${t.id}`);
-      case 'search':
-        return router.push({ pathname: '/search', params: { q: t.q } });
+        return router.push(`/chat/${target.id}`);
+      case 'listing':
+        return router.push(`/listing/${target.id}`);
       case 'profile':
         return router.navigate('/(tabs)/profile');
-      case 'listing':
-        return router.push(`/listing/${t.id}`);
-      case 'group':
-        return router.push(`/group/${t.id}`);
-      case 'post':
-        return router.push('/post');
     }
   };
 
@@ -53,7 +48,7 @@ export default function Notifications() {
             <Pressable
               accessibilityRole="button"
               hitSlop={8}
-              onPress={() => markAll.mutate(undefined, { onError: (e) => toast(e.message) })}
+              onPress={() => markRead.mutate('all', { onError: (e) => toast(e.message) })}
             >
               <Text style={styles.readAll}>Đọc tất cả</Text>
             </Pressable>
@@ -63,10 +58,7 @@ export default function Notifications() {
       </View>
 
       {!authed ? (
-        <GuestGate
-          icon="bell"
-          text="Đăng nhập để nhận đề xuất giá, tin mới khớp tìm kiếm và nhắc hạn tin."
-        />
+        <GuestGate icon="bell" text="Đăng nhập để nhận tin nhắn, trả giá và nhắc hạn tin." />
       ) : notices.isPending ? (
         <Loading />
       ) : notices.isError ? (
@@ -85,7 +77,7 @@ export default function Notifications() {
               text="Thông báo mới sẽ xuất hiện ở đây."
             />
           }
-          renderItem={({ item }) => <NoticeCard notice={item} onPress={() => open(item.target)} />}
+          renderItem={({ item }) => <NoticeCard notice={item} onPress={() => open(item)} />}
         />
       )}
     </SafeAreaView>
