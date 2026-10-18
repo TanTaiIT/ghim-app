@@ -24,7 +24,10 @@ nó, đừng đọc `res.error` ở call-site. Vỏ response của backend là `
 `{ success: false, error: { code, message, details } }`; `unwrap` bóc luôn `data`.
 
 Endpoint cần đăng nhập có `security: [{ bearerAuth }]` trong OpenAPI → SDK tự gọi `auth()` của
-`createClientConfig`. Gọi ẩn danh thì backend trả 401 và `unwrap` ném `ApiError('UNAUTHORIZED')`.
+`createClientConfig`. Gọi ẩn danh thì backend trả 401 và `unwrap` ném `ApiError('UNAUTHORIZED')`. Route
+phiên tuỳ chọn (xem tin: người đăng thấy nháp của mình, thành viên thấy tin "chỉ thành viên") khai
+`[{}, { bearerAuth }]` → SDK gắn Bearer khi có token, khách vẫn gọi ẩn danh. Đừng tự xin `security` ở
+call-site: route thiếu khai là lỗi của server, sửa bên `ghim-server` rồi `npm run api:sync`.
 
 ---
 

@@ -350,14 +350,6 @@ type WireMe = GetApiV1MeResponses[200]['data'];
 const PAGE_SIZE = 30;
 
 /**
- * Route xem tin cho cả khách lẫn người đã đăng nhập (`authenticateOptional`) không khai `security` trong
- * OpenAPI, nên SDK không tự gắn Bearer — người đăng nhập bị coi như khách: không mở được nháp của chính mình,
- * không thấy tin chỉ thành viên nhóm xem được. Xin tường minh ở từng lượt gọi; khách không có token nên vẫn gọi
- * ẩn danh.
- */
-const VIEWER = { security: [{ scheme: 'bearer', type: 'http' }] } as const;
-
-/**
  * Trần một trang của server (`MAX_LIMIT`). "Tin của tôi" đếm số tin từ chính trang này vì server không trả
  * tổng — người bán có hơn 100 tin còn sống thì con số sẽ thiếu tới khi có tải thêm.
  */
@@ -548,7 +540,6 @@ export const api = {
   searchListings: async (f: SearchFilters, load: LoadLookups): Promise<ListingCard[]> => {
     const page = await unwrap(
       getApiV1Listings({
-        ...VIEWER,
         query: {
           q: f.q.trim() || undefined,
           categoryId: f.categoryId ?? undefined,
@@ -563,10 +554,10 @@ export const api = {
   },
 
   getListing: async (id: string, load: LoadLookups): Promise<ListingDetail> => {
-    const w = await unwrap(getApiV1ListingsById({ ...VIEWER, path: { id } }));
+    const w = await unwrap(getApiV1ListingsById({ path: { id } }));
     const [lookups, owner, template] = await Promise.all([
       load(w.provinceCode === null ? [] : [w.provinceCode]),
-      unwrap(getApiV1UsersById({ ...VIEWER, path: { id: w.ownerId } })),
+      unwrap(getApiV1UsersById({ path: { id: w.ownerId } })),
       w.categoryId !== null && w.templateVersion !== null
         ? unwrap(
             getApiV1CategoriesByIdTemplateVersionsByVersion({
@@ -593,7 +584,7 @@ export const api = {
   },
 
   getSimilar: async (id: string, load: LoadLookups): Promise<ListingCard[]> =>
-    toCards(await unwrap(getApiV1ListingsByIdSuggestions({ ...VIEWER, path: { id } })), load),
+    toCards(await unwrap(getApiV1ListingsByIdSuggestions({ path: { id } })), load),
 
   getMe: async (): Promise<Me> => toMe(await unwrap(getApiV1Me())),
 
@@ -651,7 +642,7 @@ export const api = {
   },
 
   getEditable: async (id: string): Promise<EditableListing> =>
-    toEditable(await unwrap(getApiV1ListingsById({ ...VIEWER, path: { id } }))),
+    toEditable(await unwrap(getApiV1ListingsById({ path: { id } }))),
 
   /**
    * Nén → xin quyền tải cho đúng một ảnh → tải thẳng lên kho (`ghim-server/docs/media.md`). Ảnh chỉ thành

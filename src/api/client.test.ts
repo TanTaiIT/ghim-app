@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, jest } from '@jest/globals';
 import { api, NO_FILTERS, unwrap, unwrapEmpty, type Lookups } from './client';
-import { ApiError, setHttpDeviceId } from './http';
+import { ApiError, setHttpAccessToken, setHttpDeviceId } from './http';
 
 const response = (status: number) => ({ status, ok: status >= 200 && status < 300 }) as Response;
 
@@ -35,13 +35,15 @@ const lookups: Lookups = {
   category: (id) => (id === 'c-1' ? { id, name: 'Nội thất' } : null),
   place: () => ({ ward: 'Phường Ba Đình', province: 'Hà Nội' }),
 };
+const loadLookups = async () => lookups;
 
-/** Server giả theo đường dẫn; ghi lại query string của từng lượt gọi. */
+/** Server giả theo đường dẫn; ghi lại URL và header phiên của từng lượt gọi. */
 function serve(routes: Record<string, unknown>) {
-  const urls: URL[] = [];
+  const calls: { url: URL; authorization: string | null }[] = [];
   jest.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
-    const url = new URL((input as Request).url);
-    urls.push(url);
+    const req = input as Request;
+    const url = new URL(req.url);
+    calls.push({ url, authorization: req.headers.get('authorization') });
     const data = routes[url.pathname];
     return new Response(
       JSON.stringify(data === undefined ? { success: false } : { success: true, data }),
@@ -51,16 +53,17 @@ function serve(routes: Record<string, unknown>) {
       },
     );
   });
-  return urls;
+  return calls;
 }
 
 describe('đọc tin đăng từ server', () => {
   afterEach(() => {
     jest.restoreAllMocks();
+    setHttpAccessToken(null);
   });
 
   it('thẻ tin: tra tên khu vực qua lookups, ảnh đầu làm bìa, chưa có người bán; bộ lọc thành query', async () => {
-    const urls = serve({ '/api/v1/listings': { items: [wireListing], nextCursor: null } });
+    const calls = serve({ '/api/v1/listings': { items: [wireListing], nextCursor: null } });
     const load = jest.fn(async (_codes: number[]) => lookups);
 
     const [card] = await api.searchListings({ ...NO_FILTERS, q: '  bàn ', provinceCode: 1 }, load);
@@ -77,9 +80,24 @@ describe('đọc tin đăng từ server', () => {
       groupName: 'Hội Nhiếp ảnh',
     });
     expect(load).toHaveBeenCalledWith([1]);
-    expect(urls[0]?.searchParams.get('q')).toBe('bàn');
-    expect(urls[0]?.searchParams.get('provinceCode')).toBe('1');
-    expect(urls[0]?.searchParams.has('categoryId')).toBe(false);
+    expect(calls[0]?.url.searchParams.get('q')).toBe('bàn');
+    expect(calls[0]?.url.searchParams.get('provinceCode')).toBe('1');
+    expect(calls[0]?.url.searchParams.has('categoryId')).toBe(false);
+  });
+
+  // Route xem tin trả theo người xem: thiếu phiên thì chủ tin không mở được nháp của mình (404).
+  it('đã đăng nhập: bảng tin và tin tương tự kèm phiên; khách gọi ẩn danh', async () => {
+    const calls = serve({
+      '/api/v1/listings': { items: [], nextCursor: null },
+      [`/api/v1/listings/${wireListing.id}/suggestions`]: [],
+    });
+    setHttpAccessToken('tok-1');
+    await api.searchListings(NO_FILTERS, loadLookups);
+    await api.getSimilar(wireListing.id, loadLookups);
+    setHttpAccessToken(null);
+    await api.searchListings(NO_FILTERS, loadLookups);
+
+    expect(calls.map((c) => c.authorization)).toEqual(['Bearer tok-1', 'Bearer tok-1', null]);
   });
 
   it('chi tiết: thông số theo đúng phiên bản mẫu, bỏ ô trống; số điện thoại chỉ khi người bán cho hiện', async () => {
@@ -104,7 +122,7 @@ describe('đọc tin đăng từ server', () => {
       },
     });
 
-    const l = await api.getListing(wireListing.id, async () => lookups);
+    const l = await api.getListing(wireListing.id, loadLookups);
 
     expect(l.specs).toEqual([
       { label: 'Màu', value: 'Đen, Bạc' },
@@ -117,7 +135,7 @@ describe('đọc tin đăng từ server', () => {
   });
 
   it('tin của tôi: giữ trạng thái của server, bỏ tin đã gỡ; hồ sơ chưa có khu vực và đánh giá', async () => {
-    const urls = serve({
+    const calls = serve({
       '/api/v1/me/listings': {
         items: [
           { ...wireListing, id: 'a', state: 'draft', expiresAt: null },
@@ -141,13 +159,13 @@ describe('đọc tin đăng từ server', () => {
       },
     });
 
-    const mine = await api.getMyListings(async () => lookups);
+    const mine = await api.getMyListings(loadLookups);
     expect(mine.map((l) => [l.id, l.state, l.expiresAt])).toEqual([
       ['a', 'draft', null],
       ['b', 'live', '2026-11-01T00:00:00.000Z'],
       ['d', 'sold', wireListing.expiresAt],
     ]);
-    expect(urls[0]?.searchParams.get('limit')).toBe('100');
+    expect(calls[0]?.url.searchParams.get('limit')).toBe('100');
 
     await expect(api.getMe()).resolves.toMatchObject({
       name: 'Tài Nguyễn',

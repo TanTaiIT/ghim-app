@@ -1140,7 +1140,11 @@ export const postApiV1OpsGroupsByGroupIdClose = <ThrowOnError extends boolean = 
 /**
  * Không `q` = bảng tin / danh mục (tin hiện đầy đủ); có `q` = tìm kiếm (gồm tin hạn chế)
  */
-export const getApiV1Listings = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1ListingsData, ThrowOnError>): RequestResult<GetApiV1ListingsResponses, GetApiV1ListingsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1ListingsResponses, GetApiV1ListingsErrors, ThrowOnError>({ url: '/api/v1/listings', ...options });
+export const getApiV1Listings = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1ListingsData, ThrowOnError>): RequestResult<GetApiV1ListingsResponses, GetApiV1ListingsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1ListingsResponses, GetApiV1ListingsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/listings',
+    ...options
+});
 
 /**
  * Tạo nháp — lưu được khi chưa đủ trường
@@ -1167,7 +1171,11 @@ export const deleteApiV1ListingsById = <ThrowOnError extends boolean = false>(op
 /**
  * Một tin — người đăng thấy trạng thái và lý do; người khác không được thấy thì 404 như tin không tồn tại
  */
-export const getApiV1ListingsById = <ThrowOnError extends boolean = false>(options: Options<GetApiV1ListingsByIdData, ThrowOnError>): RequestResult<GetApiV1ListingsByIdResponses, GetApiV1ListingsByIdErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1ListingsByIdResponses, GetApiV1ListingsByIdErrors, ThrowOnError>({ url: '/api/v1/listings/{id}', ...options });
+export const getApiV1ListingsById = <ThrowOnError extends boolean = false>(options: Options<GetApiV1ListingsByIdData, ThrowOnError>): RequestResult<GetApiV1ListingsByIdResponses, GetApiV1ListingsByIdErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1ListingsByIdResponses, GetApiV1ListingsByIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/listings/{id}',
+    ...options
+});
 
 /**
  * Lưu nháp, hoặc sửa tin đã gửi kèm `version` — sửa nội dung qua máy lại (cần `x-device-id`), thu hẹp nơi đăng và công tắc áp ngay
@@ -1251,17 +1259,29 @@ export const getApiV1MeListings = <ThrowOnError extends boolean = false>(options
 /**
  * Vài tin sàn chung cùng danh mục để xem tiếp
  */
-export const getApiV1ListingsByIdSuggestions = <ThrowOnError extends boolean = false>(options: Options<GetApiV1ListingsByIdSuggestionsData, ThrowOnError>): RequestResult<GetApiV1ListingsByIdSuggestionsResponses, GetApiV1ListingsByIdSuggestionsErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1ListingsByIdSuggestionsResponses, GetApiV1ListingsByIdSuggestionsErrors, ThrowOnError>({ url: '/api/v1/listings/{id}/suggestions', ...options });
+export const getApiV1ListingsByIdSuggestions = <ThrowOnError extends boolean = false>(options: Options<GetApiV1ListingsByIdSuggestionsData, ThrowOnError>): RequestResult<GetApiV1ListingsByIdSuggestionsResponses, GetApiV1ListingsByIdSuggestionsErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1ListingsByIdSuggestionsResponses, GetApiV1ListingsByIdSuggestionsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/listings/{id}/suggestions',
+    ...options
+});
 
 /**
  * Bảng tin nhóm — "chỉ thành viên" chỉ hiện cho thành viên; có `q` = tìm trong nhóm
  */
-export const getApiV1GroupsByGroupIdListings = <ThrowOnError extends boolean = false>(options: Options<GetApiV1GroupsByGroupIdListingsData, ThrowOnError>): RequestResult<GetApiV1GroupsByGroupIdListingsResponses, GetApiV1GroupsByGroupIdListingsErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1GroupsByGroupIdListingsResponses, GetApiV1GroupsByGroupIdListingsErrors, ThrowOnError>({ url: '/api/v1/groups/{groupId}/listings', ...options });
+export const getApiV1GroupsByGroupIdListings = <ThrowOnError extends boolean = false>(options: Options<GetApiV1GroupsByGroupIdListingsData, ThrowOnError>): RequestResult<GetApiV1GroupsByGroupIdListingsResponses, GetApiV1GroupsByGroupIdListingsErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1GroupsByGroupIdListingsResponses, GetApiV1GroupsByGroupIdListingsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/listings',
+    ...options
+});
 
 /**
  * Tin đang hiển thị của người bán mà người xem được phép thấy
  */
-export const getApiV1UsersByIdListings = <ThrowOnError extends boolean = false>(options: Options<GetApiV1UsersByIdListingsData, ThrowOnError>): RequestResult<GetApiV1UsersByIdListingsResponses, GetApiV1UsersByIdListingsErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1UsersByIdListingsResponses, GetApiV1UsersByIdListingsErrors, ThrowOnError>({ url: '/api/v1/users/{id}/listings', ...options });
+export const getApiV1UsersByIdListings = <ThrowOnError extends boolean = false>(options: Options<GetApiV1UsersByIdListingsData, ThrowOnError>): RequestResult<GetApiV1UsersByIdListingsResponses, GetApiV1UsersByIdListingsErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1UsersByIdListingsResponses, GetApiV1UsersByIdListingsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/users/{id}/listings',
+    ...options
+});
 
 /**
  * Nhóm gỡ huy hiệu của mình khỏi một tin — tin đó không gắn lại huy hiệu nhóm này được nữa
