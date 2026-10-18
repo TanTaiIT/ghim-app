@@ -30,7 +30,7 @@ const HCM = 'TP.HCM';
 
 /* ─── NGƯỜI ───────────────────────────────────────────────────────── */
 
-export const ME_ID = 'u-me';
+const ME_ID = 'u-me';
 
 const person = (id: string, name: string, verified: boolean): Person => ({ id, name, verified });
 

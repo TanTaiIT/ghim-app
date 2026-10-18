@@ -1,4 +1,9 @@
-import { getHealthReady } from './generated/sdk.gen';
+import {
+  getHealthReady,
+  postApiV1AuthLogin,
+  postApiV1AuthLogout,
+  postApiV1AuthRefresh,
+} from './generated/sdk.gen';
 import { ApiError } from './http';
 
 /*
@@ -19,29 +24,46 @@ function isEnvelope(value: unknown): value is Envelope<unknown> {
 }
 
 /**
- * Chỗ duy nhất bóc vỏ response và đổi mọi nhánh hỏng thành `ApiError`.
- *
- * SDK không throw mà trả `{ data, error }`; backend lại trả vỏ ở CẢ hai nhánh (503 của readiness vẫn là
- * `success: true`). Đọc `data ?? error` rồi phân nhánh theo `success` là cách duy nhất không bỏ sót nhánh
- * nào. Không có vỏ nghĩa là chưa tới được server: mạng đứt, proxy trả HTML, server chết giữa chừng.
+ * `ApiError` có sẵn là lỗi của lượt làm mới phiên trong `http.ts` (SDK bắt mọi thứ `fetch` ném rồi trả ở
+ * `error`) — giữ nguyên để người dùng thấy "phiên đã hết hạn" chứ không phải "mất mạng". Không có vỏ nghĩa
+ * là chưa tới được server: mạng đứt, proxy trả HTML, server chết giữa chừng.
  */
-export async function unwrap<T>(call: Promise<SdkResult<{ success: true; data: T }>>): Promise<T> {
-  const { data, error, response } = await call;
-  const body: unknown = data ?? error;
-  if (isEnvelope(body)) {
-    if (body.success) return body.data as T;
-    throw new ApiError(
+function toApiError(body: unknown, response: Response | undefined): ApiError {
+  if (body instanceof ApiError) return body;
+  if (isEnvelope(body) && !body.success) {
+    return new ApiError(
       body.error.code,
       body.error.message,
       response?.status ?? 0,
       body.error.details,
     );
   }
-  throw new ApiError(
+  return new ApiError(
     'NETWORK_ERROR',
     'Không kết nối được tới máy chủ, kiểm tra mạng rồi thử lại',
     response?.status ?? 0,
   );
+}
+
+/**
+ * Chỗ duy nhất bóc vỏ response và đổi mọi nhánh hỏng thành `ApiError`.
+ *
+ * SDK không throw mà trả `{ data, error }`; backend lại trả vỏ ở CẢ hai nhánh (503 của readiness vẫn là
+ * `success: true`). Đọc `data ?? error` rồi phân nhánh theo `success` là cách duy nhất không bỏ sót nhánh
+ * nào.
+ */
+export async function unwrap<T>(call: Promise<SdkResult<{ success: true; data: T }>>): Promise<T> {
+  const { data, error, response } = await call;
+  const body: unknown = data ?? error;
+  if (isEnvelope(body) && body.success) return body.data as T;
+  throw toApiError(body, response);
+}
+
+/** Endpoint trả 204 không có vỏ để bóc: thành công là response 2xx; thất bại vẫn mang vỏ lỗi như mọi chỗ. */
+export async function unwrapEmpty(call: Promise<SdkResult<unknown>>): Promise<void> {
+  const { error, response } = await call;
+  if (error === undefined && response?.ok) return;
+  throw toApiError(error, response);
 }
 
 /* ------------------------------- domain type ------------------------------- */
@@ -262,15 +284,27 @@ export type Me = Person & {
 
 export type HelpTopic = { id: string; label: string; faqs: { q: string; a: string }[] };
 
-export type Session = {
-  accountId: string;
-  email: string;
-  accessToken: string;
-  refreshToken: string;
-};
+export type Session = { accessToken: string; refreshToken: string };
+
+/** Refresh token null chỉ xảy ra với `client: 'web'` (server cất vào cookie); app luôn xin `'app'`. */
+function toSession(d: { accessToken: string; refreshToken: string | null }): Session {
+  if (!d.refreshToken) {
+    throw new ApiError('NO_REFRESH_TOKEN', 'Máy chủ không trả mã giữ phiên, hãy đăng nhập lại', 0);
+  }
+  return { accessToken: d.accessToken, refreshToken: d.refreshToken };
+}
 
 /* ---------------------------------- api ----------------------------------- */
 
 export const api = {
   getReadiness: (): Promise<Readiness> => unwrap(getHealthReady()),
+
+  login: (email: string, password: string): Promise<Session> =>
+    unwrap(postApiV1AuthLogin({ body: { email, password, client: 'app' } })).then(toSession),
+
+  refresh: (refreshToken: string): Promise<Session> =>
+    unwrap(postApiV1AuthRefresh({ body: { refreshToken } })).then(toSession),
+
+  /** Thu hồi phiên hiện tại trên server (theo Bearer) — các thiết bị khác của tài khoản không bị ảnh hưởng. */
+  logout: (): Promise<void> => unwrapEmpty(postApiV1AuthLogout()),
 };

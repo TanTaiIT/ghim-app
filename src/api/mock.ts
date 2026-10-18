@@ -20,7 +20,6 @@ import type {
   Picture,
   PriceHint,
   SearchFilters,
-  Session,
 } from './client';
 import { ApiError } from './http';
 import * as D from './mock-data';
@@ -140,16 +139,6 @@ const PRICE_HINTS: Partial<Record<CategoryId, PriceHint>> = {
 };
 
 export const mockApi = {
-  login: async (email: string, password: string): Promise<Session> => {
-    if (password.length < 8) throw new ApiError('VALIDATION_ERROR', 'Mật khẩu từ 8 ký tự', 400);
-    return wait({
-      accountId: D.ME_ID,
-      email,
-      accessToken: 'mock-access',
-      refreshToken: 'mock-refresh',
-    });
-  },
-
   getMe: (): Promise<Me> => {
     const active = Object.values(shelf).filter((s) => s.state !== 'sold').length;
     return wait({

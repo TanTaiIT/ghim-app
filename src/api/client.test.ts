@@ -1,8 +1,8 @@
 import { describe, expect, it } from '@jest/globals';
-import { toCategoryId, unwrap } from './client';
+import { toCategoryId, unwrap, unwrapEmpty } from './client';
 import { ApiError } from './http';
 
-const response = (status: number) => ({ status }) as Response;
+const response = (status: number) => ({ status, ok: status >= 200 && status < 300 }) as Response;
 
 describe('unwrap', () => {
   it('trả data khi vỏ success', async () => {
@@ -52,6 +52,29 @@ describe('unwrap', () => {
   it('không có vỏ (mạng đứt, proxy trả HTML) thì là NETWORK_ERROR', async () => {
     const result = unwrap(Promise.resolve({ error: new TypeError('Network request failed') }));
     await expect(result).rejects.toMatchObject({ code: 'NETWORK_ERROR', status: 0 });
+  });
+
+  it('giữ nguyên ApiError mà lượt làm mới phiên ném qua fetch', async () => {
+    const revoked = new ApiError('SESSION_REVOKED', 'Phiên đã bị thu hồi, đăng nhập lại', 401);
+    await expect(unwrap(Promise.resolve({ error: revoked }))).rejects.toBe(revoked);
+  });
+});
+
+describe('unwrapEmpty', () => {
+  it('204 là thành công dù không có vỏ', async () => {
+    await expect(
+      unwrapEmpty(Promise.resolve({ data: {}, response: response(204) })),
+    ).resolves.toBeUndefined();
+  });
+
+  it('thất bại vẫn đọc vỏ lỗi thành ApiError', async () => {
+    const result = unwrapEmpty(
+      Promise.resolve({
+        error: { success: false, error: { code: 'UNAUTHORIZED', message: 'Cần đăng nhập' } },
+        response: response(401),
+      }),
+    );
+    await expect(result).rejects.toMatchObject({ code: 'UNAUTHORIZED', status: 401 });
   });
 });
 

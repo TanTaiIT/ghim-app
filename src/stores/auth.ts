@@ -9,15 +9,19 @@ import { createJSONStorage, persist, type StateStorage } from 'zustand/middlewar
  * một file đọc được.
  *
  * Giới hạn cần biết: SecureStore cảnh báo với giá trị trên ~2KB. `partialize` chỉ giữ `session`
- * (hai JWT + hai chuỗi ngắn, dưới 1KB); nhét thêm vào đó thì phải kiểm lại con số này.
+ * (hai token, dưới 1KB); nhét thêm vào đó thì phải kiểm lại con số này.
  *
  * Web: `expo-secure-store` là module rỗng (mọi lệnh ném `TypeError`), và trình duyệt không có kho tương
  * đương — `localStorage` thì script nào trên trang cũng đọc được refresh token. Nên web không ghi phiên
  * xuống đâu cả: phiên chỉ sống trong bộ nhớ, tải lại trang là đăng nhập lại.
+ *
+ * `getItem` của web PHẢI async dù không đọc gì: kho đồng bộ làm `persist` hydrate ngay trong `create()`,
+ * `onRehydrateStorage` chạm `useAuthStore` khi biến chưa được gán, zustand nuốt lỗi và `hydrated` kẹt
+ * ở false — web dừng ở màn trắng.
  */
 const secureStorage: StateStorage =
   Platform.OS === 'web'
-    ? { getItem: () => null, setItem: () => {}, removeItem: () => {} }
+    ? { getItem: async () => null, setItem: () => {}, removeItem: () => {} }
     : {
         getItem: (name) => SecureStore.getItemAsync(name),
         setItem: (name, value) => SecureStore.setItemAsync(name, value),
@@ -25,22 +29,18 @@ const secureStorage: StateStorage =
       };
 
 /**
- * Danh tính của phiên đăng nhập — thứ duy nhất cần sống lâu hơn một màn hình (store.convention §1).
- * Hồ sơ đầy đủ vẫn thuộc về query; nhân bản vào đây là có hai nguồn sự thật lệch nhau.
+ * Cặp token của phiên đăng nhập — thứ duy nhất cần sống lâu hơn một màn hình (store.convention §1).
+ * Hồ sơ (id, email, tên) thuộc về query `/me`; nhân bản vào đây là có hai nguồn sự thật lệch nhau.
  *
  * Khai lại type thay vì import từ `@/api`: store là lá, không import layer khác (folder §6).
  */
-type Session = {
-  accountId: string;
-  email: string;
-  accessToken: string;
-  refreshToken: string;
-};
+type Session = { accessToken: string; refreshToken: string };
 
 type AuthState = {
   session: Session | null;
   /** false cho tới khi đọc xong kho bảo mật — giữ splash để guard không nháy qua màn login. */
   hydrated: boolean;
+  /** Cả lúc đăng nhập lẫn lúc refresh: server xoay refresh token mỗi lượt, bản cũ phải bị ghi đè. */
   signIn: (session: Session) => void;
   signOut: () => void;
 };
@@ -58,11 +58,15 @@ export const useAuthStore = create<AuthState>()(
       storage: createJSONStorage(() => secureStorage),
       // `hydrated` là cờ runtime; ghi xuống đĩa thì lần mở sau đọc lại đúng giá trị cũ (false) và app treo.
       partialize: (s) => ({ session: s.session }),
+      // Bản 0 là phiên của dữ liệu mẫu, cầm token giả: giữ lại thì máy đã chạy bản mẫu trông như đang đăng
+      // nhập trong khi backend không nhận phiên nào như thế.
+      version: 1,
+      migrate: () => ({ session: null }),
       // Chạy cả khi đọc đĩa lỗi — luôn mở khoá splash. Bản ghi thiếu field thì vứt: `useIsAuthenticated`
       // chỉ hỏi `session !== null`, một object rỗng cũng đủ để guard thả vào màn cần đăng nhập.
       onRehydrateStorage: () => (state) => {
         const s = state?.session;
-        const usable = Boolean(s?.accountId && s.accessToken && s.refreshToken);
+        const usable = Boolean(s?.accessToken && s.refreshToken);
         useAuthStore.setState({ hydrated: true, ...(s && !usable && { session: null }) });
       },
     },
@@ -73,4 +77,3 @@ export const useAuthStore = create<AuthState>()(
 
 export const useIsAuthenticated = () => useAuthStore((s) => s.session !== null);
 export const useAuthHydrated = () => useAuthStore((s) => s.hydrated);
-export const useSessionEmail = () => useAuthStore((s) => s.session?.email ?? null);

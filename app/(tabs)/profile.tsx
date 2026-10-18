@@ -158,7 +158,10 @@ export default function Profile() {
               </Pressable>
             ))}
           </View>
-          <GhostButton label="Đăng xuất" onPress={signOut} />
+          <GhostButton
+            label="Đăng xuất"
+            onPress={() => signOut.mutate(undefined, { onError: (e) => toast(e.message) })}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
