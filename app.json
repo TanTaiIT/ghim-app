@@ -39,6 +39,14 @@
       "expo-font",
       "expo-secure-store",
       "expo-image",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Ghim cần mở thư viện ảnh để bạn chọn ảnh sản phẩm khi đăng tin.",
+          "cameraPermission": "Ghim cần dùng máy ảnh để bạn chụp ảnh sản phẩm khi đăng tin.",
+          "microphonePermission": false
+        }
+      ],
       "expo-asset"
     ],
     "experiments": {
