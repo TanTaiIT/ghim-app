@@ -3,47 +3,64 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-
 import Feather from '@expo/vector-icons/Feather';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Check } from '@/components/Chip';
 import { Field } from '@/components/Field';
 import { PickerSheet } from '@/components/PickerSheet';
 import { StepHeader, useClosePost } from '@/components/StepHeader';
+import { missingRequired, TemplateFields } from '@/components/TemplateFields';
 import { useToast } from '@/components/Toast';
-import { Avatar } from '@/components/Avatar';
-import { Check } from '@/components/Chip';
 import { PinButton } from '@/components/ui';
-import { useMe } from '@/queries/account';
-import { useMyGroups } from '@/queries/groups';
-import { useDistricts, usePostCategories, usePriceHint } from '@/queries/selling';
-import { DEFAULT_CITY, toPostCategoryId } from '@/api/client';
-import { useDraftStore } from '@/stores/draft';
+import { useCategoryTemplate, useProvinces, useWards } from '@/queries/catalog';
+import { useSaveDraft } from '@/queries/posting';
+import { snapshotDraft, useDraftStore } from '@/stores/draft';
 import { C, F, R, S } from '@/theme';
-import { formatMillionRange, formatPlace, groupThousands, parseDigits } from '@/utils/format';
+import { groupThousands, parseDigits } from '@/utils/format';
 
-/** Bước 2 — giá, thông số, mô tả, khu vực, nơi hiển thị. */
+/** Phường/xã là tuỳ chọn — server chỉ cần tỉnh để người mua lọc được tin. */
+const NO_WARD = 'none';
+
+/**
+ * Bước 2 — giá, thông số theo mẫu danh mục, mô tả, khu vực, nơi hiển thị. Thiết kế có gợi ý khoảng giá và
+ * chọn nhóm để đăng kèm: server chưa có gợi ý giá, còn nhóm vẫn là dữ liệu mẫu, nên tin lên toàn sàn.
+ */
 export default function PostDetails() {
   const router = useRouter();
   const toast = useToast();
   const close = useClosePost();
-  const [picking, setPicking] = useState(false);
+  const [sheet, setSheet] = useState<'province' | 'ward' | null>(null);
 
   const d = useDraftStore();
-  const me = useMe();
-  const groups = useMyGroups();
-  const categories = usePostCategories();
-  const districts = useDistricts();
-  const hint = usePriceHint(toPostCategoryId(d.categoryId));
+  const template = useCategoryTemplate(d.categoryId);
+  const provinces = useProvinces();
+  const wards = useWards(d.provinceCode);
+  const save = useSaveDraft();
 
-  const specKeys = categories.data?.find((c) => c.id === d.categoryId)?.specKeys ?? [];
-  const place = d.place ?? me.data?.place;
+  const fields = template.data ?? [];
+  const province = provinces.data?.find((p) => p.code === d.provinceCode);
+  const ward = wards.data?.find((w) => w.code === d.wardCode);
+  const ready =
+    d.price > 0 &&
+    province !== undefined &&
+    template.isSuccess &&
+    !missingRequired(fields, d.attributes);
+
+  const saveDraft = () =>
+    save.mutate(snapshotDraft(), {
+      onSuccess: () => {
+        useDraftStore.getState().reset();
+        close();
+        toast('Đã lưu nháp — làm tiếp ở Cá nhân › Đang đăng');
+      },
+      onError: (e) => toast(e.message),
+    });
 
   return (
     <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
       <StepHeader
         step={2}
+        title={d.editingLive ? 'Sửa tin' : 'Đăng tin mới'}
         caption="Giá, mô tả & nơi hiển thị"
-        onSaveDraft={() => {
-          close();
-          toast('Đã lưu nháp — mở lại Đăng tin để làm tiếp');
-        }}
+        onSaveDraft={d.editingLive ? undefined : saveDraft}
       />
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <View style={styles.section}>
@@ -60,34 +77,19 @@ export default function PostDetails() {
             />
             <Text style={styles.unit}>đ</Text>
           </View>
-          {hint.data && (
-            <Text style={styles.small}>
-              Tin tương tự gần bạn đang được rao quanh{' '}
-              <Text style={styles.strong}>{formatMillionRange(hint.data.min, hint.data.max)}</Text>.
-            </Text>
-          )}
           <Check
             label="Cho phép người mua trả giá"
-            checked={d.allowOffers}
-            onPress={() => d.patch({ allowOffers: !d.allowOffers })}
+            checked={d.negotiable}
+            onPress={() => d.patch({ negotiable: !d.negotiable })}
           />
         </View>
 
-        {specKeys.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.h2}>Thông số</Text>
-            <View style={styles.specs}>
-              {specKeys.map((key) => (
-                <View key={key} style={styles.spec}>
-                  <Field
-                    label={key}
-                    value={d.specs[key] ?? ''}
-                    onChangeText={(v) => d.patch({ specs: { ...d.specs, [key]: v } })}
-                  />
-                </View>
-              ))}
-            </View>
-          </View>
+        {fields.length > 0 && (
+          <TemplateFields
+            fields={fields}
+            values={d.attributes}
+            onChange={(name, value) => d.patch({ attributes: { ...d.attributes, [name]: value } })}
+          />
         )}
 
         <Field
@@ -102,18 +104,32 @@ export default function PostDetails() {
           <Text style={styles.h2}>Khu vực</Text>
           <Pressable
             accessibilityRole="button"
-            onPress={() => setPicking(true)}
+            onPress={() => setSheet('province')}
             style={styles.select}
           >
             <Feather name="map-pin" size={18} color={C.brand} />
-            <Text style={styles.selectText}>{place ? formatPlace(place) : 'Chọn khu vực'}</Text>
+            <Text style={[styles.selectText, !province && styles.placeholder]}>
+              {province?.name ?? 'Chọn tỉnh / thành phố'}
+            </Text>
+            <Feather name="chevron-down" size={18} color={C.ink} />
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            disabled={!province}
+            onPress={() => setSheet('ward')}
+            style={[styles.select, !province && styles.disabled]}
+          >
+            <Feather name="navigation" size={18} color={C.brand} />
+            <Text style={[styles.selectText, !ward && styles.placeholder]}>
+              {ward?.name ?? 'Phường / xã (không bắt buộc)'}
+            </Text>
             <Feather name="chevron-down" size={18} color={C.ink} />
           </Pressable>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.h2}>Hiển thị tin ở đâu?</Text>
-          <View style={[styles.where, styles.whereFixed]}>
+          <View style={styles.where}>
             <Feather name="globe" size={20} color={C.brand} />
             <View style={styles.flex}>
               <Text style={styles.whereTitle}>Toàn sàn</Text>
@@ -121,29 +137,6 @@ export default function PostDetails() {
             </View>
             <Feather name="check-circle" size={22} color={C.brand} accessibilityLabel="Luôn bật" />
           </View>
-          {groups.data?.map((g) => {
-            const on = d.groupIds.includes(g.id);
-            return (
-              <Pressable
-                key={g.id}
-                accessibilityRole="checkbox"
-                accessibilityState={{ checked: on }}
-                onPress={() => d.toggleGroup(g.id)}
-                style={[styles.where, on && styles.whereOn]}
-              >
-                <Avatar name={g.initials} size={36} tone="brand" />
-                <View style={styles.flex}>
-                  <Text style={styles.whereTitle}>{g.name}</Text>
-                  <Text style={styles.small}>
-                    {g.visibility === 'public'
-                      ? 'Nhóm công khai · tin hiện cả khi tìm kiếm'
-                      : 'Nhóm kín · chỉ thành viên nhìn thấy'}
-                  </Text>
-                </View>
-                <Check checked={on} />
-              </Pressable>
-            );
-          })}
         </View>
       </ScrollView>
 
@@ -152,18 +145,30 @@ export default function PostDetails() {
           label="Tiếp theo: Xem trước"
           icon="chevron-right"
           iconRight
-          disabled={d.price <= 0}
+          disabled={!ready}
           onPress={() => router.push('/post/preview')}
         />
       </View>
 
       <PickerSheet
-        visible={picking}
-        title="Khu vực"
-        options={(districts.data ?? []).map((x) => ({ value: x, label: `${x}, ${DEFAULT_CITY}` }))}
-        value={place?.ward ?? null}
-        onSelect={(ward) => d.patch({ place: { ward, province: DEFAULT_CITY } })}
-        onClose={() => setPicking(false)}
+        visible={sheet === 'province'}
+        title="Tỉnh / thành phố"
+        options={(provinces.data ?? []).map((p) => ({ value: String(p.code), label: p.name }))}
+        value={d.provinceCode === null ? null : String(d.provinceCode)}
+        // Phường thuộc về tỉnh: đổi tỉnh thì phường cũ không còn đúng.
+        onSelect={(code) => d.patch({ provinceCode: Number(code), wardCode: null })}
+        onClose={() => setSheet(null)}
+      />
+      <PickerSheet
+        visible={sheet === 'ward'}
+        title={`Phường / xã · ${province?.name ?? ''}`}
+        options={[
+          { value: NO_WARD, label: 'Không chọn phường / xã' },
+          ...(wards.data ?? []).map((w) => ({ value: String(w.code), label: w.name })),
+        ]}
+        value={d.wardCode === null ? NO_WARD : String(d.wardCode)}
+        onSelect={(code) => d.patch({ wardCode: code === NO_WARD ? null : Number(code) })}
+        onClose={() => setSheet(null)}
       />
     </SafeAreaView>
   );
@@ -176,7 +181,6 @@ const styles = StyleSheet.create({
   section: { gap: S.sm },
   h2: { fontFamily: F.uiBold, fontSize: 15, color: C.ink },
   small: { fontFamily: F.ui, fontSize: 12, lineHeight: 17, color: C.inkSoft },
-  strong: { fontFamily: F.uiBold, color: C.ink },
   price: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -188,8 +192,6 @@ const styles = StyleSheet.create({
   },
   priceInput: { flex: 1, fontFamily: F.uiBlack, fontSize: 17, color: C.price, paddingVertical: 0 },
   unit: { fontFamily: F.uiBold, fontSize: 15, color: C.inkSoft },
-  specs: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  spec: { flexGrow: 1, flexBasis: '40%' },
   select: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -201,6 +203,8 @@ const styles = StyleSheet.create({
     borderColor: C.lineStrong,
   },
   selectText: { flex: 1, fontFamily: F.ui, fontSize: 15, color: C.ink },
+  placeholder: { color: C.muted },
+  disabled: { opacity: 0.5 },
   where: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -208,11 +212,8 @@ const styles = StyleSheet.create({
     paddingVertical: S.md,
     paddingHorizontal: 14,
     borderRadius: R.md,
-    borderWidth: 1,
-    borderColor: C.lineStrong,
+    backgroundColor: C.sand,
   },
-  whereFixed: { borderWidth: 0, backgroundColor: C.sand },
-  whereOn: { borderWidth: 1.5, borderColor: C.brand, backgroundColor: C.brandWash },
   whereTitle: { fontFamily: F.uiSemi, fontSize: 14, color: C.ink },
   footer: {
     paddingTop: S.md,

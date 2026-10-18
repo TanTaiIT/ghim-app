@@ -14,6 +14,16 @@ export function setHttpAccessToken(next: string | null): void {
   accessToken = next;
 }
 
+let deviceId: string | null = null;
+
+export function setHttpDeviceId(next: string | null): void {
+  deviceId = next;
+}
+
+/** Header mà các route đăng tin đòi (lưu nội dung, gửi duyệt); request khác không cần nên không gửi kèm. */
+export const deviceHeaders = (): { 'x-device-id': string } | undefined =>
+  deviceId ? { 'x-device-id': deviceId } : undefined;
+
 /** Làm mới phiên, trả access token mới. Ném lỗi khi không làm mới được; null = không có phiên nào. */
 type SessionRefresher = () => Promise<string | null>;
 

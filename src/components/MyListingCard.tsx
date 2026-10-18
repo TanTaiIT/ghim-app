@@ -51,10 +51,11 @@ export function MyListingCard({
       <Pressable accessibilityRole="link" onPress={onPress} style={styles.top}>
         <Photo picture={item.cover} style={styles.thumb} />
         <View style={styles.body}>
-          <Text style={styles.title} numberOfLines={2}>
-            {item.title}
+          {/* Nháp được tạo ngay khi chọn ảnh đầu tiên, nên có thể chưa có tiêu đề hay giá. */}
+          <Text style={[styles.title, !item.title && styles.untitled]} numberOfLines={2}>
+            {item.title || 'Nháp chưa có tiêu đề'}
           </Text>
-          <Price value={item.price} />
+          {item.price > 0 && <Price value={item.price} />}
           {item.views !== null && item.saves !== null && (
             <View style={styles.stats}>
               <Feather name="eye" size={14} color={C.inkSoft} />
@@ -64,6 +65,7 @@ export function MyListingCard({
             </View>
           )}
           <Tag label={s.label} tone={s.tone} />
+          {item.note && <Text style={styles.note}>{item.note}</Text>}
         </View>
       </Pressable>
       {item.state === 'live' && (
@@ -101,8 +103,10 @@ const styles = StyleSheet.create({
   thumb: { width: 76, height: 76, borderRadius: R.sm },
   body: { flex: 1, minWidth: 0, gap: 3 },
   title: { fontFamily: F.uiSemi, fontSize: 14, color: C.ink },
+  untitled: { color: C.muted },
   stats: { flexDirection: 'row', alignItems: 'center', gap: S.xs },
   stat: { marginRight: S.sm, fontFamily: F.ui, fontSize: 12, color: C.inkSoft },
+  note: { fontFamily: F.ui, fontSize: 12, lineHeight: 17, color: C.inkSoft },
   actions: { flexDirection: 'row', gap: S.sm },
   btn: {
     flex: 1,

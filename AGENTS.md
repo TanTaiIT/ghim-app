@@ -91,7 +91,7 @@ Không có dòng nào khớp và hub không đủ → hỏi user trước khi đ
 | Chủ đề         | VueSer (`docs/VueSer`)                          | Repo này                                                                     |
 | -------------- | ----------------------------------------------- | ---------------------------------------------------------------------------- |
 | Backend        | `docs/market` (Express + Mongo), id là ObjectId | `../ghim-server` (Fastify + Prisma), id là uuid v7, vỏ response `success`    |
-| Upload ảnh     | Cloudinary unsigned preset                      | Chữ ký do backend cấp theo người (TK 25) — chưa có, chờ `add-media`          |
+| Upload ảnh     | Cloudinary unsigned preset                      | Quyền tải một ảnh do backend cấp (TK 25), nén + gỡ EXIF ở `api.uploadPhoto`  |
 | Realtime       | socket.io                                       | Chưa chọn (ghim-server CLAUDE.md "(chưa có)")                                |
 | Token          | `AsyncStorage` → di cư sang SecureStore         | SecureStore ngay từ đầu, không có bước di cư; web chỉ giữ phiên trong bộ nhớ |
 | Lint/format    | oxlint mượn từ repo cha, không formatter        | oxlint + Prettier cục bộ; `format:check` nằm trong `check` và CI             |

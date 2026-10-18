@@ -36,12 +36,27 @@ const secureStorage: StateStorage =
  */
 type Session = { accessToken: string; refreshToken: string };
 
+/**
+ * Mã của lần cài app, cho luật "một máy tối đa N tài khoản" của server (header `x-device-id` khi lưu và gửi
+ * tin; server chỉ giữ HMAC của nó). Không phải bí mật nên `Math.random` là đủ — Hermes không có
+ * `crypto.randomUUID` khi chưa cài thêm gói. Nằm chung kho với phiên vì chung lượt hydrate: request đăng tin
+ * đầu tiên không bao giờ chạy trước khi mã đọc xong. Web không ghi xuống đâu nên mỗi lần tải trang là một máy.
+ */
+const newDeviceId = () =>
+  Array.from({ length: 4 }, () =>
+    Math.floor(Math.random() * 2 ** 32)
+      .toString(16)
+      .padStart(8, '0'),
+  ).join('');
+
 type AuthState = {
   session: Session | null;
+  deviceId: string;
   /** false cho tới khi đọc xong kho bảo mật — giữ splash để guard không nháy qua màn login. */
   hydrated: boolean;
   /** Cả lúc đăng nhập lẫn lúc refresh: server xoay refresh token mỗi lượt, bản cũ phải bị ghi đè. */
   signIn: (session: Session) => void;
+  /** Giữ `deviceId`: đăng xuất không làm máy thành máy khác. */
   signOut: () => void;
 };
 
@@ -49,6 +64,7 @@ export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       session: null,
+      deviceId: newDeviceId(),
       hydrated: false,
       signIn: (session) => set({ session }),
       signOut: () => set({ session: null }),
@@ -57,13 +73,14 @@ export const useAuthStore = create<AuthState>()(
       name: 'ghim-auth',
       storage: createJSONStorage(() => secureStorage),
       // `hydrated` là cờ runtime; ghi xuống đĩa thì lần mở sau đọc lại đúng giá trị cũ (false) và app treo.
-      partialize: (s) => ({ session: s.session }),
+      partialize: (s) => ({ session: s.session, deviceId: s.deviceId }),
       // Bản 0 là phiên của dữ liệu mẫu, cầm token giả: giữ lại thì máy đã chạy bản mẫu trông như đang đăng
       // nhập trong khi backend không nhận phiên nào như thế.
       version: 1,
-      migrate: () => ({ session: null }),
+      migrate: () => ({ session: null, deviceId: newDeviceId() }),
       // Chạy cả khi đọc đĩa lỗi — luôn mở khoá splash. Bản ghi thiếu field thì vứt: `useIsAuthenticated`
-      // chỉ hỏi `session !== null`, một object rỗng cũng đủ để guard thả vào màn cần đăng nhập.
+      // chỉ hỏi `session !== null`, một object rỗng cũng đủ để guard thả vào màn cần đăng nhập. Bản ghi cũ
+      // chưa có `deviceId` giữ mã vừa sinh, và `setState` dưới đây ghi luôn nó xuống đĩa.
       onRehydrateStorage: () => (state) => {
         const s = state?.session;
         const usable = Boolean(s?.accessToken && s.refreshToken);

@@ -1,23 +1,27 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
-import type { Picture } from '@/api/client';
 import { Photo } from './Photo';
 import { C, F, R, S } from '@/theme';
 
+export type GridPhoto = { key: string; uri: string; uploaded: boolean; failed: boolean };
+
 /**
  * Lưới ảnh 3 × 2 của bước 1 đăng tin: ô "Thêm ảnh" đứng đầu, ảnh đầu tiên gắn nhãn "Ảnh bìa", ô trống
- * lấp cho đủ lưới để người đăng thấy còn bao nhiêu chỗ.
+ * lấp cho đủ lưới để người đăng thấy còn bao nhiêu chỗ. Mỗi ô tự báo trạng thái tải của nó — ảnh hỏng thì
+ * chạm vào ô để tải lại; đây là bề mặt lỗi duy nhất của ảnh (query.convention §9).
  */
 export function PhotoGrid({
   photos,
   max,
   onAdd,
   onRemove,
+  onRetry,
 }: {
-  photos: Picture[];
+  photos: GridPhoto[];
   max: number;
   onAdd: () => void;
-  onRemove: (index: number) => void;
+  onRemove: (key: string) => void;
+  onRetry: (key: string) => void;
 }) {
   const canAdd = photos.length < max;
   const blanks = Math.max(0, max - photos.length - (canAdd ? 1 : 0));
@@ -38,10 +42,24 @@ export function PhotoGrid({
           </Pressable>
         )}
         {photos.map((p, i) => (
-          // Ảnh nháp chưa có id (chưa upload); vị trí trong lưới chính là danh tính của ảnh.
-          // oxlint-disable-next-line react/no-array-index-key
-          <View key={i} style={styles.cell}>
-            <Photo picture={p} style={styles.fill} />
+          <View key={p.key} style={styles.cell}>
+            <Photo picture={{ uri: p.uri }} style={styles.fill} />
+            {!p.uploaded && !p.failed && (
+              <View style={styles.veil} accessibilityLabel="Đang tải ảnh">
+                <ActivityIndicator color={C.paperWarm} />
+              </View>
+            )}
+            {p.failed && (
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Tải lại ảnh"
+                onPress={() => onRetry(p.key)}
+                style={styles.veil}
+              >
+                <Feather name="refresh-cw" size={20} color={C.paperWarm} />
+                <Text style={styles.veilText}>Lỗi · Thử lại</Text>
+              </Pressable>
+            )}
             {i === 0 && (
               <View style={styles.cover}>
                 <Text style={styles.coverText}>Ảnh bìa</Text>
@@ -51,7 +69,7 @@ export function PhotoGrid({
               accessibilityRole="button"
               accessibilityLabel="Xoá ảnh"
               hitSlop={8}
-              onPress={() => onRemove(i)}
+              onPress={() => onRemove(p.key)}
               style={styles.remove}
             >
               <Feather name="x" size={12} color={C.paperWarm} />
@@ -89,6 +107,18 @@ const styles = StyleSheet.create({
   },
   addText: { fontFamily: F.uiBold, fontSize: 12, color: C.brand },
   blank: { backgroundColor: C.sand },
+  veil: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    backgroundColor: C.scrim,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: S.xs,
+  },
+  veilText: { fontFamily: F.uiBold, fontSize: 11, color: C.paperWarm },
   cover: {
     position: 'absolute',
     left: 6,

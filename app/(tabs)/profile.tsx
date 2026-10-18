@@ -14,6 +14,7 @@ import { useMe } from '@/queries/account';
 import { useSignOut } from '@/queries/auth';
 import { useMyGroups } from '@/queries/groups';
 import { useSavedListings } from '@/queries/listings';
+import { useOpenForEdit } from '@/queries/posting';
 import { useMarkSold, useMyListings } from '@/queries/selling';
 import { useIsAuthenticated } from '@/stores/auth';
 import { C, F, R, S } from '@/theme';
@@ -33,6 +34,12 @@ export default function Profile() {
   const sold = useMyListings('sold');
   const saved = useSavedListings();
   const markSold = useMarkSold();
+  const openForEdit = useOpenForEdit();
+  /** Nháp thì làm tiếp, tin đang hiển thị thì sửa — cùng một luồng, form nạp sẵn từ server. */
+  const openEditor = (id: string) =>
+    void openForEdit(id)
+      .then(() => router.push({ pathname: '/post', params: { edit: '1' } }))
+      .catch((e: Error) => toast(e.message));
 
   if (!authed) {
     return (
@@ -132,8 +139,10 @@ export default function Profile() {
               <MyListingCard
                 key={l.id}
                 item={l}
-                onPress={() => router.push(`/listing/${l.id}`)}
-                onEdit={() => toast('Sửa tin sẽ có khi nối luồng đăng tin')}
+                onPress={() =>
+                  l.state === 'draft' ? openEditor(l.id) : router.push(`/listing/${l.id}`)
+                }
+                onEdit={() => openEditor(l.id)}
                 onBoost={() => toast('Đẩy tin sẽ có khi chốt giá gói')}
                 onSold={() =>
                   markSold.mutate(l.id, {

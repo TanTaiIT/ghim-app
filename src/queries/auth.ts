@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useMutation, type QueryClient } from '@tanstack/react-query';
 import { api } from '@/api/client';
-import { ApiError, setHttpAccessToken, setSessionRefresher } from '@/api/http';
+import { ApiError, setHttpAccessToken, setHttpDeviceId, setSessionRefresher } from '@/api/http';
 import { useAuthStore } from '@/stores/auth';
 
 /**
@@ -36,10 +36,13 @@ async function refreshSession(): Promise<string | null> {
  */
 export function useAuthBridge(qc: QueryClient): void {
   useEffect(() => {
-    setHttpAccessToken(useAuthStore.getState().session?.accessToken ?? null);
+    const now = useAuthStore.getState();
+    setHttpAccessToken(now.session?.accessToken ?? null);
+    setHttpDeviceId(now.deviceId);
     setSessionRefresher(refreshSession);
     const unsubscribe = useAuthStore.subscribe((s, prev) => {
       setHttpAccessToken(s.session?.accessToken ?? null);
+      setHttpDeviceId(s.deviceId);
       if (prev.session && !s.session) qc.clear();
     });
     return () => {

@@ -1,36 +1,51 @@
 import { beforeEach, describe, expect, it } from '@jest/globals';
-import { MAX_PHOTOS, snapshotDraft, useDraftStore } from './draft';
+import {
+  hasPendingUploads,
+  MAX_PHOTOS,
+  snapshotDraft,
+  uploadedImageIds,
+  useDraftStore,
+} from './draft';
 
-const photo = { svg: '<svg/>' };
+const picked = { uri: 'file:///a.jpg', width: 4032, height: 3024 };
 
 describe('useDraftStore', () => {
   beforeEach(() => useDraftStore.getState().reset());
 
-  it('không nhận quá số ảnh tối đa', () => {
-    for (let i = 0; i < MAX_PHOTOS + 2; i++) useDraftStore.getState().addPhoto(photo);
-    expect(useDraftStore.getState().photos).toHaveLength(MAX_PHOTOS);
+  it('không nhận quá số ảnh tối đa, trả key của đúng những ảnh nhận được', () => {
+    const keys = useDraftStore
+      .getState()
+      .addPhotos(Array.from({ length: MAX_PHOTOS + 2 }, () => picked));
+    expect(keys).toHaveLength(MAX_PHOTOS);
+    expect(new Set(keys).size).toBe(MAX_PHOTOS);
+    expect(useDraftStore.getState().addPhotos([picked])).toEqual([]);
   });
 
-  it('bật tắt nhóm hiển thị', () => {
-    const { toggleGroup } = useDraftStore.getState();
-    toggleGroup('g-na');
-    toggleGroup('g-hv');
-    toggleGroup('g-na');
-    expect(useDraftStore.getState().groupIds).toEqual(['g-hv']);
+  it('ảnh đang tải khoá nút gửi; tải xong vào danh sách id theo thứ tự lưới, ảnh hỏng thì không', () => {
+    const [a, b, c] = useDraftStore.getState().addPhotos([picked, picked, picked]);
+    const { setPhoto } = useDraftStore.getState();
+    expect(hasPendingUploads(snapshotDraft())).toBe(true);
+    setPhoto(c ?? '', { imageId: 'img-c' });
+    setPhoto(a ?? '', { imageId: 'img-a' });
+    setPhoto(b ?? '', { failed: true });
+    expect(hasPendingUploads(snapshotDraft())).toBe(false);
+    expect(uploadedImageIds(snapshotDraft())).toEqual(['img-a', 'img-c']);
   });
 
-  it('snapshot chỉ có dữ liệu, không kèm action', () => {
-    useDraftStore.getState().patch({ title: 'MacBook', price: 13_900_000 });
+  it('xoá ảnh theo key, không theo vị trí', () => {
+    const [a, b] = useDraftStore
+      .getState()
+      .addPhotos([picked, { ...picked, uri: 'file:///b.jpg' }]);
+    useDraftStore.getState().removePhoto(a ?? '');
+    expect(useDraftStore.getState().photos.map((p) => p.key)).toEqual([b]);
+  });
+
+  it('snapshot chỉ có dữ liệu; reset trả form về rỗng', () => {
+    useDraftStore.getState().patch({ title: 'MacBook', price: 13_900_000, listingId: 'l-1' });
     const draft = snapshotDraft();
-    expect(draft.title).toBe('MacBook');
-    expect(draft.price).toBe(13_900_000);
+    expect(draft).toMatchObject({ title: 'MacBook', price: 13_900_000, listingId: 'l-1' });
     expect('patch' in draft).toBe(false);
-  });
-
-  it('reset trả nháp về rỗng', () => {
-    useDraftStore.getState().patch({ title: 'x', boostId: 'top3' });
     useDraftStore.getState().reset();
-    expect(snapshotDraft().title).toBe('');
-    expect(snapshotDraft().boostId).toBeNull();
+    expect(snapshotDraft()).toMatchObject({ title: '', listingId: null, photos: [] });
   });
 });

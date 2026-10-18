@@ -139,13 +139,15 @@ Query module ≤200 dòng. Vượt thì tách theo **domain**, không theo read/
 
 ## 9. Upload ảnh & secret (HARD#19)
 
-Luồng của backend mới (TK 25): **app tải thẳng lên kho ảnh bằng chữ ký do backend cấp theo người**; backend chỉ lưu
-URL; ảnh mang nhãn "chưa xác nhận" tới khi tin lưu thành công. Capability này chưa có (`add-media`, đợt 2) — chưa
-viết code upload nào trước đó, và không dựng tạm bằng unsigned preset.
+Luồng của backend mới (TK 25, `ghim-server/docs/media.md`): **app tải thẳng lên kho ảnh bằng quyền tải do backend
+cấp cho đúng một ảnh**; ảnh mang nhãn "chưa xác nhận" tới khi nháp được lưu kèm `imageId`. Code ở `api.uploadPhoto`
+(`src/api/client.ts`): nén bằng `expo-image-manipulator` (luôn ra JPEG — iPhone trả HEIC mà server từ chối — và gỡ
+EXIF/GPS), xin quyền qua SDK, rồi tải theo `upload.method`. Không dựng tạm bằng unsigned preset.
 
 **Cấm tuyệt đối mọi secret trong repo này**, kể cả qua `EXPO_PUBLIC_*`: biến đó vào bundle, mà bundle React Native
 giải nén được. Khoá ký ảnh, khoá push, khoá dịch vụ ngoài đều nằm ở backend; app chỉ cầm token của phiên.
 
-Quy tắc phụ khi `add-media` tới: nén trên máy trước khi gửi; component chọn ảnh chỉ trả `uri`, mutation do route
-gọi (HARD#2); mỗi ảnh upload độc lập, lỗi hiện trên thumbnail (ngoại lệ hợp lệ của §5: vẫn một bề mặt, chỉ là
-inline); nút gửi khoá khi còn ảnh đang tải.
+Quy tắc phụ: nén trên máy trước khi gửi, nén hỏng thì báo lỗi chứ không tải ảnh gốc; component chọn ảnh chỉ trả
+`uri`, mutation do route gọi (HARD#2); mỗi ảnh upload độc lập, lỗi hiện trên thumbnail (ngoại lệ hợp lệ của §5: vẫn
+một bề mặt, chỉ là inline); nút gửi khoá khi còn ảnh đang tải. Route lưu / gửi tin đòi header `x-device-id`
+(`deviceHeaders()` ở `http.ts`, mã máy sinh một lần trong `stores/auth.ts`).

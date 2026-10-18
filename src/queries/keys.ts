@@ -1,4 +1,4 @@
-import type { PostCategoryId, SearchFilters } from '@/api/client';
+import type { SearchFilters } from '@/api/client';
 
 /**
  * Key factory — nơi DUY NHẤT đặt query key (HARD#3). Call-site không viết array literal.
@@ -13,18 +13,14 @@ export const qk = {
   categories: () => ['categories'] as const,
   provinces: () => ['regions', 'provinces'] as const,
   wards: (provinceCode: number) => ['regions', 'wards', provinceCode] as const,
-  postCategories: () => ['post-categories'] as const,
-  categorySuggestion: (title: string) => ['post-categories', 'suggest', title] as const,
-  districts: () => ['districts'] as const,
-  priceHint: (categoryId: PostCategoryId) => ['price-hint', categoryId] as const,
-  boostPlans: () => ['boost-plans'] as const,
-  samplePhotos: () => ['sample-photos'] as const,
+  template: (categoryId: string) => ['categories', 'template', categoryId] as const,
   listings: {
     all: () => ['listings'] as const,
     search: (f: SearchFilters) => ['listings', 'search', f] as const,
     detail: (id: string) => ['listings', 'detail', id] as const,
     similar: (id: string) => ['listings', 'similar', id] as const,
     mine: () => ['listings', 'mine'] as const,
+    editable: (id: string) => ['listings', 'editable', id] as const,
     saved: () => ['listings', 'saved'] as const,
   },
   savedIds: () => ['saved-ids'] as const,

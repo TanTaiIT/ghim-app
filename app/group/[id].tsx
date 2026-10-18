@@ -14,7 +14,6 @@ import { EmptyState, IconButton, Loading, Tag, useBack } from '@/components/ui';
 import { useMe } from '@/queries/account';
 import { useGroup, useGroupListings, useGroupMembers, useSetGroupJoined } from '@/queries/groups';
 import { useOpenConversation } from '@/queries/messages';
-import { useDraftStore } from '@/stores/draft';
 import { C, F, R, S } from '@/theme';
 
 type Tab = 'posts' | 'about' | 'members';
@@ -60,13 +59,8 @@ export default function GroupPage() {
   }
 
   const g = group.data;
-  const postToGroup = () =>
-    guarded(() => {
-      // Mở luồng đăng tin với nhóm này đã tích sẵn ở bước 2.
-      const { groupIds, toggleGroup } = useDraftStore.getState();
-      if (!groupIds.includes(g.id)) toggleGroup(g.id);
-      router.push('/post');
-    });
+  // Nhóm vẫn là dữ liệu mẫu nên tin chưa gắn được vào nhóm: mở luồng đăng tin thường (lên toàn sàn).
+  const postToGroup = () => guarded(() => router.push('/post'));
 
   return (
     <ScrollView style={styles.screen}>

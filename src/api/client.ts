@@ -1,5 +1,9 @@
+import { Platform } from 'react-native';
+import { File } from 'expo-file-system';
+import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import {
   getApiV1Categories,
+  getApiV1CategoriesByIdTemplate,
   getApiV1CategoriesByIdTemplateVersionsByVersion,
   getApiV1Listings,
   getApiV1ListingsById,
@@ -10,17 +14,22 @@ import {
   getApiV1RegionsProvincesByCodeWards,
   getApiV1UsersById,
   getHealthReady,
+  patchApiV1ListingsById,
   postApiV1AuthLogin,
   postApiV1AuthLogout,
   postApiV1AuthRefresh,
+  postApiV1Listings,
   postApiV1ListingsByIdSold,
+  postApiV1ListingsByIdSubmit,
+  postApiV1MediaUploads,
 } from './generated/sdk.gen';
 import type {
+  GetApiV1ListingsByIdResponses,
   GetApiV1ListingsResponses,
   GetApiV1MeResponses,
   GetApiV1UsersByIdResponses,
 } from './generated/types.gen';
-import { ApiError } from './http';
+import { ApiError, deviceHeaders } from './http';
 
 /*
  * Lớp gọi dữ liệu DUY NHẤT của app (HARD#20): mọi hàm ở đây gọi SDK trong `./generated` và đi qua
@@ -111,36 +120,6 @@ export const CONDITION_LABEL: Record<Condition, string> = {
 /** Danh mục của server: uuid do master tạo lúc chạy — không có bộ khoá cố định nào để app dựa vào. */
 export type Category = { id: string; name: string };
 
-/*
- * Danh mục của luồng đăng tin vẫn là dữ liệu mẫu tới khi nối đăng tin thật: slug cố định, mỗi danh mục một
- * bộ ô thông số. Server thay bộ ô đó bằng mẫu thông số theo phiên bản (`/categories/{id}/template`).
- */
-const POST_CATEGORY_IDS = [
-  'phone',
-  'laptop',
-  'fashion',
-  'furniture',
-  'vehicle',
-  'property',
-  'jobs',
-  'camera',
-  'electronics',
-] as const;
-
-export type PostCategoryId = (typeof POST_CATEGORY_IDS)[number];
-
-/** Chuỗi trong nháp → `PostCategoryId`. Chuỗi lạ thành null, không ép kiểu. */
-export function toPostCategoryId(value: string | null | undefined): PostCategoryId | null {
-  return POST_CATEGORY_IDS.find((id) => id === value) ?? null;
-}
-
-export type PostCategory = {
-  id: PostCategoryId;
-  name: string;
-  /** Ô thông số người đăng điền ở bước 2 — mỗi danh mục hỏi một bộ khác. */
-  specKeys: string[];
-};
-
 /** Hai cấp như dữ liệu hành chính từ 01/07/2025 mà server dùng: phường/xã thuộc tỉnh/thành. */
 export type Place = { ward: string | null; province: string };
 
@@ -192,8 +171,6 @@ export type ListingDetail = Omit<ListingCard, 'seller'> & {
   allowOffers: boolean;
 };
 
-export type CategorySuggestion = { category: PostCategory; brand: string | null };
-
 /** Đúng bộ lọc mà `GET /listings` nhận — server chưa có sắp xếp hay lọc theo tình trạng. */
 export type SearchFilters = {
   q: string;
@@ -221,31 +198,47 @@ export type MyListing = ListingCard & {
   saves: number | null;
   /** null với nháp và tin chưa từng lên sàn. */
   expiresAt: string | null;
+  /** Lời của máy duyệt / người duyệt gửi người đăng: vì sao còn chờ, vì sao bị từ chối. */
+  note: string | null;
 };
 
-export type PriceHint = { min: number; max: number };
-
-export type BoostPlan = {
-  id: string;
+/** Một ô của mẫu thông số danh mục (`/categories/{id}/template`) — danh mục chưa có mẫu thì không có ô nào. */
+export type TemplateField = {
   name: string;
-  note: string;
-  /** null khi giá gói chưa chốt — thiết kế gốc để trống chỗ này. */
-  price: number | null;
+  label: string;
+  type: 'text' | 'number' | 'single_choice' | 'multi_choice';
+  required: boolean;
+  options: string[];
 };
 
-export type NewListing = {
+/** Giá trị người đăng điền cho một ô mẫu; ô chọn nhiều là mảng. */
+export type AttributeValue = string | string[];
+
+/** Nội dung một lượt lưu tin. Rỗng ở đây là "chưa điền" — `saveListing` gửi null chứ không gửi chuỗi rỗng. */
+export type ListingContent = {
   title: string;
-  categoryId: PostCategoryId;
-  condition: Condition;
-  price: number;
-  allowOffers: boolean;
-  specs: { label: string; value: string }[];
   description: string;
-  place: Place;
-  groupIds: string[];
-  photos: Picture[];
-  boostId: string | null;
+  price: number;
+  negotiable: boolean;
+  categoryId: string | null;
+  attributes: Record<string, AttributeValue>;
+  provinceCode: number | null;
+  wardCode: number | null;
+  imageIds: string[];
 };
+
+/** Bản tin đang mở trên server; `version` chống ghi đè khi hai máy cùng sửa một tin. */
+export type DraftRef = { id: string; version: number };
+
+/** Tin của chính mình dựng lại vào form: làm tiếp nháp, hay sửa tin đang hiển thị. */
+export type EditableListing = DraftRef &
+  Omit<ListingContent, 'imageIds'> & {
+    state: MyListingState;
+    photos: { imageId: string; uri: string }[];
+  };
+
+/** Ảnh vừa chọn từ máy — cỡ gốc để quyết định có thu nhỏ hay không. */
+export type PickedPhoto = { uri: string; width: number; height: number };
 
 export type GroupSummary = {
   id: string;
@@ -357,6 +350,14 @@ type WireMe = GetApiV1MeResponses[200]['data'];
 const PAGE_SIZE = 30;
 
 /**
+ * Route xem tin cho cả khách lẫn người đã đăng nhập (`authenticateOptional`) không khai `security` trong
+ * OpenAPI, nên SDK không tự gắn Bearer — người đăng nhập bị coi như khách: không mở được nháp của chính mình,
+ * không thấy tin chỉ thành viên nhóm xem được. Xin tường minh ở từng lượt gọi; khách không có token nên vẫn gọi
+ * ẩn danh.
+ */
+const VIEWER = { security: [{ scheme: 'bearer', type: 'http' }] } as const;
+
+/**
  * Trần một trang của server (`MAX_LIMIT`). "Tin của tôi" đếm số tin từ chính trang này vì server không trả
  * tổng — người bán có hơn 100 tin còn sống thì con số sẽ thiếu tới khi có tải thêm.
  */
@@ -432,6 +433,102 @@ function toSeller(u: WireUser, showPhone: boolean): Seller {
   };
 }
 
+/* -------------------------------- đăng tin -------------------------------- */
+
+type WireDetail = GetApiV1ListingsByIdResponses[200]['data'];
+
+const toRef = (w: { id: string; version: number }): DraftRef => ({ id: w.id, version: w.version });
+
+/**
+ * Chuỗi rỗng → null: server lưu nguyên những gì nhận, và "" ở tiêu đề là một tiêu đề rỗng chứ không phải
+ * "chưa điền" — lượt gửi duyệt sẽ không báo thiếu tiêu đề. Luôn `marketplace`: đăng vào nhóm cần domain nhóm
+ * thật, mà nhóm vẫn là dữ liệu mẫu.
+ */
+function toContentBody(c: ListingContent) {
+  const attributes = Object.fromEntries(
+    Object.entries(c.attributes).filter(([, v]) =>
+      Array.isArray(v) ? v.length > 0 : v.trim() !== '',
+    ),
+  );
+  return {
+    title: c.title.trim() || null,
+    description: c.description.trim() || null,
+    price: c.price > 0 ? c.price : null,
+    negotiable: c.negotiable,
+    categoryId: c.categoryId,
+    attributes,
+    provinceCode: c.provinceCode,
+    wardCode: c.wardCode,
+    imageIds: c.imageIds,
+    placement: 'marketplace' as const,
+  };
+}
+
+const toAttribute = (v: unknown): AttributeValue | null =>
+  Array.isArray(v)
+    ? v.map(String)
+    : typeof v === 'string' || typeof v === 'number'
+      ? String(v)
+      : null;
+
+/** Bản của chủ tin mới có `version`; người khác mở link chỉ nhận bản công khai, không sửa được. */
+function toEditable(w: WireDetail): EditableListing {
+  if (!('version' in w))
+    throw new ApiError('NOT_OWNER', 'Chỉ người đăng mới sửa được tin này', 403);
+  if (w.state === 'removed') throw new ApiError('NOT_EDITABLE', 'Tin đã gỡ, không sửa được', 409);
+  return {
+    id: w.id,
+    version: w.version,
+    state: w.state,
+    title: w.title ?? '',
+    description: w.description ?? '',
+    price: w.price ?? 0,
+    negotiable: w.negotiable,
+    categoryId: w.categoryId,
+    attributes: Object.fromEntries(
+      Object.entries(w.attributes).flatMap(([k, v]) => {
+        const a = toAttribute(v);
+        return a === null ? [] : [[k, a]];
+      }),
+    ),
+    provinceCode: w.provinceCode,
+    wardCode: w.wardCode,
+    photos: w.images.map((img) => ({ imageId: img.id, uri: img.url })),
+  };
+}
+
+/** Màn rộng nhất ~430pt × 3 = 1290px; 1600 đủ cho màn chi tiết và phóng nhẹ. */
+const PHOTO_MAX_EDGE = 1600;
+const PHOTO_QUALITY = 0.75;
+
+/**
+ * Luôn vẽ lại thành JPEG, kể cả ảnh đã nhỏ: iPhone trả HEIC nguyên bản mà server từ chối, và lượt vẽ lại là
+ * thứ gỡ EXIF — trong đó có toạ độ GPS chỗ chụp, thường là nhà người bán; ảnh đi thẳng vào kho nên server
+ * không gỡ hộ được. Nén hỏng thì để lỗi nổi lên, không tải ảnh gốc (`docs/media.md` bước 1).
+ */
+async function preparePhoto(p: PickedPhoto): Promise<string> {
+  const context = ImageManipulator.manipulate(p.uri);
+  if (Math.max(p.width, p.height) > PHOTO_MAX_EDGE) {
+    context.resize(p.width >= p.height ? { width: PHOTO_MAX_EDGE } : { height: PHOTO_MAX_EDGE });
+  }
+  const image = await context.renderAsync();
+  return (await image.saveAsync({ compress: PHOTO_QUALITY, format: SaveFormat.JPEG })).uri;
+}
+
+/**
+ * Web nhận URL blob/data nên đọc bằng `fetch`. Máy thật dùng `File` của expo-file-system: `fetch` của SDK 57
+ * (chuẩn WinterCG) không nhận part `{ uri, name, type }` kiểu React Native cũ; `File` tương thích Blob nhưng
+ * lib DOM của TS không biết nó, nên phải ép kiểu. Cỡ phải đúng từng byte với `byteSize` đã khai.
+ */
+async function fileOf(uri: string): Promise<{ body: Blob; size: number }> {
+  if (Platform.OS === 'web') {
+    const blob = await (await fetch(uri)).blob();
+    return { body: blob, size: blob.size };
+  }
+  const file = new File(uri);
+  return { body: file as unknown as Blob, size: file.size ?? 0 };
+}
+
 /* ---------------------------------- api ----------------------------------- */
 
 export const api = {
@@ -451,6 +548,7 @@ export const api = {
   searchListings: async (f: SearchFilters, load: LoadLookups): Promise<ListingCard[]> => {
     const page = await unwrap(
       getApiV1Listings({
+        ...VIEWER,
         query: {
           q: f.q.trim() || undefined,
           categoryId: f.categoryId ?? undefined,
@@ -465,10 +563,10 @@ export const api = {
   },
 
   getListing: async (id: string, load: LoadLookups): Promise<ListingDetail> => {
-    const w = await unwrap(getApiV1ListingsById({ path: { id } }));
+    const w = await unwrap(getApiV1ListingsById({ ...VIEWER, path: { id } }));
     const [lookups, owner, template] = await Promise.all([
       load(w.provinceCode === null ? [] : [w.provinceCode]),
-      unwrap(getApiV1UsersById({ path: { id: w.ownerId } })),
+      unwrap(getApiV1UsersById({ ...VIEWER, path: { id: w.ownerId } })),
       w.categoryId !== null && w.templateVersion !== null
         ? unwrap(
             getApiV1CategoriesByIdTemplateVersionsByVersion({
@@ -495,7 +593,7 @@ export const api = {
   },
 
   getSimilar: async (id: string, load: LoadLookups): Promise<ListingCard[]> =>
-    toCards(await unwrap(getApiV1ListingsByIdSuggestions({ path: { id } })), load),
+    toCards(await unwrap(getApiV1ListingsByIdSuggestions({ ...VIEWER, path: { id } })), load),
 
   getMe: async (): Promise<Me> => toMe(await unwrap(getApiV1Me())),
 
@@ -513,6 +611,7 @@ export const api = {
               views: null,
               saves: null,
               expiresAt: w.expiresAt,
+              note: w.machineNotice?.message ?? w.faultReason ?? null,
             },
           ],
     );
@@ -520,6 +619,69 @@ export const api = {
 
   markSold: async (id: string): Promise<void> => {
     await unwrap(postApiV1ListingsByIdSold({ path: { id } }));
+  },
+
+  getTemplate: async (categoryId: string): Promise<TemplateField[]> =>
+    (await unwrap(getApiV1CategoriesByIdTemplate({ path: { id: categoryId } }))).fields.map(
+      (f) => ({ ...f, options: f.options ?? [] }),
+    ),
+
+  createDraft: async (): Promise<DraftRef> => toRef(await unwrap(postApiV1Listings({ body: {} }))),
+
+  /** Lưu nháp, hoặc sửa tin đã gửi — server đưa nội dung đã sửa qua máy duyệt lại. */
+  saveListing: async (ref: DraftRef, c: ListingContent): Promise<DraftRef> =>
+    toRef(
+      await unwrap(
+        patchApiV1ListingsById({
+          path: { id: ref.id },
+          headers: deviceHeaders(),
+          body: { version: ref.version, ...toContentBody(c) },
+        }),
+      ),
+    ),
+
+  submitListing: async (ref: DraftRef): Promise<void> => {
+    await unwrap(
+      postApiV1ListingsByIdSubmit({
+        path: { id: ref.id },
+        headers: deviceHeaders(),
+        body: { version: ref.version },
+      }),
+    );
+  },
+
+  getEditable: async (id: string): Promise<EditableListing> =>
+    toEditable(await unwrap(getApiV1ListingsById({ ...VIEWER, path: { id } }))),
+
+  /**
+   * Nén → xin quyền tải cho đúng một ảnh → tải thẳng lên kho (`ghim-server/docs/media.md`). Ảnh chỉ thành
+   * ảnh của tin khi nháp được lưu kèm `imageId`; không lưu trong 48 giờ thì server dọn.
+   */
+  uploadPhoto: async (listingId: string, photo: PickedPhoto): Promise<string> => {
+    const { body, size } = await fileOf(await preparePhoto(photo));
+    const grant = await unwrap(
+      postApiV1MediaUploads({
+        body: {
+          ownerKind: 'listing',
+          ownerId: listingId,
+          contentType: 'image/jpeg',
+          byteSize: size,
+        },
+      }),
+    );
+    const { method, url, headers, fields } = grant.upload;
+    let res: Response;
+    if (method === 'POST') {
+      // Đúng nguyên văn các trường đã ký, tệp đứng cuối — thừa, thiếu hay đổi thứ tự là chữ ký sai.
+      const form = new FormData();
+      for (const [key, value] of Object.entries(fields)) form.append(key, value);
+      form.append('file', body, 'photo.jpg');
+      res = await fetch(url, { method, body: form, headers });
+    } else {
+      res = await fetch(url, { method, body, headers });
+    }
+    if (!res.ok) throw new ApiError('UPLOAD_FAILED', 'Không tải được ảnh lên, thử lại', res.status);
+    return grant.imageId;
   },
 
   login: (email: string, password: string): Promise<Session> =>

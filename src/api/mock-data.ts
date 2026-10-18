@@ -1,17 +1,12 @@
 import type {
-  BoostPlan,
   Conversation,
   Group,
   GroupMember,
   HelpTopic,
   ListingDetail,
-  Me,
-  MyListing,
   Notice,
   Peer,
   Person,
-  PostCategory,
-  PostCategoryId,
   Seller,
 } from './client';
 import { ART, zoom } from './mock-art';
@@ -24,7 +19,6 @@ import { ART, zoom } from './mock-art';
 const MIN = 60_000;
 const LOADED_AT = Date.now();
 const ago = (minutes: number) => new Date(LOADED_AT - minutes * MIN).toISOString();
-const inDays = (days: number) => new Date(LOADED_AT + days * 24 * 60 * MIN).toISOString();
 
 const HCM = 'TP.HCM';
 
@@ -64,53 +58,26 @@ const asSeller = (p: Person): Seller => ({
 
 export const SUPPORT: Peer = { ...person('u-support', 'Hỗ trợ Ghim', true), online: true };
 
-/** Người bán của các tin mẫu trong luồng đăng tin (`publishListing`) — hồ sơ thật đọc từ `/me`. */
-export const ME: Me = {
-  ...me,
-  email: 'tai@ghim.local',
-  idVerified: true,
-  memberSince: 2023,
-  rating: 4.9,
-  place: { ward: 'Thủ Đức', province: HCM },
-};
-
-/* ─── DANH MỤC ────────────────────────────────────────────────────── */
-
-export const CATEGORIES: PostCategory[] = [
-  { id: 'phone', name: 'Điện thoại', specKeys: ['Bộ nhớ', 'Pin'] },
-  { id: 'laptop', name: 'Laptop', specKeys: ['RAM', 'Ổ cứng'] },
-  { id: 'fashion', name: 'Thời trang', specKeys: ['Size'] },
-  { id: 'furniture', name: 'Nội thất', specKeys: ['Chất liệu'] },
-  { id: 'vehicle', name: 'Xe cộ', specKeys: ['Năm sản xuất', 'Số km'] },
-  { id: 'property', name: 'Nhà đất', specKeys: ['Diện tích'] },
-  { id: 'jobs', name: 'Việc làm', specKeys: ['Mức lương'] },
-  // Hai danh mục dưới không có ô ở lưới trang chủ (thiết kế chỉ có 7 ô + "Tất cả") nhưng tin mẫu cần.
-  { id: 'camera', name: 'Máy ảnh', specKeys: ['Số shot'] },
-  { id: 'electronics', name: 'Đồ điện tử', specKeys: ['Bảo hành'] },
-];
-
-export const DISTRICTS = [
-  'Quận 1',
-  'Quận 3',
-  'Quận 7',
-  'Quận 10',
-  'Bình Thạnh',
-  'Gò Vấp',
-  'Tân Bình',
-  'Thủ Đức',
-];
-
 /* ─── TIN ĐĂNG ────────────────────────────────────────────────────── */
+
+/** Tên danh mục cho nhãn của tin mẫu (tin trong nhóm, tin đã lưu) — danh mục thật đọc từ server. */
+const CATEGORY_NAME = {
+  phone: 'Điện thoại',
+  laptop: 'Laptop',
+  fashion: 'Thời trang',
+  furniture: 'Nội thất',
+  vehicle: 'Xe cộ',
+  camera: 'Máy ảnh',
+  electronics: 'Đồ điện tử',
+};
 
 type Seed = Pick<ListingDetail, 'id' | 'title' | 'price' | 'cover' | 'condition'> &
   Partial<Omit<ListingDetail, 'category' | 'seller'>> & {
-    categoryId: PostCategoryId;
+    categoryId: keyof typeof CATEGORY_NAME;
     minutesAgo: number;
     ward: string;
     sellerOf: Person | Seller;
   };
-
-const CATEGORY_NAME = Object.fromEntries(CATEGORIES.map((c) => [c.id, c.name]));
 
 function listing(s: Seed): ListingDetail {
   const { categoryId, minutesAgo, ward, sellerOf, ...rest } = s;
@@ -119,7 +86,7 @@ function listing(s: Seed): ListingDetail {
     postedAt: ago(minutesAgo),
     boosted: false,
     groupName: null,
-    category: { id: categoryId, name: CATEGORY_NAME[categoryId] ?? '' },
+    category: { id: categoryId, name: CATEGORY_NAME[categoryId] },
     brand: null,
     photos: [s.cover],
     specs: [],
@@ -363,14 +330,6 @@ export const LISTINGS: ListingDetail[] = [
   }),
 ];
 
-/** Tin của chính "tôi": trạng thái + hạn hiển thị, nằm ngoài `LISTINGS` vì tin đã bán không lên sàn. */
-type Shelf = Pick<MyListing, 'state' | 'views' | 'saves' | 'expiresAt'>;
-
-export const MY_SHELF: Record<string, Shelf> = {
-  'l-sony': { state: 'live', views: 142, saves: 9, expiresAt: inDays(2) },
-  'l-desk': { state: 'live', views: 58, saves: 3, expiresAt: inDays(25) },
-};
-
 export const SAVED_IDS = ['l-ip13pro', 'l-mba16', 'l-xt30'];
 
 /* ─── NHÓM ────────────────────────────────────────────────────────── */
@@ -541,22 +500,7 @@ export const NOTICES: Notice[] = [
   },
 ];
 
-/* ─── ĐẨY TIN & TRỢ GIÚP ──────────────────────────────────────────── */
-
-export const BOOST_PLANS: BoostPlan[] = [
-  {
-    id: 'top3',
-    name: 'Đẩy lên đầu · 3 ngày',
-    note: 'Tin luôn ở nhóm đầu kết quả tìm kiếm',
-    price: null,
-  },
-  {
-    id: 'hot7',
-    name: 'Gắn nhãn Nổi bật · 7 ngày',
-    note: 'Xuất hiện ở mục Tin nổi bật trang chủ',
-    price: null,
-  },
-];
+/* ─── TRỢ GIÚP ──────────────────────────────────────────────── */
 
 export const HELP_TOPICS: HelpTopic[] = [
   {

@@ -19,10 +19,12 @@ export function useClosePost() {
 export function StepHeader({
   step,
   caption,
+  title = 'Đăng tin mới',
   onSaveDraft,
 }: {
   step: 1 | 2 | 3;
   caption: string;
+  title?: string;
   onSaveDraft?: () => void;
 }) {
   const back = useBack();
@@ -44,7 +46,7 @@ export function StepHeader({
           label={first ? 'Đóng' : 'Quay lại'}
           onPress={back}
         />
-        <Text style={styles.title}>Đăng tin mới</Text>
+        <Text style={styles.title}>{title}</Text>
         {right}
       </View>
       <View style={styles.progressBlock}>

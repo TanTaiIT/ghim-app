@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, jest } from '@jest/globals';
-import { api, NO_FILTERS, toPostCategoryId, unwrap, unwrapEmpty, type Lookups } from './client';
-import { ApiError } from './http';
+import { api, NO_FILTERS, unwrap, unwrapEmpty, type Lookups } from './client';
+import { ApiError, setHttpDeviceId } from './http';
 
 const response = (status: number) => ({ status, ok: status >= 200 && status < 300 }) as Response;
 
@@ -159,6 +159,80 @@ describe('đọc tin đăng từ server', () => {
   });
 });
 
+/** Server giả trả bản tin với `version` tăng dần; ghi lại method, đường dẫn, header máy và body. */
+function record() {
+  const calls: { method: string; path: string; device: string | null; body: unknown }[] = [];
+  let version = 1;
+  jest.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+    const req = input as Request;
+    const text = await req.text();
+    calls.push({
+      method: req.method,
+      path: new URL(req.url).pathname,
+      device: req.headers.get('x-device-id'),
+      body: text ? JSON.parse(text) : null,
+    });
+    return new Response(
+      JSON.stringify({ success: true, data: { ...wireListing, id: 'l-1', version: version++ } }),
+      { status: 200, headers: { 'Content-Type': 'application/json' } },
+    );
+  });
+  return calls;
+}
+
+describe('lưu và gửi tin', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+    setHttpDeviceId(null);
+  });
+
+  it('ô bỏ trống thành null, thông số rỗng bị bỏ, luôn lên toàn sàn; lưu và gửi đều mang mã máy', async () => {
+    setHttpDeviceId('may-1');
+    const calls = record();
+
+    const ref = await api.saveListing(
+      { id: 'l-1', version: 3 },
+      {
+        title: '  ',
+        description: '',
+        price: 0,
+        negotiable: true,
+        categoryId: 'c-1',
+        attributes: { hang: 'Apple', mau: [], ghi_chu: ' ' },
+        provinceCode: 79,
+        wardCode: null,
+        imageIds: ['img-1'],
+      },
+    );
+    await api.submitListing(ref);
+
+    expect(calls[0]).toMatchObject({
+      method: 'PATCH',
+      path: '/api/v1/listings/l-1',
+      device: 'may-1',
+      body: {
+        version: 3,
+        title: null,
+        description: null,
+        price: null,
+        categoryId: 'c-1',
+        attributes: { hang: 'Apple' },
+        provinceCode: 79,
+        wardCode: null,
+        imageIds: ['img-1'],
+        placement: 'marketplace',
+      },
+    });
+    expect(ref).toEqual({ id: 'l-1', version: 1 });
+    expect(calls[1]).toMatchObject({
+      method: 'POST',
+      path: '/api/v1/listings/l-1/submit',
+      device: 'may-1',
+      body: { version: 1 },
+    });
+  });
+});
+
 describe('unwrap', () => {
   it('trả data khi vỏ success', async () => {
     const result = unwrap(
@@ -230,13 +304,5 @@ describe('unwrapEmpty', () => {
       }),
     );
     await expect(result).rejects.toMatchObject({ code: 'UNAUTHORIZED', status: 401 });
-  });
-});
-
-describe('toPostCategoryId', () => {
-  it('nhận id hợp lệ, trả null cho chuỗi lạ hoặc thiếu', () => {
-    expect(toPostCategoryId('laptop')).toBe('laptop');
-    expect(toPostCategoryId('khong-co')).toBeNull();
-    expect(toPostCategoryId(undefined)).toBeNull();
   });
 });

@@ -1,6 +1,4 @@
 import type {
-  BoostPlan,
-  CategorySuggestion,
   Conversation,
   ConversationSummary,
   Group,
@@ -10,14 +8,8 @@ import type {
   ListingCard,
   ListingDetail,
   Message,
-  MyListing,
-  NewListing,
   Notice,
   OfferStatus,
-  Picture,
-  PostCategory,
-  PostCategoryId,
-  PriceHint,
 } from './client';
 import { ApiError } from './http';
 import * as D from './mock-data';
@@ -34,15 +26,13 @@ import { formatVnd } from '@/utils/format';
 
 /** Đủ để thấy trạng thái loading và để optimistic update có ý nghĩa, không đủ để thấy chậm. */
 const LATENCY_MS = 350;
-const DAY_MS = 24 * 60 * 60_000;
 
 const wait = <T>(value: T, ms = LATENCY_MS) =>
   new Promise<T>((resolve) => setTimeout(() => resolve(value), ms));
 
 const notFound = (what: string) => new ApiError('NOT_FOUND', `Không tìm thấy ${what}`, 404);
 
-let listings = D.LISTINGS;
-let shelf = D.MY_SHELF;
+const listings = D.LISTINGS;
 let savedIds = D.SAVED_IDS;
 let savedSearches: string[] = [];
 let groups = D.GROUPS;
@@ -70,9 +60,7 @@ function toCard(l: ListingDetail): ListingCard {
   };
 }
 
-/** Tin đã đăng nhưng chưa duyệt hoặc đã bán không lên sàn. */
-const publicListings = () =>
-  listings.filter((l) => (shelf[l.id]?.state ?? 'live') === 'live').map(toCard);
+const publicListings = () => listings.map(toCard);
 
 const byNewest = (a: ListingCard, b: ListingCard) => b.postedAt.localeCompare(a.postedAt);
 
@@ -99,44 +87,7 @@ function patchConversation(id: string, fn: (c: Thread) => Thread) {
   conversations = conversations.map((c) => (c.id === id ? fn(c) : c));
 }
 
-/** Từ khoá → danh mục. Backend thật sẽ phân loại bằng máy duyệt; đây chỉ đủ cho luồng đăng tin chạy. */
-const KEYWORDS: { re: RegExp; id: PostCategoryId; brand: string | null }[] = [
-  { re: /iphone/i, id: 'phone', brand: 'Apple' },
-  { re: /samsung|xiaomi|oppo|điện thoại/i, id: 'phone', brand: null },
-  { re: /macbook/i, id: 'laptop', brand: 'Apple' },
-  { re: /laptop|dell|thinkpad|asus/i, id: 'laptop', brand: null },
-  { re: /máy ảnh|ống kính|lens|fujifilm|canon|sony a/i, id: 'camera', brand: null },
-  { re: /xe|honda|yamaha|vision/i, id: 'vehicle', brand: null },
-  { re: /bàn|ghế|tủ|sofa|giường/i, id: 'furniture', brand: null },
-  { re: /áo|quần|giày|váy|túi/i, id: 'fashion', brand: null },
-];
-
-const PRICE_HINTS: Partial<Record<PostCategoryId, PriceHint>> = {
-  phone: { min: 10_000_000, max: 15_000_000 },
-  laptop: { min: 13_000_000, max: 15_000_000 },
-  camera: { min: 2_000_000, max: 12_000_000 },
-  vehicle: { min: 18_000_000, max: 26_000_000 },
-};
-
 export const mockApi = {
-  getPostCategories: (): Promise<PostCategory[]> => wait(D.CATEGORIES),
-  getDistricts: (): Promise<string[]> => wait(D.DISTRICTS),
-
-  suggestCategory: (title: string): Promise<CategorySuggestion | null> => {
-    const hit = KEYWORDS.find((k) => k.re.test(title));
-    const category = hit && D.CATEGORIES.find((c) => c.id === hit.id);
-    return wait(hit && category ? { category, brand: hit.brand } : null);
-  },
-
-  getPriceHint: (categoryId: PostCategoryId): Promise<PriceHint | null> =>
-    wait(PRICE_HINTS[categoryId] ?? null),
-
-  getBoostPlans: (): Promise<BoostPlan[]> => wait(D.BOOST_PLANS),
-
-  /** Thay cho thư viện ảnh của máy: chọn ảnh thật cần `expo-image-picker` + chữ ký upload (`add-media`). */
-  getSamplePhotos: (): Promise<Picture[]> =>
-    wait(D.LISTINGS.flatMap((l) => l.photos).slice(0, 12), 0),
-
   getListing: async (id: string): Promise<ListingDetail> => {
     const l = listings.find((x) => x.id === id);
     if (!l) throw notFound('tin đăng');
@@ -171,53 +122,6 @@ export const mockApi = {
   },
 
   reportListing: (_id: string, _reason: string): Promise<void> => wait(undefined),
-
-  publishListing: async (input: NewListing): Promise<MyListing> => {
-    const cover = input.photos[0];
-    if (!cover) throw new ApiError('VALIDATION_ERROR', 'Tin cần ít nhất một ảnh', 400);
-    const category = D.CATEGORIES.find((c) => c.id === input.categoryId);
-    if (!category) throw new ApiError('VALIDATION_ERROR', 'Danh mục không hợp lệ', 400);
-    const me = D.ME;
-    const id = nextId('l');
-    const now = Date.now();
-    const detail: ListingDetail = {
-      id,
-      title: input.title,
-      price: input.price,
-      cover,
-      place: input.place,
-      postedAt: new Date(now).toISOString(),
-      boosted: input.boostId !== null,
-      seller: {
-        id: me.id,
-        name: me.name,
-        verified: me.verified,
-        rating: me.rating,
-        deals: 0,
-        replyMinutes: 10,
-        phone: null,
-        joinedAt: null,
-      },
-      groupName: null,
-      condition: input.condition,
-      category: { id: category.id, name: category.name },
-      brand: null,
-      photos: input.photos,
-      specs: input.specs,
-      description: input.description,
-      views: 0,
-      allowOffers: input.allowOffers,
-    };
-    const entry = {
-      state: 'pending' as const,
-      views: 0,
-      saves: 0,
-      expiresAt: new Date(now + 30 * DAY_MS).toISOString(),
-    };
-    listings = [detail, ...listings];
-    shelf = { ...shelf, [id]: entry };
-    return wait({ ...toCard(detail), ...entry });
-  },
 
   getMyGroups: (): Promise<GroupSummary[]> =>
     wait(

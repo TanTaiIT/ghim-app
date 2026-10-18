@@ -23,6 +23,19 @@ export function useProvinces() {
   return useQuery(provinces);
 }
 
+export function useWards(provinceCode: number | null) {
+  return useQuery({ ...wards(provinceCode ?? 0), enabled: provinceCode !== null });
+}
+
+/** Mẫu hiện hành của danh mục — master phát hành bản mới thì lượt mở sau đọc bản mới, nên không giữ mãi. */
+export function useCategoryTemplate(categoryId: string | null) {
+  return useQuery({
+    queryKey: qk.template(categoryId ?? ''),
+    queryFn: () => api.getTemplate(categoryId ?? ''),
+    enabled: categoryId !== null,
+  });
+}
+
 /**
  * Bộ tra tên cho `api.*Listings` — đọc qua cache: lần đầu tải danh mục, tỉnh và phường của các tỉnh có trên
  * trang, các lần sau không gọi mạng. Tỉnh/phường không có trong bảng (mã cũ, dữ liệu lỗi) thì để trống.
