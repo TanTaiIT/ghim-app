@@ -18,6 +18,9 @@ const contentOf = (d: Draft): ListingContent => ({
   provinceCode: d.provinceCode,
   wardCode: d.wardCode,
   imageIds: uploadedImageIds(d),
+  placement: d.placement,
+  groupId: d.groupId,
+  badgeGroupId: d.badgeGroupId,
 });
 
 let creating: Promise<DraftRef> | null = null;
@@ -115,6 +118,9 @@ export function useOpenForEdit() {
       description: l.description,
       provinceCode: l.provinceCode,
       wardCode: l.wardCode,
+      placement: l.placement,
+      groupId: l.groupId,
+      badgeGroupId: l.badgeGroupId,
     });
   };
 }

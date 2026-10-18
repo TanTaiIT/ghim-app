@@ -19,7 +19,9 @@ export function Field({
   return (
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
+      {/* Nhãn hiện trên ô không gắn vào ô: trình đọc màn hình chỉ đọc được tên này. */}
       <TextInput
+        accessibilityLabel={label}
         placeholderTextColor={C.muted}
         multiline={multiline}
         style={[styles.input, multiline && styles.multiline, focused && styles.focused, style]}

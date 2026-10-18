@@ -2,9 +2,16 @@ import { Platform } from 'react-native';
 import { File } from 'expo-file-system';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import {
+  deleteApiV1GroupsByGroupIdJoinRequest,
+  deleteApiV1MeGroupMutesByGroupId,
   getApiV1Categories,
   getApiV1CategoriesByIdTemplate,
   getApiV1CategoriesByIdTemplateVersionsByVersion,
+  getApiV1Groups,
+  getApiV1GroupsByGroupId,
+  getApiV1GroupsByGroupIdAnnouncements,
+  getApiV1GroupsByGroupIdListings,
+  getApiV1GroupsByGroupIdMembers,
   getApiV1Listings,
   getApiV1ListingsById,
   getApiV1ListingsByIdSuggestions,
@@ -12,7 +19,10 @@ import {
   getApiV1MeConversations,
   getApiV1MeConversationsByConversationId,
   getApiV1MeConversationsByConversationIdMessages,
+  getApiV1MeGroupInvitations,
+  getApiV1MeGroups,
   getApiV1MeListings,
+  getApiV1MeNotificationPreferences,
   getApiV1MeNotifications,
   getApiV1MeNotificationsUnreadCount,
   getApiV1RegionsProvinces,
@@ -24,7 +34,12 @@ import {
   postApiV1AuthLogin,
   postApiV1AuthLogout,
   postApiV1AuthRefresh,
+  postApiV1GroupInvitationsByIdAccept,
+  postApiV1GroupInvitationsByIdDecline,
   postApiV1GroupsByGroupIdConversation,
+  postApiV1GroupsByGroupIdJoin,
+  postApiV1GroupsByGroupIdLeave,
+  postApiV1GroupsLookupCode,
   postApiV1Listings,
   postApiV1ListingsByIdSold,
   postApiV1ListingsByIdSubmit,
@@ -37,12 +52,16 @@ import {
   postApiV1MediaUploads,
   postApiV1MeNotificationsRead,
   postApiV1MeSupportConversation,
+  putApiV1MeGroupMutesByGroupId,
 } from './generated/sdk.gen';
 import type {
+  GetApiV1GroupsByGroupIdResponses,
+  GetApiV1GroupsResponses,
   GetApiV1ListingsByIdResponses,
   GetApiV1ListingsResponses,
   GetApiV1MeConversationsByConversationIdMessagesResponses,
   GetApiV1MeConversationsByConversationIdResponses,
+  GetApiV1MeGroupsResponses,
   GetApiV1MeNotificationsResponses,
   GetApiV1MeResponses,
   GetApiV1UsersByIdResponses,
@@ -244,6 +263,11 @@ export type ListingContent = {
   provinceCode: number | null;
   wardCode: number | null;
   imageIds: string[];
+  placement: Placement;
+  /** Chỉ có nghĩa khi đăng trong nhóm. */
+  groupId: string | null;
+  /** Dòng "Thành viên «nhóm»" — server chỉ cho gắn lên tin sàn chung. */
+  badgeGroupId: string | null;
 };
 
 /** Bản tin đang mở trên server; `version` chống ghi đè khi hai máy cùng sửa một tin. */
@@ -259,23 +283,76 @@ export type EditableListing = DraftRef &
 /** Ảnh vừa chọn từ máy — cỡ gốc để quyết định có thu nhỏ hay không. */
 export type PickedPhoto = { uri: string; width: number; height: number };
 
+/** Người đăng phải tự chọn — server không đoán thay (spec placement). */
+export type Placement = 'marketplace' | 'group_public' | 'members_only';
+
+/** "Riêng tư · mở cửa" không tồn tại (spec group-modes). */
+export type GroupMode = 'public_open' | 'public_review' | 'private_code' | 'private_invite';
+export type GroupRole = 'member' | 'moderator' | 'owner';
+/** `closed` không bao giờ tới app — server trả 404 cho nhóm đã đóng. */
+export type GroupState =
+  'pending_owner' | 'active' | 'going_private' | 'ownerless' | 'locked' | 'closed';
+
+export const isPublicGroup = (mode: GroupMode): boolean =>
+  mode === 'public_open' || mode === 'public_review';
+
 export type GroupSummary = {
   id: string;
   name: string;
+  /** Server không có ảnh đại diện nhóm: ô chữ cái thay. */
   initials: string;
-  /** Nhóm kín: tin đăng vào chỉ thành viên thấy; nhóm công khai: tin hiện cả khi tìm kiếm. */
-  visibility: 'public' | 'private';
-};
-
-export type Group = GroupSummary & {
+  mode: GroupMode;
+  state: GroupState;
   memberCount: number;
-  joined: boolean;
-  cover: Picture;
-  pinnedRule: string | null;
-  about: string;
+  description: string | null;
 };
 
-export type GroupMember = Person & { role: 'admin' | 'member' };
+export type MyGroup = GroupSummary & {
+  role: GroupRole;
+  /** Gắn được dòng "Thành viên «nhóm»" lên tin sàn chung — vào bằng "bấm tham gia" thì không bao giờ có. */
+  badgeEligible: boolean;
+};
+
+/** Đơn đang chờ của chính mình; `expiresAt` = lúc đơn tự huỷ nếu chưa ai xử. */
+export type JoinRequest = { id: string; expiresAt: string };
+
+/**
+ * Người ngoài nhóm riêng tư chỉ thấy tên (`visible: false`) và không biết nhóm vào bằng mã hay chỉ bằng lời mời —
+ * màn nhóm đưa cả hai đường.
+ */
+export type Group =
+  | { visible: false; id: string; name: string; initials: string; joinRequest: JoinRequest | null }
+  | (GroupSummary & {
+      visible: true;
+      boardStyle: 'list' | 'grid';
+      /** Người ngoài đăng được tin "công khai trong nhóm". */
+      allowOutsiders: boolean;
+      /** Chỉ chủ nhóm và điều hành viên được biết lý do khoá. */
+      lockedReason: string | null;
+      /** null = chưa vào nhóm. */
+      role: GroupRole | null;
+      badgeEligible: boolean;
+      joinRequest: JoinRequest | null;
+    });
+
+export type GroupMember = { id: string; name: string; role: GroupRole };
+
+export type GroupAnnouncement = { id: string; body: string; at: string };
+
+export type GroupInvites = {
+  invitations: {
+    id: string;
+    groupId: string;
+    groupName: string;
+    initials: string;
+    expiresAt: string;
+  }[];
+  /** Có tên trong danh sách lớp: bấm vào nhóm là thành viên, không cần duyệt. */
+  rosters: { groupId: string; groupName: string; initials: string }[];
+};
+
+/** `request` = thành đơn chờ duyệt (nhóm xét duyệt, nhóm có mã). */
+export type JoinOutcome = 'member' | 'request';
 
 export type OfferStatus = 'pending' | 'accepted' | 'declined' | 'superseded';
 
@@ -325,7 +402,10 @@ export type NoticeTab = 'deal' | 'system';
 export type NoticeKind = 'message' | 'offer' | 'listing' | 'expiring' | 'group' | 'account';
 
 export type NoticeTarget =
-  { screen: 'chat'; id: string } | { screen: 'listing'; id: string } | { screen: 'profile' };
+  | { screen: 'chat'; id: string }
+  | { screen: 'listing'; id: string }
+  | { screen: 'group'; id: string }
+  | { screen: 'profile' };
 
 export type Notice = {
   id: string;
@@ -336,7 +416,7 @@ export type Notice = {
   /** Dòng gộp nổi lên theo lần cập nhật cuối, không theo lúc tạo. */
   at: string;
   read: boolean;
-  /** `null` = chưa có màn để mở (vd trang nhóm còn dữ liệu mẫu) — bấm chỉ đánh dấu đã đọc. */
+  /** `null` = không có màn nào để mở (báo cáo, hỗ trợ không gắn hội thoại) — bấm chỉ đánh dấu đã đọc. */
   target: NoticeTarget | null;
 };
 
@@ -384,6 +464,9 @@ type WireConversation = GetApiV1MeConversationsByConversationIdResponses[200]['d
 type WireMessage =
   GetApiV1MeConversationsByConversationIdMessagesResponses[200]['data']['items'][number];
 type WireNotice = GetApiV1MeNotificationsResponses[200]['data']['items'][number];
+type WireGroupSummary = GetApiV1GroupsResponses[200]['data']['items'][number];
+type WireMyGroup = GetApiV1MeGroupsResponses[200]['data'][number];
+type WireGroupView = GetApiV1GroupsByGroupIdResponses[200]['data'];
 
 /** Trang đầu đủ cho trang chủ và một màn kết quả; cuộn tải thêm (`nextCursor`) chưa làm. */
 const PAGE_SIZE = 30;
@@ -473,8 +556,8 @@ const toRef = (w: { id: string; version: number }): DraftRef => ({ id: w.id, ver
 
 /**
  * Chuỗi rỗng → null: server lưu nguyên những gì nhận, và "" ở tiêu đề là một tiêu đề rỗng chứ không phải
- * "chưa điền" — lượt gửi duyệt sẽ không báo thiếu tiêu đề. Luôn `marketplace`: đăng vào nhóm cần domain nhóm
- * thật, mà nhóm vẫn là dữ liệu mẫu.
+ * "chưa điền" — lượt gửi duyệt sẽ không báo thiếu tiêu đề. Nhóm và huy hiệu đi theo nơi đăng: server từ chối
+ * huy hiệu trên tin trong nhóm, còn `null` ở huy hiệu là gỡ — không bao giờ để sót lại từ lần chọn trước.
  */
 function toContentBody(c: ListingContent) {
   const attributes = Object.fromEntries(
@@ -492,7 +575,9 @@ function toContentBody(c: ListingContent) {
     provinceCode: c.provinceCode,
     wardCode: c.wardCode,
     imageIds: c.imageIds,
-    placement: 'marketplace' as const,
+    placement: c.placement,
+    groupId: c.placement === 'marketplace' ? null : c.groupId,
+    badgeGroupId: c.placement === 'marketplace' ? c.badgeGroupId : null,
   };
 }
 
@@ -525,6 +610,9 @@ function toEditable(w: WireDetail): EditableListing {
     ),
     provinceCode: w.provinceCode,
     wardCode: w.wardCode,
+    placement: w.placement,
+    groupId: w.groupId,
+    badgeGroupId: w.badgeGroupId,
     photos: w.images.map((img) => ({ imageId: img.id, uri: img.url })),
   };
 }
@@ -567,8 +655,6 @@ async function fileOf(uri: string): Promise<{ body: Blob; size: number }> {
 const MESSAGE_PAGE = 100;
 /** Trần một trang của server (`MAX_LIMIT`). */
 const CONVERSATION_PAGE = 100;
-
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const toMessage = (w: WireMessage): Message =>
   w.kind === 'offer' && w.offer
@@ -659,8 +745,8 @@ function kindOf(w: WireNotice): NoticeKind {
 
 /**
  * Màn mở theo mã trong `data` (`ghim-server/docs/realtime.md`): hội thoại trước, rồi tin. Tin của chính mình (duyệt,
- * hết hạn) mở "Tin của tôi" — ở đó có trạng thái và lời giải thích. Chuyện của nhóm chưa mở được: trang nhóm còn
- * chạy dữ liệu mẫu, mã nhóm thật không có trong đó.
+ * hết hạn) mở "Tin của tôi" — ở đó có trạng thái và lời giải thích. Mọi chuyện còn lại của nhóm mở trang nhóm, kể cả
+ * lời mời và danh sách lớp: trang nhóm tự đưa nút "Nhận lời mời" / "Vào nhóm".
  */
 function targetOf(w: WireNotice): NoticeTarget | null {
   const { conversationId, listingId } = w.data;
@@ -673,7 +759,7 @@ function targetOf(w: WireNotice): NoticeTarget | null {
   ) {
     return { screen: 'profile' };
   }
-  return null;
+  return w.groupId ? { screen: 'group', id: w.groupId } : null;
 }
 
 const toNotice = (w: WireNotice): Notice => ({
@@ -686,6 +772,63 @@ const toNotice = (w: WireNotice): Notice => ({
   read: w.readAt !== null,
   target: targetOf(w),
 });
+
+/* ---------------------------------- nhóm ---------------------------------- */
+
+/** Trần một trang của server (`MAX_LIMIT`): danh sách nhóm và thành viên chưa có nút tải thêm. */
+const GROUP_PAGE = 100;
+/** Khung trên đầu trang nhóm chỉ hiện thông báo mới nhất; phần còn lại xem ở tab Giới thiệu. */
+const ANNOUNCEMENT_PAGE = 20;
+
+const initialsOf = (name: string): string =>
+  name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((word) => word.charAt(0))
+    .join('')
+    .toUpperCase();
+
+const toGroupSummary = (w: WireGroupSummary): GroupSummary => ({
+  id: w.id,
+  name: w.name,
+  initials: initialsOf(w.name),
+  mode: w.mode,
+  state: w.state,
+  memberCount: w.memberCount,
+  description: w.description,
+});
+
+const toMyGroup = (w: WireMyGroup): MyGroup => ({
+  ...toGroupSummary(w),
+  role: w.membership.role,
+  badgeEligible: w.membership.badgeEligible,
+});
+
+const toJoinRequest = (w: { id: string; expiresAt: string } | null): JoinRequest | null =>
+  w && { id: w.id, expiresAt: w.expiresAt };
+
+function toGroup(w: WireGroupView): Group {
+  if (w.visibility === 'name_only') {
+    return {
+      visible: false,
+      id: w.id,
+      name: w.name,
+      initials: initialsOf(w.name),
+      joinRequest: toJoinRequest(w.joinRequest),
+    };
+  }
+  return {
+    ...toGroupSummary(w),
+    visible: true,
+    boardStyle: w.boardStyle,
+    allowOutsiders: w.allowOutsiders,
+    lockedReason: w.lockedReason,
+    role: w.membership?.role ?? null,
+    badgeEligible: w.membership?.badgeEligible ?? false,
+    joinRequest: toJoinRequest(w.joinRequest),
+  };
+}
 
 /* ---------------------------------- api ----------------------------------- */
 
@@ -767,6 +910,94 @@ export const api = {
   markNoticesRead: async (ids: string[] | 'all'): Promise<void> => {
     await unwrap(postApiV1MeNotificationsRead({ body: ids === 'all' ? { all: true } : { ids } }));
   },
+
+  /** Chỉ nhóm công khai — nhóm riêng tư không bao giờ có trong kết quả tìm (spec group-modes). */
+  searchGroups: async (q: string): Promise<GroupSummary[]> =>
+    (await unwrap(getApiV1Groups({ query: { q, limit: GROUP_PAGE } }))).items.map(toGroupSummary),
+
+  getMyGroups: async (): Promise<MyGroup[]> => (await unwrap(getApiV1MeGroups())).map(toMyGroup),
+
+  getGroup: async (id: string): Promise<Group> =>
+    toGroup(await unwrap(getApiV1GroupsByGroupId({ path: { groupId: id } }))),
+
+  /** Server tự lọc theo người xem: tin "chỉ thành viên" chỉ thành viên thấy. */
+  getGroupListings: async (id: string, load: LoadLookups): Promise<ListingCard[]> => {
+    const { items } = await unwrap(
+      getApiV1GroupsByGroupIdListings({ path: { groupId: id }, query: { limit: PAGE_SIZE } }),
+    );
+    return toCards(items, load);
+  },
+
+  /** Chỉ chủ nhóm và điều hành viên đọc được — thành viên thường nhận 403 (spec membership). */
+  getGroupMembers: async (id: string): Promise<GroupMember[]> => {
+    const { items } = await unwrap(
+      getApiV1GroupsByGroupIdMembers({ path: { groupId: id }, query: { limit: GROUP_PAGE } }),
+    );
+    return items.map((m) => ({ id: m.accountId, name: m.displayName, role: m.role }));
+  },
+
+  /** Chỉ thành viên; server đã lọc theo đơn vị của người xem, mới nhất trước. */
+  getGroupAnnouncements: async (id: string): Promise<GroupAnnouncement[]> => {
+    const { items } = await unwrap(
+      getApiV1GroupsByGroupIdAnnouncements({
+        path: { groupId: id },
+        query: { limit: ANNOUNCEMENT_PAGE },
+      }),
+    );
+    return items.map((a) => ({ id: a.id, body: a.body, at: a.createdAt }));
+  },
+
+  /** Mở cửa, lời mời, danh sách lớp → vào ngay; xét duyệt và có mã → đơn chờ duyệt. */
+  joinGroup: async (id: string, code?: string): Promise<JoinOutcome> =>
+    (
+      await unwrap(
+        postApiV1GroupsByGroupIdJoin({ path: { groupId: id }, body: code ? { code } : {} }),
+      )
+    ).result,
+
+  withdrawJoinRequest: (id: string): Promise<void> =>
+    unwrapEmpty(deleteApiV1GroupsByGroupIdJoinRequest({ path: { groupId: id } })),
+
+  /** Chủ nhóm phải chuyển chủ trước: server trả 409 kèm lời giải thích. */
+  leaveGroup: (id: string): Promise<void> =>
+    unwrapEmpty(postApiV1GroupsByGroupIdLeave({ path: { groupId: id } })),
+
+  lookupGroupCode: async (code: string): Promise<GroupSummary> =>
+    toGroupSummary(await unwrap(postApiV1GroupsLookupCode({ body: { code } }))),
+
+  getGroupInvites: async (): Promise<GroupInvites> => {
+    const { invitations, rosters } = await unwrap(getApiV1MeGroupInvitations());
+    return {
+      invitations: invitations.map(({ id, groupId, groupName, expiresAt }) => ({
+        id,
+        groupId,
+        groupName,
+        initials: initialsOf(groupName),
+        expiresAt,
+      })),
+      rosters: rosters.map(({ groupId, groupName }) => ({
+        groupId,
+        groupName,
+        initials: initialsOf(groupName),
+      })),
+    };
+  },
+
+  answerInvitation: async (id: string, accept: boolean): Promise<void> => {
+    if (accept) await unwrap(postApiV1GroupInvitationsByIdAccept({ path: { id } }));
+    else await unwrapEmpty(postApiV1GroupInvitationsByIdDecline({ path: { id } }));
+  },
+
+  /** Tắt tiếng: thông báo của nhóm vẫn vào hộp thư, chỉ không nhắc. */
+  getMutedGroupIds: async (): Promise<string[]> =>
+    (await unwrap(getApiV1MeNotificationPreferences())).mutedGroupIds,
+
+  setGroupMuted: (id: string, muted: boolean): Promise<void> =>
+    unwrapEmpty(
+      muted
+        ? putApiV1MeGroupMutesByGroupId({ path: { groupId: id } })
+        : deleteApiV1MeGroupMutesByGroupId({ path: { groupId: id } }),
+    ),
 
   /** Mọi trạng thái trong một lượt — hai ngăn "Đang đăng" / "Đã bán" lọc từ cùng một danh sách. */
   getMyListings: async (load: LoadLookups): Promise<MyListing[]> => {
@@ -924,14 +1155,6 @@ export const api = {
       return (
         await unwrap(postApiV1ListingsByListingIdConversation({ path: { listingId: to.id } }))
       ).id;
-    }
-    // Trang nhóm còn chạy dữ liệu mẫu: mã nhóm mẫu không có trên server.
-    if (!UUID.test(to.id)) {
-      throw new ApiError(
-        'NOT_AVAILABLE',
-        'Nhắn quản trị nhóm sẽ có khi trang nhóm nối server',
-        501,
-      );
     }
     return (await unwrap(postApiV1GroupsByGroupIdConversation({ path: { groupId: to.id } }))).id;
   },

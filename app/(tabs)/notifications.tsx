@@ -34,6 +34,8 @@ export default function Notifications() {
         return router.push(`/chat/${target.id}`);
       case 'listing':
         return router.push(`/listing/${target.id}`);
+      case 'group':
+        return router.push(`/group/${target.id}`);
       case 'profile':
         return router.navigate('/(tabs)/profile');
     }

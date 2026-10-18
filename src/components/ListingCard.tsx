@@ -92,19 +92,8 @@ export function ListingTile({
   );
 }
 
-/**
- * Thẻ tin dạng hàng (Gần bạn, tin trong nhóm, tin đã lưu). `by="place"` ghi khu vực và nhãn nhóm;
- * `by="seller"` ghi người đăng — trong trang nhóm thì khu vực ít quan trọng hơn ai đăng.
- */
-export function ListingRow({
-  item,
-  onPress,
-  by = 'place',
-}: {
-  item: ListingCard;
-  onPress: () => void;
-  by?: 'place' | 'seller';
-}) {
+/** Thẻ tin dạng hàng (Gần bạn, tin trong nhóm, tin đã lưu): khu vực, lúc đăng và nhãn nhóm nếu có. */
+export function ListingRow({ item, onPress }: { item: ListingCard; onPress: () => void }) {
   const ago = formatAgo(item.postedAt);
   return (
     <Pressable
@@ -118,19 +107,10 @@ export function ListingRow({
           {item.title}
         </Text>
         <Price value={item.price} />
-        {by === 'seller' && item.seller ? (
-          <View style={styles.seller}>
-            <Avatar name={item.seller.name} />
-            <Text style={styles.meta} numberOfLines={1}>
-              {item.seller.name} · {ago}
-            </Text>
-          </View>
-        ) : (
-          <Text style={styles.meta} numberOfLines={1}>
-            {formatPlace(item.place, true)} · {ago}
-          </Text>
-        )}
-        {by === 'place' && item.groupName && (
+        <Text style={styles.meta} numberOfLines={1}>
+          {formatPlace(item.place, true)} · {ago}
+        </Text>
+        {item.groupName && (
           <View style={styles.group}>
             <Feather name="users" size={12} color={C.brandDark} />
             <Text style={styles.groupLabel} numberOfLines={1}>

@@ -12,7 +12,6 @@ import { Avatar, Verified } from '@/components/Avatar';
 import { EmptyState, GhostButton, IconButton, Loading, type IconName } from '@/components/ui';
 import { useMe, useSetShowActivity } from '@/queries/account';
 import { useSignOut } from '@/queries/auth';
-import { useMyGroups } from '@/queries/groups';
 import { useSavedListings } from '@/queries/listings';
 import { useOpenForEdit } from '@/queries/posting';
 import { useMarkSold, useMyListings } from '@/queries/selling';
@@ -30,7 +29,6 @@ export default function Profile() {
 
   const me = useMe();
   const showActivity = useSetShowActivity();
-  const groups = useMyGroups();
   const active = useMyListings('active');
   const sold = useMyListings('sold');
   const saved = useSavedListings();
@@ -59,7 +57,6 @@ export default function Profile() {
     sold: sold.data?.length ?? 0,
     saved: saved.data?.length ?? 0,
   };
-  const firstGroup = groups.data?.[0];
   const menu: { icon: IconName; label: string; onPress: () => void }[] = [
     {
       icon: 'check-circle',
@@ -72,7 +69,7 @@ export default function Profile() {
     {
       icon: 'users',
       label: 'Nhóm của tôi',
-      onPress: () => firstGroup && router.push(`/group/${firstGroup.id}`),
+      onPress: () => router.push('/groups'),
     },
     { icon: 'help-circle', label: 'Trợ giúp & hỗ trợ', onPress: () => router.push('/help') },
     {

@@ -32,7 +32,8 @@ async function refreshSession(): Promise<string | null> {
  * Đăng ký bằng `subscribe` chứ không đọc qua render: token đổi lúc đăng nhập / refresh phải tới tầng HTTP ngay
  * trong cùng tick, không đợi lượt render kế tiếp của layout. Phiên kết thúc — tự đăng xuất hay bị server thu
  * hồi giữa chừng — thì dọn cache ở đây, một chỗ cho cả hai đường: thiếu bước này người đăng nhập kế tiếp thấy
- * dữ liệu của phiên trước cho tới lần refetch đầu tiên.
+ * dữ liệu của phiên trước cho tới lần refetch đầu tiên. Khách vừa đăng nhập thì đọc lại mọi thứ: hồ sơ nhóm, tin
+ * "chỉ thành viên" trả khác nhau theo người xem, bản của khách còn trong cache là sai.
  */
 export function useAuthBridge(qc: QueryClient): void {
   useEffect(() => {
@@ -44,6 +45,7 @@ export function useAuthBridge(qc: QueryClient): void {
       setHttpAccessToken(s.session?.accessToken ?? null);
       setHttpDeviceId(s.deviceId);
       if (prev.session && !s.session) qc.clear();
+      if (!prev.session && s.session) void qc.invalidateQueries();
     });
     return () => {
       unsubscribe();

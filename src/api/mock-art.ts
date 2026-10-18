@@ -172,15 +172,6 @@ const tripod = frame(
     '<path d="M222 104 L262 92" stroke="#c23b2a" stroke-width="7" stroke-linecap="round"/>',
 );
 
-/** Ảnh bìa nhóm — khổ ngang, khác khung vuông của tranh sản phẩm. */
-const skyline =
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 150" preserveAspectRatio="xMidYMid slice"><defs>' +
-  '<linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d3557"/><stop offset=".55" stop-color="#e07a5f"/><stop offset="1" stop-color="#f2cc8f"/></linearGradient></defs>' +
-  '<rect width="390" height="150" fill="url(#s)"/><circle cx="292" cy="104" r="26" fill="#ffe2a8" opacity=".9"/>' +
-  '<path d="M0 150 V112 H22 V96 H40 V118 H58 V84 H72 V70 H80 V84 H92 V120 H112 V100 H130 V124 H150 V92 H164 V108 H180 V128 H198 V60 L206 40 L214 60 V128 H232 V104 H252 V118 H270 V96 H288 V126 H306 V88 H324 V114 H344 V100 H362 V122 H390 V150z" fill="#16243a" opacity=".92"/>' +
-  '<rect y="136" width="390" height="14" fill="#16243a"/>' +
-  '<path d="M0 142 H390" stroke="#f2cc8f" stroke-opacity=".35" stroke-width="2" stroke-dasharray="14 10"/></svg>';
-
 export const ART = {
   iphone13ProBlue: phone({
     bg: ['#e3ecf4', '#c9d8e6'],
@@ -272,5 +263,4 @@ export const ART = {
   camera,
   lens,
   tripod,
-  skyline,
 };

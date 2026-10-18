@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Check } from '@/components/Chip';
 import { Field } from '@/components/Field';
 import { PickerSheet } from '@/components/PickerSheet';
+import { PlacementPicker } from '@/components/PlacementPicker';
 import { StepHeader, useClosePost } from '@/components/StepHeader';
 import { missingRequired, TemplateFields } from '@/components/TemplateFields';
 import { useToast } from '@/components/Toast';
@@ -20,8 +21,8 @@ import { groupThousands, parseDigits } from '@/utils/format';
 const NO_WARD = 'none';
 
 /**
- * Bước 2 — giá, thông số theo mẫu danh mục, mô tả, khu vực, nơi hiển thị. Thiết kế có gợi ý khoảng giá và
- * chọn nhóm để đăng kèm: server chưa có gợi ý giá, còn nhóm vẫn là dữ liệu mẫu, nên tin lên toàn sàn.
+ * Bước 2 — giá, thông số theo mẫu danh mục, mô tả, khu vực, nơi hiển thị. Thiết kế có gợi ý khoảng giá: server
+ * chưa có nên chưa hiện.
  */
 export default function PostDetails() {
   const router = useRouter();
@@ -127,17 +128,10 @@ export default function PostDetails() {
           </Pressable>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.h2}>Hiển thị tin ở đâu?</Text>
-          <View style={styles.where}>
-            <Feather name="globe" size={20} color={C.brand} />
-            <View style={styles.flex}>
-              <Text style={styles.whereTitle}>Toàn sàn</Text>
-              <Text style={styles.small}>Mọi người đều tìm thấy tin của bạn</Text>
-            </View>
-            <Feather name="check-circle" size={22} color={C.brand} accessibilityLabel="Luôn bật" />
-          </View>
-        </View>
+        <PlacementPicker
+          value={{ placement: d.placement, groupId: d.groupId, badgeGroupId: d.badgeGroupId }}
+          onChange={d.patch}
+        />
       </ScrollView>
 
       <View style={styles.footer}>
@@ -176,11 +170,9 @@ export default function PostDetails() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: C.paperWarm },
-  flex: { flex: 1 },
   content: { padding: S.lg, paddingTop: 18, gap: 22 },
   section: { gap: S.sm },
   h2: { fontFamily: F.uiBold, fontSize: 15, color: C.ink },
-  small: { fontFamily: F.ui, fontSize: 12, lineHeight: 17, color: C.inkSoft },
   price: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -205,16 +197,6 @@ const styles = StyleSheet.create({
   selectText: { flex: 1, fontFamily: F.ui, fontSize: 15, color: C.ink },
   placeholder: { color: C.muted },
   disabled: { opacity: 0.5 },
-  where: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: S.md,
-    paddingVertical: S.md,
-    paddingHorizontal: 14,
-    borderRadius: R.md,
-    backgroundColor: C.sand,
-  },
-  whereTitle: { fontFamily: F.uiSemi, fontSize: 14, color: C.ink },
   footer: {
     paddingTop: S.md,
     paddingHorizontal: S.lg,

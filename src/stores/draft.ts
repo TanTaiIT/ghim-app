@@ -33,6 +33,9 @@ export type Draft = {
   description: string;
   provinceCode: number | null;
   wardCode: number | null;
+  placement: 'marketplace' | 'group_public' | 'members_only';
+  groupId: string | null;
+  badgeGroupId: string | null;
 };
 
 /** Lưới 3 × 2 của thiết kế, cũng là trần mặc định của server (`listing.maxImages`). */
@@ -53,6 +56,9 @@ const EMPTY: Draft = {
   description: '',
   provinceCode: null,
   wardCode: null,
+  placement: 'marketplace',
+  groupId: null,
+  badgeGroupId: null,
 };
 
 let seq = 0;

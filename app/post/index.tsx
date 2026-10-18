@@ -23,7 +23,7 @@ export default function PostPhotos() {
   const router = useRouter();
   const toast = useToast();
   const close = useClosePost();
-  const params = useLocalSearchParams<{ edit?: string }>();
+  const params = useLocalSearchParams<{ edit?: string; group?: string; placement?: string }>();
   const [picking, setPicking] = useState(false);
 
   const photos = useDraftStore((s) => s.photos);
@@ -44,6 +44,15 @@ export default function PostPhotos() {
   useEffect(() => {
     if (!params.edit && useDraftStore.getState().editingLive) useDraftStore.getState().reset();
   }, [params.edit]);
+
+  // Mở từ "Đăng tin vào nhóm…": chọn sẵn nhóm đó ở bước 2 — người đăng vẫn đổi được trước khi gửi. Phụ thuộc đúng
+  // hai giá trị, không theo cả `params`: màn này còn render lại khi ảnh tải xong, lúc người đăng đã đổi ở bước 2.
+  const { group, placement } = params;
+  useEffect(() => {
+    if (group && (placement === 'group_public' || placement === 'members_only')) {
+      useDraftStore.getState().patch({ placement, groupId: group, badgeGroupId: null });
+    }
+  }, [group, placement]);
 
   const category = categories.data?.find((c) => c.id === categoryId);
   const ready = photos.some((p) => !p.failed) && title.trim() !== '' && category !== undefined;

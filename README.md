@@ -28,8 +28,9 @@ Backend: `cd ../ghim-server && pnpm dev` (cổng 3100). Bản dev hiện một �
 `/health/ready` để cho thấy đường ống app → SDK → backend → Postgres đang thông.
 
 **Dữ liệu mẫu.** Giao diện theo bộ UI "Chợ Đồ Cũ – bản làm mới" (10 màn + thanh điều hướng) đang chạy trên
-`mockApi` ở những phần chưa nối server: nhóm, thông báo, trợ giúp, tin đã lưu. Đăng nhập, tin đăng, đăng tin, tin của
-tôi và chat (cả trả giá, Hỗ trợ Ghim) đã gọi ghim-server thật.
+`mockApi` ở những phần chưa nối server: trợ giúp, tin đã lưu. Đăng nhập, tin đăng, đăng tin (cả đăng vào nhóm và huy
+hiệu nhóm), tin của tôi, chat (cả trả giá, Hỗ trợ Ghim), thông báo và nhóm phía thành viên đã gọi ghim-server thật.
+Công cụ quản trị nhóm (duyệt đơn, mời, gỡ, đăng thông báo nhóm) chưa có trong app.
 
 ## 2. Lệnh
 
@@ -54,7 +55,8 @@ app/                    routes (expo-router) — chỉ route + layout, export de
   (tabs)/               Khám phá · Tin nhắn · Thông báo · Cá nhân (nút Đăng tin nổi giữa nằm ở TabBar)
   search.tsx            kết quả tìm kiếm + bộ lọc
   listing/[id].tsx      chi tiết tin
-  group/[id].tsx        trang nhóm
+  group/[id].tsx        trang nhóm: vào theo chế độ, đơn chờ, mã nhóm, tắt tiếng, rời
+  groups.tsx            nhóm của tôi: lời mời, nhóm đang ở, tìm nhóm, nhập mã (cần phiên)
   chat/[id].tsx         chat với người bán, trả giá (cần phiên)
   post/                 đăng tin 3 bước: index → details → preview (cần phiên)
   help.tsx              trợ giúp (cần phiên)

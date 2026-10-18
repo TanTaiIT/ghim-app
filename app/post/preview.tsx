@@ -2,6 +2,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Photo } from '@/components/Photo';
+import { usePlacementLabel } from '@/components/PlacementPicker';
 import { StepHeader, useClosePost } from '@/components/StepHeader';
 import { useToast } from '@/components/Toast';
 import { PinButton, Price } from '@/components/ui';
@@ -33,6 +34,7 @@ export default function PostPreview() {
     ward: wards.data?.find((w) => w.code === d.wardCode)?.name ?? null,
   };
   const uploading = hasPendingUploads(d);
+  const where = usePlacementLabel(d);
 
   // "Sửa" ở dòng bước 1 lùi về đầu stack con; dòng bước 2 chỉ lùi một màn.
   const toStep1 = () => router.dismissAll();
@@ -40,7 +42,7 @@ export default function PostPreview() {
   const rows = [
     { k: 'Danh mục', v: category?.name ?? '—', edit: toStep1 },
     { k: 'Khu vực', v: formatPlace(place) || '—', edit: toStep2 },
-    { k: 'Hiển thị', v: 'Toàn sàn', edit: toStep2 },
+    { k: 'Hiển thị', v: where, edit: toStep2 },
     { k: 'Trả giá', v: d.negotiable ? 'Cho phép' : 'Không', edit: toStep2 },
   ];
 

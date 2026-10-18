@@ -28,8 +28,13 @@ export const qk = {
   groups: {
     all: () => ['groups'] as const,
     mine: () => ['groups', 'mine'] as const,
+    search: (q: string) => ['groups', 'search', q] as const,
+    code: (code: string) => ['groups', 'code', code] as const,
+    invites: () => ['groups', 'invites'] as const,
+    muted: () => ['groups', 'muted'] as const,
     detail: (id: string) => ['groups', 'detail', id] as const,
     listings: (id: string) => ['groups', 'listings', id] as const,
+    announcements: (id: string) => ['groups', 'announcements', id] as const,
     members: (id: string) => ['groups', 'members', id] as const,
   },
   conversations: {

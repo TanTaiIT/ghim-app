@@ -1,4 +1,4 @@
-import type { Group, GroupMember, HelpTopic, ListingDetail, Person, Seller } from './client';
+import type { HelpTopic, ListingDetail, Person, Seller } from './client';
 import { ART, zoom } from './mock-art';
 
 /*
@@ -319,54 +319,6 @@ export const LISTINGS: ListingDetail[] = [
 ];
 
 export const SAVED_IDS = ['l-ip13pro', 'l-mba16', 'l-xt30'];
-
-/* ─── NHÓM ────────────────────────────────────────────────────────── */
-
-export const GROUPS: Group[] = [
-  {
-    id: 'g-na',
-    name: NA,
-    initials: 'NA',
-    visibility: 'public',
-    memberCount: 12_400,
-    joined: true,
-    cover: { svg: ART.skyline },
-    pinnedRule: 'Chỉ đăng máy ảnh, ống kính và phụ kiện. Ghi rõ số shot và tình trạng máy.',
-    about:
-      'Nơi anh em mê ảnh ở Sài Gòn mua bán, trao đổi máy ảnh, ống kính và phụ kiện. Gặp mặt xem máy trực tiếp, không đặt cọc trước.',
-  },
-  {
-    id: 'g-hv',
-    name: 'THPT Hùng Vương',
-    initials: 'HV',
-    visibility: 'private',
-    memberCount: 860,
-    joined: true,
-    cover: { svg: ART.skyline },
-    pinnedRule: null,
-    about:
-      'Nhóm của cựu học sinh và phụ huynh THPT Hùng Vương: sách vở, đồng phục, đồ dùng học tập.',
-  },
-  {
-    id: 'g-xm',
-    name: 'Xe máy cũ Quận 7',
-    initials: 'XM',
-    visibility: 'public',
-    memberCount: 3_200,
-    joined: true,
-    cover: { svg: ART.skyline },
-    pinnedRule: 'Đăng xe phải có ảnh giấy tờ (che số khung, số máy).',
-    about: 'Mua bán xe máy cũ khu vực Quận 7 và lân cận.',
-  },
-];
-
-export const GROUP_MEMBERS: GroupMember[] = [
-  { ...person('u-na-admin', 'Lê Quang Vinh', true), role: 'admin' },
-  { ...minhKhoa, role: 'member' },
-  { ...baoNgoc, role: 'member' },
-  { ...ducHuy, role: 'member' },
-  { ...me, role: 'member' },
-];
 
 /* ─── TRỢ GIÚP ──────────────────────────────────────────────── */
 

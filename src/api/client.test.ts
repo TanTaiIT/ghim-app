@@ -348,14 +348,6 @@ describe('tin nhắn', () => {
       readOnly: 'Hội thoại này không nhận tin nhắn',
     });
   });
-
-  it('nhắn quản trị một nhóm mẫu (mã không phải uuid): báo chưa có, không gọi server', async () => {
-    const urls = serve({});
-    await expect(api.openConversation({ kind: 'group', id: 'g-na' })).rejects.toMatchObject({
-      code: 'NOT_AVAILABLE',
-    });
-    expect(urls).toEqual([]);
-  });
 });
 
 /** Đúng hình dạng một dòng của `GET /me/notifications` (ghim-server `89c7daa`). */
@@ -409,6 +401,7 @@ describe('thông báo', () => {
             category: 'your_groups',
             type: 'group.state.locked',
             data: { groupId: 'g-1' },
+            groupId: 'g-1',
           }),
           wireNotice({
             id: 'n-6',
@@ -431,7 +424,7 @@ describe('thông báo', () => {
       ['n-2', 'deal', 'offer', { screen: 'chat', id: 'c-1' }, true],
       ['n-3', 'deal', 'expiring', { screen: 'profile' }, false],
       ['n-4', 'deal', 'listing', { screen: 'listing', id: 'l-2' }, false],
-      ['n-5', 'system', 'group', null, false],
+      ['n-5', 'system', 'group', { screen: 'group', id: 'g-1' }, false],
       ['n-6', 'system', 'message', { screen: 'chat', id: 'c-9' }, false],
     ]);
     expect(notices[0]?.at).toBe('2026-10-18T09:05:00.000Z');
@@ -458,7 +451,7 @@ describe('lưu và gửi tin', () => {
     setHttpDeviceId(null);
   });
 
-  it('ô bỏ trống thành null, thông số rỗng bị bỏ, luôn lên toàn sàn; lưu và gửi đều mang mã máy', async () => {
+  it('ô bỏ trống thành null, thông số rỗng bị bỏ, nhóm cũ không sót lại trên tin sàn; lưu và gửi mang mã máy', async () => {
     setHttpDeviceId('may-1');
     const calls = record();
 
@@ -474,6 +467,9 @@ describe('lưu và gửi tin', () => {
         provinceCode: 79,
         wardCode: null,
         imageIds: ['img-1'],
+        placement: 'marketplace',
+        groupId: 'g-cu',
+        badgeGroupId: 'g-huy-hieu',
       },
     );
     await api.submitListing(ref);
@@ -493,6 +489,8 @@ describe('lưu và gửi tin', () => {
         wardCode: null,
         imageIds: ['img-1'],
         placement: 'marketplace',
+        groupId: null,
+        badgeGroupId: 'g-huy-hieu',
       },
     });
     expect(ref).toEqual({ id: 'l-1', version: 1 });
@@ -501,6 +499,176 @@ describe('lưu và gửi tin', () => {
       path: '/api/v1/listings/l-1/submit',
       device: 'may-1',
       body: { version: 1 },
+    });
+  });
+});
+
+/** Đúng hình dạng hồ sơ nhóm của `GET /groups/{groupId}` (ghim-server `616af63`). */
+const wireGroup = (overrides: Record<string, unknown> = {}) => ({
+  id: 'g-1',
+  name: 'Phụ huynh lớp 5B',
+  kind: 'school',
+  mode: 'public_review',
+  state: 'active',
+  description: 'Trao đổi sách vở, đồng phục',
+  memberCount: 42,
+  visibility: 'full',
+  boardStyle: 'grid',
+  allowOutsiders: false,
+  showNameOnMarketplace: false,
+  code: null,
+  lockedReason: null,
+  units: [],
+  membership: null,
+  joinRequest: null,
+  ...overrides,
+});
+
+const wireMembership = (role: string, badgeEligible: boolean) => ({
+  role,
+  unitId: null,
+  moderatorUnitId: null,
+  joinedVia: 'approved',
+  joinedAt: '2026-10-01T00:00:00.000Z',
+  badgeEligible,
+});
+
+describe('nhóm', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('hồ sơ đủ: chữ cái đầu thay ảnh, vai của người xem, đơn đang chờ của chính mình', async () => {
+    serve({
+      '/api/v1/groups/g-1': wireGroup({
+        joinRequest: {
+          id: 'r-1',
+          createdAt: '2026-10-18T09:00:00.000Z',
+          expiresAt: '2026-11-08T09:00:00.000Z',
+        },
+      }),
+    });
+
+    expect(await api.getGroup('g-1')).toEqual({
+      visible: true,
+      id: 'g-1',
+      name: 'Phụ huynh lớp 5B',
+      initials: 'PH',
+      mode: 'public_review',
+      state: 'active',
+      memberCount: 42,
+      description: 'Trao đổi sách vở, đồng phục',
+      boardStyle: 'grid',
+      allowOutsiders: false,
+      lockedReason: null,
+      role: null,
+      badgeEligible: false,
+      joinRequest: { id: 'r-1', expiresAt: '2026-11-08T09:00:00.000Z' },
+    });
+  });
+
+  it('người ngoài nhóm riêng tư chỉ có tên', async () => {
+    serve({
+      '/api/v1/groups/g-2': {
+        visibility: 'name_only',
+        id: 'g-2',
+        name: 'Lớp 12A1',
+        joinRequest: null,
+      },
+    });
+
+    expect(await api.getGroup('g-2')).toEqual({
+      visible: false,
+      id: 'g-2',
+      name: 'Lớp 12A1',
+      initials: 'L1',
+      joinRequest: null,
+    });
+  });
+
+  it('nhóm của tôi mang vai và quyền mang huy hiệu; lời mời mang chữ cái đầu', async () => {
+    const { visibility: _v, boardStyle: _b, allowOutsiders: _a, ...summary } = wireGroup();
+    serve({
+      '/api/v1/me/groups': [{ ...summary, membership: wireMembership('moderator', true) }],
+      '/api/v1/me/group-invitations': {
+        invitations: [
+          {
+            id: 'i-1',
+            groupId: 'g-3',
+            groupName: 'Công ty ABC',
+            unitId: null,
+            expiresAt: '2026-11-01T00:00:00.000Z',
+          },
+        ],
+        rosters: [{ groupId: 'g-4', groupName: 'THPT Hùng Vương', unitId: null }],
+      },
+    });
+
+    expect(await api.getMyGroups()).toEqual([
+      expect.objectContaining({
+        id: 'g-1',
+        initials: 'PH',
+        role: 'moderator',
+        badgeEligible: true,
+      }),
+    ]);
+    expect(await api.getGroupInvites()).toEqual({
+      invitations: [
+        {
+          id: 'i-1',
+          groupId: 'g-3',
+          groupName: 'Công ty ABC',
+          initials: 'CT',
+          expiresAt: '2026-11-01T00:00:00.000Z',
+        },
+      ],
+      rosters: [{ groupId: 'g-4', groupName: 'THPT Hùng Vương', initials: 'TH' }],
+    });
+  });
+
+  it('vào nhóm: mã đi kèm khi có, kết quả là vào ngay hay thành đơn', async () => {
+    const bodies: unknown[] = [];
+    jest.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      bodies.push(JSON.parse(await (input as Request).text()));
+      const data =
+        bodies.length === 1
+          ? { result: 'member', membership: wireMembership('member', false) }
+          : { result: 'request', request: { id: 'r-2', status: 'pending' } };
+      return new Response(JSON.stringify({ success: true, data }), {
+        status: 201,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    });
+
+    await expect(api.joinGroup('g-1')).resolves.toBe('member');
+    await expect(api.joinGroup('g-2', 'K7Q2PX')).resolves.toBe('request');
+    expect(bodies).toEqual([{}, { code: 'K7Q2PX' }]);
+  });
+
+  it('đăng trong nhóm: giữ nhóm, bỏ huy hiệu — server từ chối huy hiệu trên tin trong nhóm', async () => {
+    const calls = record();
+    await api.saveListing(
+      { id: 'l-1', version: 3 },
+      {
+        title: 'Sách lớp 5',
+        description: '',
+        price: 50_000,
+        negotiable: false,
+        categoryId: 'c-1',
+        attributes: {},
+        provinceCode: 79,
+        wardCode: null,
+        imageIds: [],
+        placement: 'members_only',
+        groupId: 'g-1',
+        badgeGroupId: 'g-1',
+      },
+    );
+
+    expect(calls[0]?.body).toMatchObject({
+      placement: 'members_only',
+      groupId: 'g-1',
+      badgeGroupId: null,
     });
   });
 });

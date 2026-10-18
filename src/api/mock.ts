@@ -1,11 +1,4 @@
-import type {
-  Group,
-  GroupMember,
-  GroupSummary,
-  HelpTopic,
-  ListingCard,
-  ListingDetail,
-} from './client';
+import type { HelpTopic, ListingCard, ListingDetail } from './client';
 import { ApiError } from './http';
 import * as D from './mock-data';
 
@@ -29,7 +22,6 @@ const notFound = (what: string) => new ApiError('NOT_FOUND', `Không tìm thấy
 const listings = D.LISTINGS;
 let savedIds = D.SAVED_IDS;
 let savedSearches: string[] = [];
-let groups = D.GROUPS;
 
 function toCard(l: ListingDetail): ListingCard {
   const { id, title, price, cover, place, postedAt, boosted, seller, groupName } = l;
@@ -48,8 +40,6 @@ function toCard(l: ListingDetail): ListingCard {
 }
 
 const publicListings = () => listings.map(toCard);
-
-const byNewest = (a: ListingCard, b: ListingCard) => b.postedAt.localeCompare(a.postedAt);
 
 export const mockApi = {
   getListing: async (id: string): Promise<ListingDetail> => {
@@ -86,39 +76,6 @@ export const mockApi = {
   },
 
   reportListing: (_id: string, _reason: string): Promise<void> => wait(undefined),
-
-  getMyGroups: (): Promise<GroupSummary[]> =>
-    wait(
-      groups
-        .filter((g) => g.joined)
-        .map(({ id, name, initials, visibility }) => ({ id, name, initials, visibility })),
-    ),
-
-  getGroup: async (id: string): Promise<Group> => {
-    const g = groups.find((x) => x.id === id);
-    if (!g) throw notFound('nhóm');
-    return wait(g);
-  },
-
-  getGroupListings: async (id: string): Promise<ListingCard[]> => {
-    const g = groups.find((x) => x.id === id);
-    if (!g) throw notFound('nhóm');
-    return wait(
-      publicListings()
-        .filter((l) => l.groupName === g.name)
-        .sort(byNewest),
-    );
-  },
-
-  getGroupMembers: (_id: string): Promise<GroupMember[]> => wait(D.GROUP_MEMBERS),
-
-  setGroupJoined: async (id: string, joined: boolean): Promise<void> => {
-    if (!groups.some((g) => g.id === id)) throw notFound('nhóm');
-    groups = groups.map((g) =>
-      g.id === id ? { ...g, joined, memberCount: g.memberCount + (joined ? 1 : -1) } : g,
-    );
-    return wait(undefined);
-  },
 
   getHelpTopics: (): Promise<HelpTopic[]> => wait(D.HELP_TOPICS),
 };

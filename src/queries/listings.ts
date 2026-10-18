@@ -10,8 +10,8 @@ import { qk } from './keys';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
- * Tin trong nhóm, tin đã lưu, tin trong chat vẫn là dữ liệu mẫu (id dạng `l-…`) và vẫn mở màn
- * chi tiết — id không phải uuid thì đọc từ mock. Xoá nhánh này khi các domain đó nối backend.
+ * Tin đã lưu vẫn là dữ liệu mẫu (id dạng `l-…`) và vẫn mở màn chi tiết — id không phải uuid thì đọc từ mock.
+ * Xoá nhánh này khi tin đã lưu nối backend.
  */
 const fromServer = (id: string) => UUID.test(id);
 
