@@ -769,6 +769,7 @@ export type GetApiV1MeResponses = {
             role: 'user' | 'master';
             twoFactorEnabled: boolean;
             nameHidden: boolean;
+            showActivity: boolean;
         };
     };
 };
@@ -779,6 +780,7 @@ export type PatchApiV1MeData = {
     body: {
         displayName?: string;
         phone?: string | null;
+        showActivity?: boolean;
     };
     path?: never;
     query?: never;
@@ -832,6 +834,7 @@ export type PatchApiV1MeResponses = {
             role: 'user' | 'master';
             twoFactorEnabled: boolean;
             nameHidden: boolean;
+            showActivity: boolean;
         };
     };
 };
@@ -881,6 +884,7 @@ export type DeleteApiV1MeAvatarResponses = {
             role: 'user' | 'master';
             twoFactorEnabled: boolean;
             nameHidden: boolean;
+            showActivity: boolean;
         };
     };
 };
@@ -945,6 +949,7 @@ export type PutApiV1MeAvatarResponses = {
             role: 'user' | 'master';
             twoFactorEnabled: boolean;
             nameHidden: boolean;
+            showActivity: boolean;
         };
     };
 };
@@ -13198,26 +13203,58 @@ export type PostApiV1ListingsByListingIdConversationResponses = {
         success: true;
         data: {
             id: string;
+            kind: 'listing' | 'support' | 'group';
             listing: {
                 id: string;
                 title: string | null;
-            };
-            role: 'buyer' | 'seller';
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                price: number | null;
+                negotiable: boolean;
+                state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+                cover: {
+                    id: string;
+                    url: string;
+                } | null;
+            } | null;
+            group: {
+                id: string;
+                name: string;
+            } | null;
+            role: 'buyer' | 'seller' | 'team';
             counterpart: {
-                accountId: string;
+                kind: 'account' | 'support' | 'group_admins';
+                accountId: string | null;
                 displayName: string | null;
+                avatarUrl: string | null;
                 gone: boolean;
+                activity: {
+                    online: boolean;
+                    lastActiveAt: string | null;
+                } | null;
             };
             lastMessage: {
                 id: string;
                 conversationId: string;
-                senderId: string;
+                senderId: string | null;
+                fromMe: boolean;
+                kind: 'text' | 'offer';
                 body: string;
+                offer: {
+                    /**
+                     * Số tiền, đơn vị đồng
+                     */
+                    amount: number;
+                    status: 'pending' | 'accepted' | 'declined' | 'superseded';
+                    respondedAt: string | null;
+                } | null;
                 createdAt: string;
             } | null;
             unreadCount: number;
             locked: boolean;
             canSend: boolean;
+            canOffer: boolean;
             createdAt: string;
             lastActivityAt: string;
         };
@@ -13229,26 +13266,58 @@ export type PostApiV1ListingsByListingIdConversationResponses = {
         success: true;
         data: {
             id: string;
+            kind: 'listing' | 'support' | 'group';
             listing: {
                 id: string;
                 title: string | null;
-            };
-            role: 'buyer' | 'seller';
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                price: number | null;
+                negotiable: boolean;
+                state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+                cover: {
+                    id: string;
+                    url: string;
+                } | null;
+            } | null;
+            group: {
+                id: string;
+                name: string;
+            } | null;
+            role: 'buyer' | 'seller' | 'team';
             counterpart: {
-                accountId: string;
+                kind: 'account' | 'support' | 'group_admins';
+                accountId: string | null;
                 displayName: string | null;
+                avatarUrl: string | null;
                 gone: boolean;
+                activity: {
+                    online: boolean;
+                    lastActiveAt: string | null;
+                } | null;
             };
             lastMessage: {
                 id: string;
                 conversationId: string;
-                senderId: string;
+                senderId: string | null;
+                fromMe: boolean;
+                kind: 'text' | 'offer';
                 body: string;
+                offer: {
+                    /**
+                     * Số tiền, đơn vị đồng
+                     */
+                    amount: number;
+                    status: 'pending' | 'accepted' | 'declined' | 'superseded';
+                    respondedAt: string | null;
+                } | null;
                 createdAt: string;
             } | null;
             unreadCount: number;
             locked: boolean;
             canSend: boolean;
+            canOffer: boolean;
             createdAt: string;
             lastActivityAt: string;
         };
@@ -13256,6 +13325,371 @@ export type PostApiV1ListingsByListingIdConversationResponses = {
 };
 
 export type PostApiV1ListingsByListingIdConversationResponse = PostApiV1ListingsByListingIdConversationResponses[keyof PostApiV1ListingsByListingIdConversationResponses];
+
+export type PostApiV1MeSupportConversationData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/support/conversation';
+};
+
+export type PostApiV1MeSupportConversationErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1MeSupportConversationError = PostApiV1MeSupportConversationErrors[keyof PostApiV1MeSupportConversationErrors];
+
+export type PostApiV1MeSupportConversationResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            kind: 'listing' | 'support' | 'group';
+            listing: {
+                id: string;
+                title: string | null;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                price: number | null;
+                negotiable: boolean;
+                state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+                cover: {
+                    id: string;
+                    url: string;
+                } | null;
+            } | null;
+            group: {
+                id: string;
+                name: string;
+            } | null;
+            role: 'buyer' | 'seller' | 'team';
+            counterpart: {
+                kind: 'account' | 'support' | 'group_admins';
+                accountId: string | null;
+                displayName: string | null;
+                avatarUrl: string | null;
+                gone: boolean;
+                activity: {
+                    online: boolean;
+                    lastActiveAt: string | null;
+                } | null;
+            };
+            lastMessage: {
+                id: string;
+                conversationId: string;
+                senderId: string | null;
+                fromMe: boolean;
+                kind: 'text' | 'offer';
+                body: string;
+                offer: {
+                    /**
+                     * Số tiền, đơn vị đồng
+                     */
+                    amount: number;
+                    status: 'pending' | 'accepted' | 'declined' | 'superseded';
+                    respondedAt: string | null;
+                } | null;
+                createdAt: string;
+            } | null;
+            unreadCount: number;
+            locked: boolean;
+            canSend: boolean;
+            canOffer: boolean;
+            createdAt: string;
+            lastActivityAt: string;
+        };
+    };
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            kind: 'listing' | 'support' | 'group';
+            listing: {
+                id: string;
+                title: string | null;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                price: number | null;
+                negotiable: boolean;
+                state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+                cover: {
+                    id: string;
+                    url: string;
+                } | null;
+            } | null;
+            group: {
+                id: string;
+                name: string;
+            } | null;
+            role: 'buyer' | 'seller' | 'team';
+            counterpart: {
+                kind: 'account' | 'support' | 'group_admins';
+                accountId: string | null;
+                displayName: string | null;
+                avatarUrl: string | null;
+                gone: boolean;
+                activity: {
+                    online: boolean;
+                    lastActiveAt: string | null;
+                } | null;
+            };
+            lastMessage: {
+                id: string;
+                conversationId: string;
+                senderId: string | null;
+                fromMe: boolean;
+                kind: 'text' | 'offer';
+                body: string;
+                offer: {
+                    /**
+                     * Số tiền, đơn vị đồng
+                     */
+                    amount: number;
+                    status: 'pending' | 'accepted' | 'declined' | 'superseded';
+                    respondedAt: string | null;
+                } | null;
+                createdAt: string;
+            } | null;
+            unreadCount: number;
+            locked: boolean;
+            canSend: boolean;
+            canOffer: boolean;
+            createdAt: string;
+            lastActivityAt: string;
+        };
+    };
+};
+
+export type PostApiV1MeSupportConversationResponse = PostApiV1MeSupportConversationResponses[keyof PostApiV1MeSupportConversationResponses];
+
+export type PostApiV1GroupsByGroupIdConversationData = {
+    body?: never;
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/conversation';
+};
+
+export type PostApiV1GroupsByGroupIdConversationErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdConversationError = PostApiV1GroupsByGroupIdConversationErrors[keyof PostApiV1GroupsByGroupIdConversationErrors];
+
+export type PostApiV1GroupsByGroupIdConversationResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            kind: 'listing' | 'support' | 'group';
+            listing: {
+                id: string;
+                title: string | null;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                price: number | null;
+                negotiable: boolean;
+                state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+                cover: {
+                    id: string;
+                    url: string;
+                } | null;
+            } | null;
+            group: {
+                id: string;
+                name: string;
+            } | null;
+            role: 'buyer' | 'seller' | 'team';
+            counterpart: {
+                kind: 'account' | 'support' | 'group_admins';
+                accountId: string | null;
+                displayName: string | null;
+                avatarUrl: string | null;
+                gone: boolean;
+                activity: {
+                    online: boolean;
+                    lastActiveAt: string | null;
+                } | null;
+            };
+            lastMessage: {
+                id: string;
+                conversationId: string;
+                senderId: string | null;
+                fromMe: boolean;
+                kind: 'text' | 'offer';
+                body: string;
+                offer: {
+                    /**
+                     * Số tiền, đơn vị đồng
+                     */
+                    amount: number;
+                    status: 'pending' | 'accepted' | 'declined' | 'superseded';
+                    respondedAt: string | null;
+                } | null;
+                createdAt: string;
+            } | null;
+            unreadCount: number;
+            locked: boolean;
+            canSend: boolean;
+            canOffer: boolean;
+            createdAt: string;
+            lastActivityAt: string;
+        };
+    };
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            kind: 'listing' | 'support' | 'group';
+            listing: {
+                id: string;
+                title: string | null;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                price: number | null;
+                negotiable: boolean;
+                state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+                cover: {
+                    id: string;
+                    url: string;
+                } | null;
+            } | null;
+            group: {
+                id: string;
+                name: string;
+            } | null;
+            role: 'buyer' | 'seller' | 'team';
+            counterpart: {
+                kind: 'account' | 'support' | 'group_admins';
+                accountId: string | null;
+                displayName: string | null;
+                avatarUrl: string | null;
+                gone: boolean;
+                activity: {
+                    online: boolean;
+                    lastActiveAt: string | null;
+                } | null;
+            };
+            lastMessage: {
+                id: string;
+                conversationId: string;
+                senderId: string | null;
+                fromMe: boolean;
+                kind: 'text' | 'offer';
+                body: string;
+                offer: {
+                    /**
+                     * Số tiền, đơn vị đồng
+                     */
+                    amount: number;
+                    status: 'pending' | 'accepted' | 'declined' | 'superseded';
+                    respondedAt: string | null;
+                } | null;
+                createdAt: string;
+            } | null;
+            unreadCount: number;
+            locked: boolean;
+            canSend: boolean;
+            canOffer: boolean;
+            createdAt: string;
+            lastActivityAt: string;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdConversationResponse = PostApiV1GroupsByGroupIdConversationResponses[keyof PostApiV1GroupsByGroupIdConversationResponses];
 
 export type GetApiV1MeConversationsData = {
     body?: never;
@@ -13303,26 +13737,58 @@ export type GetApiV1MeConversationsResponses = {
         data: {
             items: Array<{
                 id: string;
+                kind: 'listing' | 'support' | 'group';
                 listing: {
                     id: string;
                     title: string | null;
-                };
-                role: 'buyer' | 'seller';
+                    /**
+                     * Số tiền, đơn vị đồng
+                     */
+                    price: number | null;
+                    negotiable: boolean;
+                    state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+                    cover: {
+                        id: string;
+                        url: string;
+                    } | null;
+                } | null;
+                group: {
+                    id: string;
+                    name: string;
+                } | null;
+                role: 'buyer' | 'seller' | 'team';
                 counterpart: {
-                    accountId: string;
+                    kind: 'account' | 'support' | 'group_admins';
+                    accountId: string | null;
                     displayName: string | null;
+                    avatarUrl: string | null;
                     gone: boolean;
+                    activity: {
+                        online: boolean;
+                        lastActiveAt: string | null;
+                    } | null;
                 };
                 lastMessage: {
                     id: string;
                     conversationId: string;
-                    senderId: string;
+                    senderId: string | null;
+                    fromMe: boolean;
+                    kind: 'text' | 'offer';
                     body: string;
+                    offer: {
+                        /**
+                         * Số tiền, đơn vị đồng
+                         */
+                        amount: number;
+                        status: 'pending' | 'accepted' | 'declined' | 'superseded';
+                        respondedAt: string | null;
+                    } | null;
                     createdAt: string;
                 } | null;
                 unreadCount: number;
                 locked: boolean;
                 canSend: boolean;
+                canOffer: boolean;
                 createdAt: string;
                 lastActivityAt: string;
             }>;
@@ -13444,26 +13910,58 @@ export type GetApiV1MeConversationsByConversationIdResponses = {
         success: true;
         data: {
             id: string;
+            kind: 'listing' | 'support' | 'group';
             listing: {
                 id: string;
                 title: string | null;
-            };
-            role: 'buyer' | 'seller';
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                price: number | null;
+                negotiable: boolean;
+                state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+                cover: {
+                    id: string;
+                    url: string;
+                } | null;
+            } | null;
+            group: {
+                id: string;
+                name: string;
+            } | null;
+            role: 'buyer' | 'seller' | 'team';
             counterpart: {
-                accountId: string;
+                kind: 'account' | 'support' | 'group_admins';
+                accountId: string | null;
                 displayName: string | null;
+                avatarUrl: string | null;
                 gone: boolean;
+                activity: {
+                    online: boolean;
+                    lastActiveAt: string | null;
+                } | null;
             };
             lastMessage: {
                 id: string;
                 conversationId: string;
-                senderId: string;
+                senderId: string | null;
+                fromMe: boolean;
+                kind: 'text' | 'offer';
                 body: string;
+                offer: {
+                    /**
+                     * Số tiền, đơn vị đồng
+                     */
+                    amount: number;
+                    status: 'pending' | 'accepted' | 'declined' | 'superseded';
+                    respondedAt: string | null;
+                } | null;
                 createdAt: string;
             } | null;
             unreadCount: number;
             locked: boolean;
             canSend: boolean;
+            canOffer: boolean;
             createdAt: string;
             lastActivityAt: string;
         };
@@ -13543,8 +14041,18 @@ export type GetApiV1MeConversationsByConversationIdMessagesResponses = {
             items: Array<{
                 id: string;
                 conversationId: string;
-                senderId: string;
+                senderId: string | null;
+                fromMe: boolean;
+                kind: 'text' | 'offer';
                 body: string;
+                offer: {
+                    /**
+                     * Số tiền, đơn vị đồng
+                     */
+                    amount: number;
+                    status: 'pending' | 'accepted' | 'declined' | 'superseded';
+                    respondedAt: string | null;
+                } | null;
                 createdAt: string;
             }>;
             nextCursor: string | null;
@@ -13634,14 +14142,300 @@ export type PostApiV1MeConversationsByConversationIdMessagesResponses = {
         data: {
             id: string;
             conversationId: string;
-            senderId: string;
+            senderId: string | null;
+            fromMe: boolean;
+            kind: 'text' | 'offer';
             body: string;
+            offer: {
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                amount: number;
+                status: 'pending' | 'accepted' | 'declined' | 'superseded';
+                respondedAt: string | null;
+            } | null;
             createdAt: string;
         };
     };
 };
 
 export type PostApiV1MeConversationsByConversationIdMessagesResponse = PostApiV1MeConversationsByConversationIdMessagesResponses[keyof PostApiV1MeConversationsByConversationIdMessagesResponses];
+
+export type PostApiV1MeConversationsByConversationIdOffersData = {
+    body: {
+        /**
+         * Số tiền, đơn vị đồng
+         */
+        amount: number;
+    };
+    path: {
+        conversationId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/conversations/{conversationId}/offers';
+};
+
+export type PostApiV1MeConversationsByConversationIdOffersErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1MeConversationsByConversationIdOffersError = PostApiV1MeConversationsByConversationIdOffersErrors[keyof PostApiV1MeConversationsByConversationIdOffersErrors];
+
+export type PostApiV1MeConversationsByConversationIdOffersResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            conversationId: string;
+            senderId: string | null;
+            fromMe: boolean;
+            kind: 'text' | 'offer';
+            body: string;
+            offer: {
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                amount: number;
+                status: 'pending' | 'accepted' | 'declined' | 'superseded';
+                respondedAt: string | null;
+            } | null;
+            createdAt: string;
+        };
+    };
+};
+
+export type PostApiV1MeConversationsByConversationIdOffersResponse = PostApiV1MeConversationsByConversationIdOffersResponses[keyof PostApiV1MeConversationsByConversationIdOffersResponses];
+
+export type PostApiV1MeConversationsByConversationIdOffersByMessageIdAcceptData = {
+    body?: never;
+    path: {
+        conversationId: string;
+        messageId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/conversations/{conversationId}/offers/{messageId}/accept';
+};
+
+export type PostApiV1MeConversationsByConversationIdOffersByMessageIdAcceptErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1MeConversationsByConversationIdOffersByMessageIdAcceptError = PostApiV1MeConversationsByConversationIdOffersByMessageIdAcceptErrors[keyof PostApiV1MeConversationsByConversationIdOffersByMessageIdAcceptErrors];
+
+export type PostApiV1MeConversationsByConversationIdOffersByMessageIdAcceptResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            conversationId: string;
+            senderId: string | null;
+            fromMe: boolean;
+            kind: 'text' | 'offer';
+            body: string;
+            offer: {
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                amount: number;
+                status: 'pending' | 'accepted' | 'declined' | 'superseded';
+                respondedAt: string | null;
+            } | null;
+            createdAt: string;
+        };
+    };
+};
+
+export type PostApiV1MeConversationsByConversationIdOffersByMessageIdAcceptResponse = PostApiV1MeConversationsByConversationIdOffersByMessageIdAcceptResponses[keyof PostApiV1MeConversationsByConversationIdOffersByMessageIdAcceptResponses];
+
+export type PostApiV1MeConversationsByConversationIdOffersByMessageIdDeclineData = {
+    body?: never;
+    path: {
+        conversationId: string;
+        messageId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/conversations/{conversationId}/offers/{messageId}/decline';
+};
+
+export type PostApiV1MeConversationsByConversationIdOffersByMessageIdDeclineErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1MeConversationsByConversationIdOffersByMessageIdDeclineError = PostApiV1MeConversationsByConversationIdOffersByMessageIdDeclineErrors[keyof PostApiV1MeConversationsByConversationIdOffersByMessageIdDeclineErrors];
+
+export type PostApiV1MeConversationsByConversationIdOffersByMessageIdDeclineResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            conversationId: string;
+            senderId: string | null;
+            fromMe: boolean;
+            kind: 'text' | 'offer';
+            body: string;
+            offer: {
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                amount: number;
+                status: 'pending' | 'accepted' | 'declined' | 'superseded';
+                respondedAt: string | null;
+            } | null;
+            createdAt: string;
+        };
+    };
+};
+
+export type PostApiV1MeConversationsByConversationIdOffersByMessageIdDeclineResponse = PostApiV1MeConversationsByConversationIdOffersByMessageIdDeclineResponses[keyof PostApiV1MeConversationsByConversationIdOffersByMessageIdDeclineResponses];
 
 export type PostApiV1MeConversationsByConversationIdReadData = {
     body?: never;
@@ -13751,6 +14545,17 @@ export type PostApiV1MeConversationsByConversationIdReportsErrors = {
      * Default Response
      */
     404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
         success: false;
         error: {
             code: string;
@@ -14081,6 +14886,502 @@ export type DeleteApiV1MeBlocksByAccountIdResponses = {
 };
 
 export type DeleteApiV1MeBlocksByAccountIdResponse = DeleteApiV1MeBlocksByAccountIdResponses[keyof DeleteApiV1MeBlocksByAccountIdResponses];
+
+export type GetApiV1OpsSupportConversationsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number;
+        limit?: number;
+        status?: 'pending' | 'all';
+    };
+    url: '/api/v1/ops/support/conversations';
+};
+
+export type GetApiV1OpsSupportConversationsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsSupportConversationsError = GetApiV1OpsSupportConversationsErrors[keyof GetApiV1OpsSupportConversationsErrors];
+
+export type GetApiV1OpsSupportConversationsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                kind: 'listing' | 'support' | 'group';
+                listing: {
+                    id: string;
+                    title: string | null;
+                    /**
+                     * Số tiền, đơn vị đồng
+                     */
+                    price: number | null;
+                    negotiable: boolean;
+                    state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+                    cover: {
+                        id: string;
+                        url: string;
+                    } | null;
+                } | null;
+                group: {
+                    id: string;
+                    name: string;
+                } | null;
+                role: 'buyer' | 'seller' | 'team';
+                counterpart: {
+                    kind: 'account' | 'support' | 'group_admins';
+                    accountId: string | null;
+                    displayName: string | null;
+                    avatarUrl: string | null;
+                    gone: boolean;
+                    activity: {
+                        online: boolean;
+                        lastActiveAt: string | null;
+                    } | null;
+                };
+                lastMessage: {
+                    id: string;
+                    conversationId: string;
+                    senderId: string | null;
+                    fromMe: boolean;
+                    kind: 'text' | 'offer';
+                    body: string;
+                    offer: {
+                        /**
+                         * Số tiền, đơn vị đồng
+                         */
+                        amount: number;
+                        status: 'pending' | 'accepted' | 'declined' | 'superseded';
+                        respondedAt: string | null;
+                    } | null;
+                    createdAt: string;
+                } | null;
+                unreadCount: number;
+                locked: boolean;
+                canSend: boolean;
+                canOffer: boolean;
+                createdAt: string;
+                lastActivityAt: string;
+            }>;
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    };
+};
+
+export type GetApiV1OpsSupportConversationsResponse = GetApiV1OpsSupportConversationsResponses[keyof GetApiV1OpsSupportConversationsResponses];
+
+export type GetApiV1OpsSupportConversationsByConversationIdData = {
+    body?: never;
+    path: {
+        conversationId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/support/conversations/{conversationId}';
+};
+
+export type GetApiV1OpsSupportConversationsByConversationIdErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsSupportConversationsByConversationIdError = GetApiV1OpsSupportConversationsByConversationIdErrors[keyof GetApiV1OpsSupportConversationsByConversationIdErrors];
+
+export type GetApiV1OpsSupportConversationsByConversationIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            kind: 'listing' | 'support' | 'group';
+            listing: {
+                id: string;
+                title: string | null;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                price: number | null;
+                negotiable: boolean;
+                state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+                cover: {
+                    id: string;
+                    url: string;
+                } | null;
+            } | null;
+            group: {
+                id: string;
+                name: string;
+            } | null;
+            role: 'buyer' | 'seller' | 'team';
+            counterpart: {
+                kind: 'account' | 'support' | 'group_admins';
+                accountId: string | null;
+                displayName: string | null;
+                avatarUrl: string | null;
+                gone: boolean;
+                activity: {
+                    online: boolean;
+                    lastActiveAt: string | null;
+                } | null;
+            };
+            lastMessage: {
+                id: string;
+                conversationId: string;
+                senderId: string | null;
+                fromMe: boolean;
+                kind: 'text' | 'offer';
+                body: string;
+                offer: {
+                    /**
+                     * Số tiền, đơn vị đồng
+                     */
+                    amount: number;
+                    status: 'pending' | 'accepted' | 'declined' | 'superseded';
+                    respondedAt: string | null;
+                } | null;
+                createdAt: string;
+            } | null;
+            unreadCount: number;
+            locked: boolean;
+            canSend: boolean;
+            canOffer: boolean;
+            createdAt: string;
+            lastActivityAt: string;
+        };
+    };
+};
+
+export type GetApiV1OpsSupportConversationsByConversationIdResponse = GetApiV1OpsSupportConversationsByConversationIdResponses[keyof GetApiV1OpsSupportConversationsByConversationIdResponses];
+
+export type GetApiV1OpsSupportConversationsByConversationIdMessagesData = {
+    body?: never;
+    path: {
+        conversationId: string;
+    };
+    query?: {
+        cursor?: string;
+        limit?: number;
+    };
+    url: '/api/v1/ops/support/conversations/{conversationId}/messages';
+};
+
+export type GetApiV1OpsSupportConversationsByConversationIdMessagesErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsSupportConversationsByConversationIdMessagesError = GetApiV1OpsSupportConversationsByConversationIdMessagesErrors[keyof GetApiV1OpsSupportConversationsByConversationIdMessagesErrors];
+
+export type GetApiV1OpsSupportConversationsByConversationIdMessagesResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                conversationId: string;
+                senderId: string | null;
+                fromMe: boolean;
+                kind: 'text' | 'offer';
+                body: string;
+                offer: {
+                    /**
+                     * Số tiền, đơn vị đồng
+                     */
+                    amount: number;
+                    status: 'pending' | 'accepted' | 'declined' | 'superseded';
+                    respondedAt: string | null;
+                } | null;
+                createdAt: string;
+            }>;
+            nextCursor: string | null;
+        };
+    };
+};
+
+export type GetApiV1OpsSupportConversationsByConversationIdMessagesResponse = GetApiV1OpsSupportConversationsByConversationIdMessagesResponses[keyof GetApiV1OpsSupportConversationsByConversationIdMessagesResponses];
+
+export type PostApiV1OpsSupportConversationsByConversationIdMessagesData = {
+    body: {
+        body: string;
+    };
+    path: {
+        conversationId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/support/conversations/{conversationId}/messages';
+};
+
+export type PostApiV1OpsSupportConversationsByConversationIdMessagesErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsSupportConversationsByConversationIdMessagesError = PostApiV1OpsSupportConversationsByConversationIdMessagesErrors[keyof PostApiV1OpsSupportConversationsByConversationIdMessagesErrors];
+
+export type PostApiV1OpsSupportConversationsByConversationIdMessagesResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            conversationId: string;
+            senderId: string | null;
+            fromMe: boolean;
+            kind: 'text' | 'offer';
+            body: string;
+            offer: {
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                amount: number;
+                status: 'pending' | 'accepted' | 'declined' | 'superseded';
+                respondedAt: string | null;
+            } | null;
+            createdAt: string;
+        };
+    };
+};
+
+export type PostApiV1OpsSupportConversationsByConversationIdMessagesResponse = PostApiV1OpsSupportConversationsByConversationIdMessagesResponses[keyof PostApiV1OpsSupportConversationsByConversationIdMessagesResponses];
+
+export type PostApiV1OpsSupportConversationsByConversationIdReadData = {
+    body?: never;
+    path: {
+        conversationId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/support/conversations/{conversationId}/read';
+};
+
+export type PostApiV1OpsSupportConversationsByConversationIdReadErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsSupportConversationsByConversationIdReadError = PostApiV1OpsSupportConversationsByConversationIdReadErrors[keyof PostApiV1OpsSupportConversationsByConversationIdReadErrors];
+
+export type PostApiV1OpsSupportConversationsByConversationIdReadResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PostApiV1OpsSupportConversationsByConversationIdReadResponse = PostApiV1OpsSupportConversationsByConversationIdReadResponses[keyof PostApiV1OpsSupportConversationsByConversationIdReadResponses];
 
 export type GetApiV1MeNotificationsData = {
     body?: never;
