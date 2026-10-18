@@ -64,17 +64,14 @@ const asSeller = (p: Person): Seller => ({
 
 export const SUPPORT: Peer = { ...person('u-support', 'Hỗ trợ Ghim', true), online: true };
 
-export const ME: Omit<Me, 'stats'> = {
+/** Người bán của các tin mẫu trong luồng đăng tin (`publishListing`) — hồ sơ thật đọc từ `/me`. */
+export const ME: Me = {
   ...me,
+  email: 'tai@ghim.local',
   idVerified: true,
   memberSince: 2023,
   rating: 4.9,
   place: { ward: 'Thủ Đức', province: HCM },
-  groups: [
-    { id: 'g-na', name: 'Hội Nhiếp ảnh Sài Gòn', initials: 'NA', visibility: 'public' },
-    { id: 'g-hv', name: 'THPT Hùng Vương', initials: 'HV', visibility: 'private' },
-    { id: 'g-xm', name: 'Xe máy cũ Quận 7', initials: 'XM', visibility: 'public' },
-  ],
 };
 
 /* ─── DANH MỤC ────────────────────────────────────────────────────── */
@@ -370,41 +367,9 @@ export const LISTINGS: ListingDetail[] = [
 type Shelf = Pick<MyListing, 'state' | 'views' | 'saves' | 'expiresAt'>;
 
 export const MY_SHELF: Record<string, Shelf> = {
-  'l-sony': { state: 'active', views: 142, saves: 9, expiresAt: inDays(2) },
-  'l-desk': { state: 'active', views: 58, saves: 3, expiresAt: inDays(25) },
+  'l-sony': { state: 'live', views: 142, saves: 9, expiresAt: inDays(2) },
+  'l-desk': { state: 'live', views: 58, saves: 3, expiresAt: inDays(25) },
 };
-
-export const MY_SOLD: MyListing[] = [
-  {
-    id: 'l-old-vision',
-    title: 'Honda Vision 2019',
-    price: 18_000_000,
-    cover: { svg: ART.scooter },
-  },
-  {
-    id: 'l-old-mbp',
-    title: 'MacBook Pro 2017 13 inch',
-    price: 9_500_000,
-    cover: { svg: ART.macbookProM1 },
-  },
-  {
-    id: 'l-old-lens',
-    title: 'Ống kính Canon 50mm f/1.8 II',
-    price: 1_200_000,
-    cover: { svg: ART.lens },
-  },
-].map((s, i) => ({
-  ...s,
-  place: ME.place,
-  postedAt: ago(60 * 24 * (40 + i * 20)),
-  boosted: false,
-  seller: me,
-  groupName: null,
-  state: 'sold' as const,
-  views: 120 + i * 30,
-  saves: 4 + i,
-  expiresAt: ago(60 * 24 * (10 + i * 20)),
-}));
 
 export const SAVED_IDS = ['l-ip13pro', 'l-mba16', 'l-xt30'];
 

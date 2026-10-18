@@ -9,7 +9,6 @@ import type {
   HelpTopic,
   ListingCard,
   ListingDetail,
-  Me,
   Message,
   MyListing,
   NewListing,
@@ -44,7 +43,6 @@ const notFound = (what: string) => new ApiError('NOT_FOUND', `Không tìm thấy
 
 let listings = D.LISTINGS;
 let shelf = D.MY_SHELF;
-let sold = D.MY_SOLD;
 let savedIds = D.SAVED_IDS;
 let savedSearches: string[] = [];
 let groups = D.GROUPS;
@@ -74,7 +72,7 @@ function toCard(l: ListingDetail): ListingCard {
 
 /** Tin đã đăng nhưng chưa duyệt hoặc đã bán không lên sàn. */
 const publicListings = () =>
-  listings.filter((l) => (shelf[l.id]?.state ?? 'active') === 'active').map(toCard);
+  listings.filter((l) => (shelf[l.id]?.state ?? 'live') === 'live').map(toCard);
 
 const byNewest = (a: ListingCard, b: ListingCard) => b.postedAt.localeCompare(a.postedAt);
 
@@ -101,11 +99,6 @@ function patchConversation(id: string, fn: (c: Thread) => Thread) {
   conversations = conversations.map((c) => (c.id === id ? fn(c) : c));
 }
 
-const toMine = (l: ListingDetail): MyListing | null => {
-  const s = shelf[l.id];
-  return s ? { ...toCard(l), ...s } : null;
-};
-
 /** Từ khoá → danh mục. Backend thật sẽ phân loại bằng máy duyệt; đây chỉ đủ cho luồng đăng tin chạy. */
 const KEYWORDS: { re: RegExp; id: PostCategoryId; brand: string | null }[] = [
   { re: /iphone/i, id: 'phone', brand: 'Apple' },
@@ -126,14 +119,6 @@ const PRICE_HINTS: Partial<Record<PostCategoryId, PriceHint>> = {
 };
 
 export const mockApi = {
-  getMe: (): Promise<Me> => {
-    const active = Object.values(shelf).filter((s) => s.state !== 'sold').length;
-    return wait({
-      ...D.ME,
-      stats: { active, sold: sold.length, saved: savedIds.length },
-    });
-  },
-
   getPostCategories: (): Promise<PostCategory[]> => wait(D.CATEGORIES),
   getDistricts: (): Promise<string[]> => wait(D.DISTRICTS),
 
@@ -187,27 +172,12 @@ export const mockApi = {
 
   reportListing: (_id: string, _reason: string): Promise<void> => wait(undefined),
 
-  getMyListings: (state: 'active' | 'sold'): Promise<MyListing[]> => {
-    if (state === 'sold') return wait(sold);
-    const mine = listings.map(toMine).filter((m): m is MyListing => m !== null);
-    return wait(mine.filter((m) => m.state !== 'sold').sort(byNewest));
-  },
-
-  markSold: async (id: string): Promise<void> => {
-    const l = listings.find((x) => x.id === id);
-    const s = shelf[id];
-    if (!l || !s) throw notFound('tin đăng');
-    sold = [{ ...toCard(l), ...s, state: 'sold' }, ...sold];
-    shelf = { ...shelf, [id]: { ...s, state: 'sold' } };
-    return wait(undefined);
-  },
-
   publishListing: async (input: NewListing): Promise<MyListing> => {
     const cover = input.photos[0];
     if (!cover) throw new ApiError('VALIDATION_ERROR', 'Tin cần ít nhất một ảnh', 400);
     const category = D.CATEGORIES.find((c) => c.id === input.categoryId);
     if (!category) throw new ApiError('VALIDATION_ERROR', 'Danh mục không hợp lệ', 400);
-    const me = await mockApi.getMe();
+    const me = D.ME;
     const id = nextId('l');
     const now = Date.now();
     const detail: ListingDetail = {

@@ -12,6 +12,7 @@ import { Avatar, Verified } from '@/components/Avatar';
 import { EmptyState, GhostButton, IconButton, Loading, type IconName } from '@/components/ui';
 import { useMe } from '@/queries/account';
 import { useSignOut } from '@/queries/auth';
+import { useMyGroups } from '@/queries/groups';
 import { useSavedListings } from '@/queries/listings';
 import { useMarkSold, useMyListings } from '@/queries/selling';
 import { useIsAuthenticated } from '@/stores/auth';
@@ -27,6 +28,7 @@ export default function Profile() {
   const [shelf, setShelf] = useState<Shelf>('active');
 
   const me = useMe();
+  const groups = useMyGroups();
   const active = useMyListings('active');
   const sold = useMyListings('sold');
   const saved = useSavedListings();
@@ -43,17 +45,20 @@ export default function Profile() {
   if (me.isPending) return <Loading />;
   if (me.isError) return <EmptyState icon="wifi-off" text={me.error.message} />;
 
-  const { stats } = me.data;
-  const firstGroup = me.data.groups[0];
+  // Server không trả tổng số tin: đếm từ chính các danh sách đang hiện.
+  const stats = {
+    active: active.data?.length ?? 0,
+    sold: sold.data?.length ?? 0,
+    saved: saved.data?.length ?? 0,
+  };
+  const firstGroup = groups.data?.[0];
   const menu: { icon: IconName; label: string; onPress: () => void }[] = [
     {
       icon: 'check-circle',
       label: 'Xác minh tài khoản',
       onPress: () =>
         toast(
-          me.data.idVerified
-            ? 'Tài khoản đã xác minh CCCD'
-            : 'Xác minh giấy tờ sẽ có khi backend mở add-identity',
+          me.data.idVerified ? 'Tài khoản đã xác minh CCCD' : 'Xác minh giấy tờ sẽ có ở bản sau',
         ),
     },
     {
@@ -95,7 +100,7 @@ export default function Profile() {
           <View style={styles.stats}>
             <Stat value={String(stats.active)} label="Đang đăng" />
             <Stat value={String(stats.sold)} label="Đã bán" />
-            <Stat value={`${me.data.rating} ★`} label="Đánh giá" />
+            <Stat value={me.data.rating === null ? '—' : `${me.data.rating} ★`} label="Đánh giá" />
           </View>
         </View>
 
@@ -128,7 +133,7 @@ export default function Profile() {
                 key={l.id}
                 item={l}
                 onPress={() => router.push(`/listing/${l.id}`)}
-                onEdit={() => toast('Sửa tin sẽ có khi backend mở add-listings')}
+                onEdit={() => toast('Sửa tin sẽ có khi nối luồng đăng tin')}
                 onBoost={() => toast('Đẩy tin sẽ có khi chốt giá gói')}
                 onSold={() =>
                   markSold.mutate(l.id, {

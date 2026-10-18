@@ -1,14 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { Notice } from '@/api/client';
+import { api, type Notice } from '@/api/client';
 import { mockApi } from '@/api/mock';
 import { useIsAuthenticated } from '@/stores/auth';
 import { qk } from './keys';
 
-/* Dữ liệu gắn với người đang đăng nhập: hồ sơ, thông báo, trợ giúp. */
+/* Dữ liệu gắn với người đang đăng nhập: hồ sơ, thông báo, trợ giúp. Thông báo và trợ giúp vẫn là dữ liệu mẫu. */
 
 export function useMe() {
   const authed = useIsAuthenticated();
-  return useQuery({ queryKey: qk.me(), queryFn: mockApi.getMe, enabled: authed });
+  return useQuery({ queryKey: qk.me(), queryFn: api.getMe, enabled: authed });
 }
 
 export function useNotices() {

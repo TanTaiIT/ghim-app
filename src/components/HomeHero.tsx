@@ -76,7 +76,7 @@ export function HomeHero() {
         <Text style={styles.searchText}>Bạn muốn tìm gì hôm nay?</Text>
         <View style={styles.city}>
           <Feather name="map-pin" size={14} color={C.brand} />
-          <Text style={styles.cityText}>{me.data?.place.province ?? DEFAULT_CITY}</Text>
+          <Text style={styles.cityText}>{me.data?.place?.province ?? DEFAULT_CITY}</Text>
         </View>
       </Pressable>
 

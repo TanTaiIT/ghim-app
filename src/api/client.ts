@@ -4,6 +4,8 @@ import {
   getApiV1Listings,
   getApiV1ListingsById,
   getApiV1ListingsByIdSuggestions,
+  getApiV1Me,
+  getApiV1MeListings,
   getApiV1RegionsProvinces,
   getApiV1RegionsProvincesByCodeWards,
   getApiV1UsersById,
@@ -11,8 +13,13 @@ import {
   postApiV1AuthLogin,
   postApiV1AuthLogout,
   postApiV1AuthRefresh,
+  postApiV1ListingsByIdSold,
 } from './generated/sdk.gen';
-import type { GetApiV1ListingsResponses, GetApiV1UsersByIdResponses } from './generated/types.gen';
+import type {
+  GetApiV1ListingsResponses,
+  GetApiV1MeResponses,
+  GetApiV1UsersByIdResponses,
+} from './generated/types.gen';
 import { ApiError } from './http';
 
 /*
@@ -204,13 +211,16 @@ export const NO_FILTERS: SearchFilters = {
   maxPrice: null,
 };
 
-type MyListingState = 'pending' | 'active' | 'sold';
+/** Trạng thái của server, trừ `removed` (tin đã gỡ không hiện ở "Tin của tôi"). */
+export type MyListingState =
+  'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'expired' | 'sold';
 
 export type MyListing = ListingCard & {
   state: MyListingState;
-  views: number;
-  saves: number;
-  expiresAt: string;
+  views: number | null;
+  saves: number | null;
+  /** null với nháp và tin chưa từng lên sàn. */
+  expiresAt: string | null;
 };
 
 export type PriceHint = { min: number; max: number };
@@ -305,13 +315,12 @@ export type Notice = {
 };
 
 export type Me = Person & {
+  email: string;
   idVerified: boolean;
   memberSince: number;
-  /** Khu vực mặc định khi đăng tin và khi tìm kiếm. */
-  place: Place;
-  rating: number;
-  stats: { active: number; sold: number; saved: number };
-  groups: GroupSummary[];
+  /** Khu vực mặc định khi đăng tin và khi tìm kiếm — server chưa lưu, nên null với tài khoản thật. */
+  place: Place | null;
+  rating: number | null;
 };
 
 export type HelpTopic = { id: string; label: string; faqs: { q: string; a: string }[] };
@@ -342,9 +351,16 @@ export type LoadLookups = (provinceCodes: number[]) => Promise<Lookups>;
 
 type WireListing = GetApiV1ListingsResponses[200]['data']['items'][number];
 type WireUser = GetApiV1UsersByIdResponses[200]['data'];
+type WireMe = GetApiV1MeResponses[200]['data'];
 
 /** Trang đầu đủ cho trang chủ và một màn kết quả; cuộn tải thêm (`nextCursor`) chưa làm. */
 const PAGE_SIZE = 30;
+
+/**
+ * Trần một trang của server (`MAX_LIMIT`). "Tin của tôi" đếm số tin từ chính trang này vì server không trả
+ * tổng — người bán có hơn 100 tin còn sống thì con số sẽ thiếu tới khi có tải thêm.
+ */
+const MY_PAGE_SIZE = 100;
 
 const toPicture = (img: { url: string }): Picture => ({ uri: img.url });
 
@@ -366,11 +382,12 @@ function toCard(w: WireListing, lookups: Lookups): ListingCard {
   };
 }
 
+const provincesOf = (items: WireListing[]) => [
+  ...new Set(items.flatMap((w) => (w.provinceCode === null ? [] : [w.provinceCode]))),
+];
+
 async function toCards(items: WireListing[], load: LoadLookups): Promise<ListingCard[]> {
-  const provinces = [
-    ...new Set(items.flatMap((w) => (w.provinceCode === null ? [] : [w.provinceCode]))),
-  ];
-  const lookups = await load(provinces);
+  const lookups = await load(provincesOf(items));
   return items.map((w) => toCard(w, lookups));
 }
 
@@ -385,6 +402,20 @@ function toSpecs(fields: { name: string; label: string }[], attributes: Record<s
         : '';
     return value.trim() === '' ? [] : [{ label: f.label, value }];
   });
+}
+
+/** Server chưa lưu xác minh giấy tờ, đánh giá hay khu vực mặc định của tài khoản. */
+function toMe(u: WireMe): Me {
+  return {
+    id: u.id,
+    name: u.displayName,
+    verified: false,
+    email: u.email,
+    idVerified: false,
+    memberSince: new Date(u.joinedAt).getFullYear(),
+    place: null,
+    rating: null,
+  };
 }
 
 /** Hồ sơ công khai mới có tên, ảnh, ngày tham gia — chưa có xác minh, đánh giá hay số giao dịch. */
@@ -465,6 +496,31 @@ export const api = {
 
   getSimilar: async (id: string, load: LoadLookups): Promise<ListingCard[]> =>
     toCards(await unwrap(getApiV1ListingsByIdSuggestions({ path: { id } })), load),
+
+  getMe: async (): Promise<Me> => toMe(await unwrap(getApiV1Me())),
+
+  /** Mọi trạng thái trong một lượt — hai ngăn "Đang đăng" / "Đã bán" lọc từ cùng một danh sách. */
+  getMyListings: async (load: LoadLookups): Promise<MyListing[]> => {
+    const { items } = await unwrap(getApiV1MeListings({ query: { limit: MY_PAGE_SIZE } }));
+    const lookups = await load(provincesOf(items));
+    return items.flatMap((w) =>
+      w.state === 'removed'
+        ? []
+        : [
+            {
+              ...toCard(w, lookups),
+              state: w.state,
+              views: null,
+              saves: null,
+              expiresAt: w.expiresAt,
+            },
+          ],
+    );
+  },
+
+  markSold: async (id: string): Promise<void> => {
+    await unwrap(postApiV1ListingsByIdSold({ path: { id } }));
+  },
 
   login: (email: string, password: string): Promise<Session> =>
     unwrap(postApiV1AuthLogin({ body: { email, password, client: 'app' } })).then(toSession),

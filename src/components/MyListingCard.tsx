@@ -9,16 +9,29 @@ import { daysUntil } from '@/utils/format';
 /** Còn từ ngần này ngày trở xuống thì nhãn chuyển cam "Hết hạn sau N ngày" — đủ sớm để kịp gia hạn. */
 const EXPIRY_WARN_DAYS = 3;
 
-function status(item: MyListing): { label: string; tone: 'brand' | 'boost' | 'amber' | 'neutral' } {
-  if (item.state === 'sold') return { label: 'Đã bán', tone: 'neutral' };
-  if (item.state === 'pending') return { label: 'Chờ duyệt', tone: 'amber' };
-  const days = daysUntil(item.expiresAt);
-  return days <= EXPIRY_WARN_DAYS
+type Tone = 'brand' | 'boost' | 'amber' | 'neutral';
+
+const LABEL: Record<Exclude<MyListing['state'], 'live'>, { label: string; tone: Tone }> = {
+  draft: { label: 'Bản nháp', tone: 'neutral' },
+  checking: { label: 'Đang kiểm tra', tone: 'amber' },
+  pending: { label: 'Chờ duyệt', tone: 'amber' },
+  rejected: { label: 'Bị từ chối', tone: 'boost' },
+  expired: { label: 'Đã hết hạn', tone: 'boost' },
+  sold: { label: 'Đã bán', tone: 'neutral' },
+};
+
+function status(item: MyListing): { label: string; tone: Tone } {
+  if (item.state !== 'live') return LABEL[item.state];
+  const days = item.expiresAt === null ? null : daysUntil(item.expiresAt);
+  return days !== null && days <= EXPIRY_WARN_DAYS
     ? { label: `Hết hạn sau ${days} ngày`, tone: 'boost' }
     : { label: 'Đang hiển thị', tone: 'brand' };
 }
 
-/** Tin của tôi ở trang Cá nhân. Hàng nút chỉ có khi tin còn trên sàn — tin đã bán không sửa, không đẩy. */
+/**
+ * Tin của tôi ở trang Cá nhân. Hàng nút chỉ có khi tin đang hiển thị — nháp, đang kiểm, chờ duyệt, bị từ chối
+ * chưa lên sàn nên không có gì để đẩy hay đánh dấu đã bán; tin đã bán không sửa nữa.
+ */
 export function MyListingCard({
   item,
   onPress,
@@ -42,16 +55,18 @@ export function MyListingCard({
             {item.title}
           </Text>
           <Price value={item.price} />
-          <View style={styles.stats}>
-            <Feather name="eye" size={14} color={C.inkSoft} />
-            <Text style={styles.stat}>{item.views}</Text>
-            <Feather name="heart" size={14} color={C.inkSoft} />
-            <Text style={styles.stat}>{item.saves}</Text>
-          </View>
+          {item.views !== null && item.saves !== null && (
+            <View style={styles.stats}>
+              <Feather name="eye" size={14} color={C.inkSoft} />
+              <Text style={styles.stat}>{item.views}</Text>
+              <Feather name="heart" size={14} color={C.inkSoft} />
+              <Text style={styles.stat}>{item.saves}</Text>
+            </View>
+          )}
           <Tag label={s.label} tone={s.tone} />
         </View>
       </Pressable>
-      {item.state !== 'sold' && (
+      {item.state === 'live' && (
         <View style={styles.actions}>
           <Pressable accessibilityRole="button" onPress={onEdit} style={[styles.btn, styles.edit]}>
             <Text style={styles.editText}>Sửa</Text>

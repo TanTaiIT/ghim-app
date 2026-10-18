@@ -24,7 +24,7 @@ export const qk = {
     search: (f: SearchFilters) => ['listings', 'search', f] as const,
     detail: (id: string) => ['listings', 'detail', id] as const,
     similar: (id: string) => ['listings', 'similar', id] as const,
-    mine: (state: 'active' | 'sold') => ['listings', 'mine', state] as const,
+    mine: () => ['listings', 'mine'] as const,
     saved: () => ['listings', 'saved'] as const,
   },
   savedIds: () => ['saved-ids'] as const,

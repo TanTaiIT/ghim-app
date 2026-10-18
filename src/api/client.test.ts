@@ -115,6 +115,48 @@ describe('đọc tin đăng từ server', () => {
     expect(l).toMatchObject({ allowOffers: true, condition: null, views: null });
     expect(l.photos).toEqual([{ uri: 'https://img.test/1.jpg' }]);
   });
+
+  it('tin của tôi: giữ trạng thái của server, bỏ tin đã gỡ; hồ sơ chưa có khu vực và đánh giá', async () => {
+    const urls = serve({
+      '/api/v1/me/listings': {
+        items: [
+          { ...wireListing, id: 'a', state: 'draft', expiresAt: null },
+          { ...wireListing, id: 'b', state: 'live', expiresAt: '2026-11-01T00:00:00.000Z' },
+          { ...wireListing, id: 'c', state: 'removed' },
+          { ...wireListing, id: 'd', state: 'sold' },
+        ],
+        nextCursor: null,
+      },
+      '/api/v1/me': {
+        id: 'u-1',
+        displayName: 'Tài Nguyễn',
+        avatarUrl: null,
+        joinedAt: '2026-10-18T00:00:00.000Z',
+        phone: null,
+        email: 'app.dev@ghim.local',
+        emailVerified: true,
+        role: 'user',
+        twoFactorEnabled: false,
+        nameHidden: false,
+      },
+    });
+
+    const mine = await api.getMyListings(async () => lookups);
+    expect(mine.map((l) => [l.id, l.state, l.expiresAt])).toEqual([
+      ['a', 'draft', null],
+      ['b', 'live', '2026-11-01T00:00:00.000Z'],
+      ['d', 'sold', wireListing.expiresAt],
+    ]);
+    expect(urls[0]?.searchParams.get('limit')).toBe('100');
+
+    await expect(api.getMe()).resolves.toMatchObject({
+      name: 'Tài Nguyễn',
+      memberSince: 2026,
+      place: null,
+      rating: null,
+      verified: false,
+    });
+  });
 });
 
 describe('unwrap', () => {

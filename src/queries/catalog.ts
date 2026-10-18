@@ -1,5 +1,5 @@
 import { useQuery, type QueryClient } from '@tanstack/react-query';
-import { api, type Lookups } from '@/api/client';
+import { api, type LoadLookups, type Lookups } from '@/api/client';
 import { qk } from './keys';
 
 /*
@@ -43,3 +43,9 @@ export async function loadLookups(qc: QueryClient, provinceCodes: number[]): Pro
     }),
   };
 }
+
+/** Dạng mà `api.*Listings` nhận. */
+export const lookupsFrom =
+  (qc: QueryClient): LoadLookups =>
+  (codes) =>
+    loadLookups(qc, codes);

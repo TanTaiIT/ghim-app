@@ -1,14 +1,8 @@
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-  type QueryClient,
-} from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, NO_FILTERS, type ListingCard, type SearchFilters } from '@/api/client';
 import { mockApi } from '@/api/mock';
 import { useIsAuthenticated } from '@/stores/auth';
-import { loadLookups } from './catalog';
+import { lookupsFrom } from './catalog';
 import { qk } from './keys';
 
 /* Phía người xem: bảng tin, tìm kiếm, chi tiết, tin đã lưu. Phía người bán nằm ở `./selling`. */
@@ -16,12 +10,10 @@ import { qk } from './keys';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
- * Tin trong nhóm, tin đã lưu, tin của tôi, tin trong chat vẫn là dữ liệu mẫu (id dạng `l-…`) và vẫn mở màn
+ * Tin trong nhóm, tin đã lưu, tin trong chat vẫn là dữ liệu mẫu (id dạng `l-…`) và vẫn mở màn
  * chi tiết — id không phải uuid thì đọc từ mock. Xoá nhánh này khi các domain đó nối backend.
  */
 const fromServer = (id: string) => UUID.test(id);
-
-const lookupsVia = (qc: QueryClient) => (codes: number[]) => loadLookups(qc, codes);
 
 /**
  * Trang chủ đọc chung request của màn tìm kiếm không bộ lọc: bấm "Xem tất cả" mở ra đúng các tin vừa thấy,
@@ -31,7 +23,7 @@ function useFeed<T>(select: (cards: ListingCard[]) => T) {
   const qc = useQueryClient();
   return useQuery({
     queryKey: qk.listings.search(NO_FILTERS),
-    queryFn: () => api.searchListings(NO_FILTERS, lookupsVia(qc)),
+    queryFn: () => api.searchListings(NO_FILTERS, lookupsFrom(qc)),
     select,
   });
 }
@@ -52,7 +44,7 @@ export function useSearch(filters: SearchFilters) {
   const qc = useQueryClient();
   return useQuery({
     queryKey: qk.listings.search(filters),
-    queryFn: () => api.searchListings(filters, lookupsVia(qc)),
+    queryFn: () => api.searchListings(filters, lookupsFrom(qc)),
     placeholderData: keepPreviousData,
   });
 }
@@ -63,7 +55,7 @@ export function useListing(id: string | undefined) {
     queryKey: qk.listings.detail(id ?? ''),
     queryFn: () => {
       const key = id ?? '';
-      return fromServer(key) ? api.getListing(key, lookupsVia(qc)) : mockApi.getListing(key);
+      return fromServer(key) ? api.getListing(key, lookupsFrom(qc)) : mockApi.getListing(key);
     },
     enabled: Boolean(id),
   });
@@ -75,7 +67,7 @@ export function useSimilar(id: string | undefined) {
     queryKey: qk.listings.similar(id ?? ''),
     queryFn: () => {
       const key = id ?? '';
-      return fromServer(key) ? api.getSimilar(key, lookupsVia(qc)) : mockApi.getSimilar(key);
+      return fromServer(key) ? api.getSimilar(key, lookupsFrom(qc)) : mockApi.getSimilar(key);
     },
     enabled: Boolean(id),
   });
@@ -109,7 +101,6 @@ export function useToggleSaved() {
     onSettled: () => {
       void qc.invalidateQueries({ queryKey: qk.savedIds() });
       void qc.invalidateQueries({ queryKey: qk.listings.saved() });
-      void qc.invalidateQueries({ queryKey: qk.me() });
     },
   });
 }
