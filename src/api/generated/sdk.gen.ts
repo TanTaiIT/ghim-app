@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { GetHealthData, GetHealthReadyData, GetHealthReadyErrors, GetHealthReadyResponses, GetHealthResponses } from './types.gen';
+import type { DeleteApiV1GroupsByGroupIdBansByAccountIdData, DeleteApiV1GroupsByGroupIdBansByAccountIdErrors, DeleteApiV1GroupsByGroupIdBansByAccountIdResponses, DeleteApiV1GroupsByGroupIdInvitationsByInvitationIdData, DeleteApiV1GroupsByGroupIdInvitationsByInvitationIdErrors, DeleteApiV1GroupsByGroupIdInvitationsByInvitationIdResponses, DeleteApiV1GroupsByGroupIdJoinRequestData, DeleteApiV1GroupsByGroupIdJoinRequestErrors, DeleteApiV1GroupsByGroupIdJoinRequestResponses, DeleteApiV1GroupsByGroupIdListingBadgesByListingIdData, DeleteApiV1GroupsByGroupIdListingBadgesByListingIdErrors, DeleteApiV1GroupsByGroupIdListingBadgesByListingIdResponses, DeleteApiV1GroupsByGroupIdMembersByAccountIdData, DeleteApiV1GroupsByGroupIdMembersByAccountIdErrors, DeleteApiV1GroupsByGroupIdMembersByAccountIdResponses, DeleteApiV1GroupsByGroupIdModeratorsByAccountIdData, DeleteApiV1GroupsByGroupIdModeratorsByAccountIdErrors, DeleteApiV1GroupsByGroupIdModeratorsByAccountIdResponses, DeleteApiV1GroupsByGroupIdOwnerTransferData, DeleteApiV1GroupsByGroupIdOwnerTransferErrors, DeleteApiV1GroupsByGroupIdOwnerTransferResponses, DeleteApiV1GroupsByGroupIdUnitsByUnitIdData, DeleteApiV1GroupsByGroupIdUnitsByUnitIdErrors, DeleteApiV1GroupsByGroupIdUnitsByUnitIdResponses, DeleteApiV1ListingsByIdData, DeleteApiV1ListingsByIdErrors, DeleteApiV1ListingsByIdResponses, DeleteApiV1MeAvatarData, DeleteApiV1MeAvatarErrors, DeleteApiV1MeAvatarResponses, DeleteApiV1MeBlocksByAccountIdData, DeleteApiV1MeBlocksByAccountIdErrors, DeleteApiV1MeBlocksByAccountIdResponses, DeleteApiV1MeConversationsByConversationIdData, DeleteApiV1MeConversationsByConversationIdErrors, DeleteApiV1MeConversationsByConversationIdResponses, DeleteApiV1MeConversationsByConversationIdViewingData, DeleteApiV1MeConversationsByConversationIdViewingErrors, DeleteApiV1MeConversationsByConversationIdViewingResponses, DeleteApiV1MeData, DeleteApiV1MeErrors, DeleteApiV1MeGroupMutesByGroupIdData, DeleteApiV1MeGroupMutesByGroupIdErrors, DeleteApiV1MeGroupMutesByGroupIdResponses, DeleteApiV1MePushTokenData, DeleteApiV1MePushTokenErrors, DeleteApiV1MePushTokenResponses, DeleteApiV1MeResponses, DeleteApiV1MeSessionsByIdData, DeleteApiV1MeSessionsByIdErrors, DeleteApiV1MeSessionsByIdResponses, DeleteApiV1MeSessionsData, DeleteApiV1MeSessionsErrors, DeleteApiV1MeSessionsResponses, DeleteApiV1OpsCategoriesByIdTemplateDraftData, DeleteApiV1OpsCategoriesByIdTemplateDraftErrors, DeleteApiV1OpsCategoriesByIdTemplateDraftResponses, DeleteApiV1OpsDisposableDomainsByDomainData, DeleteApiV1OpsDisposableDomainsByDomainErrors, DeleteApiV1OpsDisposableDomainsByDomainResponses, DeleteApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdData, DeleteApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdErrors, DeleteApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdResponses, DeleteApiV1OpsScreeningWhitelistByIdData, DeleteApiV1OpsScreeningWhitelistByIdErrors, DeleteApiV1OpsScreeningWhitelistByIdResponses, DeleteApiV1OpsStaffByAccountIdData, DeleteApiV1OpsStaffByAccountIdErrors, DeleteApiV1OpsStaffByAccountIdResponses, GetApiV1CategoriesByIdTemplateData, GetApiV1CategoriesByIdTemplateErrors, GetApiV1CategoriesByIdTemplateResponses, GetApiV1CategoriesByIdTemplateVersionsByVersionData, GetApiV1CategoriesByIdTemplateVersionsByVersionErrors, GetApiV1CategoriesByIdTemplateVersionsByVersionResponses, GetApiV1CategoriesData, GetApiV1CategoriesResponses, GetApiV1GroupsByGroupIdAnnouncementsData, GetApiV1GroupsByGroupIdAnnouncementsErrors, GetApiV1GroupsByGroupIdAnnouncementsResponses, GetApiV1GroupsByGroupIdBansData, GetApiV1GroupsByGroupIdBansErrors, GetApiV1GroupsByGroupIdBansResponses, GetApiV1GroupsByGroupIdData, GetApiV1GroupsByGroupIdErrors, GetApiV1GroupsByGroupIdInvitationsData, GetApiV1GroupsByGroupIdInvitationsErrors, GetApiV1GroupsByGroupIdInvitationsResponses, GetApiV1GroupsByGroupIdJoinRequestsData, GetApiV1GroupsByGroupIdJoinRequestsErrors, GetApiV1GroupsByGroupIdJoinRequestsResponses, GetApiV1GroupsByGroupIdListingsData, GetApiV1GroupsByGroupIdListingsErrors, GetApiV1GroupsByGroupIdListingsResponses, GetApiV1GroupsByGroupIdMembersData, GetApiV1GroupsByGroupIdMembersErrors, GetApiV1GroupsByGroupIdMembersResponses, GetApiV1GroupsByGroupIdResponses, GetApiV1GroupsByGroupIdReviewReasonTemplatesData, GetApiV1GroupsByGroupIdReviewReasonTemplatesErrors, GetApiV1GroupsByGroupIdReviewReasonTemplatesResponses, GetApiV1GroupsByGroupIdReviewTasksByTaskIdData, GetApiV1GroupsByGroupIdReviewTasksByTaskIdErrors, GetApiV1GroupsByGroupIdReviewTasksByTaskIdResponses, GetApiV1GroupsByGroupIdReviewTasksData, GetApiV1GroupsByGroupIdReviewTasksErrors, GetApiV1GroupsByGroupIdReviewTasksResponses, GetApiV1GroupsData, GetApiV1GroupsErrors, GetApiV1GroupsResponses, GetApiV1ListingsByIdData, GetApiV1ListingsByIdErrors, GetApiV1ListingsByIdResponses, GetApiV1ListingsByIdSuggestionsData, GetApiV1ListingsByIdSuggestionsErrors, GetApiV1ListingsByIdSuggestionsResponses, GetApiV1ListingsData, GetApiV1ListingsErrors, GetApiV1ListingsResponses, GetApiV1MeBlocksData, GetApiV1MeBlocksErrors, GetApiV1MeBlocksResponses, GetApiV1MeConversationsByConversationIdData, GetApiV1MeConversationsByConversationIdErrors, GetApiV1MeConversationsByConversationIdMessagesData, GetApiV1MeConversationsByConversationIdMessagesErrors, GetApiV1MeConversationsByConversationIdMessagesResponses, GetApiV1MeConversationsByConversationIdResponses, GetApiV1MeConversationsData, GetApiV1MeConversationsErrors, GetApiV1MeConversationsResponses, GetApiV1MeData, GetApiV1MeErrors, GetApiV1MeGroupBadgesData, GetApiV1MeGroupBadgesErrors, GetApiV1MeGroupBadgesResponses, GetApiV1MeGroupInvitationsData, GetApiV1MeGroupInvitationsErrors, GetApiV1MeGroupInvitationsResponses, GetApiV1MeGroupOwnerOffersData, GetApiV1MeGroupOwnerOffersErrors, GetApiV1MeGroupOwnerOffersResponses, GetApiV1MeGroupsData, GetApiV1MeGroupsErrors, GetApiV1MeGroupsResponses, GetApiV1MeListingsData, GetApiV1MeListingsErrors, GetApiV1MeListingsResponses, GetApiV1MeNotificationPreferencesData, GetApiV1MeNotificationPreferencesErrors, GetApiV1MeNotificationPreferencesResponses, GetApiV1MeNotificationsData, GetApiV1MeNotificationsErrors, GetApiV1MeNotificationsResponses, GetApiV1MeNotificationsUnreadCountData, GetApiV1MeNotificationsUnreadCountErrors, GetApiV1MeNotificationsUnreadCountResponses, GetApiV1MeReportsData, GetApiV1MeReportsErrors, GetApiV1MeReportsResponses, GetApiV1MeResponses, GetApiV1MeSessionsData, GetApiV1MeSessionsErrors, GetApiV1MeSessionsResponses, GetApiV1MeStrikesData, GetApiV1MeStrikesErrors, GetApiV1MeStrikesResponses, GetApiV1MeTrustData, GetApiV1MeTrustErrors, GetApiV1MeTrustResponses, GetApiV1OpsAuditData, GetApiV1OpsAuditErrors, GetApiV1OpsAuditResponses, GetApiV1OpsCategoriesByIdSettingsVersionsByVersionData, GetApiV1OpsCategoriesByIdSettingsVersionsByVersionErrors, GetApiV1OpsCategoriesByIdSettingsVersionsByVersionResponses, GetApiV1OpsCategoriesByIdTemplateDraftData, GetApiV1OpsCategoriesByIdTemplateDraftErrors, GetApiV1OpsCategoriesByIdTemplateDraftResponses, GetApiV1OpsCategoriesData, GetApiV1OpsCategoriesErrors, GetApiV1OpsCategoriesResponses, GetApiV1OpsConfigData, GetApiV1OpsConfigErrors, GetApiV1OpsConfigResponses, GetApiV1OpsConfigVersionsByVersionData, GetApiV1OpsConfigVersionsByVersionErrors, GetApiV1OpsConfigVersionsByVersionResponses, GetApiV1OpsDisposableDomainsData, GetApiV1OpsDisposableDomainsErrors, GetApiV1OpsDisposableDomainsResponses, GetApiV1OpsFlagsByLookupCodeData, GetApiV1OpsFlagsByLookupCodeErrors, GetApiV1OpsFlagsByLookupCodeResponses, GetApiV1OpsGroupsByGroupIdData, GetApiV1OpsGroupsByGroupIdErrors, GetApiV1OpsGroupsByGroupIdResponses, GetApiV1OpsGroupsData, GetApiV1OpsGroupsErrors, GetApiV1OpsGroupsResponses, GetApiV1OpsIdVerificationsData, GetApiV1OpsIdVerificationsErrors, GetApiV1OpsIdVerificationsResponses, GetApiV1OpsJobsRunsData, GetApiV1OpsJobsRunsErrors, GetApiV1OpsJobsRunsResponses, GetApiV1OpsReviewReasonTemplatesData, GetApiV1OpsReviewReasonTemplatesErrors, GetApiV1OpsReviewReasonTemplatesResponses, GetApiV1OpsReviewStatsBoardData, GetApiV1OpsReviewStatsBoardErrors, GetApiV1OpsReviewStatsBoardResponses, GetApiV1OpsReviewStatsReviewersData, GetApiV1OpsReviewStatsReviewersErrors, GetApiV1OpsReviewStatsReviewersResponses, GetApiV1OpsReviewStatsRulesData, GetApiV1OpsReviewStatsRulesErrors, GetApiV1OpsReviewStatsRulesResponses, GetApiV1OpsReviewTasksByTaskIdData, GetApiV1OpsReviewTasksByTaskIdErrors, GetApiV1OpsReviewTasksByTaskIdResponses, GetApiV1OpsReviewTasksData, GetApiV1OpsReviewTasksErrors, GetApiV1OpsReviewTasksResponses, GetApiV1OpsScreeningLookupsByCodeData, GetApiV1OpsScreeningLookupsByCodeErrors, GetApiV1OpsScreeningLookupsByCodeResponses, GetApiV1OpsScreeningPhrasesData, GetApiV1OpsScreeningPhrasesErrors, GetApiV1OpsScreeningPhrasesResponses, GetApiV1OpsScreeningRulesData, GetApiV1OpsScreeningRulesErrors, GetApiV1OpsScreeningRulesResponses, GetApiV1OpsScreeningWhitelistData, GetApiV1OpsScreeningWhitelistErrors, GetApiV1OpsScreeningWhitelistResponses, GetApiV1OpsStaffData, GetApiV1OpsStaffErrors, GetApiV1OpsStaffResponses, GetApiV1OpsTrustAccountsByAccountIdStrikesData, GetApiV1OpsTrustAccountsByAccountIdStrikesErrors, GetApiV1OpsTrustAccountsByAccountIdStrikesResponses, GetApiV1OpsTrustRuleArticlesData, GetApiV1OpsTrustRuleArticlesErrors, GetApiV1OpsTrustRuleArticlesResponses, GetApiV1RegionsProvincesByCodeWardsData, GetApiV1RegionsProvincesByCodeWardsErrors, GetApiV1RegionsProvincesByCodeWardsResponses, GetApiV1RegionsProvincesData, GetApiV1RegionsProvincesResponses, GetApiV1RegionsSearchData, GetApiV1RegionsSearchResponses, GetApiV1UsersByIdData, GetApiV1UsersByIdErrors, GetApiV1UsersByIdListingsData, GetApiV1UsersByIdListingsErrors, GetApiV1UsersByIdListingsResponses, GetApiV1UsersByIdResponses, GetHealthData, GetHealthReadyData, GetHealthReadyErrors, GetHealthReadyResponses, GetHealthResponses, PatchApiV1GroupsByGroupIdMembersByAccountIdData, PatchApiV1GroupsByGroupIdMembersByAccountIdErrors, PatchApiV1GroupsByGroupIdMembersByAccountIdResponses, PatchApiV1GroupsByGroupIdSettingsData, PatchApiV1GroupsByGroupIdSettingsErrors, PatchApiV1GroupsByGroupIdSettingsResponses, PatchApiV1GroupsByGroupIdUnitsByUnitIdData, PatchApiV1GroupsByGroupIdUnitsByUnitIdErrors, PatchApiV1GroupsByGroupIdUnitsByUnitIdResponses, PatchApiV1ListingsByIdData, PatchApiV1ListingsByIdErrors, PatchApiV1ListingsByIdResponses, PatchApiV1MeData, PatchApiV1MeErrors, PatchApiV1MeResponses, PatchApiV1OpsCategoriesByIdData, PatchApiV1OpsCategoriesByIdErrors, PatchApiV1OpsCategoriesByIdResponses, PatchApiV1OpsReviewReasonTemplatesByTemplateIdData, PatchApiV1OpsReviewReasonTemplatesByTemplateIdErrors, PatchApiV1OpsReviewReasonTemplatesByTemplateIdResponses, PatchApiV1OpsScreeningPhrasesByIdData, PatchApiV1OpsScreeningPhrasesByIdErrors, PatchApiV1OpsScreeningPhrasesByIdResponses, PatchApiV1OpsScreeningRulesByCodeData, PatchApiV1OpsScreeningRulesByCodeErrors, PatchApiV1OpsScreeningRulesByCodeResponses, PatchApiV1OpsTrustRuleArticlesByArticleIdData, PatchApiV1OpsTrustRuleArticlesByArticleIdErrors, PatchApiV1OpsTrustRuleArticlesByArticleIdResponses, PostApiV1AuthDeletionRequestsData, PostApiV1AuthDeletionRequestsErrors, PostApiV1AuthDeletionRequestsResponses, PostApiV1AuthForgotPasswordData, PostApiV1AuthForgotPasswordErrors, PostApiV1AuthForgotPasswordResponses, PostApiV1AuthGoogleData, PostApiV1AuthGoogleErrors, PostApiV1AuthGoogleResponses, PostApiV1AuthLoginData, PostApiV1AuthLoginErrors, PostApiV1AuthLoginResponses, PostApiV1AuthLogoutData, PostApiV1AuthLogoutErrors, PostApiV1AuthLogoutResponses, PostApiV1AuthRefreshData, PostApiV1AuthRefreshErrors, PostApiV1AuthRefreshResponses, PostApiV1AuthRegisterData, PostApiV1AuthRegisterErrors, PostApiV1AuthRegisterResponses, PostApiV1AuthResendCodeData, PostApiV1AuthResendCodeErrors, PostApiV1AuthResendCodeResponses, PostApiV1AuthResetPasswordData, PostApiV1AuthResetPasswordErrors, PostApiV1AuthResetPasswordResponses, PostApiV1AuthVerifyEmailData, PostApiV1AuthVerifyEmailErrors, PostApiV1AuthVerifyEmailResponses, PostApiV1GroupInvitationsByIdAcceptData, PostApiV1GroupInvitationsByIdAcceptErrors, PostApiV1GroupInvitationsByIdAcceptResponses, PostApiV1GroupInvitationsByIdDeclineData, PostApiV1GroupInvitationsByIdDeclineErrors, PostApiV1GroupInvitationsByIdDeclineResponses, PostApiV1GroupJoinRequestsByIdDecisionData, PostApiV1GroupJoinRequestsByIdDecisionErrors, PostApiV1GroupJoinRequestsByIdDecisionResponses, PostApiV1GroupOwnerOffersByIdAcceptData, PostApiV1GroupOwnerOffersByIdAcceptErrors, PostApiV1GroupOwnerOffersByIdAcceptResponses, PostApiV1GroupOwnerOffersByIdDeclineData, PostApiV1GroupOwnerOffersByIdDeclineErrors, PostApiV1GroupOwnerOffersByIdDeclineResponses, PostApiV1GroupsByGroupIdAnnouncementsData, PostApiV1GroupsByGroupIdAnnouncementsErrors, PostApiV1GroupsByGroupIdAnnouncementsResponses, PostApiV1GroupsByGroupIdCloseData, PostApiV1GroupsByGroupIdCloseErrors, PostApiV1GroupsByGroupIdCloseResponses, PostApiV1GroupsByGroupIdCodeData, PostApiV1GroupsByGroupIdCodeErrors, PostApiV1GroupsByGroupIdCodeResponses, PostApiV1GroupsByGroupIdInvitationsData, PostApiV1GroupsByGroupIdInvitationsErrors, PostApiV1GroupsByGroupIdInvitationsResponses, PostApiV1GroupsByGroupIdJoinData, PostApiV1GroupsByGroupIdJoinErrors, PostApiV1GroupsByGroupIdJoinResponses, PostApiV1GroupsByGroupIdLeaveData, PostApiV1GroupsByGroupIdLeaveErrors, PostApiV1GroupsByGroupIdLeaveResponses, PostApiV1GroupsByGroupIdOwnerTransferData, PostApiV1GroupsByGroupIdOwnerTransferErrors, PostApiV1GroupsByGroupIdOwnerTransferResponses, PostApiV1GroupsByGroupIdReviewListingsByListingIdDetachData, PostApiV1GroupsByGroupIdReviewListingsByListingIdDetachErrors, PostApiV1GroupsByGroupIdReviewListingsByListingIdDetachResponses, PostApiV1GroupsByGroupIdReviewTasksByTaskIdClaimData, PostApiV1GroupsByGroupIdReviewTasksByTaskIdClaimErrors, PostApiV1GroupsByGroupIdReviewTasksByTaskIdClaimResponses, PostApiV1GroupsByGroupIdReviewTasksByTaskIdDecisionData, PostApiV1GroupsByGroupIdReviewTasksByTaskIdDecisionErrors, PostApiV1GroupsByGroupIdReviewTasksByTaskIdDecisionResponses, PostApiV1GroupsByGroupIdRosterData, PostApiV1GroupsByGroupIdRosterErrors, PostApiV1GroupsByGroupIdRosterRemoveData, PostApiV1GroupsByGroupIdRosterRemoveErrors, PostApiV1GroupsByGroupIdRosterRemoveResponses, PostApiV1GroupsByGroupIdRosterResponses, PostApiV1GroupsByGroupIdUnitsData, PostApiV1GroupsByGroupIdUnitsErrors, PostApiV1GroupsByGroupIdUnitsResponses, PostApiV1GroupsLookupCodeData, PostApiV1GroupsLookupCodeErrors, PostApiV1GroupsLookupCodeResponses, PostApiV1ListingsByIdMoveToMarketplaceData, PostApiV1ListingsByIdMoveToMarketplaceErrors, PostApiV1ListingsByIdMoveToMarketplaceResponses, PostApiV1ListingsByIdRenewData, PostApiV1ListingsByIdRenewErrors, PostApiV1ListingsByIdRenewResponses, PostApiV1ListingsByIdSoldData, PostApiV1ListingsByIdSoldErrors, PostApiV1ListingsByIdSoldResponses, PostApiV1ListingsByIdSubmitData, PostApiV1ListingsByIdSubmitErrors, PostApiV1ListingsByIdSubmitResponses, PostApiV1ListingsByIdWithdrawData, PostApiV1ListingsByIdWithdrawErrors, PostApiV1ListingsByIdWithdrawResponses, PostApiV1ListingsByListingIdConversationData, PostApiV1ListingsByListingIdConversationErrors, PostApiV1ListingsByListingIdConversationResponses, PostApiV1ListingsData, PostApiV1ListingsErrors, PostApiV1ListingsResponses, PostApiV1MeBlocksData, PostApiV1MeBlocksErrors, PostApiV1MeBlocksResponses, PostApiV1MeConversationsByConversationIdMessagesData, PostApiV1MeConversationsByConversationIdMessagesErrors, PostApiV1MeConversationsByConversationIdMessagesResponses, PostApiV1MeConversationsByConversationIdReadData, PostApiV1MeConversationsByConversationIdReadErrors, PostApiV1MeConversationsByConversationIdReadResponses, PostApiV1MeConversationsByConversationIdReportsData, PostApiV1MeConversationsByConversationIdReportsErrors, PostApiV1MeConversationsByConversationIdReportsResponses, PostApiV1MediaUploadsData, PostApiV1MediaUploadsErrors, PostApiV1MediaUploadsResponses, PostApiV1MeEmailChangeConfirmData, PostApiV1MeEmailChangeConfirmErrors, PostApiV1MeEmailChangeConfirmResponses, PostApiV1MeEmailChangeData, PostApiV1MeEmailChangeErrors, PostApiV1MeEmailChangeResponses, PostApiV1MeIdVerificationData, PostApiV1MeIdVerificationErrors, PostApiV1MeIdVerificationResponses, PostApiV1MeNotificationsReadData, PostApiV1MeNotificationsReadErrors, PostApiV1MeNotificationsReadResponses, PostApiV1MeStrikesByStrikeIdAppealData, PostApiV1MeStrikesByStrikeIdAppealErrors, PostApiV1MeStrikesByStrikeIdAppealResponses, PostApiV1MeTwoFactorConfirmData, PostApiV1MeTwoFactorConfirmErrors, PostApiV1MeTwoFactorConfirmResponses, PostApiV1MeTwoFactorSetupData, PostApiV1MeTwoFactorSetupErrors, PostApiV1MeTwoFactorSetupResponses, PostApiV1OpsAccountsByIdLockData, PostApiV1OpsAccountsByIdLockErrors, PostApiV1OpsAccountsByIdLockResponses, PostApiV1OpsAccountsByIdUnlockData, PostApiV1OpsAccountsByIdUnlockErrors, PostApiV1OpsAccountsByIdUnlockResponses, PostApiV1OpsCategoriesByIdDisableData, PostApiV1OpsCategoriesByIdDisableErrors, PostApiV1OpsCategoriesByIdDisableResponses, PostApiV1OpsCategoriesByIdEnableData, PostApiV1OpsCategoriesByIdEnableErrors, PostApiV1OpsCategoriesByIdEnableResponses, PostApiV1OpsCategoriesByIdTemplatePublishData, PostApiV1OpsCategoriesByIdTemplatePublishErrors, PostApiV1OpsCategoriesByIdTemplatePublishResponses, PostApiV1OpsCategoriesData, PostApiV1OpsCategoriesErrors, PostApiV1OpsCategoriesResponses, PostApiV1OpsConfigData, PostApiV1OpsConfigErrors, PostApiV1OpsConfigResponses, PostApiV1OpsDisposableDomainsData, PostApiV1OpsDisposableDomainsErrors, PostApiV1OpsDisposableDomainsResponses, PostApiV1OpsFlagsByLookupCodeClearData, PostApiV1OpsFlagsByLookupCodeClearErrors, PostApiV1OpsFlagsByLookupCodeClearResponses, PostApiV1OpsGroupsByGroupIdCloseData, PostApiV1OpsGroupsByGroupIdCloseErrors, PostApiV1OpsGroupsByGroupIdCloseResponses, PostApiV1OpsGroupsByGroupIdLockData, PostApiV1OpsGroupsByGroupIdLockErrors, PostApiV1OpsGroupsByGroupIdLockResponses, PostApiV1OpsGroupsByGroupIdOwnerOffersData, PostApiV1OpsGroupsByGroupIdOwnerOffersErrors, PostApiV1OpsGroupsByGroupIdOwnerOffersResponses, PostApiV1OpsGroupsByGroupIdUnlockData, PostApiV1OpsGroupsByGroupIdUnlockErrors, PostApiV1OpsGroupsByGroupIdUnlockResponses, PostApiV1OpsGroupsData, PostApiV1OpsGroupsErrors, PostApiV1OpsGroupsResponses, PostApiV1OpsIdVerificationsByIdDecisionData, PostApiV1OpsIdVerificationsByIdDecisionErrors, PostApiV1OpsIdVerificationsByIdDecisionResponses, PostApiV1OpsReviewListingsByListingIdRemoveData, PostApiV1OpsReviewListingsByListingIdRemoveErrors, PostApiV1OpsReviewListingsByListingIdRemoveResponses, PostApiV1OpsReviewListingsByListingIdRestoreData, PostApiV1OpsReviewListingsByListingIdRestoreErrors, PostApiV1OpsReviewListingsByListingIdRestoreResponses, PostApiV1OpsReviewReasonTemplatesData, PostApiV1OpsReviewReasonTemplatesErrors, PostApiV1OpsReviewReasonTemplatesResponses, PostApiV1OpsReviewTasksByTaskIdClaimData, PostApiV1OpsReviewTasksByTaskIdClaimErrors, PostApiV1OpsReviewTasksByTaskIdClaimResponses, PostApiV1OpsReviewTasksByTaskIdDecisionData, PostApiV1OpsReviewTasksByTaskIdDecisionErrors, PostApiV1OpsReviewTasksByTaskIdDecisionResponses, PostApiV1OpsScreeningPhrasesByIdActivateData, PostApiV1OpsScreeningPhrasesByIdActivateErrors, PostApiV1OpsScreeningPhrasesByIdActivateResponses, PostApiV1OpsScreeningPhrasesByIdDeactivateData, PostApiV1OpsScreeningPhrasesByIdDeactivateErrors, PostApiV1OpsScreeningPhrasesByIdDeactivateResponses, PostApiV1OpsScreeningPhrasesData, PostApiV1OpsScreeningPhrasesErrors, PostApiV1OpsScreeningPhrasesResponses, PostApiV1OpsScreeningWhitelistData, PostApiV1OpsScreeningWhitelistErrors, PostApiV1OpsScreeningWhitelistResponses, PostApiV1OpsStaffByAccountIdRestoreData, PostApiV1OpsStaffByAccountIdRestoreErrors, PostApiV1OpsStaffByAccountIdRestoreResponses, PostApiV1OpsTrustAccountsByAccountIdAmnestyData, PostApiV1OpsTrustAccountsByAccountIdAmnestyErrors, PostApiV1OpsTrustAccountsByAccountIdAmnestyResponses, PostApiV1OpsTrustRuleArticlesData, PostApiV1OpsTrustRuleArticlesErrors, PostApiV1OpsTrustRuleArticlesResponses, PostApiV1OpsTrustStrikesByStrikeIdCommentsData, PostApiV1OpsTrustStrikesByStrikeIdCommentsErrors, PostApiV1OpsTrustStrikesByStrikeIdCommentsResponses, PostApiV1OpsTrustStrikesByStrikeIdLiftData, PostApiV1OpsTrustStrikesByStrikeIdLiftErrors, PostApiV1OpsTrustStrikesByStrikeIdLiftResponses, PostApiV1ReportsData, PostApiV1ReportsErrors, PostApiV1ReportsResponses, PostApiV1SupportSeriousAppealCodeData, PostApiV1SupportSeriousAppealCodeErrors, PostApiV1SupportSeriousAppealCodeResponses, PostApiV1SupportSeriousAppealData, PostApiV1SupportSeriousAppealErrors, PostApiV1SupportSeriousAppealResponses, PutApiV1GroupsByGroupIdBansByAccountIdData, PutApiV1GroupsByGroupIdBansByAccountIdErrors, PutApiV1GroupsByGroupIdBansByAccountIdResponses, PutApiV1GroupsByGroupIdModeratorsByAccountIdData, PutApiV1GroupsByGroupIdModeratorsByAccountIdErrors, PutApiV1GroupsByGroupIdModeratorsByAccountIdResponses, PutApiV1MeAvatarData, PutApiV1MeAvatarErrors, PutApiV1MeAvatarResponses, PutApiV1MeConversationsByConversationIdViewingData, PutApiV1MeConversationsByConversationIdViewingErrors, PutApiV1MeConversationsByConversationIdViewingResponses, PutApiV1MeGroupMutesByGroupIdData, PutApiV1MeGroupMutesByGroupIdErrors, PutApiV1MeGroupMutesByGroupIdResponses, PutApiV1MeNotificationPreferencesByCategoryData, PutApiV1MeNotificationPreferencesByCategoryErrors, PutApiV1MeNotificationPreferencesByCategoryResponses, PutApiV1MePasswordData, PutApiV1MePasswordErrors, PutApiV1MePasswordResponses, PutApiV1MePushTokenData, PutApiV1MePushTokenErrors, PutApiV1MePushTokenResponses, PutApiV1OpsCategoriesByIdSettingsData, PutApiV1OpsCategoriesByIdSettingsErrors, PutApiV1OpsCategoriesByIdSettingsResponses, PutApiV1OpsCategoriesByIdTemplateDraftData, PutApiV1OpsCategoriesByIdTemplateDraftErrors, PutApiV1OpsCategoriesByIdTemplateDraftResponses, PutApiV1OpsScreeningBandsByCategoryIdData, PutApiV1OpsScreeningBandsByCategoryIdErrors, PutApiV1OpsScreeningBandsByCategoryIdResponses, PutApiV1OpsScreeningCategoriesByCategoryIdKeywordsData, PutApiV1OpsScreeningCategoriesByCategoryIdKeywordsErrors, PutApiV1OpsScreeningCategoriesByCategoryIdKeywordsResponses, PutApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdData, PutApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdErrors, PutApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdResponses, PutApiV1OpsStaffByAccountIdData, PutApiV1OpsStaffByAccountIdErrors, PutApiV1OpsStaffByAccountIdResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -27,3 +27,1965 @@ export const getHealth = <ThrowOnError extends boolean = false>(options?: Option
  * Readiness (có chạm DB)
  */
 export const getHealthReady = <ThrowOnError extends boolean = false>(options?: Options<GetHealthReadyData, ThrowOnError>): RequestResult<GetHealthReadyResponses, GetHealthReadyErrors, ThrowOnError> => (options?.client ?? client).get<GetHealthReadyResponses, GetHealthReadyErrors, ThrowOnError>({ url: '/health/ready', ...options });
+
+/**
+ * Xin quyền tải đúng một ảnh thẳng vào kho cho một chủ của mình — tải theo `upload.method`: `PUT` thân tệp kèm đúng `upload.headers`, hay `POST` biểu mẫu gồm nguyên văn `upload.fields` rồi tệp ở trường `file`
+ */
+export const postApiV1MediaUploads = <ThrowOnError extends boolean = false>(options: Options<PostApiV1MediaUploadsData, ThrowOnError>): RequestResult<PostApiV1MediaUploadsResponses, PostApiV1MediaUploadsErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1MediaUploadsResponses, PostApiV1MediaUploadsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/media/uploads',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Đăng ký bằng email và mật khẩu
+ */
+export const postApiV1AuthRegister = <ThrowOnError extends boolean = false>(options: Options<PostApiV1AuthRegisterData, ThrowOnError>): RequestResult<PostApiV1AuthRegisterResponses, PostApiV1AuthRegisterErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1AuthRegisterResponses, PostApiV1AuthRegisterErrors, ThrowOnError>({
+    url: '/api/v1/auth/register',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Xác nhận email bằng mã
+ */
+export const postApiV1AuthVerifyEmail = <ThrowOnError extends boolean = false>(options: Options<PostApiV1AuthVerifyEmailData, ThrowOnError>): RequestResult<PostApiV1AuthVerifyEmailResponses, PostApiV1AuthVerifyEmailErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1AuthVerifyEmailResponses, PostApiV1AuthVerifyEmailErrors, ThrowOnError>({
+    url: '/api/v1/auth/verify-email',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Gửi lại mã xác nhận email
+ */
+export const postApiV1AuthResendCode = <ThrowOnError extends boolean = false>(options: Options<PostApiV1AuthResendCodeData, ThrowOnError>): RequestResult<PostApiV1AuthResendCodeResponses, PostApiV1AuthResendCodeErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1AuthResendCodeResponses, PostApiV1AuthResendCodeErrors, ThrowOnError>({
+    url: '/api/v1/auth/resend-code',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Đăng nhập bằng email và mật khẩu (master, staff kèm mã lớp thứ hai)
+ */
+export const postApiV1AuthLogin = <ThrowOnError extends boolean = false>(options: Options<PostApiV1AuthLoginData, ThrowOnError>): RequestResult<PostApiV1AuthLoginResponses, PostApiV1AuthLoginErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1AuthLoginResponses, PostApiV1AuthLoginErrors, ThrowOnError>({
+    url: '/api/v1/auth/login',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Đăng ký hoặc đăng nhập bằng ID token Google
+ */
+export const postApiV1AuthGoogle = <ThrowOnError extends boolean = false>(options: Options<PostApiV1AuthGoogleData, ThrowOnError>): RequestResult<PostApiV1AuthGoogleResponses, PostApiV1AuthGoogleErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1AuthGoogleResponses, PostApiV1AuthGoogleErrors, ThrowOnError>({
+    url: '/api/v1/auth/google',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Xoay refresh token, lấy access token mới (body cho app, cookie cho web)
+ *
+ * Mỗi lượt cấp refresh token mới; token cũ gửi lại sau đó bị coi là bị lộ và thu hồi cả phiên. App: gom mọi lượt làm mới thành MỘT (dùng chung một promise). Nhận 409 REFRESH_CONFLICT nghĩa là một lượt khác vừa làm mới trước — chờ và dùng kết quả của lượt đó, KHÔNG gửi lại token cũ. Web (cookie): lượt thắng đã đặt cookie mới cho mọi tab; tab nhận 409 gửi lại một lần là được.
+ */
+export const postApiV1AuthRefresh = <ThrowOnError extends boolean = false>(options: Options<PostApiV1AuthRefreshData, ThrowOnError>): RequestResult<PostApiV1AuthRefreshResponses, PostApiV1AuthRefreshErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1AuthRefreshResponses, PostApiV1AuthRefreshErrors, ThrowOnError>({
+    url: '/api/v1/auth/refresh',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Đăng xuất phiên hiện tại
+ */
+export const postApiV1AuthLogout = <ThrowOnError extends boolean = false>(options?: Options<PostApiV1AuthLogoutData, ThrowOnError>): RequestResult<PostApiV1AuthLogoutResponses, PostApiV1AuthLogoutErrors, ThrowOnError> => (options?.client ?? client).post<PostApiV1AuthLogoutResponses, PostApiV1AuthLogoutErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/auth/logout',
+    ...options
+});
+
+/**
+ * Xin xoá tài khoản bằng email + mật khẩu (kênh hỗ trợ, không cần đăng nhập)
+ */
+export const postApiV1AuthDeletionRequests = <ThrowOnError extends boolean = false>(options: Options<PostApiV1AuthDeletionRequestsData, ThrowOnError>): RequestResult<PostApiV1AuthDeletionRequestsResponses, PostApiV1AuthDeletionRequestsErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1AuthDeletionRequestsResponses, PostApiV1AuthDeletionRequestsErrors, ThrowOnError>({
+    url: '/api/v1/auth/deletion-requests',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Xin mã đặt lại mật khẩu (trả lời giống nhau dù email có tài khoản hay không)
+ */
+export const postApiV1AuthForgotPassword = <ThrowOnError extends boolean = false>(options: Options<PostApiV1AuthForgotPasswordData, ThrowOnError>): RequestResult<PostApiV1AuthForgotPasswordResponses, PostApiV1AuthForgotPasswordErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1AuthForgotPasswordResponses, PostApiV1AuthForgotPasswordErrors, ThrowOnError>({
+    url: '/api/v1/auth/forgot-password',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Đặt lại mật khẩu bằng mã — thu hồi mọi phiên
+ */
+export const postApiV1AuthResetPassword = <ThrowOnError extends boolean = false>(options: Options<PostApiV1AuthResetPasswordData, ThrowOnError>): RequestResult<PostApiV1AuthResetPasswordResponses, PostApiV1AuthResetPasswordErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1AuthResetPasswordResponses, PostApiV1AuthResetPasswordErrors, ThrowOnError>({
+    url: '/api/v1/auth/reset-password',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Hồ sơ công khai — không email, không số giấy tờ
+ */
+export const getApiV1UsersById = <ThrowOnError extends boolean = false>(options: Options<GetApiV1UsersByIdData, ThrowOnError>): RequestResult<GetApiV1UsersByIdResponses, GetApiV1UsersByIdErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1UsersByIdResponses, GetApiV1UsersByIdErrors, ThrowOnError>({ url: '/api/v1/users/{id}', ...options });
+
+/**
+ * Tự xoá tài khoản — thu hồi mọi phiên, hồ sơ công khai biến mất
+ */
+export const deleteApiV1Me = <ThrowOnError extends boolean = false>(options?: Options<DeleteApiV1MeData, ThrowOnError>): RequestResult<DeleteApiV1MeResponses, DeleteApiV1MeErrors, ThrowOnError> => (options?.client ?? client).delete<DeleteApiV1MeResponses, DeleteApiV1MeErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me',
+    ...options
+});
+
+/**
+ * Tài khoản của chính mình
+ */
+export const getApiV1Me = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1MeData, ThrowOnError>): RequestResult<GetApiV1MeResponses, GetApiV1MeErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1MeResponses, GetApiV1MeErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me',
+    ...options
+});
+
+/**
+ * Sửa tên hiển thị, thêm / xoá số điện thoại (không xác thực)
+ */
+export const patchApiV1Me = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1MeData, ThrowOnError>): RequestResult<PatchApiV1MeResponses, PatchApiV1MeErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1MeResponses, PatchApiV1MeErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Bỏ ảnh đại diện
+ */
+export const deleteApiV1MeAvatar = <ThrowOnError extends boolean = false>(options?: Options<DeleteApiV1MeAvatarData, ThrowOnError>): RequestResult<DeleteApiV1MeAvatarResponses, DeleteApiV1MeAvatarErrors, ThrowOnError> => (options?.client ?? client).delete<DeleteApiV1MeAvatarResponses, DeleteApiV1MeAvatarErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/avatar',
+    ...options
+});
+
+/**
+ * Đặt ảnh đại diện: ảnh đã tải vào kho cho hồ sơ của mình (`imageId`), hoặc ảnh Google (`source`)
+ */
+export const putApiV1MeAvatar = <ThrowOnError extends boolean = false>(options: Options<PutApiV1MeAvatarData, ThrowOnError>): RequestResult<PutApiV1MeAvatarResponses, PutApiV1MeAvatarErrors, ThrowOnError> => (options.client ?? client).put<PutApiV1MeAvatarResponses, PutApiV1MeAvatarErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/avatar',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Xin đổi email — đòi mật khẩu (+ mã lớp hai nếu đã bật); mã gửi tới email mới, email cũ vẫn là email đăng nhập
+ */
+export const postApiV1MeEmailChange = <ThrowOnError extends boolean = false>(options: Options<PostApiV1MeEmailChangeData, ThrowOnError>): RequestResult<PostApiV1MeEmailChangeResponses, PostApiV1MeEmailChangeErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1MeEmailChangeResponses, PostApiV1MeEmailChangeErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/email-change',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Xác nhận email mới bằng mã — báo email cũ, thu hồi mọi phiên khác
+ */
+export const postApiV1MeEmailChangeConfirm = <ThrowOnError extends boolean = false>(options: Options<PostApiV1MeEmailChangeConfirmData, ThrowOnError>): RequestResult<PostApiV1MeEmailChangeConfirmResponses, PostApiV1MeEmailChangeConfirmErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1MeEmailChangeConfirmResponses, PostApiV1MeEmailChangeConfirmErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/email-change/confirm',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Nộp giấy tờ xác minh (tự nguyện, không ảnh hưởng gì)
+ */
+export const postApiV1MeIdVerification = <ThrowOnError extends boolean = false>(options: Options<PostApiV1MeIdVerificationData, ThrowOnError>): RequestResult<PostApiV1MeIdVerificationResponses, PostApiV1MeIdVerificationErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1MeIdVerificationResponses, PostApiV1MeIdVerificationErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/id-verification',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Đăng xuất mọi thiết bị khác, giữ thiết bị này
+ */
+export const deleteApiV1MeSessions = <ThrowOnError extends boolean = false>(options?: Options<DeleteApiV1MeSessionsData, ThrowOnError>): RequestResult<DeleteApiV1MeSessionsResponses, DeleteApiV1MeSessionsErrors, ThrowOnError> => (options?.client ?? client).delete<DeleteApiV1MeSessionsResponses, DeleteApiV1MeSessionsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/sessions',
+    ...options
+});
+
+/**
+ * Thiết bị đang đăng nhập
+ */
+export const getApiV1MeSessions = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1MeSessionsData, ThrowOnError>): RequestResult<GetApiV1MeSessionsResponses, GetApiV1MeSessionsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1MeSessionsResponses, GetApiV1MeSessionsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/sessions',
+    ...options
+});
+
+/**
+ * Đăng xuất một thiết bị
+ */
+export const deleteApiV1MeSessionsById = <ThrowOnError extends boolean = false>(options: Options<DeleteApiV1MeSessionsByIdData, ThrowOnError>): RequestResult<DeleteApiV1MeSessionsByIdResponses, DeleteApiV1MeSessionsByIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteApiV1MeSessionsByIdResponses, DeleteApiV1MeSessionsByIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/sessions/{id}',
+    ...options
+});
+
+/**
+ * Thôi hiện thông báo trên máy này
+ */
+export const deleteApiV1MePushToken = <ThrowOnError extends boolean = false>(options?: Options<DeleteApiV1MePushTokenData, ThrowOnError>): RequestResult<DeleteApiV1MePushTokenResponses, DeleteApiV1MePushTokenErrors, ThrowOnError> => (options?.client ?? client).delete<DeleteApiV1MePushTokenResponses, DeleteApiV1MePushTokenErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/push-token',
+    ...options
+});
+
+/**
+ * Cho phép hiện thông báo trên máy này: gắn token Expo Push vào phiên hiện tại — token đang ở phiên khác thì chuyển sang
+ */
+export const putApiV1MePushToken = <ThrowOnError extends boolean = false>(options: Options<PutApiV1MePushTokenData, ThrowOnError>): RequestResult<PutApiV1MePushTokenResponses, PutApiV1MePushTokenErrors, ThrowOnError> => (options.client ?? client).put<PutApiV1MePushTokenResponses, PutApiV1MePushTokenErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/push-token',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Đổi mật khẩu — thu hồi mọi phiên khác
+ */
+export const putApiV1MePassword = <ThrowOnError extends boolean = false>(options: Options<PutApiV1MePasswordData, ThrowOnError>): RequestResult<PutApiV1MePasswordResponses, PutApiV1MePasswordErrors, ThrowOnError> => (options.client ?? client).put<PutApiV1MePasswordResponses, PutApiV1MePasswordErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/password',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Bắt đầu thiết lập lớp thứ hai — trả URI otpauth cho ứng dụng tạo mã
+ */
+export const postApiV1MeTwoFactorSetup = <ThrowOnError extends boolean = false>(options?: Options<PostApiV1MeTwoFactorSetupData, ThrowOnError>): RequestResult<PostApiV1MeTwoFactorSetupResponses, PostApiV1MeTwoFactorSetupErrors, ThrowOnError> => (options?.client ?? client).post<PostApiV1MeTwoFactorSetupResponses, PostApiV1MeTwoFactorSetupErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/two-factor/setup',
+    ...options
+});
+
+/**
+ * Xác nhận lớp thứ hai bằng mã đầu tiên — phiên này được mở bàn vận hành ngay
+ */
+export const postApiV1MeTwoFactorConfirm = <ThrowOnError extends boolean = false>(options: Options<PostApiV1MeTwoFactorConfirmData, ThrowOnError>): RequestResult<PostApiV1MeTwoFactorConfirmResponses, PostApiV1MeTwoFactorConfirmErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1MeTwoFactorConfirmResponses, PostApiV1MeTwoFactorConfirmErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/two-factor/confirm',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Khoá tài khoản kèm lý do — thu hồi mọi phiên ngay
+ */
+export const postApiV1OpsAccountsByIdLock = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsAccountsByIdLockData, ThrowOnError>): RequestResult<PostApiV1OpsAccountsByIdLockResponses, PostApiV1OpsAccountsByIdLockErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsAccountsByIdLockResponses, PostApiV1OpsAccountsByIdLockErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/accounts/{id}/lock',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Mở khoá — đóng luôn đánh dấu "dùng máy của tài khoản bị khoá" liên quan
+ */
+export const postApiV1OpsAccountsByIdUnlock = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsAccountsByIdUnlockData, ThrowOnError>): RequestResult<PostApiV1OpsAccountsByIdUnlockResponses, PostApiV1OpsAccountsByIdUnlockErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsAccountsByIdUnlockResponses, PostApiV1OpsAccountsByIdUnlockErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/accounts/{id}/unlock',
+    ...options
+});
+
+/**
+ * Tra mã tra cứu người dùng gửi kèm yêu cầu hỗ trợ — thấy loại đánh dấu, không thấy mã thiết bị
+ */
+export const getApiV1OpsFlagsByLookupCode = <ThrowOnError extends boolean = false>(options: Options<GetApiV1OpsFlagsByLookupCodeData, ThrowOnError>): RequestResult<GetApiV1OpsFlagsByLookupCodeResponses, GetApiV1OpsFlagsByLookupCodeErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1OpsFlagsByLookupCodeResponses, GetApiV1OpsFlagsByLookupCodeErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/flags/{lookupCode}',
+    ...options
+});
+
+/**
+ * Gỡ đánh dấu kèm lý do (vd máy mua lại) — lượt gửi tin sau không bị đánh dấu lại vì chủ cũ
+ */
+export const postApiV1OpsFlagsByLookupCodeClear = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsFlagsByLookupCodeClearData, ThrowOnError>): RequestResult<PostApiV1OpsFlagsByLookupCodeClearResponses, PostApiV1OpsFlagsByLookupCodeClearErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsFlagsByLookupCodeClearResponses, PostApiV1OpsFlagsByLookupCodeClearErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/flags/{lookupCode}/clear',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Danh sách miền email dùng một lần (kể cả miền đã bỏ)
+ */
+export const getApiV1OpsDisposableDomains = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1OpsDisposableDomainsData, ThrowOnError>): RequestResult<GetApiV1OpsDisposableDomainsResponses, GetApiV1OpsDisposableDomainsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1OpsDisposableDomainsResponses, GetApiV1OpsDisposableDomainsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/disposable-domains',
+    ...options
+});
+
+/**
+ * Thêm một miền vào danh sách chặn
+ */
+export const postApiV1OpsDisposableDomains = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsDisposableDomainsData, ThrowOnError>): RequestResult<PostApiV1OpsDisposableDomainsResponses, PostApiV1OpsDisposableDomainsErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsDisposableDomainsResponses, PostApiV1OpsDisposableDomainsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/disposable-domains',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Bỏ một miền khỏi danh sách chặn (giữ bia mộ để cập nhật tự động không thêm lại)
+ */
+export const deleteApiV1OpsDisposableDomainsByDomain = <ThrowOnError extends boolean = false>(options: Options<DeleteApiV1OpsDisposableDomainsByDomainData, ThrowOnError>): RequestResult<DeleteApiV1OpsDisposableDomainsByDomainResponses, DeleteApiV1OpsDisposableDomainsByDomainErrors, ThrowOnError> => (options.client ?? client).delete<DeleteApiV1OpsDisposableDomainsByDomainResponses, DeleteApiV1OpsDisposableDomainsByDomainErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/disposable-domains/{domain}',
+    ...options
+});
+
+/**
+ * Hàng chờ xác minh giấy tờ (mặc định mọi trạng thái, lọc bằng ?status=)
+ */
+export const getApiV1OpsIdVerifications = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1OpsIdVerificationsData, ThrowOnError>): RequestResult<GetApiV1OpsIdVerificationsResponses, GetApiV1OpsIdVerificationsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1OpsIdVerificationsResponses, GetApiV1OpsIdVerificationsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/id-verifications',
+    ...options
+});
+
+/**
+ * Duyệt hoặc từ chối (từ chối phải kèm lý do)
+ */
+export const postApiV1OpsIdVerificationsByIdDecision = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsIdVerificationsByIdDecisionData, ThrowOnError>): RequestResult<PostApiV1OpsIdVerificationsByIdDecisionResponses, PostApiV1OpsIdVerificationsByIdDecisionErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsIdVerificationsByIdDecisionResponses, PostApiV1OpsIdVerificationsByIdDecisionErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/id-verifications/{id}/decision',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Danh mục đang bật — mã, tên, số phiên bản mẫu hiện hành
+ */
+export const getApiV1Categories = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1CategoriesData, ThrowOnError>): RequestResult<GetApiV1CategoriesResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetApiV1CategoriesResponses, unknown, ThrowOnError>({ url: '/api/v1/categories', ...options });
+
+/**
+ * Mẫu thông tin hiện hành của danh mục (version null = chưa phát hành)
+ */
+export const getApiV1CategoriesByIdTemplate = <ThrowOnError extends boolean = false>(options: Options<GetApiV1CategoriesByIdTemplateData, ThrowOnError>): RequestResult<GetApiV1CategoriesByIdTemplateResponses, GetApiV1CategoriesByIdTemplateErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1CategoriesByIdTemplateResponses, GetApiV1CategoriesByIdTemplateErrors, ThrowOnError>({ url: '/api/v1/categories/{id}/template', ...options });
+
+/**
+ * Một phiên bản mẫu đã phát hành — tin đăng cũ đọc đúng mẫu nó điền
+ */
+export const getApiV1CategoriesByIdTemplateVersionsByVersion = <ThrowOnError extends boolean = false>(options: Options<GetApiV1CategoriesByIdTemplateVersionsByVersionData, ThrowOnError>): RequestResult<GetApiV1CategoriesByIdTemplateVersionsByVersionResponses, GetApiV1CategoriesByIdTemplateVersionsByVersionErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1CategoriesByIdTemplateVersionsByVersionResponses, GetApiV1CategoriesByIdTemplateVersionsByVersionErrors, ThrowOnError>({ url: '/api/v1/categories/{id}/template/versions/{version}', ...options });
+
+/**
+ * 34 tỉnh, thành sau sáp nhập kèm tên cũ và tên gọi tắt
+ */
+export const getApiV1RegionsProvinces = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1RegionsProvincesData, ThrowOnError>): RequestResult<GetApiV1RegionsProvincesResponses, unknown, ThrowOnError> => (options?.client ?? client).get<GetApiV1RegionsProvincesResponses, unknown, ThrowOnError>({ url: '/api/v1/regions/provinces', ...options });
+
+/**
+ * Phường, xã của một tỉnh, thành
+ */
+export const getApiV1RegionsProvincesByCodeWards = <ThrowOnError extends boolean = false>(options: Options<GetApiV1RegionsProvincesByCodeWardsData, ThrowOnError>): RequestResult<GetApiV1RegionsProvincesByCodeWardsResponses, GetApiV1RegionsProvincesByCodeWardsErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1RegionsProvincesByCodeWardsResponses, GetApiV1RegionsProvincesByCodeWardsErrors, ThrowOnError>({ url: '/api/v1/regions/provinces/{code}/wards', ...options });
+
+/**
+ * Tìm khu vực theo tên mới, tên cũ hay tên gọi tắt (bỏ dấu) — tỉnh trước, phường sau
+ */
+export const getApiV1RegionsSearch = <ThrowOnError extends boolean = false>(options: Options<GetApiV1RegionsSearchData, ThrowOnError>): RequestResult<GetApiV1RegionsSearchResponses, unknown, ThrowOnError> => (options.client ?? client).get<GetApiV1RegionsSearchResponses, unknown, ThrowOnError>({ url: '/api/v1/regions/search', ...options });
+
+/**
+ * Mọi danh mục kể cả đang tắt, đủ cài đặt hiện hành
+ */
+export const getApiV1OpsCategories = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1OpsCategoriesData, ThrowOnError>): RequestResult<GetApiV1OpsCategoriesResponses, GetApiV1OpsCategoriesErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1OpsCategoriesResponses, GetApiV1OpsCategoriesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/categories',
+    ...options
+});
+
+/**
+ * Tạo danh mục với phiên bản cài đặt 1
+ */
+export const postApiV1OpsCategories = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsCategoriesData, ThrowOnError>): RequestResult<PostApiV1OpsCategoriesResponses, PostApiV1OpsCategoriesErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsCategoriesResponses, PostApiV1OpsCategoriesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/categories',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Đổi tên danh mục (không tạo phiên bản cài đặt)
+ */
+export const patchApiV1OpsCategoriesById = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1OpsCategoriesByIdData, ThrowOnError>): RequestResult<PatchApiV1OpsCategoriesByIdResponses, PatchApiV1OpsCategoriesByIdErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1OpsCategoriesByIdResponses, PatchApiV1OpsCategoriesByIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/categories/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Đổi cài đặt máy duyệt — gửi trọn bộ, tạo phiên bản cài đặt kế
+ */
+export const putApiV1OpsCategoriesByIdSettings = <ThrowOnError extends boolean = false>(options: Options<PutApiV1OpsCategoriesByIdSettingsData, ThrowOnError>): RequestResult<PutApiV1OpsCategoriesByIdSettingsResponses, PutApiV1OpsCategoriesByIdSettingsErrors, ThrowOnError> => (options.client ?? client).put<PutApiV1OpsCategoriesByIdSettingsResponses, PutApiV1OpsCategoriesByIdSettingsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/categories/{id}/settings',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Tra một phiên bản cài đặt cũ
+ */
+export const getApiV1OpsCategoriesByIdSettingsVersionsByVersion = <ThrowOnError extends boolean = false>(options: Options<GetApiV1OpsCategoriesByIdSettingsVersionsByVersionData, ThrowOnError>): RequestResult<GetApiV1OpsCategoriesByIdSettingsVersionsByVersionResponses, GetApiV1OpsCategoriesByIdSettingsVersionsByVersionErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1OpsCategoriesByIdSettingsVersionsByVersionResponses, GetApiV1OpsCategoriesByIdSettingsVersionsByVersionErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/categories/{id}/settings/versions/{version}',
+    ...options
+});
+
+/**
+ * Bật lại danh mục — cài đặt và mẫu giữ nguyên như lúc tắt
+ */
+export const postApiV1OpsCategoriesByIdEnable = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsCategoriesByIdEnableData, ThrowOnError>): RequestResult<PostApiV1OpsCategoriesByIdEnableResponses, PostApiV1OpsCategoriesByIdEnableErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsCategoriesByIdEnableResponses, PostApiV1OpsCategoriesByIdEnableErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/categories/{id}/enable',
+    ...options
+});
+
+/**
+ * Tắt danh mục — không xoá
+ */
+export const postApiV1OpsCategoriesByIdDisable = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsCategoriesByIdDisableData, ThrowOnError>): RequestResult<PostApiV1OpsCategoriesByIdDisableResponses, PostApiV1OpsCategoriesByIdDisableErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsCategoriesByIdDisableResponses, PostApiV1OpsCategoriesByIdDisableErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/categories/{id}/disable',
+    ...options
+});
+
+/**
+ * Bỏ bản nháp — mẫu hiện hành không đổi
+ */
+export const deleteApiV1OpsCategoriesByIdTemplateDraft = <ThrowOnError extends boolean = false>(options: Options<DeleteApiV1OpsCategoriesByIdTemplateDraftData, ThrowOnError>): RequestResult<DeleteApiV1OpsCategoriesByIdTemplateDraftResponses, DeleteApiV1OpsCategoriesByIdTemplateDraftErrors, ThrowOnError> => (options.client ?? client).delete<DeleteApiV1OpsCategoriesByIdTemplateDraftResponses, DeleteApiV1OpsCategoriesByIdTemplateDraftErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/categories/{id}/template/draft',
+    ...options
+});
+
+/**
+ * Bản nháp mẫu (draftVersion 0 = chưa có, fields là mẫu hiện hành)
+ */
+export const getApiV1OpsCategoriesByIdTemplateDraft = <ThrowOnError extends boolean = false>(options: Options<GetApiV1OpsCategoriesByIdTemplateDraftData, ThrowOnError>): RequestResult<GetApiV1OpsCategoriesByIdTemplateDraftResponses, GetApiV1OpsCategoriesByIdTemplateDraftErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1OpsCategoriesByIdTemplateDraftResponses, GetApiV1OpsCategoriesByIdTemplateDraftErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/categories/{id}/template/draft',
+    ...options
+});
+
+/**
+ * Thay cả bản nháp với khoá lạc quan baseDraftVersion
+ */
+export const putApiV1OpsCategoriesByIdTemplateDraft = <ThrowOnError extends boolean = false>(options: Options<PutApiV1OpsCategoriesByIdTemplateDraftData, ThrowOnError>): RequestResult<PutApiV1OpsCategoriesByIdTemplateDraftResponses, PutApiV1OpsCategoriesByIdTemplateDraftErrors, ThrowOnError> => (options.client ?? client).put<PutApiV1OpsCategoriesByIdTemplateDraftResponses, PutApiV1OpsCategoriesByIdTemplateDraftErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/categories/{id}/template/draft',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Phát hành bản nháp thành phiên bản mẫu kế — bất biến từ đó
+ */
+export const postApiV1OpsCategoriesByIdTemplatePublish = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsCategoriesByIdTemplatePublishData, ThrowOnError>): RequestResult<PostApiV1OpsCategoriesByIdTemplatePublishResponses, PostApiV1OpsCategoriesByIdTemplatePublishErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsCategoriesByIdTemplatePublishResponses, PostApiV1OpsCategoriesByIdTemplatePublishErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/categories/{id}/template/publish',
+    ...options
+});
+
+/**
+ * Danh sách tài khoản mang quyền staff, lọc được theo danh mục
+ */
+export const getApiV1OpsStaff = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1OpsStaffData, ThrowOnError>): RequestResult<GetApiV1OpsStaffResponses, GetApiV1OpsStaffErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1OpsStaffResponses, GetApiV1OpsStaffErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/staff',
+    ...options
+});
+
+/**
+ * Thu toàn bộ quyền staff — có hiệu lực ngay
+ */
+export const deleteApiV1OpsStaffByAccountId = <ThrowOnError extends boolean = false>(options: Options<DeleteApiV1OpsStaffByAccountIdData, ThrowOnError>): RequestResult<DeleteApiV1OpsStaffByAccountIdResponses, DeleteApiV1OpsStaffByAccountIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteApiV1OpsStaffByAccountIdResponses, DeleteApiV1OpsStaffByAccountIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/staff/{accountId}',
+    ...options
+});
+
+/**
+ * Gắn hoặc sửa quyền staff — gửi TRỌN phạm vi (danh mục + việc toàn hệ thống)
+ */
+export const putApiV1OpsStaffByAccountId = <ThrowOnError extends boolean = false>(options: Options<PutApiV1OpsStaffByAccountIdData, ThrowOnError>): RequestResult<PutApiV1OpsStaffByAccountIdResponses, PutApiV1OpsStaffByAccountIdErrors, ThrowOnError> => (options.client ?? client).put<PutApiV1OpsStaffByAccountIdResponses, PutApiV1OpsStaffByAccountIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/staff/{accountId}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Trả lại quyền đang treo, đúng phạm vi lúc treo
+ */
+export const postApiV1OpsStaffByAccountIdRestore = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsStaffByAccountIdRestoreData, ThrowOnError>): RequestResult<PostApiV1OpsStaffByAccountIdRestoreResponses, PostApiV1OpsStaffByAccountIdRestoreErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsStaffByAccountIdRestoreResponses, PostApiV1OpsStaffByAccountIdRestoreErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/staff/{accountId}/restore',
+    ...options
+});
+
+/**
+ * Phiên bản hiện hành của bảng con số
+ */
+export const getApiV1OpsConfig = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1OpsConfigData, ThrowOnError>): RequestResult<GetApiV1OpsConfigResponses, GetApiV1OpsConfigErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1OpsConfigResponses, GetApiV1OpsConfigErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/config',
+    ...options
+});
+
+/**
+ * Đổi con số: tạo phiên bản mới từ phiên bản đang sửa (409 nếu đã có người sửa trước)
+ */
+export const postApiV1OpsConfig = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsConfigData, ThrowOnError>): RequestResult<PostApiV1OpsConfigResponses, PostApiV1OpsConfigErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsConfigResponses, PostApiV1OpsConfigErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/config',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Tra một phiên bản cũ
+ */
+export const getApiV1OpsConfigVersionsByVersion = <ThrowOnError extends boolean = false>(options: Options<GetApiV1OpsConfigVersionsByVersionData, ThrowOnError>): RequestResult<GetApiV1OpsConfigVersionsByVersionResponses, GetApiV1OpsConfigVersionsByVersionErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1OpsConfigVersionsByVersionResponses, GetApiV1OpsConfigVersionsByVersionErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/config/versions/{version}',
+    ...options
+});
+
+/**
+ * Tra nhật ký theo người làm, đối tượng, khoảng thời gian
+ */
+export const getApiV1OpsAudit = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1OpsAuditData, ThrowOnError>): RequestResult<GetApiV1OpsAuditResponses, GetApiV1OpsAuditErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1OpsAuditResponses, GetApiV1OpsAuditErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/audit',
+    ...options
+});
+
+/**
+ * Tìm nhóm công khai theo tên, không phân biệt dấu
+ */
+export const getApiV1Groups = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1GroupsData, ThrowOnError>): RequestResult<GetApiV1GroupsResponses, GetApiV1GroupsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1GroupsResponses, GetApiV1GroupsErrors, ThrowOnError>({ url: '/api/v1/groups', ...options });
+
+/**
+ * Hồ sơ nhóm — người ngoài nhóm riêng tư chỉ thấy tên nhóm
+ */
+export const getApiV1GroupsByGroupId = <ThrowOnError extends boolean = false>(options: Options<GetApiV1GroupsByGroupIdData, ThrowOnError>): RequestResult<GetApiV1GroupsByGroupIdResponses, GetApiV1GroupsByGroupIdErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1GroupsByGroupIdResponses, GetApiV1GroupsByGroupIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}',
+    ...options
+});
+
+/**
+ * Tìm nhóm riêng tư bằng mã nhóm
+ */
+export const postApiV1GroupsLookupCode = <ThrowOnError extends boolean = false>(options: Options<PostApiV1GroupsLookupCodeData, ThrowOnError>): RequestResult<PostApiV1GroupsLookupCodeResponses, PostApiV1GroupsLookupCodeErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1GroupsLookupCodeResponses, PostApiV1GroupsLookupCodeErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/lookup-code',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Vào nhóm: vào ngay (mở cửa, lời mời, danh sách lớp) hoặc gửi đơn (xét duyệt, có mã)
+ */
+export const postApiV1GroupsByGroupIdJoin = <ThrowOnError extends boolean = false>(options: Options<PostApiV1GroupsByGroupIdJoinData, ThrowOnError>): RequestResult<PostApiV1GroupsByGroupIdJoinResponses, PostApiV1GroupsByGroupIdJoinErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1GroupsByGroupIdJoinResponses, PostApiV1GroupsByGroupIdJoinErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/join',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Rút đơn đang chờ của mình
+ */
+export const deleteApiV1GroupsByGroupIdJoinRequest = <ThrowOnError extends boolean = false>(options: Options<DeleteApiV1GroupsByGroupIdJoinRequestData, ThrowOnError>): RequestResult<DeleteApiV1GroupsByGroupIdJoinRequestResponses, DeleteApiV1GroupsByGroupIdJoinRequestErrors, ThrowOnError> => (options.client ?? client).delete<DeleteApiV1GroupsByGroupIdJoinRequestResponses, DeleteApiV1GroupsByGroupIdJoinRequestErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/join-request',
+    ...options
+});
+
+/**
+ * Rời nhóm — chủ nhóm phải chuyển chủ trước
+ */
+export const postApiV1GroupsByGroupIdLeave = <ThrowOnError extends boolean = false>(options: Options<PostApiV1GroupsByGroupIdLeaveData, ThrowOnError>): RequestResult<PostApiV1GroupsByGroupIdLeaveResponses, PostApiV1GroupsByGroupIdLeaveErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1GroupsByGroupIdLeaveResponses, PostApiV1GroupsByGroupIdLeaveErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/leave',
+    ...options
+});
+
+/**
+ * Thông báo của nhóm gửi tới mình (cả nhóm và đơn vị của mình), mới nhất trước
+ */
+export const getApiV1GroupsByGroupIdAnnouncements = <ThrowOnError extends boolean = false>(options: Options<GetApiV1GroupsByGroupIdAnnouncementsData, ThrowOnError>): RequestResult<GetApiV1GroupsByGroupIdAnnouncementsResponses, GetApiV1GroupsByGroupIdAnnouncementsErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1GroupsByGroupIdAnnouncementsResponses, GetApiV1GroupsByGroupIdAnnouncementsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/announcements',
+    ...options
+});
+
+/**
+ * Gửi thông báo cho cả nhóm, hay cho đơn vị mình phụ trách
+ */
+export const postApiV1GroupsByGroupIdAnnouncements = <ThrowOnError extends boolean = false>(options: Options<PostApiV1GroupsByGroupIdAnnouncementsData, ThrowOnError>): RequestResult<PostApiV1GroupsByGroupIdAnnouncementsResponses, PostApiV1GroupsByGroupIdAnnouncementsErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1GroupsByGroupIdAnnouncementsResponses, PostApiV1GroupsByGroupIdAnnouncementsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/announcements',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Nhóm mình đang ở, kèm vai và quyền mang huy hiệu
+ */
+export const getApiV1MeGroups = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1MeGroupsData, ThrowOnError>): RequestResult<GetApiV1MeGroupsResponses, GetApiV1MeGroupsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1MeGroupsResponses, GetApiV1MeGroupsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/groups',
+    ...options
+});
+
+/**
+ * Nhóm mình đang có quyền mang huy hiệu trên tin sàn
+ */
+export const getApiV1MeGroupBadges = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1MeGroupBadgesData, ThrowOnError>): RequestResult<GetApiV1MeGroupBadgesResponses, GetApiV1MeGroupBadgesErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1MeGroupBadgesResponses, GetApiV1MeGroupBadgesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/group-badges',
+    ...options
+});
+
+/**
+ * Lời mời còn hạn và nhóm có tên mình trong danh sách lớp
+ */
+export const getApiV1MeGroupInvitations = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1MeGroupInvitationsData, ThrowOnError>): RequestResult<GetApiV1MeGroupInvitationsResponses, GetApiV1MeGroupInvitationsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1MeGroupInvitationsResponses, GetApiV1MeGroupInvitationsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/group-invitations',
+    ...options
+});
+
+/**
+ * Lời giao chủ nhóm, lời chuyển chủ đang chờ mình trả lời
+ */
+export const getApiV1MeGroupOwnerOffers = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1MeGroupOwnerOffersData, ThrowOnError>): RequestResult<GetApiV1MeGroupOwnerOffersResponses, GetApiV1MeGroupOwnerOffersErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1MeGroupOwnerOffersResponses, GetApiV1MeGroupOwnerOffersErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/group-owner-offers',
+    ...options
+});
+
+/**
+ * Nhận lời mời vào nhóm
+ */
+export const postApiV1GroupInvitationsByIdAccept = <ThrowOnError extends boolean = false>(options: Options<PostApiV1GroupInvitationsByIdAcceptData, ThrowOnError>): RequestResult<PostApiV1GroupInvitationsByIdAcceptResponses, PostApiV1GroupInvitationsByIdAcceptErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1GroupInvitationsByIdAcceptResponses, PostApiV1GroupInvitationsByIdAcceptErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/group-invitations/{id}/accept',
+    ...options
+});
+
+/**
+ * Từ chối lời mời vào nhóm
+ */
+export const postApiV1GroupInvitationsByIdDecline = <ThrowOnError extends boolean = false>(options: Options<PostApiV1GroupInvitationsByIdDeclineData, ThrowOnError>): RequestResult<PostApiV1GroupInvitationsByIdDeclineResponses, PostApiV1GroupInvitationsByIdDeclineErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1GroupInvitationsByIdDeclineResponses, PostApiV1GroupInvitationsByIdDeclineErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/group-invitations/{id}/decline',
+    ...options
+});
+
+/**
+ * Nhận làm chủ nhóm
+ */
+export const postApiV1GroupOwnerOffersByIdAccept = <ThrowOnError extends boolean = false>(options: Options<PostApiV1GroupOwnerOffersByIdAcceptData, ThrowOnError>): RequestResult<PostApiV1GroupOwnerOffersByIdAcceptResponses, PostApiV1GroupOwnerOffersByIdAcceptErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1GroupOwnerOffersByIdAcceptResponses, PostApiV1GroupOwnerOffersByIdAcceptErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/group-owner-offers/{id}/accept',
+    ...options
+});
+
+/**
+ * Từ chối làm chủ nhóm
+ */
+export const postApiV1GroupOwnerOffersByIdDecline = <ThrowOnError extends boolean = false>(options: Options<PostApiV1GroupOwnerOffersByIdDeclineData, ThrowOnError>): RequestResult<PostApiV1GroupOwnerOffersByIdDeclineResponses, PostApiV1GroupOwnerOffersByIdDeclineErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1GroupOwnerOffersByIdDeclineResponses, PostApiV1GroupOwnerOffersByIdDeclineErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/group-owner-offers/{id}/decline',
+    ...options
+});
+
+/**
+ * Danh sách thành viên — chỉ chủ nhóm, điều hành viên, master
+ */
+export const getApiV1GroupsByGroupIdMembers = <ThrowOnError extends boolean = false>(options: Options<GetApiV1GroupsByGroupIdMembersData, ThrowOnError>): RequestResult<GetApiV1GroupsByGroupIdMembersResponses, GetApiV1GroupsByGroupIdMembersErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1GroupsByGroupIdMembersResponses, GetApiV1GroupsByGroupIdMembersErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/members',
+    ...options
+});
+
+/**
+ * Gỡ thành viên — người bị gỡ vào lại như người mới
+ */
+export const deleteApiV1GroupsByGroupIdMembersByAccountId = <ThrowOnError extends boolean = false>(options: Options<DeleteApiV1GroupsByGroupIdMembersByAccountIdData, ThrowOnError>): RequestResult<DeleteApiV1GroupsByGroupIdMembersByAccountIdResponses, DeleteApiV1GroupsByGroupIdMembersByAccountIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteApiV1GroupsByGroupIdMembersByAccountIdResponses, DeleteApiV1GroupsByGroupIdMembersByAccountIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/members/{accountId}',
+    ...options
+});
+
+/**
+ * Xếp thành viên vào đơn vị con (null = bỏ khỏi đơn vị)
+ */
+export const patchApiV1GroupsByGroupIdMembersByAccountId = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1GroupsByGroupIdMembersByAccountIdData, ThrowOnError>): RequestResult<PatchApiV1GroupsByGroupIdMembersByAccountIdResponses, PatchApiV1GroupsByGroupIdMembersByAccountIdErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1GroupsByGroupIdMembersByAccountIdResponses, PatchApiV1GroupsByGroupIdMembersByAccountIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/members/{accountId}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Gỡ cấm
+ */
+export const deleteApiV1GroupsByGroupIdBansByAccountId = <ThrowOnError extends boolean = false>(options: Options<DeleteApiV1GroupsByGroupIdBansByAccountIdData, ThrowOnError>): RequestResult<DeleteApiV1GroupsByGroupIdBansByAccountIdResponses, DeleteApiV1GroupsByGroupIdBansByAccountIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteApiV1GroupsByGroupIdBansByAccountIdResponses, DeleteApiV1GroupsByGroupIdBansByAccountIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/bans/{accountId}',
+    ...options
+});
+
+/**
+ * Cấm một người khỏi nhóm (kể cả người chưa từng vào) — chỉ có tác dụng trong nhóm
+ */
+export const putApiV1GroupsByGroupIdBansByAccountId = <ThrowOnError extends boolean = false>(options: Options<PutApiV1GroupsByGroupIdBansByAccountIdData, ThrowOnError>): RequestResult<PutApiV1GroupsByGroupIdBansByAccountIdResponses, PutApiV1GroupsByGroupIdBansByAccountIdErrors, ThrowOnError> => (options.client ?? client).put<PutApiV1GroupsByGroupIdBansByAccountIdResponses, PutApiV1GroupsByGroupIdBansByAccountIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/bans/{accountId}',
+    ...options
+});
+
+/**
+ * Người đang bị cấm khỏi nhóm, mới cấm trước — để gỡ cấm
+ */
+export const getApiV1GroupsByGroupIdBans = <ThrowOnError extends boolean = false>(options: Options<GetApiV1GroupsByGroupIdBansData, ThrowOnError>): RequestResult<GetApiV1GroupsByGroupIdBansResponses, GetApiV1GroupsByGroupIdBansErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1GroupsByGroupIdBansResponses, GetApiV1GroupsByGroupIdBansErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/bans',
+    ...options
+});
+
+/**
+ * Đơn xin vào đang chờ, cũ nhất trước
+ */
+export const getApiV1GroupsByGroupIdJoinRequests = <ThrowOnError extends boolean = false>(options: Options<GetApiV1GroupsByGroupIdJoinRequestsData, ThrowOnError>): RequestResult<GetApiV1GroupsByGroupIdJoinRequestsResponses, GetApiV1GroupsByGroupIdJoinRequestsErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1GroupsByGroupIdJoinRequestsResponses, GetApiV1GroupsByGroupIdJoinRequestsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/join-requests',
+    ...options
+});
+
+/**
+ * Duyệt hoặc từ chối một đơn
+ */
+export const postApiV1GroupJoinRequestsByIdDecision = <ThrowOnError extends boolean = false>(options: Options<PostApiV1GroupJoinRequestsByIdDecisionData, ThrowOnError>): RequestResult<PostApiV1GroupJoinRequestsByIdDecisionResponses, PostApiV1GroupJoinRequestsByIdDecisionErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1GroupJoinRequestsByIdDecisionResponses, PostApiV1GroupJoinRequestsByIdDecisionErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/group-join-requests/{id}/decision',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Lời mời đang chờ, mới trước — email đã che, như nhau dù email có tài khoản hay không; điều hành viên đơn vị chỉ thấy đơn vị mình
+ */
+export const getApiV1GroupsByGroupIdInvitations = <ThrowOnError extends boolean = false>(options: Options<GetApiV1GroupsByGroupIdInvitationsData, ThrowOnError>): RequestResult<GetApiV1GroupsByGroupIdInvitationsResponses, GetApiV1GroupsByGroupIdInvitationsErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1GroupsByGroupIdInvitationsResponses, GetApiV1GroupsByGroupIdInvitationsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/invitations',
+    ...options
+});
+
+/**
+ * Mời bằng email — trả lời giống hệt dù email có tài khoản hay không
+ */
+export const postApiV1GroupsByGroupIdInvitations = <ThrowOnError extends boolean = false>(options: Options<PostApiV1GroupsByGroupIdInvitationsData, ThrowOnError>): RequestResult<PostApiV1GroupsByGroupIdInvitationsResponses, PostApiV1GroupsByGroupIdInvitationsErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1GroupsByGroupIdInvitationsResponses, PostApiV1GroupsByGroupIdInvitationsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/invitations',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Thu hồi lời mời đang chờ
+ */
+export const deleteApiV1GroupsByGroupIdInvitationsByInvitationId = <ThrowOnError extends boolean = false>(options: Options<DeleteApiV1GroupsByGroupIdInvitationsByInvitationIdData, ThrowOnError>): RequestResult<DeleteApiV1GroupsByGroupIdInvitationsByInvitationIdResponses, DeleteApiV1GroupsByGroupIdInvitationsByInvitationIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteApiV1GroupsByGroupIdInvitationsByInvitationIdResponses, DeleteApiV1GroupsByGroupIdInvitationsByInvitationIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/invitations/{invitationId}',
+    ...options
+});
+
+/**
+ * Nạp thêm email vào danh sách lớp (chỉ lưu dấu băm) — trả số dòng mới, không nói email nào khớp
+ */
+export const postApiV1GroupsByGroupIdRoster = <ThrowOnError extends boolean = false>(options: Options<PostApiV1GroupsByGroupIdRosterData, ThrowOnError>): RequestResult<PostApiV1GroupsByGroupIdRosterResponses, PostApiV1GroupsByGroupIdRosterErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1GroupsByGroupIdRosterResponses, PostApiV1GroupsByGroupIdRosterErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/roster',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Bỏ một email khỏi danh sách lớp
+ */
+export const postApiV1GroupsByGroupIdRosterRemove = <ThrowOnError extends boolean = false>(options: Options<PostApiV1GroupsByGroupIdRosterRemoveData, ThrowOnError>): RequestResult<PostApiV1GroupsByGroupIdRosterRemoveResponses, PostApiV1GroupsByGroupIdRosterRemoveErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1GroupsByGroupIdRosterRemoveResponses, PostApiV1GroupsByGroupIdRosterRemoveErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/roster/remove',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Đổi tên, mô tả, chế độ, nhận tin người ngoài, hiện tên trên tin sàn, kiểu bảng tin
+ */
+export const patchApiV1GroupsByGroupIdSettings = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1GroupsByGroupIdSettingsData, ThrowOnError>): RequestResult<PatchApiV1GroupsByGroupIdSettingsResponses, PatchApiV1GroupsByGroupIdSettingsErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1GroupsByGroupIdSettingsResponses, PatchApiV1GroupsByGroupIdSettingsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/settings',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Đổi mã nhóm khi bị lộ — mã cũ hết hiệu lực ngay
+ */
+export const postApiV1GroupsByGroupIdCode = <ThrowOnError extends boolean = false>(options: Options<PostApiV1GroupsByGroupIdCodeData, ThrowOnError>): RequestResult<PostApiV1GroupsByGroupIdCodeResponses, PostApiV1GroupsByGroupIdCodeErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1GroupsByGroupIdCodeResponses, PostApiV1GroupsByGroupIdCodeErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/code',
+    ...options
+});
+
+/**
+ * Lập đơn vị con (lớp, phòng ban) — chỉ nhóm trường học, công ty
+ */
+export const postApiV1GroupsByGroupIdUnits = <ThrowOnError extends boolean = false>(options: Options<PostApiV1GroupsByGroupIdUnitsData, ThrowOnError>): RequestResult<PostApiV1GroupsByGroupIdUnitsResponses, PostApiV1GroupsByGroupIdUnitsErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1GroupsByGroupIdUnitsResponses, PostApiV1GroupsByGroupIdUnitsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/units',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Xoá đơn vị con trống
+ */
+export const deleteApiV1GroupsByGroupIdUnitsByUnitId = <ThrowOnError extends boolean = false>(options: Options<DeleteApiV1GroupsByGroupIdUnitsByUnitIdData, ThrowOnError>): RequestResult<DeleteApiV1GroupsByGroupIdUnitsByUnitIdResponses, DeleteApiV1GroupsByGroupIdUnitsByUnitIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteApiV1GroupsByGroupIdUnitsByUnitIdResponses, DeleteApiV1GroupsByGroupIdUnitsByUnitIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/units/{unitId}',
+    ...options
+});
+
+/**
+ * Đổi tên đơn vị con
+ */
+export const patchApiV1GroupsByGroupIdUnitsByUnitId = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1GroupsByGroupIdUnitsByUnitIdData, ThrowOnError>): RequestResult<PatchApiV1GroupsByGroupIdUnitsByUnitIdResponses, PatchApiV1GroupsByGroupIdUnitsByUnitIdErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1GroupsByGroupIdUnitsByUnitIdResponses, PatchApiV1GroupsByGroupIdUnitsByUnitIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/units/{unitId}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Bãi nhiệm điều hành viên — người đó vẫn là thành viên
+ */
+export const deleteApiV1GroupsByGroupIdModeratorsByAccountId = <ThrowOnError extends boolean = false>(options: Options<DeleteApiV1GroupsByGroupIdModeratorsByAccountIdData, ThrowOnError>): RequestResult<DeleteApiV1GroupsByGroupIdModeratorsByAccountIdResponses, DeleteApiV1GroupsByGroupIdModeratorsByAccountIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteApiV1GroupsByGroupIdModeratorsByAccountIdResponses, DeleteApiV1GroupsByGroupIdModeratorsByAccountIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/moderators/{accountId}',
+    ...options
+});
+
+/**
+ * Bổ nhiệm hoặc đổi phạm vi điều hành viên (unitId null = cả nhóm)
+ */
+export const putApiV1GroupsByGroupIdModeratorsByAccountId = <ThrowOnError extends boolean = false>(options: Options<PutApiV1GroupsByGroupIdModeratorsByAccountIdData, ThrowOnError>): RequestResult<PutApiV1GroupsByGroupIdModeratorsByAccountIdResponses, PutApiV1GroupsByGroupIdModeratorsByAccountIdErrors, ThrowOnError> => (options.client ?? client).put<PutApiV1GroupsByGroupIdModeratorsByAccountIdResponses, PutApiV1GroupsByGroupIdModeratorsByAccountIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/moderators/{accountId}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Huỷ lời chuyển chủ đang chờ
+ */
+export const deleteApiV1GroupsByGroupIdOwnerTransfer = <ThrowOnError extends boolean = false>(options: Options<DeleteApiV1GroupsByGroupIdOwnerTransferData, ThrowOnError>): RequestResult<DeleteApiV1GroupsByGroupIdOwnerTransferResponses, DeleteApiV1GroupsByGroupIdOwnerTransferErrors, ThrowOnError> => (options.client ?? client).delete<DeleteApiV1GroupsByGroupIdOwnerTransferResponses, DeleteApiV1GroupsByGroupIdOwnerTransferErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/owner-transfer',
+    ...options
+});
+
+/**
+ * Chuyển quyền chủ nhóm cho một thành viên — người nhận đồng ý trong 14 ngày
+ */
+export const postApiV1GroupsByGroupIdOwnerTransfer = <ThrowOnError extends boolean = false>(options: Options<PostApiV1GroupsByGroupIdOwnerTransferData, ThrowOnError>): RequestResult<PostApiV1GroupsByGroupIdOwnerTransferResponses, PostApiV1GroupsByGroupIdOwnerTransferErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1GroupsByGroupIdOwnerTransferResponses, PostApiV1GroupsByGroupIdOwnerTransferErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/owner-transfer',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Đóng nhóm — vĩnh viễn
+ */
+export const postApiV1GroupsByGroupIdClose = <ThrowOnError extends boolean = false>(options: Options<PostApiV1GroupsByGroupIdCloseData, ThrowOnError>): RequestResult<PostApiV1GroupsByGroupIdCloseResponses, PostApiV1GroupsByGroupIdCloseErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1GroupsByGroupIdCloseResponses, PostApiV1GroupsByGroupIdCloseErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/close',
+    ...options
+});
+
+/**
+ * Danh sách nhóm, lọc theo trạng thái (vd thiếu chủ)
+ */
+export const getApiV1OpsGroups = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1OpsGroupsData, ThrowOnError>): RequestResult<GetApiV1OpsGroupsResponses, GetApiV1OpsGroupsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1OpsGroupsResponses, GetApiV1OpsGroupsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/groups',
+    ...options
+});
+
+/**
+ * Lập nhóm — nhóm chờ giao chủ tới khi có người nhận làm chủ
+ */
+export const postApiV1OpsGroups = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsGroupsData, ThrowOnError>): RequestResult<PostApiV1OpsGroupsResponses, PostApiV1OpsGroupsErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsGroupsResponses, PostApiV1OpsGroupsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/groups',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Hồ sơ nhóm cho master, kèm chủ nhóm, người được đề cử và lúc bắt đầu thiếu chủ
+ */
+export const getApiV1OpsGroupsByGroupId = <ThrowOnError extends boolean = false>(options: Options<GetApiV1OpsGroupsByGroupIdData, ThrowOnError>): RequestResult<GetApiV1OpsGroupsByGroupIdResponses, GetApiV1OpsGroupsByGroupIdErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1OpsGroupsByGroupIdResponses, GetApiV1OpsGroupsByGroupIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/groups/{groupId}',
+    ...options
+});
+
+/**
+ * Giao chủ nhóm — lần đầu, nhóm thiếu chủ, hay giao đè; người nhận đồng ý trong 14 ngày
+ */
+export const postApiV1OpsGroupsByGroupIdOwnerOffers = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsGroupsByGroupIdOwnerOffersData, ThrowOnError>): RequestResult<PostApiV1OpsGroupsByGroupIdOwnerOffersResponses, PostApiV1OpsGroupsByGroupIdOwnerOffersErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsGroupsByGroupIdOwnerOffersResponses, PostApiV1OpsGroupsByGroupIdOwnerOffersErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/groups/{groupId}/owner-offers',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Tạm khoá nhóm kèm lý do
+ */
+export const postApiV1OpsGroupsByGroupIdLock = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsGroupsByGroupIdLockData, ThrowOnError>): RequestResult<PostApiV1OpsGroupsByGroupIdLockResponses, PostApiV1OpsGroupsByGroupIdLockErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsGroupsByGroupIdLockResponses, PostApiV1OpsGroupsByGroupIdLockErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/groups/{groupId}/lock',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Mở khoá nhóm — cần chủ nhóm dùng được
+ */
+export const postApiV1OpsGroupsByGroupIdUnlock = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsGroupsByGroupIdUnlockData, ThrowOnError>): RequestResult<PostApiV1OpsGroupsByGroupIdUnlockResponses, PostApiV1OpsGroupsByGroupIdUnlockErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsGroupsByGroupIdUnlockResponses, PostApiV1OpsGroupsByGroupIdUnlockErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/groups/{groupId}/unlock',
+    ...options
+});
+
+/**
+ * Đóng nhóm, kể cả nhóm chưa có chủ — vĩnh viễn
+ */
+export const postApiV1OpsGroupsByGroupIdClose = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsGroupsByGroupIdCloseData, ThrowOnError>): RequestResult<PostApiV1OpsGroupsByGroupIdCloseResponses, PostApiV1OpsGroupsByGroupIdCloseErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsGroupsByGroupIdCloseResponses, PostApiV1OpsGroupsByGroupIdCloseErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/groups/{groupId}/close',
+    ...options
+});
+
+/**
+ * Không `q` = bảng tin / danh mục (tin hiện đầy đủ); có `q` = tìm kiếm (gồm tin hạn chế)
+ */
+export const getApiV1Listings = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1ListingsData, ThrowOnError>): RequestResult<GetApiV1ListingsResponses, GetApiV1ListingsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1ListingsResponses, GetApiV1ListingsErrors, ThrowOnError>({ url: '/api/v1/listings', ...options });
+
+/**
+ * Tạo nháp — lưu được khi chưa đủ trường
+ */
+export const postApiV1Listings = <ThrowOnError extends boolean = false>(options: Options<PostApiV1ListingsData, ThrowOnError>): RequestResult<PostApiV1ListingsResponses, PostApiV1ListingsErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1ListingsResponses, PostApiV1ListingsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/listings',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Xoá tin ở mọi trạng thái — không ai thấy nữa, kể cả người đăng
+ */
+export const deleteApiV1ListingsById = <ThrowOnError extends boolean = false>(options: Options<DeleteApiV1ListingsByIdData, ThrowOnError>): RequestResult<DeleteApiV1ListingsByIdResponses, DeleteApiV1ListingsByIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteApiV1ListingsByIdResponses, DeleteApiV1ListingsByIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/listings/{id}',
+    ...options
+});
+
+/**
+ * Một tin — người đăng thấy trạng thái và lý do; người khác không được thấy thì 404 như tin không tồn tại
+ */
+export const getApiV1ListingsById = <ThrowOnError extends boolean = false>(options: Options<GetApiV1ListingsByIdData, ThrowOnError>): RequestResult<GetApiV1ListingsByIdResponses, GetApiV1ListingsByIdErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1ListingsByIdResponses, GetApiV1ListingsByIdErrors, ThrowOnError>({ url: '/api/v1/listings/{id}', ...options });
+
+/**
+ * Lưu nháp, hoặc sửa tin đã gửi kèm `version` — sửa nội dung qua máy lại (cần `x-device-id`), thu hẹp nơi đăng và công tắc áp ngay
+ */
+export const patchApiV1ListingsById = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1ListingsByIdData, ThrowOnError>): RequestResult<PatchApiV1ListingsByIdResponses, PatchApiV1ListingsByIdErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1ListingsByIdResponses, PatchApiV1ListingsByIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/listings/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Gửi nháp — bấm hai lần cùng `version` trả 200 cùng tin, không tính thêm lượt gửi
+ */
+export const postApiV1ListingsByIdSubmit = <ThrowOnError extends boolean = false>(options: Options<PostApiV1ListingsByIdSubmitData, ThrowOnError>): RequestResult<PostApiV1ListingsByIdSubmitResponses, PostApiV1ListingsByIdSubmitErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1ListingsByIdSubmitResponses, PostApiV1ListingsByIdSubmitErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/listings/{id}/submit',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Rút tin đang chờ duyệt về nháp
+ */
+export const postApiV1ListingsByIdWithdraw = <ThrowOnError extends boolean = false>(options: Options<PostApiV1ListingsByIdWithdrawData, ThrowOnError>): RequestResult<PostApiV1ListingsByIdWithdrawResponses, PostApiV1ListingsByIdWithdrawErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1ListingsByIdWithdrawResponses, PostApiV1ListingsByIdWithdrawErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/listings/{id}/withdraw',
+    ...options
+});
+
+/**
+ * Gia hạn (7 ngày cuối hay sau khi hết hạn), kèm sửa tuỳ chọn — qua máy như một lượt gửi
+ */
+export const postApiV1ListingsByIdRenew = <ThrowOnError extends boolean = false>(options: Options<PostApiV1ListingsByIdRenewData, ThrowOnError>): RequestResult<PostApiV1ListingsByIdRenewResponses, PostApiV1ListingsByIdRenewErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1ListingsByIdRenewResponses, PostApiV1ListingsByIdRenewErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/listings/{id}/renew',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Đánh dấu đã bán
+ */
+export const postApiV1ListingsByIdSold = <ThrowOnError extends boolean = false>(options: Options<PostApiV1ListingsByIdSoldData, ThrowOnError>): RequestResult<PostApiV1ListingsByIdSoldResponses, PostApiV1ListingsByIdSoldErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1ListingsByIdSoldResponses, PostApiV1ListingsByIdSoldErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/listings/{id}/sold',
+    ...options
+});
+
+/**
+ * Chuyển tin đã rời nhóm hẳn lên sàn chung thành một tin mới — một lần, trong hạn; tin cũ giữ nguyên
+ */
+export const postApiV1ListingsByIdMoveToMarketplace = <ThrowOnError extends boolean = false>(options: Options<PostApiV1ListingsByIdMoveToMarketplaceData, ThrowOnError>): RequestResult<PostApiV1ListingsByIdMoveToMarketplaceResponses, PostApiV1ListingsByIdMoveToMarketplaceErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1ListingsByIdMoveToMarketplaceResponses, PostApiV1ListingsByIdMoveToMarketplaceErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/listings/{id}/move-to-marketplace',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Tin của tôi ở mọi trạng thái, kèm lý do tạm ẩn và lý do hạn chế
+ */
+export const getApiV1MeListings = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1MeListingsData, ThrowOnError>): RequestResult<GetApiV1MeListingsResponses, GetApiV1MeListingsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1MeListingsResponses, GetApiV1MeListingsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/listings',
+    ...options
+});
+
+/**
+ * Vài tin sàn chung cùng danh mục để xem tiếp
+ */
+export const getApiV1ListingsByIdSuggestions = <ThrowOnError extends boolean = false>(options: Options<GetApiV1ListingsByIdSuggestionsData, ThrowOnError>): RequestResult<GetApiV1ListingsByIdSuggestionsResponses, GetApiV1ListingsByIdSuggestionsErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1ListingsByIdSuggestionsResponses, GetApiV1ListingsByIdSuggestionsErrors, ThrowOnError>({ url: '/api/v1/listings/{id}/suggestions', ...options });
+
+/**
+ * Bảng tin nhóm — "chỉ thành viên" chỉ hiện cho thành viên; có `q` = tìm trong nhóm
+ */
+export const getApiV1GroupsByGroupIdListings = <ThrowOnError extends boolean = false>(options: Options<GetApiV1GroupsByGroupIdListingsData, ThrowOnError>): RequestResult<GetApiV1GroupsByGroupIdListingsResponses, GetApiV1GroupsByGroupIdListingsErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1GroupsByGroupIdListingsResponses, GetApiV1GroupsByGroupIdListingsErrors, ThrowOnError>({ url: '/api/v1/groups/{groupId}/listings', ...options });
+
+/**
+ * Tin đang hiển thị của người bán mà người xem được phép thấy
+ */
+export const getApiV1UsersByIdListings = <ThrowOnError extends boolean = false>(options: Options<GetApiV1UsersByIdListingsData, ThrowOnError>): RequestResult<GetApiV1UsersByIdListingsResponses, GetApiV1UsersByIdListingsErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1UsersByIdListingsResponses, GetApiV1UsersByIdListingsErrors, ThrowOnError>({ url: '/api/v1/users/{id}/listings', ...options });
+
+/**
+ * Nhóm gỡ huy hiệu của mình khỏi một tin — tin đó không gắn lại huy hiệu nhóm này được nữa
+ */
+export const deleteApiV1GroupsByGroupIdListingBadgesByListingId = <ThrowOnError extends boolean = false>(options: Options<DeleteApiV1GroupsByGroupIdListingBadgesByListingIdData, ThrowOnError>): RequestResult<DeleteApiV1GroupsByGroupIdListingBadgesByListingIdResponses, DeleteApiV1GroupsByGroupIdListingBadgesByListingIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteApiV1GroupsByGroupIdListingBadgesByListingIdResponses, DeleteApiV1GroupsByGroupIdListingBadgesByListingIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/listing-badges/{listingId}',
+    ...options
+});
+
+/**
+ * Bảng uy tín: mức, còn thiếu gì để lên mức, hạn mức còn lại, tin hạn chế, tin chờ người duyệt
+ */
+export const getApiV1MeTrust = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1MeTrustData, ThrowOnError>): RequestResult<GetApiV1MeTrustResponses, GetApiV1MeTrustErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1MeTrustResponses, GetApiV1MeTrustErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/trust',
+    ...options
+});
+
+/**
+ * Gậy của tôi — kể cả đã hết hạn, đã huỷ; mỗi gậy ghi điều trích và ngày hết
+ */
+export const getApiV1MeStrikes = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1MeStrikesData, ThrowOnError>): RequestResult<GetApiV1MeStrikesResponses, GetApiV1MeStrikesErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1MeStrikesResponses, GetApiV1MeStrikesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/strikes',
+    ...options
+});
+
+/**
+ * Khiếu nại một gậy thường / nặng — một lần, trong hạn; gậy nghiêm trọng đi kênh hỗ trợ
+ */
+export const postApiV1MeStrikesByStrikeIdAppeal = <ThrowOnError extends boolean = false>(options: Options<PostApiV1MeStrikesByStrikeIdAppealData, ThrowOnError>): RequestResult<PostApiV1MeStrikesByStrikeIdAppealResponses, PostApiV1MeStrikesByStrikeIdAppealErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1MeStrikesByStrikeIdAppealResponses, PostApiV1MeStrikesByStrikeIdAppealErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/strikes/{strikeId}/appeal',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Người bị khoá vì gậy nghiêm trọng xin mã về email đã đăng ký — luôn 200, không lộ gì
+ */
+export const postApiV1SupportSeriousAppealCode = <ThrowOnError extends boolean = false>(options: Options<PostApiV1SupportSeriousAppealCodeData, ThrowOnError>): RequestResult<PostApiV1SupportSeriousAppealCodeResponses, PostApiV1SupportSeriousAppealCodeErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1SupportSeriousAppealCodeResponses, PostApiV1SupportSeriousAppealCodeErrors, ThrowOnError>({
+    url: '/api/v1/support/serious-appeal/code',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Nộp khiếu nại gậy nghiêm trọng bằng mã — trả lý do khoá, lúc ra gậy, hạn khiếu nại
+ */
+export const postApiV1SupportSeriousAppeal = <ThrowOnError extends boolean = false>(options: Options<PostApiV1SupportSeriousAppealData, ThrowOnError>): RequestResult<PostApiV1SupportSeriousAppealResponses, PostApiV1SupportSeriousAppealErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1SupportSeriousAppealResponses, PostApiV1SupportSeriousAppealErrors, ThrowOnError>({
+    url: '/api/v1/support/serious-appeal',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Master ân xá một hay nhiều gậy thường / nặng của một người, bắt buộc ghi lý do
+ */
+export const postApiV1OpsTrustAccountsByAccountIdAmnesty = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsTrustAccountsByAccountIdAmnestyData, ThrowOnError>): RequestResult<PostApiV1OpsTrustAccountsByAccountIdAmnestyResponses, PostApiV1OpsTrustAccountsByAccountIdAmnestyErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsTrustAccountsByAccountIdAmnestyResponses, PostApiV1OpsTrustAccountsByAccountIdAmnestyErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/trust/accounts/{accountId}/amnesty',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Master gỡ khoá vĩnh viễn — tài khoản mở khoá, email hết bị chặn
+ */
+export const postApiV1OpsTrustStrikesByStrikeIdLift = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsTrustStrikesByStrikeIdLiftData, ThrowOnError>): RequestResult<PostApiV1OpsTrustStrikesByStrikeIdLiftResponses, PostApiV1OpsTrustStrikesByStrikeIdLiftErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsTrustStrikesByStrikeIdLiftResponses, PostApiV1OpsTrustStrikesByStrikeIdLiftErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/trust/strikes/{strikeId}/lift',
+    ...options
+});
+
+/**
+ * Lịch sử gậy của một người (staff, master)
+ */
+export const getApiV1OpsTrustAccountsByAccountIdStrikes = <ThrowOnError extends boolean = false>(options: Options<GetApiV1OpsTrustAccountsByAccountIdStrikesData, ThrowOnError>): RequestResult<GetApiV1OpsTrustAccountsByAccountIdStrikesResponses, GetApiV1OpsTrustAccountsByAccountIdStrikesErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1OpsTrustAccountsByAccountIdStrikesResponses, GetApiV1OpsTrustAccountsByAccountIdStrikesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/trust/accounts/{accountId}/strikes',
+    ...options
+});
+
+/**
+ * Staff ghi nhận xét vào hồ sơ gậy nghiêm trọng đang chờ master — không đổi gì khác
+ */
+export const postApiV1OpsTrustStrikesByStrikeIdComments = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsTrustStrikesByStrikeIdCommentsData, ThrowOnError>): RequestResult<PostApiV1OpsTrustStrikesByStrikeIdCommentsResponses, PostApiV1OpsTrustStrikesByStrikeIdCommentsErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsTrustStrikesByStrikeIdCommentsResponses, PostApiV1OpsTrustStrikesByStrikeIdCommentsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/trust/strikes/{strikeId}/comments',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Quy định sàn để trích khi ra gậy — master thấy cả điều đã tắt
+ */
+export const getApiV1OpsTrustRuleArticles = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1OpsTrustRuleArticlesData, ThrowOnError>): RequestResult<GetApiV1OpsTrustRuleArticlesResponses, GetApiV1OpsTrustRuleArticlesErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1OpsTrustRuleArticlesResponses, GetApiV1OpsTrustRuleArticlesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/trust/rule-articles',
+    ...options
+});
+
+/**
+ * Master thêm một điều vào quy định sàn
+ */
+export const postApiV1OpsTrustRuleArticles = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsTrustRuleArticlesData, ThrowOnError>): RequestResult<PostApiV1OpsTrustRuleArticlesResponses, PostApiV1OpsTrustRuleArticlesErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsTrustRuleArticlesResponses, PostApiV1OpsTrustRuleArticlesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/trust/rule-articles',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Master sửa câu, thứ tự, tắt / bật một điều — gậy đã ra giữ bản trích cũ
+ */
+export const patchApiV1OpsTrustRuleArticlesByArticleId = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1OpsTrustRuleArticlesByArticleIdData, ThrowOnError>): RequestResult<PatchApiV1OpsTrustRuleArticlesByArticleIdResponses, PatchApiV1OpsTrustRuleArticlesByArticleIdErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1OpsTrustRuleArticlesByArticleIdResponses, PatchApiV1OpsTrustRuleArticlesByArticleIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/trust/rule-articles/{articleId}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Luật, ghi đè theo danh mục, ngưỡng dải của phiên bản luật hiện hành
+ */
+export const getApiV1OpsScreeningRules = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1OpsScreeningRulesData, ThrowOnError>): RequestResult<GetApiV1OpsScreeningRulesResponses, GetApiV1OpsScreeningRulesErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1OpsScreeningRulesResponses, GetApiV1OpsScreeningRulesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/screening/rules',
+    ...options
+});
+
+/**
+ * Đổi trọng số hay chế độ một luật — cổng cứng không tắt được; tạo phiên bản luật mới
+ */
+export const patchApiV1OpsScreeningRulesByCode = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1OpsScreeningRulesByCodeData, ThrowOnError>): RequestResult<PatchApiV1OpsScreeningRulesByCodeResponses, PatchApiV1OpsScreeningRulesByCodeErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1OpsScreeningRulesByCodeResponses, PatchApiV1OpsScreeningRulesByCodeErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/screening/rules/{code}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Bỏ ghi đè — danh mục dùng lại giá trị chung
+ */
+export const deleteApiV1OpsScreeningRulesByCodeCategoriesByCategoryId = <ThrowOnError extends boolean = false>(options: Options<DeleteApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdData, ThrowOnError>): RequestResult<DeleteApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdResponses, DeleteApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdResponses, DeleteApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/screening/rules/{code}/categories/{categoryId}',
+    ...options
+});
+
+/**
+ * Ghi đè trọng số hay chế độ của một luật cho một danh mục
+ */
+export const putApiV1OpsScreeningRulesByCodeCategoriesByCategoryId = <ThrowOnError extends boolean = false>(options: Options<PutApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdData, ThrowOnError>): RequestResult<PutApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdResponses, PutApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdErrors, ThrowOnError> => (options.client ?? client).put<PutApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdResponses, PutApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/screening/rules/{code}/categories/{categoryId}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Ngưỡng dải Vừa / Cao riêng cho một danh mục
+ */
+export const putApiV1OpsScreeningBandsByCategoryId = <ThrowOnError extends boolean = false>(options: Options<PutApiV1OpsScreeningBandsByCategoryIdData, ThrowOnError>): RequestResult<PutApiV1OpsScreeningBandsByCategoryIdResponses, PutApiV1OpsScreeningBandsByCategoryIdErrors, ThrowOnError> => (options.client ?? client).put<PutApiV1OpsScreeningBandsByCategoryIdResponses, PutApiV1OpsScreeningBandsByCategoryIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/screening/bands/{categoryId}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Mọi cụm từ cấm, mới nhất trước
+ */
+export const getApiV1OpsScreeningPhrases = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1OpsScreeningPhrasesData, ThrowOnError>): RequestResult<GetApiV1OpsScreeningPhrasesResponses, GetApiV1OpsScreeningPhrasesErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1OpsScreeningPhrasesResponses, GetApiV1OpsScreeningPhrasesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/screening/phrases',
+    ...options
+});
+
+/**
+ * Thêm cụm (từ hai chữ) — bắt đầu ở chế độ chạy thử
+ */
+export const postApiV1OpsScreeningPhrases = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsScreeningPhrasesData, ThrowOnError>): RequestResult<PostApiV1OpsScreeningPhrasesResponses, PostApiV1OpsScreeningPhrasesErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsScreeningPhrasesResponses, PostApiV1OpsScreeningPhrasesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/screening/phrases',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Đổi mức hay danh sách ngoại lệ của một cụm
+ */
+export const patchApiV1OpsScreeningPhrasesById = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1OpsScreeningPhrasesByIdData, ThrowOnError>): RequestResult<PatchApiV1OpsScreeningPhrasesByIdResponses, PatchApiV1OpsScreeningPhrasesByIdErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1OpsScreeningPhrasesByIdResponses, PatchApiV1OpsScreeningPhrasesByIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/screening/phrases/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Bật thật — chưa đủ ngày chạy thử thì bắt buộc lý do; cụm mức chắc thì quét lại tin đang hiển thị
+ */
+export const postApiV1OpsScreeningPhrasesByIdActivate = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsScreeningPhrasesByIdActivateData, ThrowOnError>): RequestResult<PostApiV1OpsScreeningPhrasesByIdActivateResponses, PostApiV1OpsScreeningPhrasesByIdActivateErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsScreeningPhrasesByIdActivateResponses, PostApiV1OpsScreeningPhrasesByIdActivateErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/screening/phrases/{id}/activate',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Tắt — tin đang chờ vì cụm này vẫn chờ người duyệt
+ */
+export const postApiV1OpsScreeningPhrasesByIdDeactivate = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsScreeningPhrasesByIdDeactivateData, ThrowOnError>): RequestResult<PostApiV1OpsScreeningPhrasesByIdDeactivateResponses, PostApiV1OpsScreeningPhrasesByIdDeactivateErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsScreeningPhrasesByIdDeactivateResponses, PostApiV1OpsScreeningPhrasesByIdDeactivateErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/screening/phrases/{id}/deactivate',
+    ...options
+});
+
+/**
+ * Ảnh mẫu của hãng không tính là ảnh trùng
+ */
+export const getApiV1OpsScreeningWhitelist = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1OpsScreeningWhitelistData, ThrowOnError>): RequestResult<GetApiV1OpsScreeningWhitelistResponses, GetApiV1OpsScreeningWhitelistErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1OpsScreeningWhitelistResponses, GetApiV1OpsScreeningWhitelistErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/screening/whitelist',
+    ...options
+});
+
+/**
+ * Thêm một ảnh trong kho vào danh sách trắng
+ */
+export const postApiV1OpsScreeningWhitelist = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsScreeningWhitelistData, ThrowOnError>): RequestResult<PostApiV1OpsScreeningWhitelistResponses, PostApiV1OpsScreeningWhitelistErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsScreeningWhitelistResponses, PostApiV1OpsScreeningWhitelistErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/screening/whitelist',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Gỡ một ảnh khỏi danh sách trắng
+ */
+export const deleteApiV1OpsScreeningWhitelistById = <ThrowOnError extends boolean = false>(options: Options<DeleteApiV1OpsScreeningWhitelistByIdData, ThrowOnError>): RequestResult<DeleteApiV1OpsScreeningWhitelistByIdResponses, DeleteApiV1OpsScreeningWhitelistByIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteApiV1OpsScreeningWhitelistByIdResponses, DeleteApiV1OpsScreeningWhitelistByIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/screening/whitelist/{id}',
+    ...options
+});
+
+/**
+ * Thay bộ từ khoá suy ra danh mục — dùng cho dấu hiệu "sai danh mục"
+ */
+export const putApiV1OpsScreeningCategoriesByCategoryIdKeywords = <ThrowOnError extends boolean = false>(options: Options<PutApiV1OpsScreeningCategoriesByCategoryIdKeywordsData, ThrowOnError>): RequestResult<PutApiV1OpsScreeningCategoriesByCategoryIdKeywordsResponses, PutApiV1OpsScreeningCategoriesByCategoryIdKeywordsErrors, ThrowOnError> => (options.client ?? client).put<PutApiV1OpsScreeningCategoriesByCategoryIdKeywordsResponses, PutApiV1OpsScreeningCategoriesByCategoryIdKeywordsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/screening/categories/{categoryId}/keywords',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Lý do cụ thể của một lần giữ theo mã tra cứu — không có dấu thiết bị
+ */
+export const getApiV1OpsScreeningLookupsByCode = <ThrowOnError extends boolean = false>(options: Options<GetApiV1OpsScreeningLookupsByCodeData, ThrowOnError>): RequestResult<GetApiV1OpsScreeningLookupsByCodeResponses, GetApiV1OpsScreeningLookupsByCodeErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1OpsScreeningLookupsByCodeResponses, GetApiV1OpsScreeningLookupsByCodeErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/screening/lookups/{code}',
+    ...options
+});
+
+/**
+ * Hàng chờ của tôi: mỗi việc kèm số hàng, lý do, hạn xử, ai đang giữ — master thấy mọi việc, lọc `atMaster`
+ */
+export const getApiV1OpsReviewTasks = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1OpsReviewTasksData, ThrowOnError>): RequestResult<GetApiV1OpsReviewTasksResponses, GetApiV1OpsReviewTasksErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1OpsReviewTasksResponses, GetApiV1OpsReviewTasksErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/review/tasks',
+    ...options
+});
+
+/**
+ * Bối cảnh người xử: tin, điểm và luật máy đã trúng, tin sạch, ảnh trùng, tài khoản dùng chung thiết bị
+ */
+export const getApiV1OpsReviewTasksByTaskId = <ThrowOnError extends boolean = false>(options: Options<GetApiV1OpsReviewTasksByTaskIdData, ThrowOnError>): RequestResult<GetApiV1OpsReviewTasksByTaskIdResponses, GetApiV1OpsReviewTasksByTaskIdErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1OpsReviewTasksByTaskIdResponses, GetApiV1OpsReviewTasksByTaskIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/review/tasks/{taskId}',
+    ...options
+});
+
+/**
+ * Nhận việc — giữ 10 phút; người khác thấy "đang có người xử"
+ */
+export const postApiV1OpsReviewTasksByTaskIdClaim = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsReviewTasksByTaskIdClaimData, ThrowOnError>): RequestResult<PostApiV1OpsReviewTasksByTaskIdClaimResponses, PostApiV1OpsReviewTasksByTaskIdClaimErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsReviewTasksByTaskIdClaimResponses, PostApiV1OpsReviewTasksByTaskIdClaimErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/review/tasks/{taskId}/claim',
+    ...options
+});
+
+/**
+ * Quyết định việc đang nhận: đạt (kèm nhận định máy với việc máy giữ), sai sót (kèm lý do mẫu), bác việc nhóm chuyển lên
+ */
+export const postApiV1OpsReviewTasksByTaskIdDecision = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsReviewTasksByTaskIdDecisionData, ThrowOnError>): RequestResult<PostApiV1OpsReviewTasksByTaskIdDecisionResponses, PostApiV1OpsReviewTasksByTaskIdDecisionErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsReviewTasksByTaskIdDecisionResponses, PostApiV1OpsReviewTasksByTaskIdDecisionErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/review/tasks/{taskId}/decision',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Gỡ thẳng một tin sàn đang hiện không có việc mở — sai sót, kèm lý do mẫu
+ */
+export const postApiV1OpsReviewListingsByListingIdRemove = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsReviewListingsByListingIdRemoveData, ThrowOnError>): RequestResult<PostApiV1OpsReviewListingsByListingIdRemoveResponses, PostApiV1OpsReviewListingsByListingIdRemoveErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsReviewListingsByListingIdRemoveResponses, PostApiV1OpsReviewListingsByListingIdRemoveErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/review/listings/{listingId}/remove',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Khôi phục tin sàn đã bị gỡ — ngày hiển thị chạy tiếp từ chỗ đã dừng
+ */
+export const postApiV1OpsReviewListingsByListingIdRestore = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsReviewListingsByListingIdRestoreData, ThrowOnError>): RequestResult<PostApiV1OpsReviewListingsByListingIdRestoreResponses, PostApiV1OpsReviewListingsByListingIdRestoreErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsReviewListingsByListingIdRestoreResponses, PostApiV1OpsReviewListingsByListingIdRestoreErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/review/listings/{listingId}/restore',
+    ...options
+});
+
+/**
+ * Lý do mẫu cho "sai sót" — master thấy cả lý do đã tắt
+ */
+export const getApiV1OpsReviewReasonTemplates = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1OpsReviewReasonTemplatesData, ThrowOnError>): RequestResult<GetApiV1OpsReviewReasonTemplatesResponses, GetApiV1OpsReviewReasonTemplatesErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1OpsReviewReasonTemplatesResponses, GetApiV1OpsReviewReasonTemplatesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/review/reason-templates',
+    ...options
+});
+
+/**
+ * Thêm lý do mẫu (master)
+ */
+export const postApiV1OpsReviewReasonTemplates = <ThrowOnError extends boolean = false>(options: Options<PostApiV1OpsReviewReasonTemplatesData, ThrowOnError>): RequestResult<PostApiV1OpsReviewReasonTemplatesResponses, PostApiV1OpsReviewReasonTemplatesErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1OpsReviewReasonTemplatesResponses, PostApiV1OpsReviewReasonTemplatesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/review/reason-templates',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Sửa câu, thứ tự, hay tắt / bật một lý do mẫu (master)
+ */
+export const patchApiV1OpsReviewReasonTemplatesByTemplateId = <ThrowOnError extends boolean = false>(options: Options<PatchApiV1OpsReviewReasonTemplatesByTemplateIdData, ThrowOnError>): RequestResult<PatchApiV1OpsReviewReasonTemplatesByTemplateIdResponses, PatchApiV1OpsReviewReasonTemplatesByTemplateIdErrors, ThrowOnError> => (options.client ?? client).patch<PatchApiV1OpsReviewReasonTemplatesByTemplateIdResponses, PatchApiV1OpsReviewReasonTemplatesByTemplateIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/review/reason-templates/{templateId}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Hàng chờ của nhóm mà tôi xử được
+ */
+export const getApiV1GroupsByGroupIdReviewTasks = <ThrowOnError extends boolean = false>(options: Options<GetApiV1GroupsByGroupIdReviewTasksData, ThrowOnError>): RequestResult<GetApiV1GroupsByGroupIdReviewTasksResponses, GetApiV1GroupsByGroupIdReviewTasksErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1GroupsByGroupIdReviewTasksResponses, GetApiV1GroupsByGroupIdReviewTasksErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/review/tasks',
+    ...options
+});
+
+/**
+ * Bối cảnh việc của nhóm
+ */
+export const getApiV1GroupsByGroupIdReviewTasksByTaskId = <ThrowOnError extends boolean = false>(options: Options<GetApiV1GroupsByGroupIdReviewTasksByTaskIdData, ThrowOnError>): RequestResult<GetApiV1GroupsByGroupIdReviewTasksByTaskIdResponses, GetApiV1GroupsByGroupIdReviewTasksByTaskIdErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1GroupsByGroupIdReviewTasksByTaskIdResponses, GetApiV1GroupsByGroupIdReviewTasksByTaskIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/review/tasks/{taskId}',
+    ...options
+});
+
+/**
+ * Nhận việc của nhóm — giữ 10 phút
+ */
+export const postApiV1GroupsByGroupIdReviewTasksByTaskIdClaim = <ThrowOnError extends boolean = false>(options: Options<PostApiV1GroupsByGroupIdReviewTasksByTaskIdClaimData, ThrowOnError>): RequestResult<PostApiV1GroupsByGroupIdReviewTasksByTaskIdClaimResponses, PostApiV1GroupsByGroupIdReviewTasksByTaskIdClaimErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1GroupsByGroupIdReviewTasksByTaskIdClaimResponses, PostApiV1GroupsByGroupIdReviewTasksByTaskIdClaimErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/review/tasks/{taskId}/claim',
+    ...options
+});
+
+/**
+ * Quyết định việc của nhóm: đạt, sai sót (kèm lý do mẫu), gỡ khỏi nhóm — kèm "trái quy định sàn" thì chuyển lên staff
+ */
+export const postApiV1GroupsByGroupIdReviewTasksByTaskIdDecision = <ThrowOnError extends boolean = false>(options: Options<PostApiV1GroupsByGroupIdReviewTasksByTaskIdDecisionData, ThrowOnError>): RequestResult<PostApiV1GroupsByGroupIdReviewTasksByTaskIdDecisionResponses, PostApiV1GroupsByGroupIdReviewTasksByTaskIdDecisionErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1GroupsByGroupIdReviewTasksByTaskIdDecisionResponses, PostApiV1GroupsByGroupIdReviewTasksByTaskIdDecisionErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/review/tasks/{taskId}/decision',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Gỡ khỏi nhóm một tin không có việc mở — chủ nhóm, điều hành cả nhóm hay của đơn vị tin; kèm "trái quy định sàn" thì chuyển lên staff
+ */
+export const postApiV1GroupsByGroupIdReviewListingsByListingIdDetach = <ThrowOnError extends boolean = false>(options: Options<PostApiV1GroupsByGroupIdReviewListingsByListingIdDetachData, ThrowOnError>): RequestResult<PostApiV1GroupsByGroupIdReviewListingsByListingIdDetachResponses, PostApiV1GroupsByGroupIdReviewListingsByListingIdDetachErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1GroupsByGroupIdReviewListingsByListingIdDetachResponses, PostApiV1GroupsByGroupIdReviewListingsByListingIdDetachErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/review/listings/{listingId}/detach',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Lý do mẫu đang dùng cho "sai sót"
+ */
+export const getApiV1GroupsByGroupIdReviewReasonTemplates = <ThrowOnError extends boolean = false>(options: Options<GetApiV1GroupsByGroupIdReviewReasonTemplatesData, ThrowOnError>): RequestResult<GetApiV1GroupsByGroupIdReviewReasonTemplatesResponses, GetApiV1GroupsByGroupIdReviewReasonTemplatesErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1GroupsByGroupIdReviewReasonTemplatesResponses, GetApiV1GroupsByGroupIdReviewReasonTemplatesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/groups/{groupId}/review/reason-templates',
+    ...options
+});
+
+/**
+ * Bảng tồn: việc mở theo hàng, việc quá hạn, việc nằm ở hàng master quá hạn nhắc (master)
+ */
+export const getApiV1OpsReviewStatsBoard = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1OpsReviewStatsBoardData, ThrowOnError>): RequestResult<GetApiV1OpsReviewStatsBoardResponses, GetApiV1OpsReviewStatsBoardErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1OpsReviewStatsBoardResponses, GetApiV1OpsReviewStatsBoardErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/review/stats/board',
+    ...options
+});
+
+/**
+ * Tỉ lệ bị lật theo người duyệt — quyết định "đạt" đã hậu kiểm bị gỡ tin hay gỡ khỏi nhóm (master)
+ */
+export const getApiV1OpsReviewStatsReviewers = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1OpsReviewStatsReviewersData, ThrowOnError>): RequestResult<GetApiV1OpsReviewStatsReviewersResponses, GetApiV1OpsReviewStatsReviewersErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1OpsReviewStatsReviewersResponses, GetApiV1OpsReviewStatsReviewersErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/review/stats/reviewers',
+    ...options
+});
+
+/**
+ * Tỉ lệ máy quá tay theo luật — tin máy giữ có trúng luật được người cho đạt, kèm số lượt "máy quá tay" (master)
+ */
+export const getApiV1OpsReviewStatsRules = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1OpsReviewStatsRulesData, ThrowOnError>): RequestResult<GetApiV1OpsReviewStatsRulesResponses, GetApiV1OpsReviewStatsRulesErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1OpsReviewStatsRulesResponses, GetApiV1OpsReviewStatsRulesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/review/stats/rules',
+    ...options
+});
+
+/**
+ * Báo cáo một tin hay một người — 201 lượt báo mới; 200 khi mình đã báo đối tượng này trong báo cáo đang mở
+ */
+export const postApiV1Reports = <ThrowOnError extends boolean = false>(options: Options<PostApiV1ReportsData, ThrowOnError>): RequestResult<PostApiV1ReportsResponses, PostApiV1ReportsErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1ReportsResponses, PostApiV1ReportsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/reports',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Báo cáo tôi đã gửi: loại, trạng thái, kết quả — không có ai khác đã báo
+ */
+export const getApiV1MeReports = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1MeReportsData, ThrowOnError>): RequestResult<GetApiV1MeReportsResponses, GetApiV1MeReportsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1MeReportsResponses, GetApiV1MeReportsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/reports',
+    ...options
+});
+
+/**
+ * Mở hội thoại với một tin đang hiển thị — 201 hội thoại mới; 200 khi đã có hội thoại với tin này
+ */
+export const postApiV1ListingsByListingIdConversation = <ThrowOnError extends boolean = false>(options: Options<PostApiV1ListingsByListingIdConversationData, ThrowOnError>): RequestResult<PostApiV1ListingsByListingIdConversationResponses, PostApiV1ListingsByListingIdConversationErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1ListingsByListingIdConversationResponses, PostApiV1ListingsByListingIdConversationErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/listings/{listingId}/conversation',
+    ...options
+});
+
+/**
+ * Hội thoại của tôi, hoạt động gần nhất trước — không có hội thoại đã xoá phía mình
+ */
+export const getApiV1MeConversations = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1MeConversationsData, ThrowOnError>): RequestResult<GetApiV1MeConversationsResponses, GetApiV1MeConversationsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1MeConversationsResponses, GetApiV1MeConversationsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/conversations',
+    ...options
+});
+
+/**
+ * Xoá hội thoại khỏi danh sách của tôi — bên kia vẫn thấy đủ
+ */
+export const deleteApiV1MeConversationsByConversationId = <ThrowOnError extends boolean = false>(options: Options<DeleteApiV1MeConversationsByConversationIdData, ThrowOnError>): RequestResult<DeleteApiV1MeConversationsByConversationIdResponses, DeleteApiV1MeConversationsByConversationIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteApiV1MeConversationsByConversationIdResponses, DeleteApiV1MeConversationsByConversationIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/conversations/{conversationId}',
+    ...options
+});
+
+/**
+ * Một hội thoại của tôi; người ngoài nhận 404 như không có
+ */
+export const getApiV1MeConversationsByConversationId = <ThrowOnError extends boolean = false>(options: Options<GetApiV1MeConversationsByConversationIdData, ThrowOnError>): RequestResult<GetApiV1MeConversationsByConversationIdResponses, GetApiV1MeConversationsByConversationIdErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1MeConversationsByConversationIdResponses, GetApiV1MeConversationsByConversationIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/conversations/{conversationId}',
+    ...options
+});
+
+/**
+ * Tin nhắn của hội thoại, mới trước; con trỏ đi về quá khứ
+ */
+export const getApiV1MeConversationsByConversationIdMessages = <ThrowOnError extends boolean = false>(options: Options<GetApiV1MeConversationsByConversationIdMessagesData, ThrowOnError>): RequestResult<GetApiV1MeConversationsByConversationIdMessagesResponses, GetApiV1MeConversationsByConversationIdMessagesErrors, ThrowOnError> => (options.client ?? client).get<GetApiV1MeConversationsByConversationIdMessagesResponses, GetApiV1MeConversationsByConversationIdMessagesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/conversations/{conversationId}/messages',
+    ...options
+});
+
+/**
+ * Gửi tin nhắn — qua bộ lọc cụm từ cấm của tin đăng; bị chặn hay bên kia đã rời thì không gửi được
+ */
+export const postApiV1MeConversationsByConversationIdMessages = <ThrowOnError extends boolean = false>(options: Options<PostApiV1MeConversationsByConversationIdMessagesData, ThrowOnError>): RequestResult<PostApiV1MeConversationsByConversationIdMessagesResponses, PostApiV1MeConversationsByConversationIdMessagesErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1MeConversationsByConversationIdMessagesResponses, PostApiV1MeConversationsByConversationIdMessagesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/conversations/{conversationId}/messages',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Đánh dấu đã đọc tới giờ
+ */
+export const postApiV1MeConversationsByConversationIdRead = <ThrowOnError extends boolean = false>(options: Options<PostApiV1MeConversationsByConversationIdReadData, ThrowOnError>): RequestResult<PostApiV1MeConversationsByConversationIdReadResponses, PostApiV1MeConversationsByConversationIdReadErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1MeConversationsByConversationIdReadResponses, PostApiV1MeConversationsByConversationIdReadErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/conversations/{conversationId}/read',
+    ...options
+});
+
+/**
+ * Báo cáo bên kia ngay từ hội thoại — 201 lượt báo mới; 200 khi mình đã báo người này trong báo cáo đang mở
+ */
+export const postApiV1MeConversationsByConversationIdReports = <ThrowOnError extends boolean = false>(options: Options<PostApiV1MeConversationsByConversationIdReportsData, ThrowOnError>): RequestResult<PostApiV1MeConversationsByConversationIdReportsResponses, PostApiV1MeConversationsByConversationIdReportsErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1MeConversationsByConversationIdReportsResponses, PostApiV1MeConversationsByConversationIdReportsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/conversations/{conversationId}/reports',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Đã đóng hội thoại trên máy này
+ */
+export const deleteApiV1MeConversationsByConversationIdViewing = <ThrowOnError extends boolean = false>(options: Options<DeleteApiV1MeConversationsByConversationIdViewingData, ThrowOnError>): RequestResult<DeleteApiV1MeConversationsByConversationIdViewingResponses, DeleteApiV1MeConversationsByConversationIdViewingErrors, ThrowOnError> => (options.client ?? client).delete<DeleteApiV1MeConversationsByConversationIdViewingResponses, DeleteApiV1MeConversationsByConversationIdViewingErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/conversations/{conversationId}/viewing',
+    ...options
+});
+
+/**
+ * Máy này đang mở hội thoại: tin nhắn của nó không đẩy lên máy này trong 10 phút — gọi lại khi còn mở
+ */
+export const putApiV1MeConversationsByConversationIdViewing = <ThrowOnError extends boolean = false>(options: Options<PutApiV1MeConversationsByConversationIdViewingData, ThrowOnError>): RequestResult<PutApiV1MeConversationsByConversationIdViewingResponses, PutApiV1MeConversationsByConversationIdViewingErrors, ThrowOnError> => (options.client ?? client).put<PutApiV1MeConversationsByConversationIdViewingResponses, PutApiV1MeConversationsByConversationIdViewingErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/conversations/{conversationId}/viewing',
+    ...options
+});
+
+/**
+ * Người tôi đã chặn
+ */
+export const getApiV1MeBlocks = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1MeBlocksData, ThrowOnError>): RequestResult<GetApiV1MeBlocksResponses, GetApiV1MeBlocksErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1MeBlocksResponses, GetApiV1MeBlocksErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/blocks',
+    ...options
+});
+
+/**
+ * Chặn một người: không hội thoại mới, hội thoại cũ ngừng nhận tin — không ai được báo
+ */
+export const postApiV1MeBlocks = <ThrowOnError extends boolean = false>(options: Options<PostApiV1MeBlocksData, ThrowOnError>): RequestResult<PostApiV1MeBlocksResponses, PostApiV1MeBlocksErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1MeBlocksResponses, PostApiV1MeBlocksErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/blocks',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Gỡ chặn
+ */
+export const deleteApiV1MeBlocksByAccountId = <ThrowOnError extends boolean = false>(options: Options<DeleteApiV1MeBlocksByAccountIdData, ThrowOnError>): RequestResult<DeleteApiV1MeBlocksByAccountIdResponses, DeleteApiV1MeBlocksByAccountIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteApiV1MeBlocksByAccountIdResponses, DeleteApiV1MeBlocksByAccountIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/blocks/{accountId}',
+    ...options
+});
+
+/**
+ * Hộp thư — mới nhất trước (thông báo gộp nổi lên khi được cập nhật)
+ */
+export const getApiV1MeNotifications = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1MeNotificationsData, ThrowOnError>): RequestResult<GetApiV1MeNotificationsResponses, GetApiV1MeNotificationsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1MeNotificationsResponses, GetApiV1MeNotificationsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/notifications',
+    ...options
+});
+
+/**
+ * Số thông báo chưa đọc
+ */
+export const getApiV1MeNotificationsUnreadCount = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1MeNotificationsUnreadCountData, ThrowOnError>): RequestResult<GetApiV1MeNotificationsUnreadCountResponses, GetApiV1MeNotificationsUnreadCountErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1MeNotificationsUnreadCountResponses, GetApiV1MeNotificationsUnreadCountErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/notifications/unread-count',
+    ...options
+});
+
+/**
+ * Đánh dấu đã đọc theo mã, hoặc tất cả
+ */
+export const postApiV1MeNotificationsRead = <ThrowOnError extends boolean = false>(options: Options<PostApiV1MeNotificationsReadData, ThrowOnError>): RequestResult<PostApiV1MeNotificationsReadResponses, PostApiV1MeNotificationsReadErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1MeNotificationsReadResponses, PostApiV1MeNotificationsReadErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/notifications/read',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Bật / tắt của chín nhóm thông báo và các nhóm đang tắt tiếng
+ */
+export const getApiV1MeNotificationPreferences = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1MeNotificationPreferencesData, ThrowOnError>): RequestResult<GetApiV1MeNotificationPreferencesResponses, GetApiV1MeNotificationPreferencesErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1MeNotificationPreferencesResponses, GetApiV1MeNotificationPreferencesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/notification-preferences',
+    ...options
+});
+
+/**
+ * Bật hoặc tắt nhắc của một nhóm thông báo — nhóm "tài khoản" luôn bật
+ */
+export const putApiV1MeNotificationPreferencesByCategory = <ThrowOnError extends boolean = false>(options: Options<PutApiV1MeNotificationPreferencesByCategoryData, ThrowOnError>): RequestResult<PutApiV1MeNotificationPreferencesByCategoryResponses, PutApiV1MeNotificationPreferencesByCategoryErrors, ThrowOnError> => (options.client ?? client).put<PutApiV1MeNotificationPreferencesByCategoryResponses, PutApiV1MeNotificationPreferencesByCategoryErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/notification-preferences/{category}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Bật lại tiếng một nhóm
+ */
+export const deleteApiV1MeGroupMutesByGroupId = <ThrowOnError extends boolean = false>(options: Options<DeleteApiV1MeGroupMutesByGroupIdData, ThrowOnError>): RequestResult<DeleteApiV1MeGroupMutesByGroupIdResponses, DeleteApiV1MeGroupMutesByGroupIdErrors, ThrowOnError> => (options.client ?? client).delete<DeleteApiV1MeGroupMutesByGroupIdResponses, DeleteApiV1MeGroupMutesByGroupIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/group-mutes/{groupId}',
+    ...options
+});
+
+/**
+ * Tắt tiếng một nhóm — thông báo vẫn vào hộp thư, không nhắc
+ */
+export const putApiV1MeGroupMutesByGroupId = <ThrowOnError extends boolean = false>(options: Options<PutApiV1MeGroupMutesByGroupIdData, ThrowOnError>): RequestResult<PutApiV1MeGroupMutesByGroupIdResponses, PutApiV1MeGroupMutesByGroupIdErrors, ThrowOnError> => (options.client ?? client).put<PutApiV1MeGroupMutesByGroupIdResponses, PutApiV1MeGroupMutesByGroupIdErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/me/group-mutes/{groupId}',
+    ...options
+});
+
+/**
+ * Kết quả các lượt việc theo lịch gần nhất: xong, mới làm được một phần, hay hỏng
+ */
+export const getApiV1OpsJobsRuns = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1OpsJobsRunsData, ThrowOnError>): RequestResult<GetApiV1OpsJobsRunsResponses, GetApiV1OpsJobsRunsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1OpsJobsRunsResponses, GetApiV1OpsJobsRunsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/ops/jobs/runs',
+    ...options
+});

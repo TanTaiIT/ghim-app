@@ -63,3 +63,14516 @@ export type GetHealthReadyResponses = {
 };
 
 export type GetHealthReadyResponse = GetHealthReadyResponses[keyof GetHealthReadyResponses];
+
+export type PostApiV1MediaUploadsData = {
+    body: {
+        ownerKind: 'profile' | 'listing';
+        ownerId: string;
+        contentType: 'image/jpeg' | 'image/png' | 'image/webp';
+        byteSize: number;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/media/uploads';
+};
+
+export type PostApiV1MediaUploadsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1MediaUploadsError = PostApiV1MediaUploadsErrors[keyof PostApiV1MediaUploadsErrors];
+
+export type PostApiV1MediaUploadsResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            imageId: string;
+            upload: {
+                method: 'PUT' | 'POST';
+                url: string;
+                headers: {
+                    [key: string]: string;
+                };
+                fields: {
+                    [key: string]: string;
+                };
+                expiresAt: string;
+            };
+        };
+    };
+};
+
+export type PostApiV1MediaUploadsResponse = PostApiV1MediaUploadsResponses[keyof PostApiV1MediaUploadsResponses];
+
+export type PostApiV1AuthRegisterData = {
+    body: {
+        email: string;
+        password: string;
+        displayName: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/auth/register';
+};
+
+export type PostApiV1AuthRegisterErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1AuthRegisterError = PostApiV1AuthRegisterErrors[keyof PostApiV1AuthRegisterErrors];
+
+export type PostApiV1AuthRegisterResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            accountId: string;
+        };
+    };
+};
+
+export type PostApiV1AuthRegisterResponse = PostApiV1AuthRegisterResponses[keyof PostApiV1AuthRegisterResponses];
+
+export type PostApiV1AuthVerifyEmailData = {
+    body: {
+        email: string;
+        code: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/auth/verify-email';
+};
+
+export type PostApiV1AuthVerifyEmailErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1AuthVerifyEmailError = PostApiV1AuthVerifyEmailErrors[keyof PostApiV1AuthVerifyEmailErrors];
+
+export type PostApiV1AuthVerifyEmailResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: null;
+    };
+};
+
+export type PostApiV1AuthVerifyEmailResponse = PostApiV1AuthVerifyEmailResponses[keyof PostApiV1AuthVerifyEmailResponses];
+
+export type PostApiV1AuthResendCodeData = {
+    body: {
+        email: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/auth/resend-code';
+};
+
+export type PostApiV1AuthResendCodeErrors = {
+    /**
+     * Default Response
+     */
+    429: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1AuthResendCodeError = PostApiV1AuthResendCodeErrors[keyof PostApiV1AuthResendCodeErrors];
+
+export type PostApiV1AuthResendCodeResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: null;
+    };
+};
+
+export type PostApiV1AuthResendCodeResponse = PostApiV1AuthResendCodeResponses[keyof PostApiV1AuthResendCodeResponses];
+
+export type PostApiV1AuthLoginData = {
+    body: {
+        email: string;
+        password: string;
+        totpCode?: string;
+        deviceName?: string;
+        client?: 'app' | 'web';
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/auth/login';
+};
+
+export type PostApiV1AuthLoginErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1AuthLoginError = PostApiV1AuthLoginErrors[keyof PostApiV1AuthLoginErrors];
+
+export type PostApiV1AuthLoginResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            accessToken: string;
+            refreshToken: string | null;
+            expiresIn: number;
+        };
+    };
+};
+
+export type PostApiV1AuthLoginResponse = PostApiV1AuthLoginResponses[keyof PostApiV1AuthLoginResponses];
+
+export type PostApiV1AuthGoogleData = {
+    body: {
+        idToken: string;
+        deviceName?: string;
+        client?: 'app' | 'web';
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/auth/google';
+};
+
+export type PostApiV1AuthGoogleErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1AuthGoogleError = PostApiV1AuthGoogleErrors[keyof PostApiV1AuthGoogleErrors];
+
+export type PostApiV1AuthGoogleResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            accessToken: string;
+            refreshToken: string | null;
+            expiresIn: number;
+        };
+    };
+};
+
+export type PostApiV1AuthGoogleResponse = PostApiV1AuthGoogleResponses[keyof PostApiV1AuthGoogleResponses];
+
+export type PostApiV1AuthRefreshData = {
+    body: {
+        refreshToken?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/auth/refresh';
+};
+
+export type PostApiV1AuthRefreshErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1AuthRefreshError = PostApiV1AuthRefreshErrors[keyof PostApiV1AuthRefreshErrors];
+
+export type PostApiV1AuthRefreshResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            accessToken: string;
+            refreshToken: string | null;
+            expiresIn: number;
+        };
+    };
+};
+
+export type PostApiV1AuthRefreshResponse = PostApiV1AuthRefreshResponses[keyof PostApiV1AuthRefreshResponses];
+
+export type PostApiV1AuthLogoutData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/auth/logout';
+};
+
+export type PostApiV1AuthLogoutErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1AuthLogoutError = PostApiV1AuthLogoutErrors[keyof PostApiV1AuthLogoutErrors];
+
+export type PostApiV1AuthLogoutResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PostApiV1AuthLogoutResponse = PostApiV1AuthLogoutResponses[keyof PostApiV1AuthLogoutResponses];
+
+export type PostApiV1AuthDeletionRequestsData = {
+    body: {
+        email: string;
+        password: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/auth/deletion-requests';
+};
+
+export type PostApiV1AuthDeletionRequestsErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1AuthDeletionRequestsError = PostApiV1AuthDeletionRequestsErrors[keyof PostApiV1AuthDeletionRequestsErrors];
+
+export type PostApiV1AuthDeletionRequestsResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PostApiV1AuthDeletionRequestsResponse = PostApiV1AuthDeletionRequestsResponses[keyof PostApiV1AuthDeletionRequestsResponses];
+
+export type PostApiV1AuthForgotPasswordData = {
+    body: {
+        email: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/auth/forgot-password';
+};
+
+export type PostApiV1AuthForgotPasswordErrors = {
+    /**
+     * Default Response
+     */
+    429: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1AuthForgotPasswordError = PostApiV1AuthForgotPasswordErrors[keyof PostApiV1AuthForgotPasswordErrors];
+
+export type PostApiV1AuthForgotPasswordResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: null;
+    };
+};
+
+export type PostApiV1AuthForgotPasswordResponse = PostApiV1AuthForgotPasswordResponses[keyof PostApiV1AuthForgotPasswordResponses];
+
+export type PostApiV1AuthResetPasswordData = {
+    body: {
+        email: string;
+        code: string;
+        password: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/auth/reset-password';
+};
+
+export type PostApiV1AuthResetPasswordErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1AuthResetPasswordError = PostApiV1AuthResetPasswordErrors[keyof PostApiV1AuthResetPasswordErrors];
+
+export type PostApiV1AuthResetPasswordResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: null;
+    };
+};
+
+export type PostApiV1AuthResetPasswordResponse = PostApiV1AuthResetPasswordResponses[keyof PostApiV1AuthResetPasswordResponses];
+
+export type GetApiV1UsersByIdData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/users/{id}';
+};
+
+export type GetApiV1UsersByIdErrors = {
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1UsersByIdError = GetApiV1UsersByIdErrors[keyof GetApiV1UsersByIdErrors];
+
+export type GetApiV1UsersByIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            displayName: string;
+            avatarUrl: string | null;
+            joinedAt: string;
+            phone: {
+                number: string;
+                verified: false;
+            } | null;
+        };
+    };
+};
+
+export type GetApiV1UsersByIdResponse = GetApiV1UsersByIdResponses[keyof GetApiV1UsersByIdResponses];
+
+export type DeleteApiV1MeData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me';
+};
+
+export type DeleteApiV1MeErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1MeError = DeleteApiV1MeErrors[keyof DeleteApiV1MeErrors];
+
+export type DeleteApiV1MeResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1MeResponse = DeleteApiV1MeResponses[keyof DeleteApiV1MeResponses];
+
+export type GetApiV1MeData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me';
+};
+
+export type GetApiV1MeErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeError = GetApiV1MeErrors[keyof GetApiV1MeErrors];
+
+export type GetApiV1MeResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            displayName: string;
+            avatarUrl: string | null;
+            joinedAt: string;
+            phone: {
+                number: string;
+                verified: false;
+            } | null;
+            email: string;
+            emailVerified: boolean;
+            role: 'user' | 'master';
+            twoFactorEnabled: boolean;
+            nameHidden: boolean;
+        };
+    };
+};
+
+export type GetApiV1MeResponse = GetApiV1MeResponses[keyof GetApiV1MeResponses];
+
+export type PatchApiV1MeData = {
+    body: {
+        displayName?: string;
+        phone?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/me';
+};
+
+export type PatchApiV1MeErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PatchApiV1MeError = PatchApiV1MeErrors[keyof PatchApiV1MeErrors];
+
+export type PatchApiV1MeResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            displayName: string;
+            avatarUrl: string | null;
+            joinedAt: string;
+            phone: {
+                number: string;
+                verified: false;
+            } | null;
+            email: string;
+            emailVerified: boolean;
+            role: 'user' | 'master';
+            twoFactorEnabled: boolean;
+            nameHidden: boolean;
+        };
+    };
+};
+
+export type PatchApiV1MeResponse = PatchApiV1MeResponses[keyof PatchApiV1MeResponses];
+
+export type DeleteApiV1MeAvatarData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/avatar';
+};
+
+export type DeleteApiV1MeAvatarErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1MeAvatarError = DeleteApiV1MeAvatarErrors[keyof DeleteApiV1MeAvatarErrors];
+
+export type DeleteApiV1MeAvatarResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            displayName: string;
+            avatarUrl: string | null;
+            joinedAt: string;
+            phone: {
+                number: string;
+                verified: false;
+            } | null;
+            email: string;
+            emailVerified: boolean;
+            role: 'user' | 'master';
+            twoFactorEnabled: boolean;
+            nameHidden: boolean;
+        };
+    };
+};
+
+export type DeleteApiV1MeAvatarResponse = DeleteApiV1MeAvatarResponses[keyof DeleteApiV1MeAvatarResponses];
+
+export type PutApiV1MeAvatarData = {
+    body: {
+        imageId: string;
+    } | {
+        source: 'google';
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/avatar';
+};
+
+export type PutApiV1MeAvatarErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PutApiV1MeAvatarError = PutApiV1MeAvatarErrors[keyof PutApiV1MeAvatarErrors];
+
+export type PutApiV1MeAvatarResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            displayName: string;
+            avatarUrl: string | null;
+            joinedAt: string;
+            phone: {
+                number: string;
+                verified: false;
+            } | null;
+            email: string;
+            emailVerified: boolean;
+            role: 'user' | 'master';
+            twoFactorEnabled: boolean;
+            nameHidden: boolean;
+        };
+    };
+};
+
+export type PutApiV1MeAvatarResponse = PutApiV1MeAvatarResponses[keyof PutApiV1MeAvatarResponses];
+
+export type PostApiV1MeEmailChangeData = {
+    body: {
+        email: string;
+        currentPassword: string;
+        totpCode?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/email-change';
+};
+
+export type PostApiV1MeEmailChangeErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1MeEmailChangeError = PostApiV1MeEmailChangeErrors[keyof PostApiV1MeEmailChangeErrors];
+
+export type PostApiV1MeEmailChangeResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: null;
+    };
+};
+
+export type PostApiV1MeEmailChangeResponse = PostApiV1MeEmailChangeResponses[keyof PostApiV1MeEmailChangeResponses];
+
+export type PostApiV1MeEmailChangeConfirmData = {
+    body: {
+        code: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/email-change/confirm';
+};
+
+export type PostApiV1MeEmailChangeConfirmErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1MeEmailChangeConfirmError = PostApiV1MeEmailChangeConfirmErrors[keyof PostApiV1MeEmailChangeConfirmErrors];
+
+export type PostApiV1MeEmailChangeConfirmResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: null;
+    };
+};
+
+export type PostApiV1MeEmailChangeConfirmResponse = PostApiV1MeEmailChangeConfirmResponses[keyof PostApiV1MeEmailChangeConfirmResponses];
+
+export type PostApiV1MeIdVerificationData = {
+    body: {
+        documentType: string;
+        documentNumber: string;
+        fullName: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/id-verification';
+};
+
+export type PostApiV1MeIdVerificationErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1MeIdVerificationError = PostApiV1MeIdVerificationErrors[keyof PostApiV1MeIdVerificationErrors];
+
+export type PostApiV1MeIdVerificationResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            accountId: string;
+            documentType: string;
+            fullName: string;
+            status: 'pending' | 'verified' | 'rejected';
+            createdAt: string;
+            reviewedAt: string | null;
+            reason: string | null;
+        };
+    };
+};
+
+export type PostApiV1MeIdVerificationResponse = PostApiV1MeIdVerificationResponses[keyof PostApiV1MeIdVerificationResponses];
+
+export type DeleteApiV1MeSessionsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/sessions';
+};
+
+export type DeleteApiV1MeSessionsErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1MeSessionsError = DeleteApiV1MeSessionsErrors[keyof DeleteApiV1MeSessionsErrors];
+
+export type DeleteApiV1MeSessionsResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1MeSessionsResponse = DeleteApiV1MeSessionsResponses[keyof DeleteApiV1MeSessionsResponses];
+
+export type GetApiV1MeSessionsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/sessions';
+};
+
+export type GetApiV1MeSessionsErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeSessionsError = GetApiV1MeSessionsErrors[keyof GetApiV1MeSessionsErrors];
+
+export type GetApiV1MeSessionsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            id: string;
+            deviceName: string;
+            createdAt: string;
+            lastActiveAt: string;
+            current: boolean;
+        }>;
+    };
+};
+
+export type GetApiV1MeSessionsResponse = GetApiV1MeSessionsResponses[keyof GetApiV1MeSessionsResponses];
+
+export type DeleteApiV1MeSessionsByIdData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/me/sessions/{id}';
+};
+
+export type DeleteApiV1MeSessionsByIdErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1MeSessionsByIdError = DeleteApiV1MeSessionsByIdErrors[keyof DeleteApiV1MeSessionsByIdErrors];
+
+export type DeleteApiV1MeSessionsByIdResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1MeSessionsByIdResponse = DeleteApiV1MeSessionsByIdResponses[keyof DeleteApiV1MeSessionsByIdResponses];
+
+export type DeleteApiV1MePushTokenData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/push-token';
+};
+
+export type DeleteApiV1MePushTokenErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1MePushTokenError = DeleteApiV1MePushTokenErrors[keyof DeleteApiV1MePushTokenErrors];
+
+export type DeleteApiV1MePushTokenResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1MePushTokenResponse = DeleteApiV1MePushTokenResponses[keyof DeleteApiV1MePushTokenResponses];
+
+export type PutApiV1MePushTokenData = {
+    body: {
+        token: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/push-token';
+};
+
+export type PutApiV1MePushTokenErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PutApiV1MePushTokenError = PutApiV1MePushTokenErrors[keyof PutApiV1MePushTokenErrors];
+
+export type PutApiV1MePushTokenResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PutApiV1MePushTokenResponse = PutApiV1MePushTokenResponses[keyof PutApiV1MePushTokenResponses];
+
+export type PutApiV1MePasswordData = {
+    body: {
+        currentPassword: string;
+        newPassword: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/password';
+};
+
+export type PutApiV1MePasswordErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PutApiV1MePasswordError = PutApiV1MePasswordErrors[keyof PutApiV1MePasswordErrors];
+
+export type PutApiV1MePasswordResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PutApiV1MePasswordResponse = PutApiV1MePasswordResponses[keyof PutApiV1MePasswordResponses];
+
+export type PostApiV1MeTwoFactorSetupData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/two-factor/setup';
+};
+
+export type PostApiV1MeTwoFactorSetupErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1MeTwoFactorSetupError = PostApiV1MeTwoFactorSetupErrors[keyof PostApiV1MeTwoFactorSetupErrors];
+
+export type PostApiV1MeTwoFactorSetupResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            otpauthUri: string;
+        };
+    };
+};
+
+export type PostApiV1MeTwoFactorSetupResponse = PostApiV1MeTwoFactorSetupResponses[keyof PostApiV1MeTwoFactorSetupResponses];
+
+export type PostApiV1MeTwoFactorConfirmData = {
+    body: {
+        code: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/two-factor/confirm';
+};
+
+export type PostApiV1MeTwoFactorConfirmErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1MeTwoFactorConfirmError = PostApiV1MeTwoFactorConfirmErrors[keyof PostApiV1MeTwoFactorConfirmErrors];
+
+export type PostApiV1MeTwoFactorConfirmResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PostApiV1MeTwoFactorConfirmResponse = PostApiV1MeTwoFactorConfirmResponses[keyof PostApiV1MeTwoFactorConfirmResponses];
+
+export type PostApiV1OpsAccountsByIdLockData = {
+    body: {
+        reason: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/accounts/{id}/lock';
+};
+
+export type PostApiV1OpsAccountsByIdLockErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsAccountsByIdLockError = PostApiV1OpsAccountsByIdLockErrors[keyof PostApiV1OpsAccountsByIdLockErrors];
+
+export type PostApiV1OpsAccountsByIdLockResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PostApiV1OpsAccountsByIdLockResponse = PostApiV1OpsAccountsByIdLockResponses[keyof PostApiV1OpsAccountsByIdLockResponses];
+
+export type PostApiV1OpsAccountsByIdUnlockData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/accounts/{id}/unlock';
+};
+
+export type PostApiV1OpsAccountsByIdUnlockErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsAccountsByIdUnlockError = PostApiV1OpsAccountsByIdUnlockErrors[keyof PostApiV1OpsAccountsByIdUnlockErrors];
+
+export type PostApiV1OpsAccountsByIdUnlockResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PostApiV1OpsAccountsByIdUnlockResponse = PostApiV1OpsAccountsByIdUnlockResponses[keyof PostApiV1OpsAccountsByIdUnlockResponses];
+
+export type GetApiV1OpsFlagsByLookupCodeData = {
+    body?: never;
+    path: {
+        lookupCode: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/flags/{lookupCode}';
+};
+
+export type GetApiV1OpsFlagsByLookupCodeErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsFlagsByLookupCodeError = GetApiV1OpsFlagsByLookupCodeErrors[keyof GetApiV1OpsFlagsByLookupCodeErrors];
+
+export type GetApiV1OpsFlagsByLookupCodeResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            lookupCode: string;
+            kind: 'many_accounts_on_device' | 'device_of_locked_account' | 'device_of_struck_account';
+            accountId: string;
+            relatedAccountId: string | null;
+            createdAt: string;
+            clearedAt: string | null;
+            clearedReason: string | null;
+        };
+    };
+};
+
+export type GetApiV1OpsFlagsByLookupCodeResponse = GetApiV1OpsFlagsByLookupCodeResponses[keyof GetApiV1OpsFlagsByLookupCodeResponses];
+
+export type PostApiV1OpsFlagsByLookupCodeClearData = {
+    body: {
+        reason: string;
+    };
+    path: {
+        lookupCode: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/flags/{lookupCode}/clear';
+};
+
+export type PostApiV1OpsFlagsByLookupCodeClearErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsFlagsByLookupCodeClearError = PostApiV1OpsFlagsByLookupCodeClearErrors[keyof PostApiV1OpsFlagsByLookupCodeClearErrors];
+
+export type PostApiV1OpsFlagsByLookupCodeClearResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PostApiV1OpsFlagsByLookupCodeClearResponse = PostApiV1OpsFlagsByLookupCodeClearResponses[keyof PostApiV1OpsFlagsByLookupCodeClearResponses];
+
+export type GetApiV1OpsDisposableDomainsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number;
+        limit?: number;
+    };
+    url: '/api/v1/ops/disposable-domains';
+};
+
+export type GetApiV1OpsDisposableDomainsErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsDisposableDomainsError = GetApiV1OpsDisposableDomainsErrors[keyof GetApiV1OpsDisposableDomainsErrors];
+
+export type GetApiV1OpsDisposableDomainsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                domain: string;
+                source: 'seed' | 'manual';
+                addedAt: string;
+                removedAt: string | null;
+            }>;
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    };
+};
+
+export type GetApiV1OpsDisposableDomainsResponse = GetApiV1OpsDisposableDomainsResponses[keyof GetApiV1OpsDisposableDomainsResponses];
+
+export type PostApiV1OpsDisposableDomainsData = {
+    body: {
+        domain: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/ops/disposable-domains';
+};
+
+export type PostApiV1OpsDisposableDomainsErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsDisposableDomainsError = PostApiV1OpsDisposableDomainsErrors[keyof PostApiV1OpsDisposableDomainsErrors];
+
+export type PostApiV1OpsDisposableDomainsResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            domain: string;
+            source: 'seed' | 'manual';
+            addedAt: string;
+            removedAt: string | null;
+        };
+    };
+};
+
+export type PostApiV1OpsDisposableDomainsResponse = PostApiV1OpsDisposableDomainsResponses[keyof PostApiV1OpsDisposableDomainsResponses];
+
+export type DeleteApiV1OpsDisposableDomainsByDomainData = {
+    body?: never;
+    path: {
+        domain: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/disposable-domains/{domain}';
+};
+
+export type DeleteApiV1OpsDisposableDomainsByDomainErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1OpsDisposableDomainsByDomainError = DeleteApiV1OpsDisposableDomainsByDomainErrors[keyof DeleteApiV1OpsDisposableDomainsByDomainErrors];
+
+export type DeleteApiV1OpsDisposableDomainsByDomainResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: null;
+    };
+};
+
+export type DeleteApiV1OpsDisposableDomainsByDomainResponse = DeleteApiV1OpsDisposableDomainsByDomainResponses[keyof DeleteApiV1OpsDisposableDomainsByDomainResponses];
+
+export type GetApiV1OpsIdVerificationsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number;
+        limit?: number;
+        status?: 'pending' | 'verified' | 'rejected';
+    };
+    url: '/api/v1/ops/id-verifications';
+};
+
+export type GetApiV1OpsIdVerificationsErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsIdVerificationsError = GetApiV1OpsIdVerificationsErrors[keyof GetApiV1OpsIdVerificationsErrors];
+
+export type GetApiV1OpsIdVerificationsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                accountId: string;
+                documentType: string;
+                fullName: string;
+                status: 'pending' | 'verified' | 'rejected';
+                createdAt: string;
+                reviewedAt: string | null;
+                reason: string | null;
+            }>;
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    };
+};
+
+export type GetApiV1OpsIdVerificationsResponse = GetApiV1OpsIdVerificationsResponses[keyof GetApiV1OpsIdVerificationsResponses];
+
+export type PostApiV1OpsIdVerificationsByIdDecisionData = {
+    body: {
+        status: 'verified' | 'rejected';
+        reason?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/id-verifications/{id}/decision';
+};
+
+export type PostApiV1OpsIdVerificationsByIdDecisionErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsIdVerificationsByIdDecisionError = PostApiV1OpsIdVerificationsByIdDecisionErrors[keyof PostApiV1OpsIdVerificationsByIdDecisionErrors];
+
+export type PostApiV1OpsIdVerificationsByIdDecisionResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            accountId: string;
+            documentType: string;
+            fullName: string;
+            status: 'pending' | 'verified' | 'rejected';
+            createdAt: string;
+            reviewedAt: string | null;
+            reason: string | null;
+        };
+    };
+};
+
+export type PostApiV1OpsIdVerificationsByIdDecisionResponse = PostApiV1OpsIdVerificationsByIdDecisionResponses[keyof PostApiV1OpsIdVerificationsByIdDecisionResponses];
+
+export type GetApiV1CategoriesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/categories';
+};
+
+export type GetApiV1CategoriesResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            id: string;
+            name: string;
+            templateVersion: number | null;
+        }>;
+    };
+};
+
+export type GetApiV1CategoriesResponse = GetApiV1CategoriesResponses[keyof GetApiV1CategoriesResponses];
+
+export type GetApiV1CategoriesByIdTemplateData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/categories/{id}/template';
+};
+
+export type GetApiV1CategoriesByIdTemplateErrors = {
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1CategoriesByIdTemplateError = GetApiV1CategoriesByIdTemplateErrors[keyof GetApiV1CategoriesByIdTemplateErrors];
+
+export type GetApiV1CategoriesByIdTemplateResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            categoryId: string;
+            version: number | null;
+            fields: Array<{
+                name: string;
+                label: string;
+                type: 'text' | 'number' | 'single_choice' | 'multi_choice';
+                required: boolean;
+                options?: Array<string>;
+            }>;
+            publishedAt: string | null;
+        };
+    };
+};
+
+export type GetApiV1CategoriesByIdTemplateResponse = GetApiV1CategoriesByIdTemplateResponses[keyof GetApiV1CategoriesByIdTemplateResponses];
+
+export type GetApiV1CategoriesByIdTemplateVersionsByVersionData = {
+    body?: never;
+    path: {
+        id: string;
+        version: number;
+    };
+    query?: never;
+    url: '/api/v1/categories/{id}/template/versions/{version}';
+};
+
+export type GetApiV1CategoriesByIdTemplateVersionsByVersionErrors = {
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1CategoriesByIdTemplateVersionsByVersionError = GetApiV1CategoriesByIdTemplateVersionsByVersionErrors[keyof GetApiV1CategoriesByIdTemplateVersionsByVersionErrors];
+
+export type GetApiV1CategoriesByIdTemplateVersionsByVersionResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            categoryId: string;
+            version: number | null;
+            fields: Array<{
+                name: string;
+                label: string;
+                type: 'text' | 'number' | 'single_choice' | 'multi_choice';
+                required: boolean;
+                options?: Array<string>;
+            }>;
+            publishedAt: string | null;
+        };
+    };
+};
+
+export type GetApiV1CategoriesByIdTemplateVersionsByVersionResponse = GetApiV1CategoriesByIdTemplateVersionsByVersionResponses[keyof GetApiV1CategoriesByIdTemplateVersionsByVersionResponses];
+
+export type GetApiV1RegionsProvincesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/regions/provinces';
+};
+
+export type GetApiV1RegionsProvincesResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            code: number;
+            name: string;
+            fullName: string;
+            formerNames: Array<string>;
+            aliases: Array<string>;
+        }>;
+    };
+};
+
+export type GetApiV1RegionsProvincesResponse = GetApiV1RegionsProvincesResponses[keyof GetApiV1RegionsProvincesResponses];
+
+export type GetApiV1RegionsProvincesByCodeWardsData = {
+    body?: never;
+    path: {
+        code: number;
+    };
+    query?: never;
+    url: '/api/v1/regions/provinces/{code}/wards';
+};
+
+export type GetApiV1RegionsProvincesByCodeWardsErrors = {
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1RegionsProvincesByCodeWardsError = GetApiV1RegionsProvincesByCodeWardsErrors[keyof GetApiV1RegionsProvincesByCodeWardsErrors];
+
+export type GetApiV1RegionsProvincesByCodeWardsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            code: number;
+            provinceCode: number;
+            name: string;
+            formerNames: Array<string>;
+        }>;
+    };
+};
+
+export type GetApiV1RegionsProvincesByCodeWardsResponse = GetApiV1RegionsProvincesByCodeWardsResponses[keyof GetApiV1RegionsProvincesByCodeWardsResponses];
+
+export type GetApiV1RegionsSearchData = {
+    body?: never;
+    path?: never;
+    query: {
+        q: string;
+    };
+    url: '/api/v1/regions/search';
+};
+
+export type GetApiV1RegionsSearchResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            kind: 'province' | 'ward';
+            code: number;
+            name: string;
+            provinceCode: number;
+            provinceName: string;
+            formerNames: Array<string>;
+        }>;
+    };
+};
+
+export type GetApiV1RegionsSearchResponse = GetApiV1RegionsSearchResponses[keyof GetApiV1RegionsSearchResponses];
+
+export type GetApiV1OpsCategoriesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/ops/categories';
+};
+
+export type GetApiV1OpsCategoriesErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsCategoriesError = GetApiV1OpsCategoriesErrors[keyof GetApiV1OpsCategoriesErrors];
+
+export type GetApiV1OpsCategoriesResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            id: string;
+            name: string;
+            templateVersion: number | null;
+            status: 'active' | 'disabled';
+            settings: {
+                version: number;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                priceCap: number | null;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                referencePrice: number | null;
+                riskLevel: 'low' | 'medium' | 'high';
+                alwaysManual: boolean;
+                groupReview: 'group' | 'platform';
+                changedBy: string;
+                createdAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+        }>;
+    };
+};
+
+export type GetApiV1OpsCategoriesResponse = GetApiV1OpsCategoriesResponses[keyof GetApiV1OpsCategoriesResponses];
+
+export type PostApiV1OpsCategoriesData = {
+    body: {
+        name: string;
+        /**
+         * Số tiền, đơn vị đồng
+         */
+        priceCap?: number | null;
+        /**
+         * Số tiền, đơn vị đồng
+         */
+        referencePrice?: number | null;
+        riskLevel?: 'low' | 'medium' | 'high';
+        alwaysManual?: boolean;
+        groupReview?: 'group' | 'platform';
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/ops/categories';
+};
+
+export type PostApiV1OpsCategoriesErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsCategoriesError = PostApiV1OpsCategoriesErrors[keyof PostApiV1OpsCategoriesErrors];
+
+export type PostApiV1OpsCategoriesResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            name: string;
+            templateVersion: number | null;
+            status: 'active' | 'disabled';
+            settings: {
+                version: number;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                priceCap: number | null;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                referencePrice: number | null;
+                riskLevel: 'low' | 'medium' | 'high';
+                alwaysManual: boolean;
+                groupReview: 'group' | 'platform';
+                changedBy: string;
+                createdAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+        };
+    };
+};
+
+export type PostApiV1OpsCategoriesResponse = PostApiV1OpsCategoriesResponses[keyof PostApiV1OpsCategoriesResponses];
+
+export type PatchApiV1OpsCategoriesByIdData = {
+    body: {
+        name: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/categories/{id}';
+};
+
+export type PatchApiV1OpsCategoriesByIdErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PatchApiV1OpsCategoriesByIdError = PatchApiV1OpsCategoriesByIdErrors[keyof PatchApiV1OpsCategoriesByIdErrors];
+
+export type PatchApiV1OpsCategoriesByIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            name: string;
+            templateVersion: number | null;
+            status: 'active' | 'disabled';
+            settings: {
+                version: number;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                priceCap: number | null;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                referencePrice: number | null;
+                riskLevel: 'low' | 'medium' | 'high';
+                alwaysManual: boolean;
+                groupReview: 'group' | 'platform';
+                changedBy: string;
+                createdAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+        };
+    };
+};
+
+export type PatchApiV1OpsCategoriesByIdResponse = PatchApiV1OpsCategoriesByIdResponses[keyof PatchApiV1OpsCategoriesByIdResponses];
+
+export type PutApiV1OpsCategoriesByIdSettingsData = {
+    body: {
+        /**
+         * Số tiền, đơn vị đồng
+         */
+        priceCap: number | null;
+        /**
+         * Số tiền, đơn vị đồng
+         */
+        referencePrice: number | null;
+        riskLevel: 'low' | 'medium' | 'high';
+        alwaysManual: boolean;
+        groupReview: 'group' | 'platform';
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/categories/{id}/settings';
+};
+
+export type PutApiV1OpsCategoriesByIdSettingsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PutApiV1OpsCategoriesByIdSettingsError = PutApiV1OpsCategoriesByIdSettingsErrors[keyof PutApiV1OpsCategoriesByIdSettingsErrors];
+
+export type PutApiV1OpsCategoriesByIdSettingsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            name: string;
+            templateVersion: number | null;
+            status: 'active' | 'disabled';
+            settings: {
+                version: number;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                priceCap: number | null;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                referencePrice: number | null;
+                riskLevel: 'low' | 'medium' | 'high';
+                alwaysManual: boolean;
+                groupReview: 'group' | 'platform';
+                changedBy: string;
+                createdAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+        };
+    };
+};
+
+export type PutApiV1OpsCategoriesByIdSettingsResponse = PutApiV1OpsCategoriesByIdSettingsResponses[keyof PutApiV1OpsCategoriesByIdSettingsResponses];
+
+export type GetApiV1OpsCategoriesByIdSettingsVersionsByVersionData = {
+    body?: never;
+    path: {
+        id: string;
+        version: number;
+    };
+    query?: never;
+    url: '/api/v1/ops/categories/{id}/settings/versions/{version}';
+};
+
+export type GetApiV1OpsCategoriesByIdSettingsVersionsByVersionErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsCategoriesByIdSettingsVersionsByVersionError = GetApiV1OpsCategoriesByIdSettingsVersionsByVersionErrors[keyof GetApiV1OpsCategoriesByIdSettingsVersionsByVersionErrors];
+
+export type GetApiV1OpsCategoriesByIdSettingsVersionsByVersionResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            version: number;
+            /**
+             * Số tiền, đơn vị đồng
+             */
+            priceCap: number | null;
+            /**
+             * Số tiền, đơn vị đồng
+             */
+            referencePrice: number | null;
+            riskLevel: 'low' | 'medium' | 'high';
+            alwaysManual: boolean;
+            groupReview: 'group' | 'platform';
+            changedBy: string;
+            createdAt: string;
+        };
+    };
+};
+
+export type GetApiV1OpsCategoriesByIdSettingsVersionsByVersionResponse = GetApiV1OpsCategoriesByIdSettingsVersionsByVersionResponses[keyof GetApiV1OpsCategoriesByIdSettingsVersionsByVersionResponses];
+
+export type PostApiV1OpsCategoriesByIdEnableData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/categories/{id}/enable';
+};
+
+export type PostApiV1OpsCategoriesByIdEnableErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsCategoriesByIdEnableError = PostApiV1OpsCategoriesByIdEnableErrors[keyof PostApiV1OpsCategoriesByIdEnableErrors];
+
+export type PostApiV1OpsCategoriesByIdEnableResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            name: string;
+            templateVersion: number | null;
+            status: 'active' | 'disabled';
+            settings: {
+                version: number;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                priceCap: number | null;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                referencePrice: number | null;
+                riskLevel: 'low' | 'medium' | 'high';
+                alwaysManual: boolean;
+                groupReview: 'group' | 'platform';
+                changedBy: string;
+                createdAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+        };
+    };
+};
+
+export type PostApiV1OpsCategoriesByIdEnableResponse = PostApiV1OpsCategoriesByIdEnableResponses[keyof PostApiV1OpsCategoriesByIdEnableResponses];
+
+export type PostApiV1OpsCategoriesByIdDisableData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/categories/{id}/disable';
+};
+
+export type PostApiV1OpsCategoriesByIdDisableErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsCategoriesByIdDisableError = PostApiV1OpsCategoriesByIdDisableErrors[keyof PostApiV1OpsCategoriesByIdDisableErrors];
+
+export type PostApiV1OpsCategoriesByIdDisableResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            name: string;
+            templateVersion: number | null;
+            status: 'active' | 'disabled';
+            settings: {
+                version: number;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                priceCap: number | null;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                referencePrice: number | null;
+                riskLevel: 'low' | 'medium' | 'high';
+                alwaysManual: boolean;
+                groupReview: 'group' | 'platform';
+                changedBy: string;
+                createdAt: string;
+            };
+            createdAt: string;
+            updatedAt: string;
+        };
+    };
+};
+
+export type PostApiV1OpsCategoriesByIdDisableResponse = PostApiV1OpsCategoriesByIdDisableResponses[keyof PostApiV1OpsCategoriesByIdDisableResponses];
+
+export type DeleteApiV1OpsCategoriesByIdTemplateDraftData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/categories/{id}/template/draft';
+};
+
+export type DeleteApiV1OpsCategoriesByIdTemplateDraftErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1OpsCategoriesByIdTemplateDraftError = DeleteApiV1OpsCategoriesByIdTemplateDraftErrors[keyof DeleteApiV1OpsCategoriesByIdTemplateDraftErrors];
+
+export type DeleteApiV1OpsCategoriesByIdTemplateDraftResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1OpsCategoriesByIdTemplateDraftResponse = DeleteApiV1OpsCategoriesByIdTemplateDraftResponses[keyof DeleteApiV1OpsCategoriesByIdTemplateDraftResponses];
+
+export type GetApiV1OpsCategoriesByIdTemplateDraftData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/categories/{id}/template/draft';
+};
+
+export type GetApiV1OpsCategoriesByIdTemplateDraftErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsCategoriesByIdTemplateDraftError = GetApiV1OpsCategoriesByIdTemplateDraftErrors[keyof GetApiV1OpsCategoriesByIdTemplateDraftErrors];
+
+export type GetApiV1OpsCategoriesByIdTemplateDraftResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            categoryId: string;
+            draftVersion: number;
+            fields: Array<{
+                name: string;
+                label: string;
+                type: 'text' | 'number' | 'single_choice' | 'multi_choice';
+                required: boolean;
+                options?: Array<string>;
+            }>;
+            updatedBy: string | null;
+            updatedAt: string | null;
+        };
+    };
+};
+
+export type GetApiV1OpsCategoriesByIdTemplateDraftResponse = GetApiV1OpsCategoriesByIdTemplateDraftResponses[keyof GetApiV1OpsCategoriesByIdTemplateDraftResponses];
+
+export type PutApiV1OpsCategoriesByIdTemplateDraftData = {
+    body: {
+        baseDraftVersion: number;
+        fields: Array<{
+            name: string;
+            label: string;
+            type: 'text' | 'number' | 'single_choice' | 'multi_choice';
+            required: boolean;
+            options?: Array<string>;
+        }>;
+        version?: number;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/categories/{id}/template/draft';
+};
+
+export type PutApiV1OpsCategoriesByIdTemplateDraftErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PutApiV1OpsCategoriesByIdTemplateDraftError = PutApiV1OpsCategoriesByIdTemplateDraftErrors[keyof PutApiV1OpsCategoriesByIdTemplateDraftErrors];
+
+export type PutApiV1OpsCategoriesByIdTemplateDraftResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            categoryId: string;
+            draftVersion: number;
+            fields: Array<{
+                name: string;
+                label: string;
+                type: 'text' | 'number' | 'single_choice' | 'multi_choice';
+                required: boolean;
+                options?: Array<string>;
+            }>;
+            updatedBy: string | null;
+            updatedAt: string | null;
+        };
+    };
+};
+
+export type PutApiV1OpsCategoriesByIdTemplateDraftResponse = PutApiV1OpsCategoriesByIdTemplateDraftResponses[keyof PutApiV1OpsCategoriesByIdTemplateDraftResponses];
+
+export type PostApiV1OpsCategoriesByIdTemplatePublishData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/categories/{id}/template/publish';
+};
+
+export type PostApiV1OpsCategoriesByIdTemplatePublishErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsCategoriesByIdTemplatePublishError = PostApiV1OpsCategoriesByIdTemplatePublishErrors[keyof PostApiV1OpsCategoriesByIdTemplatePublishErrors];
+
+export type PostApiV1OpsCategoriesByIdTemplatePublishResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            categoryId: string;
+            version: number | null;
+            fields: Array<{
+                name: string;
+                label: string;
+                type: 'text' | 'number' | 'single_choice' | 'multi_choice';
+                required: boolean;
+                options?: Array<string>;
+            }>;
+            publishedAt: string | null;
+        };
+    };
+};
+
+export type PostApiV1OpsCategoriesByIdTemplatePublishResponse = PostApiV1OpsCategoriesByIdTemplatePublishResponses[keyof PostApiV1OpsCategoriesByIdTemplatePublishResponses];
+
+export type GetApiV1OpsStaffData = {
+    body?: never;
+    path?: never;
+    query?: {
+        categoryId?: string;
+    };
+    url: '/api/v1/ops/staff';
+};
+
+export type GetApiV1OpsStaffErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsStaffError = GetApiV1OpsStaffErrors[keyof GetApiV1OpsStaffErrors];
+
+export type GetApiV1OpsStaffResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            accountId: string;
+            scopes: Array<'support' | 'user_reports' | 'id_verification'>;
+            categoryIds: Array<string>;
+            status: 'active' | 'suspended';
+            suspendedReason: string | null;
+            grantedAt: string;
+        }>;
+    };
+};
+
+export type GetApiV1OpsStaffResponse = GetApiV1OpsStaffResponses[keyof GetApiV1OpsStaffResponses];
+
+export type DeleteApiV1OpsStaffByAccountIdData = {
+    body?: never;
+    path: {
+        accountId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/staff/{accountId}';
+};
+
+export type DeleteApiV1OpsStaffByAccountIdErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1OpsStaffByAccountIdError = DeleteApiV1OpsStaffByAccountIdErrors[keyof DeleteApiV1OpsStaffByAccountIdErrors];
+
+export type DeleteApiV1OpsStaffByAccountIdResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1OpsStaffByAccountIdResponse = DeleteApiV1OpsStaffByAccountIdResponses[keyof DeleteApiV1OpsStaffByAccountIdResponses];
+
+export type PutApiV1OpsStaffByAccountIdData = {
+    body: {
+        categoryIds: Array<string>;
+        scopes: Array<'support' | 'user_reports' | 'id_verification'>;
+    };
+    path: {
+        accountId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/staff/{accountId}';
+};
+
+export type PutApiV1OpsStaffByAccountIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PutApiV1OpsStaffByAccountIdError = PutApiV1OpsStaffByAccountIdErrors[keyof PutApiV1OpsStaffByAccountIdErrors];
+
+export type PutApiV1OpsStaffByAccountIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            accountId: string;
+            scopes: Array<'support' | 'user_reports' | 'id_verification'>;
+            categoryIds: Array<string>;
+            status: 'active' | 'suspended';
+            suspendedReason: string | null;
+            grantedAt: string;
+        };
+    };
+};
+
+export type PutApiV1OpsStaffByAccountIdResponse = PutApiV1OpsStaffByAccountIdResponses[keyof PutApiV1OpsStaffByAccountIdResponses];
+
+export type PostApiV1OpsStaffByAccountIdRestoreData = {
+    body?: never;
+    path: {
+        accountId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/staff/{accountId}/restore';
+};
+
+export type PostApiV1OpsStaffByAccountIdRestoreErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsStaffByAccountIdRestoreError = PostApiV1OpsStaffByAccountIdRestoreErrors[keyof PostApiV1OpsStaffByAccountIdRestoreErrors];
+
+export type PostApiV1OpsStaffByAccountIdRestoreResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            accountId: string;
+            scopes: Array<'support' | 'user_reports' | 'id_verification'>;
+            categoryIds: Array<string>;
+            status: 'active' | 'suspended';
+            suspendedReason: string | null;
+            grantedAt: string;
+        };
+    };
+};
+
+export type PostApiV1OpsStaffByAccountIdRestoreResponse = PostApiV1OpsStaffByAccountIdRestoreResponses[keyof PostApiV1OpsStaffByAccountIdRestoreResponses];
+
+export type GetApiV1OpsConfigData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/ops/config';
+};
+
+export type GetApiV1OpsConfigErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsConfigError = GetApiV1OpsConfigErrors[keyof GetApiV1OpsConfigErrors];
+
+export type GetApiV1OpsConfigResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            version: number;
+            values: {
+                [key: string]: number;
+            };
+            note: string | null;
+            createdBy: string;
+            createdAt: string;
+        };
+    };
+};
+
+export type GetApiV1OpsConfigResponse = GetApiV1OpsConfigResponses[keyof GetApiV1OpsConfigResponses];
+
+export type PostApiV1OpsConfigData = {
+    body: {
+        baseVersion: number;
+        changes: {
+            [key: string]: number;
+        };
+        note?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/ops/config';
+};
+
+export type PostApiV1OpsConfigErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsConfigError = PostApiV1OpsConfigErrors[keyof PostApiV1OpsConfigErrors];
+
+export type PostApiV1OpsConfigResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            version: number;
+            values: {
+                [key: string]: number;
+            };
+            note: string | null;
+            createdBy: string;
+            createdAt: string;
+        };
+    };
+};
+
+export type PostApiV1OpsConfigResponse = PostApiV1OpsConfigResponses[keyof PostApiV1OpsConfigResponses];
+
+export type GetApiV1OpsConfigVersionsByVersionData = {
+    body?: never;
+    path: {
+        version: number;
+    };
+    query?: never;
+    url: '/api/v1/ops/config/versions/{version}';
+};
+
+export type GetApiV1OpsConfigVersionsByVersionErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsConfigVersionsByVersionError = GetApiV1OpsConfigVersionsByVersionErrors[keyof GetApiV1OpsConfigVersionsByVersionErrors];
+
+export type GetApiV1OpsConfigVersionsByVersionResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            version: number;
+            values: {
+                [key: string]: number;
+            };
+            note: string | null;
+            createdBy: string;
+            createdAt: string;
+        };
+    };
+};
+
+export type GetApiV1OpsConfigVersionsByVersionResponse = GetApiV1OpsConfigVersionsByVersionResponses[keyof GetApiV1OpsConfigVersionsByVersionResponses];
+
+export type GetApiV1OpsAuditData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number;
+        limit?: number;
+        actorId?: string;
+        targetType?: string;
+        targetId?: string;
+        from?: string;
+        to?: string;
+    };
+    url: '/api/v1/ops/audit';
+};
+
+export type GetApiV1OpsAuditErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsAuditError = GetApiV1OpsAuditErrors[keyof GetApiV1OpsAuditErrors];
+
+export type GetApiV1OpsAuditResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                actorId: string;
+                actorRole: 'user' | 'master';
+                action: string;
+                targetType: string;
+                targetId: string;
+                reason: string | null;
+                details: {
+                    [key: string]: unknown;
+                } | null;
+                createdAt: string;
+            }>;
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    };
+};
+
+export type GetApiV1OpsAuditResponse = GetApiV1OpsAuditResponses[keyof GetApiV1OpsAuditResponses];
+
+export type GetApiV1GroupsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number;
+        limit?: number;
+        q?: string;
+    };
+    url: '/api/v1/groups';
+};
+
+export type GetApiV1GroupsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1GroupsError = GetApiV1GroupsErrors[keyof GetApiV1GroupsErrors];
+
+export type GetApiV1GroupsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                name: string;
+                kind: 'school' | 'company' | 'community' | 'other';
+                mode: 'public_open' | 'public_review' | 'private_code' | 'private_invite';
+                state: 'pending_owner' | 'active' | 'going_private' | 'ownerless' | 'locked' | 'closed';
+                description: string | null;
+                memberCount: number;
+            }>;
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    };
+};
+
+export type GetApiV1GroupsResponse = GetApiV1GroupsResponses[keyof GetApiV1GroupsResponses];
+
+export type GetApiV1GroupsByGroupIdData = {
+    body?: never;
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}';
+};
+
+export type GetApiV1GroupsByGroupIdErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1GroupsByGroupIdError = GetApiV1GroupsByGroupIdErrors[keyof GetApiV1GroupsByGroupIdErrors];
+
+export type GetApiV1GroupsByGroupIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            name: string;
+            kind: 'school' | 'company' | 'community' | 'other';
+            mode: 'public_open' | 'public_review' | 'private_code' | 'private_invite';
+            state: 'pending_owner' | 'active' | 'going_private' | 'ownerless' | 'locked' | 'closed';
+            description: string | null;
+            memberCount: number;
+            visibility: 'full';
+            boardStyle: 'list' | 'grid';
+            allowOutsiders: boolean;
+            showNameOnMarketplace: boolean;
+            code: string | null;
+            lockedReason: string | null;
+            units: Array<{
+                id: string;
+                name: string;
+            }>;
+            membership: {
+                role: 'member' | 'moderator' | 'owner';
+                unitId: string | null;
+                moderatorUnitId: string | null;
+                joinedVia: 'joined' | 'approved' | 'invited' | 'roster' | 'assigned';
+                joinedAt: string;
+                badgeEligible: boolean;
+            } | null;
+        } | {
+            visibility: 'name_only';
+            id: string;
+            name: string;
+        };
+    };
+};
+
+export type GetApiV1GroupsByGroupIdResponse = GetApiV1GroupsByGroupIdResponses[keyof GetApiV1GroupsByGroupIdResponses];
+
+export type PostApiV1GroupsLookupCodeData = {
+    body: {
+        code: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/groups/lookup-code';
+};
+
+export type PostApiV1GroupsLookupCodeErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1GroupsLookupCodeError = PostApiV1GroupsLookupCodeErrors[keyof PostApiV1GroupsLookupCodeErrors];
+
+export type PostApiV1GroupsLookupCodeResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            name: string;
+            kind: 'school' | 'company' | 'community' | 'other';
+            mode: 'public_open' | 'public_review' | 'private_code' | 'private_invite';
+            state: 'pending_owner' | 'active' | 'going_private' | 'ownerless' | 'locked' | 'closed';
+            description: string | null;
+            memberCount: number;
+        };
+    };
+};
+
+export type PostApiV1GroupsLookupCodeResponse = PostApiV1GroupsLookupCodeResponses[keyof PostApiV1GroupsLookupCodeResponses];
+
+export type PostApiV1GroupsByGroupIdJoinData = {
+    body: {
+        code?: string;
+    };
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/join';
+};
+
+export type PostApiV1GroupsByGroupIdJoinErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdJoinError = PostApiV1GroupsByGroupIdJoinErrors[keyof PostApiV1GroupsByGroupIdJoinErrors];
+
+export type PostApiV1GroupsByGroupIdJoinResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            result: 'member';
+            membership: {
+                role: 'member' | 'moderator' | 'owner';
+                unitId: string | null;
+                moderatorUnitId: string | null;
+                joinedVia: 'joined' | 'approved' | 'invited' | 'roster' | 'assigned';
+                joinedAt: string;
+                badgeEligible: boolean;
+            };
+        } | {
+            result: 'request';
+            request: {
+                id: string;
+                groupId: string;
+                accountId: string;
+                displayName: string;
+                status: 'pending' | 'approved' | 'rejected' | 'expired' | 'withdrawn' | 'cancelled';
+                createdAt: string;
+                expiresAt: string;
+            };
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdJoinResponse = PostApiV1GroupsByGroupIdJoinResponses[keyof PostApiV1GroupsByGroupIdJoinResponses];
+
+export type DeleteApiV1GroupsByGroupIdJoinRequestData = {
+    body?: never;
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/join-request';
+};
+
+export type DeleteApiV1GroupsByGroupIdJoinRequestErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1GroupsByGroupIdJoinRequestError = DeleteApiV1GroupsByGroupIdJoinRequestErrors[keyof DeleteApiV1GroupsByGroupIdJoinRequestErrors];
+
+export type DeleteApiV1GroupsByGroupIdJoinRequestResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1GroupsByGroupIdJoinRequestResponse = DeleteApiV1GroupsByGroupIdJoinRequestResponses[keyof DeleteApiV1GroupsByGroupIdJoinRequestResponses];
+
+export type PostApiV1GroupsByGroupIdLeaveData = {
+    body?: never;
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/leave';
+};
+
+export type PostApiV1GroupsByGroupIdLeaveErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdLeaveError = PostApiV1GroupsByGroupIdLeaveErrors[keyof PostApiV1GroupsByGroupIdLeaveErrors];
+
+export type PostApiV1GroupsByGroupIdLeaveResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PostApiV1GroupsByGroupIdLeaveResponse = PostApiV1GroupsByGroupIdLeaveResponses[keyof PostApiV1GroupsByGroupIdLeaveResponses];
+
+export type GetApiV1GroupsByGroupIdAnnouncementsData = {
+    body?: never;
+    path: {
+        groupId: string;
+    };
+    query?: {
+        page?: number;
+        limit?: number;
+    };
+    url: '/api/v1/groups/{groupId}/announcements';
+};
+
+export type GetApiV1GroupsByGroupIdAnnouncementsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1GroupsByGroupIdAnnouncementsError = GetApiV1GroupsByGroupIdAnnouncementsErrors[keyof GetApiV1GroupsByGroupIdAnnouncementsErrors];
+
+export type GetApiV1GroupsByGroupIdAnnouncementsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                groupId: string;
+                unitId: string | null;
+                body: string;
+                createdAt: string;
+            }>;
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    };
+};
+
+export type GetApiV1GroupsByGroupIdAnnouncementsResponse = GetApiV1GroupsByGroupIdAnnouncementsResponses[keyof GetApiV1GroupsByGroupIdAnnouncementsResponses];
+
+export type PostApiV1GroupsByGroupIdAnnouncementsData = {
+    body: {
+        body: string;
+        unitId?: string;
+    };
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/announcements';
+};
+
+export type PostApiV1GroupsByGroupIdAnnouncementsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdAnnouncementsError = PostApiV1GroupsByGroupIdAnnouncementsErrors[keyof PostApiV1GroupsByGroupIdAnnouncementsErrors];
+
+export type PostApiV1GroupsByGroupIdAnnouncementsResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            groupId: string;
+            unitId: string | null;
+            body: string;
+            createdAt: string;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdAnnouncementsResponse = PostApiV1GroupsByGroupIdAnnouncementsResponses[keyof PostApiV1GroupsByGroupIdAnnouncementsResponses];
+
+export type GetApiV1MeGroupsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/groups';
+};
+
+export type GetApiV1MeGroupsErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeGroupsError = GetApiV1MeGroupsErrors[keyof GetApiV1MeGroupsErrors];
+
+export type GetApiV1MeGroupsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            id: string;
+            name: string;
+            kind: 'school' | 'company' | 'community' | 'other';
+            mode: 'public_open' | 'public_review' | 'private_code' | 'private_invite';
+            state: 'pending_owner' | 'active' | 'going_private' | 'ownerless' | 'locked' | 'closed';
+            description: string | null;
+            memberCount: number;
+            membership: {
+                role: 'member' | 'moderator' | 'owner';
+                unitId: string | null;
+                moderatorUnitId: string | null;
+                joinedVia: 'joined' | 'approved' | 'invited' | 'roster' | 'assigned';
+                joinedAt: string;
+                badgeEligible: boolean;
+            };
+        }>;
+    };
+};
+
+export type GetApiV1MeGroupsResponse = GetApiV1MeGroupsResponses[keyof GetApiV1MeGroupsResponses];
+
+export type GetApiV1MeGroupBadgesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/group-badges';
+};
+
+export type GetApiV1MeGroupBadgesErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeGroupBadgesError = GetApiV1MeGroupBadgesErrors[keyof GetApiV1MeGroupBadgesErrors];
+
+export type GetApiV1MeGroupBadgesResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            groupId: string;
+            groupName: string;
+        }>;
+    };
+};
+
+export type GetApiV1MeGroupBadgesResponse = GetApiV1MeGroupBadgesResponses[keyof GetApiV1MeGroupBadgesResponses];
+
+export type GetApiV1MeGroupInvitationsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/group-invitations';
+};
+
+export type GetApiV1MeGroupInvitationsErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeGroupInvitationsError = GetApiV1MeGroupInvitationsErrors[keyof GetApiV1MeGroupInvitationsErrors];
+
+export type GetApiV1MeGroupInvitationsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            invitations: Array<{
+                id: string;
+                groupId: string;
+                groupName: string;
+                unitId: string | null;
+                expiresAt: string;
+            }>;
+            rosters: Array<{
+                groupId: string;
+                groupName: string;
+                unitId: string | null;
+            }>;
+        };
+    };
+};
+
+export type GetApiV1MeGroupInvitationsResponse = GetApiV1MeGroupInvitationsResponses[keyof GetApiV1MeGroupInvitationsResponses];
+
+export type GetApiV1MeGroupOwnerOffersData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/group-owner-offers';
+};
+
+export type GetApiV1MeGroupOwnerOffersErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeGroupOwnerOffersError = GetApiV1MeGroupOwnerOffersErrors[keyof GetApiV1MeGroupOwnerOffersErrors];
+
+export type GetApiV1MeGroupOwnerOffersResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            id: string;
+            groupId: string;
+            groupName: string;
+            kind: 'assignment' | 'transfer';
+            expiresAt: string;
+        }>;
+    };
+};
+
+export type GetApiV1MeGroupOwnerOffersResponse = GetApiV1MeGroupOwnerOffersResponses[keyof GetApiV1MeGroupOwnerOffersResponses];
+
+export type PostApiV1GroupInvitationsByIdAcceptData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/group-invitations/{id}/accept';
+};
+
+export type PostApiV1GroupInvitationsByIdAcceptErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1GroupInvitationsByIdAcceptError = PostApiV1GroupInvitationsByIdAcceptErrors[keyof PostApiV1GroupInvitationsByIdAcceptErrors];
+
+export type PostApiV1GroupInvitationsByIdAcceptResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            name: string;
+            kind: 'school' | 'company' | 'community' | 'other';
+            mode: 'public_open' | 'public_review' | 'private_code' | 'private_invite';
+            state: 'pending_owner' | 'active' | 'going_private' | 'ownerless' | 'locked' | 'closed';
+            description: string | null;
+            memberCount: number;
+            membership: {
+                role: 'member' | 'moderator' | 'owner';
+                unitId: string | null;
+                moderatorUnitId: string | null;
+                joinedVia: 'joined' | 'approved' | 'invited' | 'roster' | 'assigned';
+                joinedAt: string;
+                badgeEligible: boolean;
+            };
+        };
+    };
+};
+
+export type PostApiV1GroupInvitationsByIdAcceptResponse = PostApiV1GroupInvitationsByIdAcceptResponses[keyof PostApiV1GroupInvitationsByIdAcceptResponses];
+
+export type PostApiV1GroupInvitationsByIdDeclineData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/group-invitations/{id}/decline';
+};
+
+export type PostApiV1GroupInvitationsByIdDeclineErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1GroupInvitationsByIdDeclineError = PostApiV1GroupInvitationsByIdDeclineErrors[keyof PostApiV1GroupInvitationsByIdDeclineErrors];
+
+export type PostApiV1GroupInvitationsByIdDeclineResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PostApiV1GroupInvitationsByIdDeclineResponse = PostApiV1GroupInvitationsByIdDeclineResponses[keyof PostApiV1GroupInvitationsByIdDeclineResponses];
+
+export type PostApiV1GroupOwnerOffersByIdAcceptData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/group-owner-offers/{id}/accept';
+};
+
+export type PostApiV1GroupOwnerOffersByIdAcceptErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1GroupOwnerOffersByIdAcceptError = PostApiV1GroupOwnerOffersByIdAcceptErrors[keyof PostApiV1GroupOwnerOffersByIdAcceptErrors];
+
+export type PostApiV1GroupOwnerOffersByIdAcceptResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            name: string;
+            kind: 'school' | 'company' | 'community' | 'other';
+            mode: 'public_open' | 'public_review' | 'private_code' | 'private_invite';
+            state: 'pending_owner' | 'active' | 'going_private' | 'ownerless' | 'locked' | 'closed';
+            description: string | null;
+            memberCount: number;
+            membership: {
+                role: 'member' | 'moderator' | 'owner';
+                unitId: string | null;
+                moderatorUnitId: string | null;
+                joinedVia: 'joined' | 'approved' | 'invited' | 'roster' | 'assigned';
+                joinedAt: string;
+                badgeEligible: boolean;
+            };
+        };
+    };
+};
+
+export type PostApiV1GroupOwnerOffersByIdAcceptResponse = PostApiV1GroupOwnerOffersByIdAcceptResponses[keyof PostApiV1GroupOwnerOffersByIdAcceptResponses];
+
+export type PostApiV1GroupOwnerOffersByIdDeclineData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/group-owner-offers/{id}/decline';
+};
+
+export type PostApiV1GroupOwnerOffersByIdDeclineErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1GroupOwnerOffersByIdDeclineError = PostApiV1GroupOwnerOffersByIdDeclineErrors[keyof PostApiV1GroupOwnerOffersByIdDeclineErrors];
+
+export type PostApiV1GroupOwnerOffersByIdDeclineResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PostApiV1GroupOwnerOffersByIdDeclineResponse = PostApiV1GroupOwnerOffersByIdDeclineResponses[keyof PostApiV1GroupOwnerOffersByIdDeclineResponses];
+
+export type GetApiV1GroupsByGroupIdMembersData = {
+    body?: never;
+    path: {
+        groupId: string;
+    };
+    query?: {
+        page?: number;
+        limit?: number;
+        unitId?: string;
+    };
+    url: '/api/v1/groups/{groupId}/members';
+};
+
+export type GetApiV1GroupsByGroupIdMembersErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1GroupsByGroupIdMembersError = GetApiV1GroupsByGroupIdMembersErrors[keyof GetApiV1GroupsByGroupIdMembersErrors];
+
+export type GetApiV1GroupsByGroupIdMembersResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                accountId: string;
+                displayName: string;
+                role: 'member' | 'moderator' | 'owner';
+                unitId: string | null;
+                moderatorUnitId: string | null;
+                joinedVia: 'joined' | 'approved' | 'invited' | 'roster' | 'assigned';
+                joinedAt: string;
+            }>;
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    };
+};
+
+export type GetApiV1GroupsByGroupIdMembersResponse = GetApiV1GroupsByGroupIdMembersResponses[keyof GetApiV1GroupsByGroupIdMembersResponses];
+
+export type DeleteApiV1GroupsByGroupIdMembersByAccountIdData = {
+    body?: never;
+    path: {
+        groupId: string;
+        accountId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/members/{accountId}';
+};
+
+export type DeleteApiV1GroupsByGroupIdMembersByAccountIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1GroupsByGroupIdMembersByAccountIdError = DeleteApiV1GroupsByGroupIdMembersByAccountIdErrors[keyof DeleteApiV1GroupsByGroupIdMembersByAccountIdErrors];
+
+export type DeleteApiV1GroupsByGroupIdMembersByAccountIdResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1GroupsByGroupIdMembersByAccountIdResponse = DeleteApiV1GroupsByGroupIdMembersByAccountIdResponses[keyof DeleteApiV1GroupsByGroupIdMembersByAccountIdResponses];
+
+export type PatchApiV1GroupsByGroupIdMembersByAccountIdData = {
+    body: {
+        unitId: string | null;
+    };
+    path: {
+        groupId: string;
+        accountId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/members/{accountId}';
+};
+
+export type PatchApiV1GroupsByGroupIdMembersByAccountIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PatchApiV1GroupsByGroupIdMembersByAccountIdError = PatchApiV1GroupsByGroupIdMembersByAccountIdErrors[keyof PatchApiV1GroupsByGroupIdMembersByAccountIdErrors];
+
+export type PatchApiV1GroupsByGroupIdMembersByAccountIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            accountId: string;
+            displayName: string;
+            role: 'member' | 'moderator' | 'owner';
+            unitId: string | null;
+            moderatorUnitId: string | null;
+            joinedVia: 'joined' | 'approved' | 'invited' | 'roster' | 'assigned';
+            joinedAt: string;
+        };
+    };
+};
+
+export type PatchApiV1GroupsByGroupIdMembersByAccountIdResponse = PatchApiV1GroupsByGroupIdMembersByAccountIdResponses[keyof PatchApiV1GroupsByGroupIdMembersByAccountIdResponses];
+
+export type DeleteApiV1GroupsByGroupIdBansByAccountIdData = {
+    body?: never;
+    path: {
+        groupId: string;
+        accountId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/bans/{accountId}';
+};
+
+export type DeleteApiV1GroupsByGroupIdBansByAccountIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1GroupsByGroupIdBansByAccountIdError = DeleteApiV1GroupsByGroupIdBansByAccountIdErrors[keyof DeleteApiV1GroupsByGroupIdBansByAccountIdErrors];
+
+export type DeleteApiV1GroupsByGroupIdBansByAccountIdResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1GroupsByGroupIdBansByAccountIdResponse = DeleteApiV1GroupsByGroupIdBansByAccountIdResponses[keyof DeleteApiV1GroupsByGroupIdBansByAccountIdResponses];
+
+export type PutApiV1GroupsByGroupIdBansByAccountIdData = {
+    body?: never;
+    path: {
+        groupId: string;
+        accountId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/bans/{accountId}';
+};
+
+export type PutApiV1GroupsByGroupIdBansByAccountIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PutApiV1GroupsByGroupIdBansByAccountIdError = PutApiV1GroupsByGroupIdBansByAccountIdErrors[keyof PutApiV1GroupsByGroupIdBansByAccountIdErrors];
+
+export type PutApiV1GroupsByGroupIdBansByAccountIdResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PutApiV1GroupsByGroupIdBansByAccountIdResponse = PutApiV1GroupsByGroupIdBansByAccountIdResponses[keyof PutApiV1GroupsByGroupIdBansByAccountIdResponses];
+
+export type GetApiV1GroupsByGroupIdBansData = {
+    body?: never;
+    path: {
+        groupId: string;
+    };
+    query?: {
+        page?: number;
+        limit?: number;
+    };
+    url: '/api/v1/groups/{groupId}/bans';
+};
+
+export type GetApiV1GroupsByGroupIdBansErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1GroupsByGroupIdBansError = GetApiV1GroupsByGroupIdBansErrors[keyof GetApiV1GroupsByGroupIdBansErrors];
+
+export type GetApiV1GroupsByGroupIdBansResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                accountId: string;
+                displayName: string;
+                bannedAt: string;
+                bannedBy: string;
+            }>;
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    };
+};
+
+export type GetApiV1GroupsByGroupIdBansResponse = GetApiV1GroupsByGroupIdBansResponses[keyof GetApiV1GroupsByGroupIdBansResponses];
+
+export type GetApiV1GroupsByGroupIdJoinRequestsData = {
+    body?: never;
+    path: {
+        groupId: string;
+    };
+    query?: {
+        page?: number;
+        limit?: number;
+    };
+    url: '/api/v1/groups/{groupId}/join-requests';
+};
+
+export type GetApiV1GroupsByGroupIdJoinRequestsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1GroupsByGroupIdJoinRequestsError = GetApiV1GroupsByGroupIdJoinRequestsErrors[keyof GetApiV1GroupsByGroupIdJoinRequestsErrors];
+
+export type GetApiV1GroupsByGroupIdJoinRequestsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                groupId: string;
+                accountId: string;
+                displayName: string;
+                status: 'pending' | 'approved' | 'rejected' | 'expired' | 'withdrawn' | 'cancelled';
+                createdAt: string;
+                expiresAt: string;
+            }>;
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    };
+};
+
+export type GetApiV1GroupsByGroupIdJoinRequestsResponse = GetApiV1GroupsByGroupIdJoinRequestsResponses[keyof GetApiV1GroupsByGroupIdJoinRequestsResponses];
+
+export type PostApiV1GroupJoinRequestsByIdDecisionData = {
+    body: {
+        approve: boolean;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/group-join-requests/{id}/decision';
+};
+
+export type PostApiV1GroupJoinRequestsByIdDecisionErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1GroupJoinRequestsByIdDecisionError = PostApiV1GroupJoinRequestsByIdDecisionErrors[keyof PostApiV1GroupJoinRequestsByIdDecisionErrors];
+
+export type PostApiV1GroupJoinRequestsByIdDecisionResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            groupId: string;
+            accountId: string;
+            displayName: string;
+            status: 'pending' | 'approved' | 'rejected' | 'expired' | 'withdrawn' | 'cancelled';
+            createdAt: string;
+            expiresAt: string;
+        };
+    };
+};
+
+export type PostApiV1GroupJoinRequestsByIdDecisionResponse = PostApiV1GroupJoinRequestsByIdDecisionResponses[keyof PostApiV1GroupJoinRequestsByIdDecisionResponses];
+
+export type GetApiV1GroupsByGroupIdInvitationsData = {
+    body?: never;
+    path: {
+        groupId: string;
+    };
+    query?: {
+        page?: number;
+        limit?: number;
+    };
+    url: '/api/v1/groups/{groupId}/invitations';
+};
+
+export type GetApiV1GroupsByGroupIdInvitationsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1GroupsByGroupIdInvitationsError = GetApiV1GroupsByGroupIdInvitationsErrors[keyof GetApiV1GroupsByGroupIdInvitationsErrors];
+
+export type GetApiV1GroupsByGroupIdInvitationsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                emailHint: string;
+                unitId: string | null;
+                createdAt: string;
+                expiresAt: string;
+            }>;
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    };
+};
+
+export type GetApiV1GroupsByGroupIdInvitationsResponse = GetApiV1GroupsByGroupIdInvitationsResponses[keyof GetApiV1GroupsByGroupIdInvitationsResponses];
+
+export type PostApiV1GroupsByGroupIdInvitationsData = {
+    body: {
+        email: string;
+        unitId?: string;
+    };
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/invitations';
+};
+
+export type PostApiV1GroupsByGroupIdInvitationsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdInvitationsError = PostApiV1GroupsByGroupIdInvitationsErrors[keyof PostApiV1GroupsByGroupIdInvitationsErrors];
+
+export type PostApiV1GroupsByGroupIdInvitationsResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PostApiV1GroupsByGroupIdInvitationsResponse = PostApiV1GroupsByGroupIdInvitationsResponses[keyof PostApiV1GroupsByGroupIdInvitationsResponses];
+
+export type DeleteApiV1GroupsByGroupIdInvitationsByInvitationIdData = {
+    body?: never;
+    path: {
+        groupId: string;
+        invitationId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/invitations/{invitationId}';
+};
+
+export type DeleteApiV1GroupsByGroupIdInvitationsByInvitationIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1GroupsByGroupIdInvitationsByInvitationIdError = DeleteApiV1GroupsByGroupIdInvitationsByInvitationIdErrors[keyof DeleteApiV1GroupsByGroupIdInvitationsByInvitationIdErrors];
+
+export type DeleteApiV1GroupsByGroupIdInvitationsByInvitationIdResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1GroupsByGroupIdInvitationsByInvitationIdResponse = DeleteApiV1GroupsByGroupIdInvitationsByInvitationIdResponses[keyof DeleteApiV1GroupsByGroupIdInvitationsByInvitationIdResponses];
+
+export type PostApiV1GroupsByGroupIdRosterData = {
+    body: {
+        entries: Array<{
+            email: string;
+            unitId?: string;
+        }>;
+    };
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/roster';
+};
+
+export type PostApiV1GroupsByGroupIdRosterErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdRosterError = PostApiV1GroupsByGroupIdRosterErrors[keyof PostApiV1GroupsByGroupIdRosterErrors];
+
+export type PostApiV1GroupsByGroupIdRosterResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            added: number;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdRosterResponse = PostApiV1GroupsByGroupIdRosterResponses[keyof PostApiV1GroupsByGroupIdRosterResponses];
+
+export type PostApiV1GroupsByGroupIdRosterRemoveData = {
+    body: {
+        email: string;
+    };
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/roster/remove';
+};
+
+export type PostApiV1GroupsByGroupIdRosterRemoveErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdRosterRemoveError = PostApiV1GroupsByGroupIdRosterRemoveErrors[keyof PostApiV1GroupsByGroupIdRosterRemoveErrors];
+
+export type PostApiV1GroupsByGroupIdRosterRemoveResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PostApiV1GroupsByGroupIdRosterRemoveResponse = PostApiV1GroupsByGroupIdRosterRemoveResponses[keyof PostApiV1GroupsByGroupIdRosterRemoveResponses];
+
+export type PatchApiV1GroupsByGroupIdSettingsData = {
+    body: {
+        name?: string;
+        description?: string | null;
+        mode?: 'public_open' | 'public_review' | 'private_code' | 'private_invite';
+        allowOutsiders?: boolean;
+        showNameOnMarketplace?: boolean;
+        boardStyle?: 'list' | 'grid';
+    };
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/settings';
+};
+
+export type PatchApiV1GroupsByGroupIdSettingsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PatchApiV1GroupsByGroupIdSettingsError = PatchApiV1GroupsByGroupIdSettingsErrors[keyof PatchApiV1GroupsByGroupIdSettingsErrors];
+
+export type PatchApiV1GroupsByGroupIdSettingsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            name: string;
+            kind: 'school' | 'company' | 'community' | 'other';
+            mode: 'public_open' | 'public_review' | 'private_code' | 'private_invite';
+            state: 'pending_owner' | 'active' | 'going_private' | 'ownerless' | 'locked' | 'closed';
+            description: string | null;
+            memberCount: number;
+            visibility: 'full';
+            boardStyle: 'list' | 'grid';
+            allowOutsiders: boolean;
+            showNameOnMarketplace: boolean;
+            code: string | null;
+            lockedReason: string | null;
+            units: Array<{
+                id: string;
+                name: string;
+            }>;
+            membership: {
+                role: 'member' | 'moderator' | 'owner';
+                unitId: string | null;
+                moderatorUnitId: string | null;
+                joinedVia: 'joined' | 'approved' | 'invited' | 'roster' | 'assigned';
+                joinedAt: string;
+                badgeEligible: boolean;
+            } | null;
+        };
+    };
+};
+
+export type PatchApiV1GroupsByGroupIdSettingsResponse = PatchApiV1GroupsByGroupIdSettingsResponses[keyof PatchApiV1GroupsByGroupIdSettingsResponses];
+
+export type PostApiV1GroupsByGroupIdCodeData = {
+    body?: never;
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/code';
+};
+
+export type PostApiV1GroupsByGroupIdCodeErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdCodeError = PostApiV1GroupsByGroupIdCodeErrors[keyof PostApiV1GroupsByGroupIdCodeErrors];
+
+export type PostApiV1GroupsByGroupIdCodeResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            code: string;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdCodeResponse = PostApiV1GroupsByGroupIdCodeResponses[keyof PostApiV1GroupsByGroupIdCodeResponses];
+
+export type PostApiV1GroupsByGroupIdUnitsData = {
+    body: {
+        name: string;
+    };
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/units';
+};
+
+export type PostApiV1GroupsByGroupIdUnitsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdUnitsError = PostApiV1GroupsByGroupIdUnitsErrors[keyof PostApiV1GroupsByGroupIdUnitsErrors];
+
+export type PostApiV1GroupsByGroupIdUnitsResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            name: string;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdUnitsResponse = PostApiV1GroupsByGroupIdUnitsResponses[keyof PostApiV1GroupsByGroupIdUnitsResponses];
+
+export type DeleteApiV1GroupsByGroupIdUnitsByUnitIdData = {
+    body?: never;
+    path: {
+        groupId: string;
+        unitId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/units/{unitId}';
+};
+
+export type DeleteApiV1GroupsByGroupIdUnitsByUnitIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1GroupsByGroupIdUnitsByUnitIdError = DeleteApiV1GroupsByGroupIdUnitsByUnitIdErrors[keyof DeleteApiV1GroupsByGroupIdUnitsByUnitIdErrors];
+
+export type DeleteApiV1GroupsByGroupIdUnitsByUnitIdResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1GroupsByGroupIdUnitsByUnitIdResponse = DeleteApiV1GroupsByGroupIdUnitsByUnitIdResponses[keyof DeleteApiV1GroupsByGroupIdUnitsByUnitIdResponses];
+
+export type PatchApiV1GroupsByGroupIdUnitsByUnitIdData = {
+    body: {
+        name: string;
+    };
+    path: {
+        groupId: string;
+        unitId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/units/{unitId}';
+};
+
+export type PatchApiV1GroupsByGroupIdUnitsByUnitIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PatchApiV1GroupsByGroupIdUnitsByUnitIdError = PatchApiV1GroupsByGroupIdUnitsByUnitIdErrors[keyof PatchApiV1GroupsByGroupIdUnitsByUnitIdErrors];
+
+export type PatchApiV1GroupsByGroupIdUnitsByUnitIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            name: string;
+        };
+    };
+};
+
+export type PatchApiV1GroupsByGroupIdUnitsByUnitIdResponse = PatchApiV1GroupsByGroupIdUnitsByUnitIdResponses[keyof PatchApiV1GroupsByGroupIdUnitsByUnitIdResponses];
+
+export type DeleteApiV1GroupsByGroupIdModeratorsByAccountIdData = {
+    body?: never;
+    path: {
+        groupId: string;
+        accountId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/moderators/{accountId}';
+};
+
+export type DeleteApiV1GroupsByGroupIdModeratorsByAccountIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1GroupsByGroupIdModeratorsByAccountIdError = DeleteApiV1GroupsByGroupIdModeratorsByAccountIdErrors[keyof DeleteApiV1GroupsByGroupIdModeratorsByAccountIdErrors];
+
+export type DeleteApiV1GroupsByGroupIdModeratorsByAccountIdResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1GroupsByGroupIdModeratorsByAccountIdResponse = DeleteApiV1GroupsByGroupIdModeratorsByAccountIdResponses[keyof DeleteApiV1GroupsByGroupIdModeratorsByAccountIdResponses];
+
+export type PutApiV1GroupsByGroupIdModeratorsByAccountIdData = {
+    body: {
+        unitId: string | null;
+    };
+    path: {
+        groupId: string;
+        accountId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/moderators/{accountId}';
+};
+
+export type PutApiV1GroupsByGroupIdModeratorsByAccountIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PutApiV1GroupsByGroupIdModeratorsByAccountIdError = PutApiV1GroupsByGroupIdModeratorsByAccountIdErrors[keyof PutApiV1GroupsByGroupIdModeratorsByAccountIdErrors];
+
+export type PutApiV1GroupsByGroupIdModeratorsByAccountIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            accountId: string;
+            displayName: string;
+            role: 'member' | 'moderator' | 'owner';
+            unitId: string | null;
+            moderatorUnitId: string | null;
+            joinedVia: 'joined' | 'approved' | 'invited' | 'roster' | 'assigned';
+            joinedAt: string;
+        };
+    };
+};
+
+export type PutApiV1GroupsByGroupIdModeratorsByAccountIdResponse = PutApiV1GroupsByGroupIdModeratorsByAccountIdResponses[keyof PutApiV1GroupsByGroupIdModeratorsByAccountIdResponses];
+
+export type DeleteApiV1GroupsByGroupIdOwnerTransferData = {
+    body?: never;
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/owner-transfer';
+};
+
+export type DeleteApiV1GroupsByGroupIdOwnerTransferErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1GroupsByGroupIdOwnerTransferError = DeleteApiV1GroupsByGroupIdOwnerTransferErrors[keyof DeleteApiV1GroupsByGroupIdOwnerTransferErrors];
+
+export type DeleteApiV1GroupsByGroupIdOwnerTransferResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1GroupsByGroupIdOwnerTransferResponse = DeleteApiV1GroupsByGroupIdOwnerTransferResponses[keyof DeleteApiV1GroupsByGroupIdOwnerTransferResponses];
+
+export type PostApiV1GroupsByGroupIdOwnerTransferData = {
+    body: {
+        accountId: string;
+    };
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/owner-transfer';
+};
+
+export type PostApiV1GroupsByGroupIdOwnerTransferErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdOwnerTransferError = PostApiV1GroupsByGroupIdOwnerTransferErrors[keyof PostApiV1GroupsByGroupIdOwnerTransferErrors];
+
+export type PostApiV1GroupsByGroupIdOwnerTransferResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            groupId: string;
+            groupName: string;
+            kind: 'assignment' | 'transfer';
+            expiresAt: string;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdOwnerTransferResponse = PostApiV1GroupsByGroupIdOwnerTransferResponses[keyof PostApiV1GroupsByGroupIdOwnerTransferResponses];
+
+export type PostApiV1GroupsByGroupIdCloseData = {
+    body?: never;
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/close';
+};
+
+export type PostApiV1GroupsByGroupIdCloseErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdCloseError = PostApiV1GroupsByGroupIdCloseErrors[keyof PostApiV1GroupsByGroupIdCloseErrors];
+
+export type PostApiV1GroupsByGroupIdCloseResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PostApiV1GroupsByGroupIdCloseResponse = PostApiV1GroupsByGroupIdCloseResponses[keyof PostApiV1GroupsByGroupIdCloseResponses];
+
+export type GetApiV1OpsGroupsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number;
+        limit?: number;
+        state?: 'pending_owner' | 'active' | 'going_private' | 'ownerless' | 'locked' | 'closed';
+    };
+    url: '/api/v1/ops/groups';
+};
+
+export type GetApiV1OpsGroupsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsGroupsError = GetApiV1OpsGroupsErrors[keyof GetApiV1OpsGroupsErrors];
+
+export type GetApiV1OpsGroupsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                name: string;
+                kind: 'school' | 'company' | 'community' | 'other';
+                mode: 'public_open' | 'public_review' | 'private_code' | 'private_invite';
+                state: 'pending_owner' | 'active' | 'going_private' | 'ownerless' | 'locked' | 'closed';
+                description: string | null;
+                memberCount: number;
+            }>;
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    };
+};
+
+export type GetApiV1OpsGroupsResponse = GetApiV1OpsGroupsResponses[keyof GetApiV1OpsGroupsResponses];
+
+export type PostApiV1OpsGroupsData = {
+    body: {
+        name: string;
+        kind: 'school' | 'company' | 'community' | 'other';
+        mode: 'public_open' | 'public_review' | 'private_code' | 'private_invite';
+        description?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/ops/groups';
+};
+
+export type PostApiV1OpsGroupsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsGroupsError = PostApiV1OpsGroupsErrors[keyof PostApiV1OpsGroupsErrors];
+
+export type PostApiV1OpsGroupsResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            name: string;
+            kind: 'school' | 'company' | 'community' | 'other';
+            mode: 'public_open' | 'public_review' | 'private_code' | 'private_invite';
+            state: 'pending_owner' | 'active' | 'going_private' | 'ownerless' | 'locked' | 'closed';
+            description: string | null;
+            memberCount: number;
+        };
+    };
+};
+
+export type PostApiV1OpsGroupsResponse = PostApiV1OpsGroupsResponses[keyof PostApiV1OpsGroupsResponses];
+
+export type GetApiV1OpsGroupsByGroupIdData = {
+    body?: never;
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/groups/{groupId}';
+};
+
+export type GetApiV1OpsGroupsByGroupIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsGroupsByGroupIdError = GetApiV1OpsGroupsByGroupIdErrors[keyof GetApiV1OpsGroupsByGroupIdErrors];
+
+export type GetApiV1OpsGroupsByGroupIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            name: string;
+            kind: 'school' | 'company' | 'community' | 'other';
+            mode: 'public_open' | 'public_review' | 'private_code' | 'private_invite';
+            state: 'pending_owner' | 'active' | 'going_private' | 'ownerless' | 'locked' | 'closed';
+            description: string | null;
+            memberCount: number;
+            visibility: 'full';
+            boardStyle: 'list' | 'grid';
+            allowOutsiders: boolean;
+            showNameOnMarketplace: boolean;
+            code: string | null;
+            lockedReason: string | null;
+            units: Array<{
+                id: string;
+                name: string;
+            }>;
+            membership: {
+                role: 'member' | 'moderator' | 'owner';
+                unitId: string | null;
+                moderatorUnitId: string | null;
+                joinedVia: 'joined' | 'approved' | 'invited' | 'roster' | 'assigned';
+                joinedAt: string;
+                badgeEligible: boolean;
+            } | null;
+            ownerId: string | null;
+            nomineeId: string | null;
+            ownerlessSince: string | null;
+        };
+    };
+};
+
+export type GetApiV1OpsGroupsByGroupIdResponse = GetApiV1OpsGroupsByGroupIdResponses[keyof GetApiV1OpsGroupsByGroupIdResponses];
+
+export type PostApiV1OpsGroupsByGroupIdOwnerOffersData = {
+    body: {
+        accountId: string;
+    };
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/groups/{groupId}/owner-offers';
+};
+
+export type PostApiV1OpsGroupsByGroupIdOwnerOffersErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsGroupsByGroupIdOwnerOffersError = PostApiV1OpsGroupsByGroupIdOwnerOffersErrors[keyof PostApiV1OpsGroupsByGroupIdOwnerOffersErrors];
+
+export type PostApiV1OpsGroupsByGroupIdOwnerOffersResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            groupId: string;
+            groupName: string;
+            kind: 'assignment' | 'transfer';
+            expiresAt: string;
+        };
+    };
+};
+
+export type PostApiV1OpsGroupsByGroupIdOwnerOffersResponse = PostApiV1OpsGroupsByGroupIdOwnerOffersResponses[keyof PostApiV1OpsGroupsByGroupIdOwnerOffersResponses];
+
+export type PostApiV1OpsGroupsByGroupIdLockData = {
+    body: {
+        reason: string;
+    };
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/groups/{groupId}/lock';
+};
+
+export type PostApiV1OpsGroupsByGroupIdLockErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsGroupsByGroupIdLockError = PostApiV1OpsGroupsByGroupIdLockErrors[keyof PostApiV1OpsGroupsByGroupIdLockErrors];
+
+export type PostApiV1OpsGroupsByGroupIdLockResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PostApiV1OpsGroupsByGroupIdLockResponse = PostApiV1OpsGroupsByGroupIdLockResponses[keyof PostApiV1OpsGroupsByGroupIdLockResponses];
+
+export type PostApiV1OpsGroupsByGroupIdUnlockData = {
+    body?: never;
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/groups/{groupId}/unlock';
+};
+
+export type PostApiV1OpsGroupsByGroupIdUnlockErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsGroupsByGroupIdUnlockError = PostApiV1OpsGroupsByGroupIdUnlockErrors[keyof PostApiV1OpsGroupsByGroupIdUnlockErrors];
+
+export type PostApiV1OpsGroupsByGroupIdUnlockResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PostApiV1OpsGroupsByGroupIdUnlockResponse = PostApiV1OpsGroupsByGroupIdUnlockResponses[keyof PostApiV1OpsGroupsByGroupIdUnlockResponses];
+
+export type PostApiV1OpsGroupsByGroupIdCloseData = {
+    body?: never;
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/groups/{groupId}/close';
+};
+
+export type PostApiV1OpsGroupsByGroupIdCloseErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsGroupsByGroupIdCloseError = PostApiV1OpsGroupsByGroupIdCloseErrors[keyof PostApiV1OpsGroupsByGroupIdCloseErrors];
+
+export type PostApiV1OpsGroupsByGroupIdCloseResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PostApiV1OpsGroupsByGroupIdCloseResponse = PostApiV1OpsGroupsByGroupIdCloseResponses[keyof PostApiV1OpsGroupsByGroupIdCloseResponses];
+
+export type GetApiV1ListingsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        cursor?: string;
+        limit?: number;
+        q?: string;
+        categoryId?: string;
+        provinceCode?: number;
+        wardCode?: number;
+        priceMin?: number;
+        priceMax?: number;
+    };
+    url: '/api/v1/listings';
+};
+
+export type GetApiV1ListingsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1ListingsError = GetApiV1ListingsErrors[keyof GetApiV1ListingsErrors];
+
+export type GetApiV1ListingsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                ownerId: string;
+                state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+                placement: 'marketplace' | 'group_public' | 'members_only';
+                groupId: string | null;
+                title: string | null;
+                description: string | null;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                price: number | null;
+                negotiable: boolean;
+                delivery: boolean;
+                showPhone: boolean;
+                categoryId: string | null;
+                templateVersion: number | null;
+                attributes: {
+                    [key: string]: unknown;
+                };
+                provinceCode: number | null;
+                wardCode: number | null;
+                images: Array<{
+                    id: string;
+                    url: string;
+                }>;
+                badge: {
+                    groupId: string;
+                    name: string;
+                } | null;
+                firstLiveAt: string | null;
+                featuredUntil: string | null;
+                expiresAt: string | null;
+                createdAt: string;
+                updatedAt: string;
+            }>;
+            nextCursor: string | null;
+        };
+    };
+};
+
+export type GetApiV1ListingsResponse = GetApiV1ListingsResponses[keyof GetApiV1ListingsResponses];
+
+export type PostApiV1ListingsData = {
+    body: {
+        title?: string | null;
+        description?: string | null;
+        /**
+         * Số tiền, đơn vị đồng
+         */
+        price?: number | null;
+        negotiable?: boolean;
+        delivery?: boolean;
+        showPhone?: boolean;
+        categoryId?: string | null;
+        attributes?: {
+            [key: string]: unknown;
+        };
+        provinceCode?: number | null;
+        wardCode?: number | null;
+        placement?: 'marketplace' | 'group_public' | 'members_only';
+        groupId?: string | null;
+        imageIds?: Array<string>;
+        badgeGroupId?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/listings';
+};
+
+export type PostApiV1ListingsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1ListingsError = PostApiV1ListingsErrors[keyof PostApiV1ListingsErrors];
+
+export type PostApiV1ListingsResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            ownerId: string;
+            state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+            placement: 'marketplace' | 'group_public' | 'members_only';
+            groupId: string | null;
+            title: string | null;
+            description: string | null;
+            /**
+             * Số tiền, đơn vị đồng
+             */
+            price: number | null;
+            negotiable: boolean;
+            delivery: boolean;
+            showPhone: boolean;
+            categoryId: string | null;
+            templateVersion: number | null;
+            attributes: {
+                [key: string]: unknown;
+            };
+            provinceCode: number | null;
+            wardCode: number | null;
+            images: Array<{
+                id: string;
+                url: string;
+            }>;
+            badge: {
+                groupId: string;
+                name: string;
+            } | null;
+            firstLiveAt: string | null;
+            featuredUntil: string | null;
+            expiresAt: string | null;
+            createdAt: string;
+            updatedAt: string;
+            version: number;
+            unitId: string | null;
+            badgeGroupId: string | null;
+            hideReasons: Array<'account_locked' | 'account_deleted' | 'left_group' | 'removed_from_group' | 'group_banned' | 'group_locked' | 'category_disabled' | 'group_closed' | 'group_privatized' | 'detached_by_group' | 'reported'>;
+            restrictions: Array<'machine' | 'new_account' | 'strike' | 'strike_wave'>;
+            remainingMs: number | null;
+            renewal: 'early' | 'expired';
+            fault: 'mistake' | 'violation';
+            faultReason: string | null;
+            moveUntil: string | null;
+            machineNotice: {
+                kind: 'plain' | 'fraud' | 'limited';
+                message: string;
+                estimatedWait: string | null;
+                lookupCode: string | null;
+                fixes: Array<{
+                    code: string;
+                    message: string;
+                }>;
+            } | null;
+        };
+    };
+};
+
+export type PostApiV1ListingsResponse = PostApiV1ListingsResponses[keyof PostApiV1ListingsResponses];
+
+export type DeleteApiV1ListingsByIdData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/listings/{id}';
+};
+
+export type DeleteApiV1ListingsByIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1ListingsByIdError = DeleteApiV1ListingsByIdErrors[keyof DeleteApiV1ListingsByIdErrors];
+
+export type DeleteApiV1ListingsByIdResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1ListingsByIdResponse = DeleteApiV1ListingsByIdResponses[keyof DeleteApiV1ListingsByIdResponses];
+
+export type GetApiV1ListingsByIdData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/listings/{id}';
+};
+
+export type GetApiV1ListingsByIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1ListingsByIdError = GetApiV1ListingsByIdErrors[keyof GetApiV1ListingsByIdErrors];
+
+export type GetApiV1ListingsByIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            ownerId: string;
+            state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+            placement: 'marketplace' | 'group_public' | 'members_only';
+            groupId: string | null;
+            title: string | null;
+            description: string | null;
+            /**
+             * Số tiền, đơn vị đồng
+             */
+            price: number | null;
+            negotiable: boolean;
+            delivery: boolean;
+            showPhone: boolean;
+            categoryId: string | null;
+            templateVersion: number | null;
+            attributes: {
+                [key: string]: unknown;
+            };
+            provinceCode: number | null;
+            wardCode: number | null;
+            images: Array<{
+                id: string;
+                url: string;
+            }>;
+            badge: {
+                groupId: string;
+                name: string;
+            } | null;
+            firstLiveAt: string | null;
+            featuredUntil: string | null;
+            expiresAt: string | null;
+            createdAt: string;
+            updatedAt: string;
+            version: number;
+            unitId: string | null;
+            badgeGroupId: string | null;
+            hideReasons: Array<'account_locked' | 'account_deleted' | 'left_group' | 'removed_from_group' | 'group_banned' | 'group_locked' | 'category_disabled' | 'group_closed' | 'group_privatized' | 'detached_by_group' | 'reported'>;
+            restrictions: Array<'machine' | 'new_account' | 'strike' | 'strike_wave'>;
+            remainingMs: number | null;
+            renewal: 'early' | 'expired';
+            fault: 'mistake' | 'violation';
+            faultReason: string | null;
+            moveUntil: string | null;
+            machineNotice: {
+                kind: 'plain' | 'fraud' | 'limited';
+                message: string;
+                estimatedWait: string | null;
+                lookupCode: string | null;
+                fixes: Array<{
+                    code: string;
+                    message: string;
+                }>;
+            } | null;
+        } | {
+            id: string;
+            ownerId: string;
+            state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+            placement: 'marketplace' | 'group_public' | 'members_only';
+            groupId: string | null;
+            title: string | null;
+            description: string | null;
+            /**
+             * Số tiền, đơn vị đồng
+             */
+            price: number | null;
+            negotiable: boolean;
+            delivery: boolean;
+            showPhone: boolean;
+            categoryId: string | null;
+            templateVersion: number | null;
+            attributes: {
+                [key: string]: unknown;
+            };
+            provinceCode: number | null;
+            wardCode: number | null;
+            images: Array<{
+                id: string;
+                url: string;
+            }>;
+            badge: {
+                groupId: string;
+                name: string;
+            } | null;
+            firstLiveAt: string | null;
+            featuredUntil: string | null;
+            expiresAt: string | null;
+            createdAt: string;
+            updatedAt: string;
+        };
+    };
+};
+
+export type GetApiV1ListingsByIdResponse = GetApiV1ListingsByIdResponses[keyof GetApiV1ListingsByIdResponses];
+
+export type PatchApiV1ListingsByIdData = {
+    body: {
+        version: number;
+        title?: string | null;
+        description?: string | null;
+        /**
+         * Số tiền, đơn vị đồng
+         */
+        price?: number | null;
+        negotiable?: boolean;
+        delivery?: boolean;
+        showPhone?: boolean;
+        categoryId?: string | null;
+        attributes?: {
+            [key: string]: unknown;
+        };
+        provinceCode?: number | null;
+        wardCode?: number | null;
+        placement?: 'marketplace' | 'group_public' | 'members_only';
+        groupId?: string | null;
+        imageIds?: Array<string>;
+        badgeGroupId?: string | null;
+    };
+    headers?: {
+        'x-device-id'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/listings/{id}';
+};
+
+export type PatchApiV1ListingsByIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PatchApiV1ListingsByIdError = PatchApiV1ListingsByIdErrors[keyof PatchApiV1ListingsByIdErrors];
+
+export type PatchApiV1ListingsByIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            ownerId: string;
+            state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+            placement: 'marketplace' | 'group_public' | 'members_only';
+            groupId: string | null;
+            title: string | null;
+            description: string | null;
+            /**
+             * Số tiền, đơn vị đồng
+             */
+            price: number | null;
+            negotiable: boolean;
+            delivery: boolean;
+            showPhone: boolean;
+            categoryId: string | null;
+            templateVersion: number | null;
+            attributes: {
+                [key: string]: unknown;
+            };
+            provinceCode: number | null;
+            wardCode: number | null;
+            images: Array<{
+                id: string;
+                url: string;
+            }>;
+            badge: {
+                groupId: string;
+                name: string;
+            } | null;
+            firstLiveAt: string | null;
+            featuredUntil: string | null;
+            expiresAt: string | null;
+            createdAt: string;
+            updatedAt: string;
+            version: number;
+            unitId: string | null;
+            badgeGroupId: string | null;
+            hideReasons: Array<'account_locked' | 'account_deleted' | 'left_group' | 'removed_from_group' | 'group_banned' | 'group_locked' | 'category_disabled' | 'group_closed' | 'group_privatized' | 'detached_by_group' | 'reported'>;
+            restrictions: Array<'machine' | 'new_account' | 'strike' | 'strike_wave'>;
+            remainingMs: number | null;
+            renewal: 'early' | 'expired';
+            fault: 'mistake' | 'violation';
+            faultReason: string | null;
+            moveUntil: string | null;
+            machineNotice: {
+                kind: 'plain' | 'fraud' | 'limited';
+                message: string;
+                estimatedWait: string | null;
+                lookupCode: string | null;
+                fixes: Array<{
+                    code: string;
+                    message: string;
+                }>;
+            } | null;
+        };
+    };
+};
+
+export type PatchApiV1ListingsByIdResponse = PatchApiV1ListingsByIdResponses[keyof PatchApiV1ListingsByIdResponses];
+
+export type PostApiV1ListingsByIdSubmitData = {
+    body: {
+        version: number;
+    };
+    headers?: {
+        'x-device-id'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/listings/{id}/submit';
+};
+
+export type PostApiV1ListingsByIdSubmitErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1ListingsByIdSubmitError = PostApiV1ListingsByIdSubmitErrors[keyof PostApiV1ListingsByIdSubmitErrors];
+
+export type PostApiV1ListingsByIdSubmitResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            ownerId: string;
+            state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+            placement: 'marketplace' | 'group_public' | 'members_only';
+            groupId: string | null;
+            title: string | null;
+            description: string | null;
+            /**
+             * Số tiền, đơn vị đồng
+             */
+            price: number | null;
+            negotiable: boolean;
+            delivery: boolean;
+            showPhone: boolean;
+            categoryId: string | null;
+            templateVersion: number | null;
+            attributes: {
+                [key: string]: unknown;
+            };
+            provinceCode: number | null;
+            wardCode: number | null;
+            images: Array<{
+                id: string;
+                url: string;
+            }>;
+            badge: {
+                groupId: string;
+                name: string;
+            } | null;
+            firstLiveAt: string | null;
+            featuredUntil: string | null;
+            expiresAt: string | null;
+            createdAt: string;
+            updatedAt: string;
+            version: number;
+            unitId: string | null;
+            badgeGroupId: string | null;
+            hideReasons: Array<'account_locked' | 'account_deleted' | 'left_group' | 'removed_from_group' | 'group_banned' | 'group_locked' | 'category_disabled' | 'group_closed' | 'group_privatized' | 'detached_by_group' | 'reported'>;
+            restrictions: Array<'machine' | 'new_account' | 'strike' | 'strike_wave'>;
+            remainingMs: number | null;
+            renewal: 'early' | 'expired';
+            fault: 'mistake' | 'violation';
+            faultReason: string | null;
+            moveUntil: string | null;
+            machineNotice: {
+                kind: 'plain' | 'fraud' | 'limited';
+                message: string;
+                estimatedWait: string | null;
+                lookupCode: string | null;
+                fixes: Array<{
+                    code: string;
+                    message: string;
+                }>;
+            } | null;
+        };
+    };
+};
+
+export type PostApiV1ListingsByIdSubmitResponse = PostApiV1ListingsByIdSubmitResponses[keyof PostApiV1ListingsByIdSubmitResponses];
+
+export type PostApiV1ListingsByIdWithdrawData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/listings/{id}/withdraw';
+};
+
+export type PostApiV1ListingsByIdWithdrawErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1ListingsByIdWithdrawError = PostApiV1ListingsByIdWithdrawErrors[keyof PostApiV1ListingsByIdWithdrawErrors];
+
+export type PostApiV1ListingsByIdWithdrawResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            ownerId: string;
+            state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+            placement: 'marketplace' | 'group_public' | 'members_only';
+            groupId: string | null;
+            title: string | null;
+            description: string | null;
+            /**
+             * Số tiền, đơn vị đồng
+             */
+            price: number | null;
+            negotiable: boolean;
+            delivery: boolean;
+            showPhone: boolean;
+            categoryId: string | null;
+            templateVersion: number | null;
+            attributes: {
+                [key: string]: unknown;
+            };
+            provinceCode: number | null;
+            wardCode: number | null;
+            images: Array<{
+                id: string;
+                url: string;
+            }>;
+            badge: {
+                groupId: string;
+                name: string;
+            } | null;
+            firstLiveAt: string | null;
+            featuredUntil: string | null;
+            expiresAt: string | null;
+            createdAt: string;
+            updatedAt: string;
+            version: number;
+            unitId: string | null;
+            badgeGroupId: string | null;
+            hideReasons: Array<'account_locked' | 'account_deleted' | 'left_group' | 'removed_from_group' | 'group_banned' | 'group_locked' | 'category_disabled' | 'group_closed' | 'group_privatized' | 'detached_by_group' | 'reported'>;
+            restrictions: Array<'machine' | 'new_account' | 'strike' | 'strike_wave'>;
+            remainingMs: number | null;
+            renewal: 'early' | 'expired';
+            fault: 'mistake' | 'violation';
+            faultReason: string | null;
+            moveUntil: string | null;
+            machineNotice: {
+                kind: 'plain' | 'fraud' | 'limited';
+                message: string;
+                estimatedWait: string | null;
+                lookupCode: string | null;
+                fixes: Array<{
+                    code: string;
+                    message: string;
+                }>;
+            } | null;
+        };
+    };
+};
+
+export type PostApiV1ListingsByIdWithdrawResponse = PostApiV1ListingsByIdWithdrawResponses[keyof PostApiV1ListingsByIdWithdrawResponses];
+
+export type PostApiV1ListingsByIdRenewData = {
+    body: {
+        version: number;
+        title?: string | null;
+        description?: string | null;
+        /**
+         * Số tiền, đơn vị đồng
+         */
+        price?: number | null;
+        negotiable?: boolean;
+        delivery?: boolean;
+        showPhone?: boolean;
+        categoryId?: string | null;
+        attributes?: {
+            [key: string]: unknown;
+        };
+        provinceCode?: number | null;
+        wardCode?: number | null;
+        placement?: 'marketplace' | 'group_public' | 'members_only';
+        groupId?: string | null;
+        imageIds?: Array<string>;
+        badgeGroupId?: string | null;
+    };
+    headers?: {
+        'x-device-id'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/listings/{id}/renew';
+};
+
+export type PostApiV1ListingsByIdRenewErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1ListingsByIdRenewError = PostApiV1ListingsByIdRenewErrors[keyof PostApiV1ListingsByIdRenewErrors];
+
+export type PostApiV1ListingsByIdRenewResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            ownerId: string;
+            state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+            placement: 'marketplace' | 'group_public' | 'members_only';
+            groupId: string | null;
+            title: string | null;
+            description: string | null;
+            /**
+             * Số tiền, đơn vị đồng
+             */
+            price: number | null;
+            negotiable: boolean;
+            delivery: boolean;
+            showPhone: boolean;
+            categoryId: string | null;
+            templateVersion: number | null;
+            attributes: {
+                [key: string]: unknown;
+            };
+            provinceCode: number | null;
+            wardCode: number | null;
+            images: Array<{
+                id: string;
+                url: string;
+            }>;
+            badge: {
+                groupId: string;
+                name: string;
+            } | null;
+            firstLiveAt: string | null;
+            featuredUntil: string | null;
+            expiresAt: string | null;
+            createdAt: string;
+            updatedAt: string;
+            version: number;
+            unitId: string | null;
+            badgeGroupId: string | null;
+            hideReasons: Array<'account_locked' | 'account_deleted' | 'left_group' | 'removed_from_group' | 'group_banned' | 'group_locked' | 'category_disabled' | 'group_closed' | 'group_privatized' | 'detached_by_group' | 'reported'>;
+            restrictions: Array<'machine' | 'new_account' | 'strike' | 'strike_wave'>;
+            remainingMs: number | null;
+            renewal: 'early' | 'expired';
+            fault: 'mistake' | 'violation';
+            faultReason: string | null;
+            moveUntil: string | null;
+            machineNotice: {
+                kind: 'plain' | 'fraud' | 'limited';
+                message: string;
+                estimatedWait: string | null;
+                lookupCode: string | null;
+                fixes: Array<{
+                    code: string;
+                    message: string;
+                }>;
+            } | null;
+        };
+    };
+};
+
+export type PostApiV1ListingsByIdRenewResponse = PostApiV1ListingsByIdRenewResponses[keyof PostApiV1ListingsByIdRenewResponses];
+
+export type PostApiV1ListingsByIdSoldData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/listings/{id}/sold';
+};
+
+export type PostApiV1ListingsByIdSoldErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1ListingsByIdSoldError = PostApiV1ListingsByIdSoldErrors[keyof PostApiV1ListingsByIdSoldErrors];
+
+export type PostApiV1ListingsByIdSoldResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            ownerId: string;
+            state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+            placement: 'marketplace' | 'group_public' | 'members_only';
+            groupId: string | null;
+            title: string | null;
+            description: string | null;
+            /**
+             * Số tiền, đơn vị đồng
+             */
+            price: number | null;
+            negotiable: boolean;
+            delivery: boolean;
+            showPhone: boolean;
+            categoryId: string | null;
+            templateVersion: number | null;
+            attributes: {
+                [key: string]: unknown;
+            };
+            provinceCode: number | null;
+            wardCode: number | null;
+            images: Array<{
+                id: string;
+                url: string;
+            }>;
+            badge: {
+                groupId: string;
+                name: string;
+            } | null;
+            firstLiveAt: string | null;
+            featuredUntil: string | null;
+            expiresAt: string | null;
+            createdAt: string;
+            updatedAt: string;
+            version: number;
+            unitId: string | null;
+            badgeGroupId: string | null;
+            hideReasons: Array<'account_locked' | 'account_deleted' | 'left_group' | 'removed_from_group' | 'group_banned' | 'group_locked' | 'category_disabled' | 'group_closed' | 'group_privatized' | 'detached_by_group' | 'reported'>;
+            restrictions: Array<'machine' | 'new_account' | 'strike' | 'strike_wave'>;
+            remainingMs: number | null;
+            renewal: 'early' | 'expired';
+            fault: 'mistake' | 'violation';
+            faultReason: string | null;
+            moveUntil: string | null;
+            machineNotice: {
+                kind: 'plain' | 'fraud' | 'limited';
+                message: string;
+                estimatedWait: string | null;
+                lookupCode: string | null;
+                fixes: Array<{
+                    code: string;
+                    message: string;
+                }>;
+            } | null;
+        };
+    };
+};
+
+export type PostApiV1ListingsByIdSoldResponse = PostApiV1ListingsByIdSoldResponses[keyof PostApiV1ListingsByIdSoldResponses];
+
+export type PostApiV1ListingsByIdMoveToMarketplaceData = {
+    body: {
+        provinceCode?: number;
+        wardCode?: number;
+    };
+    headers?: {
+        'x-device-id'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/listings/{id}/move-to-marketplace';
+};
+
+export type PostApiV1ListingsByIdMoveToMarketplaceErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1ListingsByIdMoveToMarketplaceError = PostApiV1ListingsByIdMoveToMarketplaceErrors[keyof PostApiV1ListingsByIdMoveToMarketplaceErrors];
+
+export type PostApiV1ListingsByIdMoveToMarketplaceResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            ownerId: string;
+            state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+            placement: 'marketplace' | 'group_public' | 'members_only';
+            groupId: string | null;
+            title: string | null;
+            description: string | null;
+            /**
+             * Số tiền, đơn vị đồng
+             */
+            price: number | null;
+            negotiable: boolean;
+            delivery: boolean;
+            showPhone: boolean;
+            categoryId: string | null;
+            templateVersion: number | null;
+            attributes: {
+                [key: string]: unknown;
+            };
+            provinceCode: number | null;
+            wardCode: number | null;
+            images: Array<{
+                id: string;
+                url: string;
+            }>;
+            badge: {
+                groupId: string;
+                name: string;
+            } | null;
+            firstLiveAt: string | null;
+            featuredUntil: string | null;
+            expiresAt: string | null;
+            createdAt: string;
+            updatedAt: string;
+            version: number;
+            unitId: string | null;
+            badgeGroupId: string | null;
+            hideReasons: Array<'account_locked' | 'account_deleted' | 'left_group' | 'removed_from_group' | 'group_banned' | 'group_locked' | 'category_disabled' | 'group_closed' | 'group_privatized' | 'detached_by_group' | 'reported'>;
+            restrictions: Array<'machine' | 'new_account' | 'strike' | 'strike_wave'>;
+            remainingMs: number | null;
+            renewal: 'early' | 'expired';
+            fault: 'mistake' | 'violation';
+            faultReason: string | null;
+            moveUntil: string | null;
+            machineNotice: {
+                kind: 'plain' | 'fraud' | 'limited';
+                message: string;
+                estimatedWait: string | null;
+                lookupCode: string | null;
+                fixes: Array<{
+                    code: string;
+                    message: string;
+                }>;
+            } | null;
+        };
+    };
+};
+
+export type PostApiV1ListingsByIdMoveToMarketplaceResponse = PostApiV1ListingsByIdMoveToMarketplaceResponses[keyof PostApiV1ListingsByIdMoveToMarketplaceResponses];
+
+export type GetApiV1MeListingsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        cursor?: string;
+        limit?: number;
+        state?: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+    };
+    url: '/api/v1/me/listings';
+};
+
+export type GetApiV1MeListingsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeListingsError = GetApiV1MeListingsErrors[keyof GetApiV1MeListingsErrors];
+
+export type GetApiV1MeListingsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                ownerId: string;
+                state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+                placement: 'marketplace' | 'group_public' | 'members_only';
+                groupId: string | null;
+                title: string | null;
+                description: string | null;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                price: number | null;
+                negotiable: boolean;
+                delivery: boolean;
+                showPhone: boolean;
+                categoryId: string | null;
+                templateVersion: number | null;
+                attributes: {
+                    [key: string]: unknown;
+                };
+                provinceCode: number | null;
+                wardCode: number | null;
+                images: Array<{
+                    id: string;
+                    url: string;
+                }>;
+                badge: {
+                    groupId: string;
+                    name: string;
+                } | null;
+                firstLiveAt: string | null;
+                featuredUntil: string | null;
+                expiresAt: string | null;
+                createdAt: string;
+                updatedAt: string;
+                version: number;
+                unitId: string | null;
+                badgeGroupId: string | null;
+                hideReasons: Array<'account_locked' | 'account_deleted' | 'left_group' | 'removed_from_group' | 'group_banned' | 'group_locked' | 'category_disabled' | 'group_closed' | 'group_privatized' | 'detached_by_group' | 'reported'>;
+                restrictions: Array<'machine' | 'new_account' | 'strike' | 'strike_wave'>;
+                remainingMs: number | null;
+                renewal: 'early' | 'expired';
+                fault: 'mistake' | 'violation';
+                faultReason: string | null;
+                moveUntil: string | null;
+                machineNotice: {
+                    kind: 'plain' | 'fraud' | 'limited';
+                    message: string;
+                    estimatedWait: string | null;
+                    lookupCode: string | null;
+                    fixes: Array<{
+                        code: string;
+                        message: string;
+                    }>;
+                } | null;
+            }>;
+            nextCursor: string | null;
+        };
+    };
+};
+
+export type GetApiV1MeListingsResponse = GetApiV1MeListingsResponses[keyof GetApiV1MeListingsResponses];
+
+export type GetApiV1ListingsByIdSuggestionsData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/listings/{id}/suggestions';
+};
+
+export type GetApiV1ListingsByIdSuggestionsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1ListingsByIdSuggestionsError = GetApiV1ListingsByIdSuggestionsErrors[keyof GetApiV1ListingsByIdSuggestionsErrors];
+
+export type GetApiV1ListingsByIdSuggestionsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            id: string;
+            ownerId: string;
+            state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+            placement: 'marketplace' | 'group_public' | 'members_only';
+            groupId: string | null;
+            title: string | null;
+            description: string | null;
+            /**
+             * Số tiền, đơn vị đồng
+             */
+            price: number | null;
+            negotiable: boolean;
+            delivery: boolean;
+            showPhone: boolean;
+            categoryId: string | null;
+            templateVersion: number | null;
+            attributes: {
+                [key: string]: unknown;
+            };
+            provinceCode: number | null;
+            wardCode: number | null;
+            images: Array<{
+                id: string;
+                url: string;
+            }>;
+            badge: {
+                groupId: string;
+                name: string;
+            } | null;
+            firstLiveAt: string | null;
+            featuredUntil: string | null;
+            expiresAt: string | null;
+            createdAt: string;
+            updatedAt: string;
+        }>;
+    };
+};
+
+export type GetApiV1ListingsByIdSuggestionsResponse = GetApiV1ListingsByIdSuggestionsResponses[keyof GetApiV1ListingsByIdSuggestionsResponses];
+
+export type GetApiV1GroupsByGroupIdListingsData = {
+    body?: never;
+    path: {
+        groupId: string;
+    };
+    query?: {
+        cursor?: string;
+        limit?: number;
+        q?: string;
+    };
+    url: '/api/v1/groups/{groupId}/listings';
+};
+
+export type GetApiV1GroupsByGroupIdListingsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1GroupsByGroupIdListingsError = GetApiV1GroupsByGroupIdListingsErrors[keyof GetApiV1GroupsByGroupIdListingsErrors];
+
+export type GetApiV1GroupsByGroupIdListingsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                ownerId: string;
+                state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+                placement: 'marketplace' | 'group_public' | 'members_only';
+                groupId: string | null;
+                title: string | null;
+                description: string | null;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                price: number | null;
+                negotiable: boolean;
+                delivery: boolean;
+                showPhone: boolean;
+                categoryId: string | null;
+                templateVersion: number | null;
+                attributes: {
+                    [key: string]: unknown;
+                };
+                provinceCode: number | null;
+                wardCode: number | null;
+                images: Array<{
+                    id: string;
+                    url: string;
+                }>;
+                badge: {
+                    groupId: string;
+                    name: string;
+                } | null;
+                firstLiveAt: string | null;
+                featuredUntil: string | null;
+                expiresAt: string | null;
+                createdAt: string;
+                updatedAt: string;
+            }>;
+            nextCursor: string | null;
+        };
+    };
+};
+
+export type GetApiV1GroupsByGroupIdListingsResponse = GetApiV1GroupsByGroupIdListingsResponses[keyof GetApiV1GroupsByGroupIdListingsResponses];
+
+export type GetApiV1UsersByIdListingsData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: {
+        cursor?: string;
+        limit?: number;
+    };
+    url: '/api/v1/users/{id}/listings';
+};
+
+export type GetApiV1UsersByIdListingsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1UsersByIdListingsError = GetApiV1UsersByIdListingsErrors[keyof GetApiV1UsersByIdListingsErrors];
+
+export type GetApiV1UsersByIdListingsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                ownerId: string;
+                state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+                placement: 'marketplace' | 'group_public' | 'members_only';
+                groupId: string | null;
+                title: string | null;
+                description: string | null;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                price: number | null;
+                negotiable: boolean;
+                delivery: boolean;
+                showPhone: boolean;
+                categoryId: string | null;
+                templateVersion: number | null;
+                attributes: {
+                    [key: string]: unknown;
+                };
+                provinceCode: number | null;
+                wardCode: number | null;
+                images: Array<{
+                    id: string;
+                    url: string;
+                }>;
+                badge: {
+                    groupId: string;
+                    name: string;
+                } | null;
+                firstLiveAt: string | null;
+                featuredUntil: string | null;
+                expiresAt: string | null;
+                createdAt: string;
+                updatedAt: string;
+            }>;
+            nextCursor: string | null;
+        };
+    };
+};
+
+export type GetApiV1UsersByIdListingsResponse = GetApiV1UsersByIdListingsResponses[keyof GetApiV1UsersByIdListingsResponses];
+
+export type DeleteApiV1GroupsByGroupIdListingBadgesByListingIdData = {
+    body?: never;
+    path: {
+        groupId: string;
+        listingId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/listing-badges/{listingId}';
+};
+
+export type DeleteApiV1GroupsByGroupIdListingBadgesByListingIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1GroupsByGroupIdListingBadgesByListingIdError = DeleteApiV1GroupsByGroupIdListingBadgesByListingIdErrors[keyof DeleteApiV1GroupsByGroupIdListingBadgesByListingIdErrors];
+
+export type DeleteApiV1GroupsByGroupIdListingBadgesByListingIdResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1GroupsByGroupIdListingBadgesByListingIdResponse = DeleteApiV1GroupsByGroupIdListingBadgesByListingIdResponses[keyof DeleteApiV1GroupsByGroupIdListingBadgesByListingIdResponses];
+
+export type GetApiV1MeTrustData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/trust';
+};
+
+export type GetApiV1MeTrustErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeTrustError = GetApiV1MeTrustErrors[keyof GetApiV1MeTrustErrors];
+
+export type GetApiV1MeTrustResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            tier: 'T0' | 'T1' | 'T2' | 'T3';
+            countedClean: number;
+            configVersion: number;
+            next: {
+                tier: 'T0' | 'T1' | 'T2' | 'T3';
+                missingDays: number;
+                missingClean: number;
+            } | null;
+            quota: {
+                live: number;
+                liveCap: number;
+                submissionsLeft: number;
+                nextSubmissionAt: string | null;
+                fee: {
+                    amount: number;
+                    currency: 'xu';
+                };
+            };
+            cooldownUntil: string | null;
+            strikes: Array<{
+                id: string;
+                kind: 'normal' | 'severe' | 'serious';
+                status: 'active' | 'expired' | 'cancelled' | 'permanent' | 'lifted';
+                points: number;
+                inForce: boolean;
+                ruleCode: string;
+                ruleText: string;
+                issuedAt: string;
+                expiresAt: string | null;
+                remainingDays: number | null;
+                listingId: string | null;
+                cancelledAt: string | null;
+                cancelCause: 'appeal' | 'amnesty' | 'serious_cancel';
+                seriousDecision: 'permanent' | 'downgrade' | 'cancel';
+                appealable: boolean;
+                appealUntil: string | null;
+                appeal: {
+                    status: 'pending' | 'won' | 'lost' | 'closed';
+                    filedAt: string;
+                    decidedAt: string | null;
+                } | null;
+            }>;
+            strikePoints: number;
+            postingLockedUntil: string | null;
+            restricted: Array<{
+                id: string;
+                title: string | null;
+                restrictions: Array<'machine' | 'new_account' | 'strike' | 'strike_wave'>;
+            }>;
+            pending: Array<{
+                id: string;
+                title: string | null;
+                reason: string;
+                estimatedWait: string | null;
+                lookupCode: string | null;
+            }>;
+        };
+    };
+};
+
+export type GetApiV1MeTrustResponse = GetApiV1MeTrustResponses[keyof GetApiV1MeTrustResponses];
+
+export type GetApiV1MeStrikesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/strikes';
+};
+
+export type GetApiV1MeStrikesErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeStrikesError = GetApiV1MeStrikesErrors[keyof GetApiV1MeStrikesErrors];
+
+export type GetApiV1MeStrikesResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            id: string;
+            kind: 'normal' | 'severe' | 'serious';
+            status: 'active' | 'expired' | 'cancelled' | 'permanent' | 'lifted';
+            points: number;
+            inForce: boolean;
+            ruleCode: string;
+            ruleText: string;
+            issuedAt: string;
+            expiresAt: string | null;
+            remainingDays: number | null;
+            listingId: string | null;
+            cancelledAt: string | null;
+            cancelCause: 'appeal' | 'amnesty' | 'serious_cancel';
+            seriousDecision: 'permanent' | 'downgrade' | 'cancel';
+            appealable: boolean;
+            appealUntil: string | null;
+            appeal: {
+                status: 'pending' | 'won' | 'lost' | 'closed';
+                filedAt: string;
+                decidedAt: string | null;
+            } | null;
+        }>;
+    };
+};
+
+export type GetApiV1MeStrikesResponse = GetApiV1MeStrikesResponses[keyof GetApiV1MeStrikesResponses];
+
+export type PostApiV1MeStrikesByStrikeIdAppealData = {
+    body: {
+        statement: string;
+    };
+    path: {
+        strikeId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/strikes/{strikeId}/appeal';
+};
+
+export type PostApiV1MeStrikesByStrikeIdAppealErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1MeStrikesByStrikeIdAppealError = PostApiV1MeStrikesByStrikeIdAppealErrors[keyof PostApiV1MeStrikesByStrikeIdAppealErrors];
+
+export type PostApiV1MeStrikesByStrikeIdAppealResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            kind: 'normal' | 'severe' | 'serious';
+            status: 'active' | 'expired' | 'cancelled' | 'permanent' | 'lifted';
+            points: number;
+            inForce: boolean;
+            ruleCode: string;
+            ruleText: string;
+            issuedAt: string;
+            expiresAt: string | null;
+            remainingDays: number | null;
+            listingId: string | null;
+            cancelledAt: string | null;
+            cancelCause: 'appeal' | 'amnesty' | 'serious_cancel';
+            seriousDecision: 'permanent' | 'downgrade' | 'cancel';
+            appealable: boolean;
+            appealUntil: string | null;
+            appeal: {
+                status: 'pending' | 'won' | 'lost' | 'closed';
+                filedAt: string;
+                decidedAt: string | null;
+            } | null;
+        };
+    };
+};
+
+export type PostApiV1MeStrikesByStrikeIdAppealResponse = PostApiV1MeStrikesByStrikeIdAppealResponses[keyof PostApiV1MeStrikesByStrikeIdAppealResponses];
+
+export type PostApiV1SupportSeriousAppealCodeData = {
+    body: {
+        email: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/support/serious-appeal/code';
+};
+
+export type PostApiV1SupportSeriousAppealCodeErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1SupportSeriousAppealCodeError = PostApiV1SupportSeriousAppealCodeErrors[keyof PostApiV1SupportSeriousAppealCodeErrors];
+
+export type PostApiV1SupportSeriousAppealCodeResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: null;
+    };
+};
+
+export type PostApiV1SupportSeriousAppealCodeResponse = PostApiV1SupportSeriousAppealCodeResponses[keyof PostApiV1SupportSeriousAppealCodeResponses];
+
+export type PostApiV1SupportSeriousAppealData = {
+    body: {
+        email: string;
+        code: string;
+        statement: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/support/serious-appeal';
+};
+
+export type PostApiV1SupportSeriousAppealErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1SupportSeriousAppealError = PostApiV1SupportSeriousAppealErrors[keyof PostApiV1SupportSeriousAppealErrors];
+
+export type PostApiV1SupportSeriousAppealResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            strikeId: string;
+            ruleText: string;
+            issuedAt: string;
+            appealUntil: string;
+            appealStatus: 'pending' | 'won' | 'lost' | 'closed';
+        };
+    };
+};
+
+export type PostApiV1SupportSeriousAppealResponse = PostApiV1SupportSeriousAppealResponses[keyof PostApiV1SupportSeriousAppealResponses];
+
+export type PostApiV1OpsTrustAccountsByAccountIdAmnestyData = {
+    body: {
+        strikeIds: Array<string>;
+        reason: string;
+    };
+    path: {
+        accountId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/trust/accounts/{accountId}/amnesty';
+};
+
+export type PostApiV1OpsTrustAccountsByAccountIdAmnestyErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsTrustAccountsByAccountIdAmnestyError = PostApiV1OpsTrustAccountsByAccountIdAmnestyErrors[keyof PostApiV1OpsTrustAccountsByAccountIdAmnestyErrors];
+
+export type PostApiV1OpsTrustAccountsByAccountIdAmnestyResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            id: string;
+            kind: 'normal' | 'severe' | 'serious';
+            status: 'active' | 'expired' | 'cancelled' | 'permanent' | 'lifted';
+            points: number;
+            inForce: boolean;
+            ruleCode: string;
+            ruleText: string;
+            issuedAt: string;
+            expiresAt: string | null;
+            remainingDays: number | null;
+            listingId: string | null;
+            cancelledAt: string | null;
+            cancelCause: 'appeal' | 'amnesty' | 'serious_cancel';
+            seriousDecision: 'permanent' | 'downgrade' | 'cancel';
+            appealable: boolean;
+            appealUntil: string | null;
+            appeal: {
+                status: 'pending' | 'won' | 'lost' | 'closed';
+                filedAt: string;
+                decidedAt: string | null;
+            } | null;
+        }>;
+    };
+};
+
+export type PostApiV1OpsTrustAccountsByAccountIdAmnestyResponse = PostApiV1OpsTrustAccountsByAccountIdAmnestyResponses[keyof PostApiV1OpsTrustAccountsByAccountIdAmnestyResponses];
+
+export type PostApiV1OpsTrustStrikesByStrikeIdLiftData = {
+    body?: never;
+    path: {
+        strikeId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/trust/strikes/{strikeId}/lift';
+};
+
+export type PostApiV1OpsTrustStrikesByStrikeIdLiftErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsTrustStrikesByStrikeIdLiftError = PostApiV1OpsTrustStrikesByStrikeIdLiftErrors[keyof PostApiV1OpsTrustStrikesByStrikeIdLiftErrors];
+
+export type PostApiV1OpsTrustStrikesByStrikeIdLiftResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            kind: 'normal' | 'severe' | 'serious';
+            status: 'active' | 'expired' | 'cancelled' | 'permanent' | 'lifted';
+            points: number;
+            inForce: boolean;
+            ruleCode: string;
+            ruleText: string;
+            issuedAt: string;
+            expiresAt: string | null;
+            remainingDays: number | null;
+            listingId: string | null;
+            cancelledAt: string | null;
+            cancelCause: 'appeal' | 'amnesty' | 'serious_cancel';
+            seriousDecision: 'permanent' | 'downgrade' | 'cancel';
+            appealable: boolean;
+            appealUntil: string | null;
+            appeal: {
+                status: 'pending' | 'won' | 'lost' | 'closed';
+                filedAt: string;
+                decidedAt: string | null;
+            } | null;
+        };
+    };
+};
+
+export type PostApiV1OpsTrustStrikesByStrikeIdLiftResponse = PostApiV1OpsTrustStrikesByStrikeIdLiftResponses[keyof PostApiV1OpsTrustStrikesByStrikeIdLiftResponses];
+
+export type GetApiV1OpsTrustAccountsByAccountIdStrikesData = {
+    body?: never;
+    path: {
+        accountId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/trust/accounts/{accountId}/strikes';
+};
+
+export type GetApiV1OpsTrustAccountsByAccountIdStrikesErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsTrustAccountsByAccountIdStrikesError = GetApiV1OpsTrustAccountsByAccountIdStrikesErrors[keyof GetApiV1OpsTrustAccountsByAccountIdStrikesErrors];
+
+export type GetApiV1OpsTrustAccountsByAccountIdStrikesResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            id: string;
+            kind: 'normal' | 'severe' | 'serious';
+            status: 'active' | 'expired' | 'cancelled' | 'permanent' | 'lifted';
+            points: number;
+            inForce: boolean;
+            ruleCode: string;
+            ruleText: string;
+            issuedAt: string;
+            expiresAt: string | null;
+            remainingDays: number | null;
+            listingId: string | null;
+            cancelledAt: string | null;
+            cancelCause: 'appeal' | 'amnesty' | 'serious_cancel';
+            seriousDecision: 'permanent' | 'downgrade' | 'cancel';
+            appealable: boolean;
+            appealUntil: string | null;
+            appeal: {
+                status: 'pending' | 'won' | 'lost' | 'closed';
+                filedAt: string;
+                decidedAt: string | null;
+            } | null;
+        }>;
+    };
+};
+
+export type GetApiV1OpsTrustAccountsByAccountIdStrikesResponse = GetApiV1OpsTrustAccountsByAccountIdStrikesResponses[keyof GetApiV1OpsTrustAccountsByAccountIdStrikesResponses];
+
+export type PostApiV1OpsTrustStrikesByStrikeIdCommentsData = {
+    body: {
+        body: string;
+    };
+    path: {
+        strikeId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/trust/strikes/{strikeId}/comments';
+};
+
+export type PostApiV1OpsTrustStrikesByStrikeIdCommentsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsTrustStrikesByStrikeIdCommentsError = PostApiV1OpsTrustStrikesByStrikeIdCommentsErrors[keyof PostApiV1OpsTrustStrikesByStrikeIdCommentsErrors];
+
+export type PostApiV1OpsTrustStrikesByStrikeIdCommentsResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            strikeId: string;
+            authorId: string;
+            body: string;
+            createdAt: string;
+        };
+    };
+};
+
+export type PostApiV1OpsTrustStrikesByStrikeIdCommentsResponse = PostApiV1OpsTrustStrikesByStrikeIdCommentsResponses[keyof PostApiV1OpsTrustStrikesByStrikeIdCommentsResponses];
+
+export type GetApiV1OpsTrustRuleArticlesData = {
+    body?: never;
+    path?: never;
+    query?: {
+        includeInactive?: string;
+    };
+    url: '/api/v1/ops/trust/rule-articles';
+};
+
+export type GetApiV1OpsTrustRuleArticlesErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsTrustRuleArticlesError = GetApiV1OpsTrustRuleArticlesErrors[keyof GetApiV1OpsTrustRuleArticlesErrors];
+
+export type GetApiV1OpsTrustRuleArticlesResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            id: string;
+            code: string;
+            title: string;
+            text: string;
+            active: boolean;
+            sort: number;
+        }>;
+    };
+};
+
+export type GetApiV1OpsTrustRuleArticlesResponse = GetApiV1OpsTrustRuleArticlesResponses[keyof GetApiV1OpsTrustRuleArticlesResponses];
+
+export type PostApiV1OpsTrustRuleArticlesData = {
+    body: {
+        code: string;
+        title: string;
+        text: string;
+        sort?: number;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/ops/trust/rule-articles';
+};
+
+export type PostApiV1OpsTrustRuleArticlesErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsTrustRuleArticlesError = PostApiV1OpsTrustRuleArticlesErrors[keyof PostApiV1OpsTrustRuleArticlesErrors];
+
+export type PostApiV1OpsTrustRuleArticlesResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            code: string;
+            title: string;
+            text: string;
+            active: boolean;
+            sort: number;
+        };
+    };
+};
+
+export type PostApiV1OpsTrustRuleArticlesResponse = PostApiV1OpsTrustRuleArticlesResponses[keyof PostApiV1OpsTrustRuleArticlesResponses];
+
+export type PatchApiV1OpsTrustRuleArticlesByArticleIdData = {
+    body: {
+        title?: string;
+        text?: string;
+        active?: boolean;
+        sort?: number;
+    };
+    path: {
+        articleId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/trust/rule-articles/{articleId}';
+};
+
+export type PatchApiV1OpsTrustRuleArticlesByArticleIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PatchApiV1OpsTrustRuleArticlesByArticleIdError = PatchApiV1OpsTrustRuleArticlesByArticleIdErrors[keyof PatchApiV1OpsTrustRuleArticlesByArticleIdErrors];
+
+export type PatchApiV1OpsTrustRuleArticlesByArticleIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            code: string;
+            title: string;
+            text: string;
+            active: boolean;
+            sort: number;
+        };
+    };
+};
+
+export type PatchApiV1OpsTrustRuleArticlesByArticleIdResponse = PatchApiV1OpsTrustRuleArticlesByArticleIdResponses[keyof PatchApiV1OpsTrustRuleArticlesByArticleIdResponses];
+
+export type GetApiV1OpsScreeningRulesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/ops/screening/rules';
+};
+
+export type GetApiV1OpsScreeningRulesErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsScreeningRulesError = GetApiV1OpsScreeningRulesErrors[keyof GetApiV1OpsScreeningRulesErrors];
+
+export type GetApiV1OpsScreeningRulesResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            version: number;
+            rules: Array<{
+                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap';
+                label: string;
+                kind: 'signal' | 'gate';
+                weight: number;
+                mode: 'on' | 'trial' | 'off';
+            }>;
+            overrides: Array<{
+                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap';
+                categoryId: string;
+                weight: number | null;
+                mode: 'on' | 'trial' | 'off';
+            }>;
+            bands: Array<{
+                categoryId: string;
+                mediumFrom: number;
+                highFrom: number;
+            }>;
+            defaultBands: {
+                mediumFrom: number;
+                highFrom: number;
+            };
+        };
+    };
+};
+
+export type GetApiV1OpsScreeningRulesResponse = GetApiV1OpsScreeningRulesResponses[keyof GetApiV1OpsScreeningRulesResponses];
+
+export type PatchApiV1OpsScreeningRulesByCodeData = {
+    body: {
+        weight?: number;
+        mode?: 'on' | 'trial' | 'off';
+    };
+    path: {
+        code: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/screening/rules/{code}';
+};
+
+export type PatchApiV1OpsScreeningRulesByCodeErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PatchApiV1OpsScreeningRulesByCodeError = PatchApiV1OpsScreeningRulesByCodeErrors[keyof PatchApiV1OpsScreeningRulesByCodeErrors];
+
+export type PatchApiV1OpsScreeningRulesByCodeResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            version: number;
+            rules: Array<{
+                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap';
+                label: string;
+                kind: 'signal' | 'gate';
+                weight: number;
+                mode: 'on' | 'trial' | 'off';
+            }>;
+            overrides: Array<{
+                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap';
+                categoryId: string;
+                weight: number | null;
+                mode: 'on' | 'trial' | 'off';
+            }>;
+            bands: Array<{
+                categoryId: string;
+                mediumFrom: number;
+                highFrom: number;
+            }>;
+            defaultBands: {
+                mediumFrom: number;
+                highFrom: number;
+            };
+        };
+    };
+};
+
+export type PatchApiV1OpsScreeningRulesByCodeResponse = PatchApiV1OpsScreeningRulesByCodeResponses[keyof PatchApiV1OpsScreeningRulesByCodeResponses];
+
+export type DeleteApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdData = {
+    body?: never;
+    path: {
+        code: string;
+        categoryId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/screening/rules/{code}/categories/{categoryId}';
+};
+
+export type DeleteApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdError = DeleteApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdErrors[keyof DeleteApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdErrors];
+
+export type DeleteApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdResponse = DeleteApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdResponses[keyof DeleteApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdResponses];
+
+export type PutApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdData = {
+    body: {
+        weight?: number;
+        mode?: 'on' | 'trial' | 'off';
+    };
+    path: {
+        code: string;
+        categoryId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/screening/rules/{code}/categories/{categoryId}';
+};
+
+export type PutApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PutApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdError = PutApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdErrors[keyof PutApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdErrors];
+
+export type PutApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            version: number;
+            rules: Array<{
+                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap';
+                label: string;
+                kind: 'signal' | 'gate';
+                weight: number;
+                mode: 'on' | 'trial' | 'off';
+            }>;
+            overrides: Array<{
+                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap';
+                categoryId: string;
+                weight: number | null;
+                mode: 'on' | 'trial' | 'off';
+            }>;
+            bands: Array<{
+                categoryId: string;
+                mediumFrom: number;
+                highFrom: number;
+            }>;
+            defaultBands: {
+                mediumFrom: number;
+                highFrom: number;
+            };
+        };
+    };
+};
+
+export type PutApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdResponse = PutApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdResponses[keyof PutApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdResponses];
+
+export type PutApiV1OpsScreeningBandsByCategoryIdData = {
+    body: {
+        mediumFrom: number;
+        highFrom: number;
+    };
+    path: {
+        categoryId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/screening/bands/{categoryId}';
+};
+
+export type PutApiV1OpsScreeningBandsByCategoryIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PutApiV1OpsScreeningBandsByCategoryIdError = PutApiV1OpsScreeningBandsByCategoryIdErrors[keyof PutApiV1OpsScreeningBandsByCategoryIdErrors];
+
+export type PutApiV1OpsScreeningBandsByCategoryIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            version: number;
+            rules: Array<{
+                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap';
+                label: string;
+                kind: 'signal' | 'gate';
+                weight: number;
+                mode: 'on' | 'trial' | 'off';
+            }>;
+            overrides: Array<{
+                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap';
+                categoryId: string;
+                weight: number | null;
+                mode: 'on' | 'trial' | 'off';
+            }>;
+            bands: Array<{
+                categoryId: string;
+                mediumFrom: number;
+                highFrom: number;
+            }>;
+            defaultBands: {
+                mediumFrom: number;
+                highFrom: number;
+            };
+        };
+    };
+};
+
+export type PutApiV1OpsScreeningBandsByCategoryIdResponse = PutApiV1OpsScreeningBandsByCategoryIdResponses[keyof PutApiV1OpsScreeningBandsByCategoryIdResponses];
+
+export type GetApiV1OpsScreeningPhrasesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/ops/screening/phrases';
+};
+
+export type GetApiV1OpsScreeningPhrasesErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsScreeningPhrasesError = GetApiV1OpsScreeningPhrasesErrors[keyof GetApiV1OpsScreeningPhrasesErrors];
+
+export type GetApiV1OpsScreeningPhrasesResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            id: string;
+            text: string;
+            level: 'certain' | 'ambiguous';
+            mode: 'on' | 'trial' | 'off';
+            exceptions: Array<string>;
+            trialEndsAt: string | null;
+            activatedAt: string | null;
+            activationReason: string | null;
+            createdAt: string;
+        }>;
+    };
+};
+
+export type GetApiV1OpsScreeningPhrasesResponse = GetApiV1OpsScreeningPhrasesResponses[keyof GetApiV1OpsScreeningPhrasesResponses];
+
+export type PostApiV1OpsScreeningPhrasesData = {
+    body: {
+        text: string;
+        level: 'certain' | 'ambiguous';
+        exceptions?: Array<string>;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/ops/screening/phrases';
+};
+
+export type PostApiV1OpsScreeningPhrasesErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsScreeningPhrasesError = PostApiV1OpsScreeningPhrasesErrors[keyof PostApiV1OpsScreeningPhrasesErrors];
+
+export type PostApiV1OpsScreeningPhrasesResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            text: string;
+            level: 'certain' | 'ambiguous';
+            mode: 'on' | 'trial' | 'off';
+            exceptions: Array<string>;
+            trialEndsAt: string | null;
+            activatedAt: string | null;
+            activationReason: string | null;
+            createdAt: string;
+        };
+    };
+};
+
+export type PostApiV1OpsScreeningPhrasesResponse = PostApiV1OpsScreeningPhrasesResponses[keyof PostApiV1OpsScreeningPhrasesResponses];
+
+export type PatchApiV1OpsScreeningPhrasesByIdData = {
+    body: {
+        level?: 'certain' | 'ambiguous';
+        exceptions?: Array<string>;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/screening/phrases/{id}';
+};
+
+export type PatchApiV1OpsScreeningPhrasesByIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PatchApiV1OpsScreeningPhrasesByIdError = PatchApiV1OpsScreeningPhrasesByIdErrors[keyof PatchApiV1OpsScreeningPhrasesByIdErrors];
+
+export type PatchApiV1OpsScreeningPhrasesByIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            text: string;
+            level: 'certain' | 'ambiguous';
+            mode: 'on' | 'trial' | 'off';
+            exceptions: Array<string>;
+            trialEndsAt: string | null;
+            activatedAt: string | null;
+            activationReason: string | null;
+            createdAt: string;
+        };
+    };
+};
+
+export type PatchApiV1OpsScreeningPhrasesByIdResponse = PatchApiV1OpsScreeningPhrasesByIdResponses[keyof PatchApiV1OpsScreeningPhrasesByIdResponses];
+
+export type PostApiV1OpsScreeningPhrasesByIdActivateData = {
+    body: {
+        reason?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/screening/phrases/{id}/activate';
+};
+
+export type PostApiV1OpsScreeningPhrasesByIdActivateErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsScreeningPhrasesByIdActivateError = PostApiV1OpsScreeningPhrasesByIdActivateErrors[keyof PostApiV1OpsScreeningPhrasesByIdActivateErrors];
+
+export type PostApiV1OpsScreeningPhrasesByIdActivateResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            text: string;
+            level: 'certain' | 'ambiguous';
+            mode: 'on' | 'trial' | 'off';
+            exceptions: Array<string>;
+            trialEndsAt: string | null;
+            activatedAt: string | null;
+            activationReason: string | null;
+            createdAt: string;
+        };
+    };
+};
+
+export type PostApiV1OpsScreeningPhrasesByIdActivateResponse = PostApiV1OpsScreeningPhrasesByIdActivateResponses[keyof PostApiV1OpsScreeningPhrasesByIdActivateResponses];
+
+export type PostApiV1OpsScreeningPhrasesByIdDeactivateData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/screening/phrases/{id}/deactivate';
+};
+
+export type PostApiV1OpsScreeningPhrasesByIdDeactivateErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsScreeningPhrasesByIdDeactivateError = PostApiV1OpsScreeningPhrasesByIdDeactivateErrors[keyof PostApiV1OpsScreeningPhrasesByIdDeactivateErrors];
+
+export type PostApiV1OpsScreeningPhrasesByIdDeactivateResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            text: string;
+            level: 'certain' | 'ambiguous';
+            mode: 'on' | 'trial' | 'off';
+            exceptions: Array<string>;
+            trialEndsAt: string | null;
+            activatedAt: string | null;
+            activationReason: string | null;
+            createdAt: string;
+        };
+    };
+};
+
+export type PostApiV1OpsScreeningPhrasesByIdDeactivateResponse = PostApiV1OpsScreeningPhrasesByIdDeactivateResponses[keyof PostApiV1OpsScreeningPhrasesByIdDeactivateResponses];
+
+export type GetApiV1OpsScreeningWhitelistData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/ops/screening/whitelist';
+};
+
+export type GetApiV1OpsScreeningWhitelistErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsScreeningWhitelistError = GetApiV1OpsScreeningWhitelistErrors[keyof GetApiV1OpsScreeningWhitelistErrors];
+
+export type GetApiV1OpsScreeningWhitelistResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            id: string;
+            sourceImageId: string;
+            addedBy: string;
+            addedAt: string;
+        }>;
+    };
+};
+
+export type GetApiV1OpsScreeningWhitelistResponse = GetApiV1OpsScreeningWhitelistResponses[keyof GetApiV1OpsScreeningWhitelistResponses];
+
+export type PostApiV1OpsScreeningWhitelistData = {
+    body: {
+        imageId: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/ops/screening/whitelist';
+};
+
+export type PostApiV1OpsScreeningWhitelistErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsScreeningWhitelistError = PostApiV1OpsScreeningWhitelistErrors[keyof PostApiV1OpsScreeningWhitelistErrors];
+
+export type PostApiV1OpsScreeningWhitelistResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            sourceImageId: string;
+            addedBy: string;
+            addedAt: string;
+        };
+    };
+};
+
+export type PostApiV1OpsScreeningWhitelistResponse = PostApiV1OpsScreeningWhitelistResponses[keyof PostApiV1OpsScreeningWhitelistResponses];
+
+export type DeleteApiV1OpsScreeningWhitelistByIdData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/screening/whitelist/{id}';
+};
+
+export type DeleteApiV1OpsScreeningWhitelistByIdErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1OpsScreeningWhitelistByIdError = DeleteApiV1OpsScreeningWhitelistByIdErrors[keyof DeleteApiV1OpsScreeningWhitelistByIdErrors];
+
+export type DeleteApiV1OpsScreeningWhitelistByIdResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1OpsScreeningWhitelistByIdResponse = DeleteApiV1OpsScreeningWhitelistByIdResponses[keyof DeleteApiV1OpsScreeningWhitelistByIdResponses];
+
+export type PutApiV1OpsScreeningCategoriesByCategoryIdKeywordsData = {
+    body: {
+        keywords: Array<string>;
+    };
+    path: {
+        categoryId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/screening/categories/{categoryId}/keywords';
+};
+
+export type PutApiV1OpsScreeningCategoriesByCategoryIdKeywordsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PutApiV1OpsScreeningCategoriesByCategoryIdKeywordsError = PutApiV1OpsScreeningCategoriesByCategoryIdKeywordsErrors[keyof PutApiV1OpsScreeningCategoriesByCategoryIdKeywordsErrors];
+
+export type PutApiV1OpsScreeningCategoriesByCategoryIdKeywordsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            categoryId: string;
+            keywords: Array<string>;
+        };
+    };
+};
+
+export type PutApiV1OpsScreeningCategoriesByCategoryIdKeywordsResponse = PutApiV1OpsScreeningCategoriesByCategoryIdKeywordsResponses[keyof PutApiV1OpsScreeningCategoriesByCategoryIdKeywordsResponses];
+
+export type GetApiV1OpsScreeningLookupsByCodeData = {
+    body?: never;
+    path: {
+        code: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/screening/lookups/{code}';
+};
+
+export type GetApiV1OpsScreeningLookupsByCodeErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsScreeningLookupsByCodeError = GetApiV1OpsScreeningLookupsByCodeErrors[keyof GetApiV1OpsScreeningLookupsByCodeErrors];
+
+export type GetApiV1OpsScreeningLookupsByCodeResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            lookupCode: string;
+            listingId: string;
+            listingVersion: number;
+            accountId: string;
+            trigger: 'submission' | 'recall';
+            decidedAt: string;
+            outcome: 'pass_full' | 'pass_limited' | 'hold';
+            cause: 'score' | 'gate' | 'always_manual' | 'device' | 'error' | 'timeout';
+            score: number | null;
+            band: 'low' | 'medium' | 'high';
+            tier: 'T0' | 'T1' | 'T2' | 'T3';
+            ruleVersion: number;
+            configVersion: number;
+            hits: Array<{
+                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap';
+                label: string;
+                weight: number;
+                mode: 'on' | 'trial';
+                refs: Array<string>;
+                phrases: Array<{
+                    id: string;
+                    text: string;
+                }>;
+            }>;
+            deviceFlags: Array<{
+                kind: 'many_accounts_on_device' | 'device_of_locked_account' | 'device_of_struck_account';
+                label: string;
+                flagLookupCode: string | null;
+            }>;
+        };
+    };
+};
+
+export type GetApiV1OpsScreeningLookupsByCodeResponse = GetApiV1OpsScreeningLookupsByCodeResponses[keyof GetApiV1OpsScreeningLookupsByCodeResponses];
+
+export type GetApiV1OpsReviewTasksData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number;
+        limit?: number;
+        queue?: number;
+        atMaster?: string;
+    };
+    url: '/api/v1/ops/review/tasks';
+};
+
+export type GetApiV1OpsReviewTasksErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsReviewTasksError = GetApiV1OpsReviewTasksErrors[keyof GetApiV1OpsReviewTasksErrors];
+
+export type GetApiV1OpsReviewTasksResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                subjectKind: 'listing' | 'account' | 'strike';
+                listingId: string | null;
+                accountId: string | null;
+                strikeId: string | null;
+                title: string | null;
+                queue: number;
+                reasons: Array<'machine_hold' | 'machine_restricted' | 'group_escalation' | 'sample_risk' | 'sample_reviewer' | 'report' | 'report_severe' | 'appeal' | 'serious_strike' | 'permanent_review'>;
+                dueAt: string;
+                overdue: boolean;
+                level: 'unit_moderators' | 'group_moderators' | 'group_owner' | 'category_staff' | 'safety_staff' | 'master';
+                categoryId: string | null;
+                groupId: string | null;
+                claim: {
+                    state: 'free' | 'mine' | 'taken';
+                    expiresAt: string | null;
+                };
+            }>;
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    };
+};
+
+export type GetApiV1OpsReviewTasksResponse = GetApiV1OpsReviewTasksResponses[keyof GetApiV1OpsReviewTasksResponses];
+
+export type GetApiV1OpsReviewTasksByTaskIdData = {
+    body?: never;
+    path: {
+        taskId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/review/tasks/{taskId}';
+};
+
+export type GetApiV1OpsReviewTasksByTaskIdErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsReviewTasksByTaskIdError = GetApiV1OpsReviewTasksByTaskIdErrors[keyof GetApiV1OpsReviewTasksByTaskIdErrors];
+
+export type GetApiV1OpsReviewTasksByTaskIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            subjectKind: 'listing' | 'account' | 'strike';
+            listingId: string | null;
+            accountId: string | null;
+            strikeId: string | null;
+            title: string | null;
+            queue: number;
+            reasons: Array<'machine_hold' | 'machine_restricted' | 'group_escalation' | 'sample_risk' | 'sample_reviewer' | 'report' | 'report_severe' | 'appeal' | 'serious_strike' | 'permanent_review'>;
+            dueAt: string;
+            overdue: boolean;
+            level: 'unit_moderators' | 'group_moderators' | 'group_owner' | 'category_staff' | 'safety_staff' | 'master';
+            categoryId: string | null;
+            groupId: string | null;
+            claim: {
+                state: 'free' | 'mine' | 'taken';
+                expiresAt: string | null;
+            };
+            listing: {
+                id: string;
+                ownerId: string;
+                state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+                placement: 'marketplace' | 'group_public' | 'members_only';
+                groupId: string | null;
+                title: string | null;
+                description: string | null;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                price: number | null;
+                negotiable: boolean;
+                delivery: boolean;
+                showPhone: boolean;
+                categoryId: string | null;
+                templateVersion: number | null;
+                attributes: {
+                    [key: string]: unknown;
+                };
+                provinceCode: number | null;
+                wardCode: number | null;
+                images: Array<{
+                    id: string;
+                    url: string;
+                }>;
+                badge: {
+                    groupId: string;
+                    name: string;
+                } | null;
+                firstLiveAt: string | null;
+                featuredUntil: string | null;
+                expiresAt: string | null;
+                createdAt: string;
+                updatedAt: string;
+                version: number;
+                unitId: string | null;
+                badgeGroupId: string | null;
+                hideReasons: Array<'account_locked' | 'account_deleted' | 'left_group' | 'removed_from_group' | 'group_banned' | 'group_locked' | 'category_disabled' | 'group_closed' | 'group_privatized' | 'detached_by_group' | 'reported'>;
+                restrictions: Array<'machine' | 'new_account' | 'strike' | 'strike_wave'>;
+                remainingMs: number | null;
+                renewal: 'early' | 'expired';
+                fault: 'mistake' | 'violation';
+                faultReason: string | null;
+                moveUntil: string | null;
+                machineNotice: {
+                    kind: 'plain' | 'fraud' | 'limited';
+                    message: string;
+                    estimatedWait: string | null;
+                    lookupCode: string | null;
+                    fixes: Array<{
+                        code: string;
+                        message: string;
+                    }>;
+                } | null;
+            } | null;
+            listingDeleted: boolean;
+            machine: {
+                listingVersion: number;
+                outcome: 'pass_full' | 'pass_limited' | 'hold';
+                cause: string | null;
+                score: number | null;
+                band: string | null;
+                tier: 'T0' | 'T1' | 'T2' | 'T3';
+                hits: Array<string>;
+            } | null;
+            seller: {
+                accountId: string;
+                displayName: string | null;
+                tier: 'T0' | 'T1' | 'T2' | 'T3';
+                cleanListings: number;
+                strikes: Array<{
+                    id: string;
+                    kind: 'normal' | 'severe' | 'serious';
+                    status: 'active' | 'expired' | 'cancelled' | 'permanent' | 'lifted';
+                    points: number;
+                    inForce: boolean;
+                    ruleCode: string;
+                    ruleText: string;
+                    issuedAt: string;
+                    expiresAt: string | null;
+                    remainingDays: number | null;
+                    listingId: string | null;
+                    cancelledAt: string | null;
+                    cancelCause: 'appeal' | 'amnesty' | 'serious_cancel';
+                    seriousDecision: 'permanent' | 'downgrade' | 'cancel';
+                    appealable: boolean;
+                    appealUntil: string | null;
+                    appeal: {
+                        status: 'pending' | 'won' | 'lost' | 'closed';
+                        filedAt: string;
+                        decidedAt: string | null;
+                    } | null;
+                }>;
+            };
+            duplicates: Array<{
+                imageId: string;
+                matchImageId: string;
+                accountId: string;
+                displayName: string | null;
+                listingId: string | null;
+            }>;
+            sharedDeviceAccounts: Array<{
+                accountId: string;
+                displayName: string | null;
+            }>;
+            escalation: {
+                by: string;
+                note: string;
+            } | null;
+            reports: Array<{
+                reportId: string;
+                subjectKind: 'listing' | 'account';
+                listingId: string | null;
+                status: 'open' | 'upheld' | 'dismissed';
+                severe: boolean;
+                autoHidden: boolean;
+                reporterCount: number;
+                entries: Array<{
+                    category: 'fraud' | 'misinformation' | 'harassment' | 'prohibited' | 'other';
+                    reportedAt: string;
+                    conversationId: string | null;
+                }>;
+                createdAt: string;
+                decidedAt: string | null;
+            }>;
+            strike: {
+                id: string;
+                kind: 'normal' | 'severe' | 'serious';
+                status: 'active' | 'expired' | 'cancelled' | 'permanent' | 'lifted';
+                points: number;
+                inForce: boolean;
+                ruleCode: string;
+                ruleText: string;
+                issuedAt: string;
+                expiresAt: string | null;
+                remainingDays: number | null;
+                listingId: string | null;
+                cancelledAt: string | null;
+                cancelCause: 'appeal' | 'amnesty' | 'serious_cancel';
+                seriousDecision: 'permanent' | 'downgrade' | 'cancel';
+                appealable: boolean;
+                appealUntil: string | null;
+                appeal: {
+                    status: 'pending' | 'won' | 'lost' | 'closed';
+                    filedAt: string;
+                    decidedAt: string | null;
+                } | null;
+                accountId: string;
+                issuedBy: string;
+                issuedByRole: 'master' | 'staff' | 'moderator' | 'owner';
+                categoryId: string | null;
+                fromReport: boolean;
+                statement: string | null;
+                comments: Array<{
+                    id: string;
+                    authorId: string;
+                    authorName: string | null;
+                    body: string;
+                    createdAt: string;
+                }>;
+                permanentReviewAt: string | null;
+            } | null;
+            conversations: Array<{
+                id: string;
+                listingId: string;
+                buyerId: string;
+                sellerId: string;
+                messages: Array<{
+                    id: string;
+                    senderId: string;
+                    body: string;
+                    flagged: boolean;
+                    createdAt: string;
+                }>;
+            }>;
+        };
+    };
+};
+
+export type GetApiV1OpsReviewTasksByTaskIdResponse = GetApiV1OpsReviewTasksByTaskIdResponses[keyof GetApiV1OpsReviewTasksByTaskIdResponses];
+
+export type PostApiV1OpsReviewTasksByTaskIdClaimData = {
+    body?: never;
+    path: {
+        taskId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/review/tasks/{taskId}/claim';
+};
+
+export type PostApiV1OpsReviewTasksByTaskIdClaimErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsReviewTasksByTaskIdClaimError = PostApiV1OpsReviewTasksByTaskIdClaimErrors[keyof PostApiV1OpsReviewTasksByTaskIdClaimErrors];
+
+export type PostApiV1OpsReviewTasksByTaskIdClaimResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            taskId: string;
+            claimExpiresAt: string;
+            listingVersion: number | null;
+        };
+    };
+};
+
+export type PostApiV1OpsReviewTasksByTaskIdClaimResponse = PostApiV1OpsReviewTasksByTaskIdClaimResponses[keyof PostApiV1OpsReviewTasksByTaskIdClaimResponses];
+
+export type PostApiV1OpsReviewTasksByTaskIdDecisionData = {
+    body: {
+        outcome: 'pass' | 'mistake' | 'detach' | 'dismiss' | 'keep' | 'violation';
+        machineJudgment?: 'machine_right' | 'machine_overreach';
+        reasonTemplateId?: string;
+        report?: {
+            verdict: 'upheld' | 'dismissed';
+            banFromGroup?: boolean;
+            lockAccount?: boolean;
+        };
+        strike?: {
+            kind: 'normal' | 'severe' | 'serious';
+            ruleArticleId: string;
+        };
+        appeal?: {
+            verdict: 'won' | 'lost';
+        };
+        serious?: {
+            decision: 'permanent' | 'downgrade' | 'cancel';
+        };
+        permanent?: {
+            decision: 'keep' | 'lift';
+        };
+        platformViolation?: boolean;
+        note?: string;
+    };
+    path: {
+        taskId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/review/tasks/{taskId}/decision';
+};
+
+export type PostApiV1OpsReviewTasksByTaskIdDecisionErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsReviewTasksByTaskIdDecisionError = PostApiV1OpsReviewTasksByTaskIdDecisionErrors[keyof PostApiV1OpsReviewTasksByTaskIdDecisionErrors];
+
+export type PostApiV1OpsReviewTasksByTaskIdDecisionResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            decisionId: string;
+            outcome: 'pass' | 'reject' | 'remove' | 'detach' | 'dismiss' | 'restore' | 'keep';
+            listingState: string | null;
+            reportVerdict: 'upheld' | 'dismissed';
+            strikeId: string | null;
+        };
+    };
+};
+
+export type PostApiV1OpsReviewTasksByTaskIdDecisionResponse = PostApiV1OpsReviewTasksByTaskIdDecisionResponses[keyof PostApiV1OpsReviewTasksByTaskIdDecisionResponses];
+
+export type PostApiV1OpsReviewListingsByListingIdRemoveData = {
+    body: {
+        reasonTemplateId: string;
+    };
+    path: {
+        listingId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/review/listings/{listingId}/remove';
+};
+
+export type PostApiV1OpsReviewListingsByListingIdRemoveErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsReviewListingsByListingIdRemoveError = PostApiV1OpsReviewListingsByListingIdRemoveErrors[keyof PostApiV1OpsReviewListingsByListingIdRemoveErrors];
+
+export type PostApiV1OpsReviewListingsByListingIdRemoveResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            decisionId: string;
+            outcome: 'pass' | 'reject' | 'remove' | 'detach' | 'dismiss' | 'restore' | 'keep';
+            listingState: string | null;
+            reportVerdict: 'upheld' | 'dismissed';
+            strikeId: string | null;
+        };
+    };
+};
+
+export type PostApiV1OpsReviewListingsByListingIdRemoveResponse = PostApiV1OpsReviewListingsByListingIdRemoveResponses[keyof PostApiV1OpsReviewListingsByListingIdRemoveResponses];
+
+export type PostApiV1OpsReviewListingsByListingIdRestoreData = {
+    body?: never;
+    path: {
+        listingId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/review/listings/{listingId}/restore';
+};
+
+export type PostApiV1OpsReviewListingsByListingIdRestoreErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsReviewListingsByListingIdRestoreError = PostApiV1OpsReviewListingsByListingIdRestoreErrors[keyof PostApiV1OpsReviewListingsByListingIdRestoreErrors];
+
+export type PostApiV1OpsReviewListingsByListingIdRestoreResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            decisionId: string;
+            outcome: 'pass' | 'reject' | 'remove' | 'detach' | 'dismiss' | 'restore' | 'keep';
+            listingState: string | null;
+            reportVerdict: 'upheld' | 'dismissed';
+            strikeId: string | null;
+        };
+    };
+};
+
+export type PostApiV1OpsReviewListingsByListingIdRestoreResponse = PostApiV1OpsReviewListingsByListingIdRestoreResponses[keyof PostApiV1OpsReviewListingsByListingIdRestoreResponses];
+
+export type GetApiV1OpsReviewReasonTemplatesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/ops/review/reason-templates';
+};
+
+export type GetApiV1OpsReviewReasonTemplatesErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsReviewReasonTemplatesError = GetApiV1OpsReviewReasonTemplatesErrors[keyof GetApiV1OpsReviewReasonTemplatesErrors];
+
+export type GetApiV1OpsReviewReasonTemplatesResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            id: string;
+            text: string;
+            active: boolean;
+            sort: number;
+        }>;
+    };
+};
+
+export type GetApiV1OpsReviewReasonTemplatesResponse = GetApiV1OpsReviewReasonTemplatesResponses[keyof GetApiV1OpsReviewReasonTemplatesResponses];
+
+export type PostApiV1OpsReviewReasonTemplatesData = {
+    body: {
+        text: string;
+        sort?: number;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/ops/review/reason-templates';
+};
+
+export type PostApiV1OpsReviewReasonTemplatesErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsReviewReasonTemplatesError = PostApiV1OpsReviewReasonTemplatesErrors[keyof PostApiV1OpsReviewReasonTemplatesErrors];
+
+export type PostApiV1OpsReviewReasonTemplatesResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            text: string;
+            active: boolean;
+            sort: number;
+        };
+    };
+};
+
+export type PostApiV1OpsReviewReasonTemplatesResponse = PostApiV1OpsReviewReasonTemplatesResponses[keyof PostApiV1OpsReviewReasonTemplatesResponses];
+
+export type PatchApiV1OpsReviewReasonTemplatesByTemplateIdData = {
+    body: {
+        text?: string;
+        active?: boolean;
+        sort?: number;
+    };
+    path: {
+        templateId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/review/reason-templates/{templateId}';
+};
+
+export type PatchApiV1OpsReviewReasonTemplatesByTemplateIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PatchApiV1OpsReviewReasonTemplatesByTemplateIdError = PatchApiV1OpsReviewReasonTemplatesByTemplateIdErrors[keyof PatchApiV1OpsReviewReasonTemplatesByTemplateIdErrors];
+
+export type PatchApiV1OpsReviewReasonTemplatesByTemplateIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            text: string;
+            active: boolean;
+            sort: number;
+        };
+    };
+};
+
+export type PatchApiV1OpsReviewReasonTemplatesByTemplateIdResponse = PatchApiV1OpsReviewReasonTemplatesByTemplateIdResponses[keyof PatchApiV1OpsReviewReasonTemplatesByTemplateIdResponses];
+
+export type GetApiV1GroupsByGroupIdReviewTasksData = {
+    body?: never;
+    path: {
+        groupId: string;
+    };
+    query?: {
+        page?: number;
+        limit?: number;
+    };
+    url: '/api/v1/groups/{groupId}/review/tasks';
+};
+
+export type GetApiV1GroupsByGroupIdReviewTasksErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1GroupsByGroupIdReviewTasksError = GetApiV1GroupsByGroupIdReviewTasksErrors[keyof GetApiV1GroupsByGroupIdReviewTasksErrors];
+
+export type GetApiV1GroupsByGroupIdReviewTasksResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                subjectKind: 'listing' | 'account' | 'strike';
+                listingId: string | null;
+                accountId: string | null;
+                strikeId: string | null;
+                title: string | null;
+                queue: number;
+                reasons: Array<'machine_hold' | 'machine_restricted' | 'group_escalation' | 'sample_risk' | 'sample_reviewer' | 'report' | 'report_severe' | 'appeal' | 'serious_strike' | 'permanent_review'>;
+                dueAt: string;
+                overdue: boolean;
+                level: 'unit_moderators' | 'group_moderators' | 'group_owner' | 'category_staff' | 'safety_staff' | 'master';
+                categoryId: string | null;
+                groupId: string | null;
+                claim: {
+                    state: 'free' | 'mine' | 'taken';
+                    expiresAt: string | null;
+                };
+            }>;
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    };
+};
+
+export type GetApiV1GroupsByGroupIdReviewTasksResponse = GetApiV1GroupsByGroupIdReviewTasksResponses[keyof GetApiV1GroupsByGroupIdReviewTasksResponses];
+
+export type GetApiV1GroupsByGroupIdReviewTasksByTaskIdData = {
+    body?: never;
+    path: {
+        groupId: string;
+        taskId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/review/tasks/{taskId}';
+};
+
+export type GetApiV1GroupsByGroupIdReviewTasksByTaskIdErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1GroupsByGroupIdReviewTasksByTaskIdError = GetApiV1GroupsByGroupIdReviewTasksByTaskIdErrors[keyof GetApiV1GroupsByGroupIdReviewTasksByTaskIdErrors];
+
+export type GetApiV1GroupsByGroupIdReviewTasksByTaskIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            subjectKind: 'listing' | 'account' | 'strike';
+            listingId: string | null;
+            accountId: string | null;
+            strikeId: string | null;
+            title: string | null;
+            queue: number;
+            reasons: Array<'machine_hold' | 'machine_restricted' | 'group_escalation' | 'sample_risk' | 'sample_reviewer' | 'report' | 'report_severe' | 'appeal' | 'serious_strike' | 'permanent_review'>;
+            dueAt: string;
+            overdue: boolean;
+            level: 'unit_moderators' | 'group_moderators' | 'group_owner' | 'category_staff' | 'safety_staff' | 'master';
+            categoryId: string | null;
+            groupId: string | null;
+            claim: {
+                state: 'free' | 'mine' | 'taken';
+                expiresAt: string | null;
+            };
+            listing: {
+                id: string;
+                ownerId: string;
+                state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+                placement: 'marketplace' | 'group_public' | 'members_only';
+                groupId: string | null;
+                title: string | null;
+                description: string | null;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                price: number | null;
+                negotiable: boolean;
+                delivery: boolean;
+                showPhone: boolean;
+                categoryId: string | null;
+                templateVersion: number | null;
+                attributes: {
+                    [key: string]: unknown;
+                };
+                provinceCode: number | null;
+                wardCode: number | null;
+                images: Array<{
+                    id: string;
+                    url: string;
+                }>;
+                badge: {
+                    groupId: string;
+                    name: string;
+                } | null;
+                firstLiveAt: string | null;
+                featuredUntil: string | null;
+                expiresAt: string | null;
+                createdAt: string;
+                updatedAt: string;
+                version: number;
+                unitId: string | null;
+                badgeGroupId: string | null;
+                hideReasons: Array<'account_locked' | 'account_deleted' | 'left_group' | 'removed_from_group' | 'group_banned' | 'group_locked' | 'category_disabled' | 'group_closed' | 'group_privatized' | 'detached_by_group' | 'reported'>;
+                restrictions: Array<'machine' | 'new_account' | 'strike' | 'strike_wave'>;
+                remainingMs: number | null;
+                renewal: 'early' | 'expired';
+                fault: 'mistake' | 'violation';
+                faultReason: string | null;
+                moveUntil: string | null;
+                machineNotice: {
+                    kind: 'plain' | 'fraud' | 'limited';
+                    message: string;
+                    estimatedWait: string | null;
+                    lookupCode: string | null;
+                    fixes: Array<{
+                        code: string;
+                        message: string;
+                    }>;
+                } | null;
+            } | null;
+            listingDeleted: boolean;
+            machine: {
+                listingVersion: number;
+                outcome: 'pass_full' | 'pass_limited' | 'hold';
+                cause: string | null;
+                score: number | null;
+                band: string | null;
+                tier: 'T0' | 'T1' | 'T2' | 'T3';
+                hits: Array<string>;
+            } | null;
+            seller: {
+                accountId: string;
+                displayName: string | null;
+                tier: 'T0' | 'T1' | 'T2' | 'T3';
+                cleanListings: number;
+                strikes: Array<{
+                    id: string;
+                    kind: 'normal' | 'severe' | 'serious';
+                    status: 'active' | 'expired' | 'cancelled' | 'permanent' | 'lifted';
+                    points: number;
+                    inForce: boolean;
+                    ruleCode: string;
+                    ruleText: string;
+                    issuedAt: string;
+                    expiresAt: string | null;
+                    remainingDays: number | null;
+                    listingId: string | null;
+                    cancelledAt: string | null;
+                    cancelCause: 'appeal' | 'amnesty' | 'serious_cancel';
+                    seriousDecision: 'permanent' | 'downgrade' | 'cancel';
+                    appealable: boolean;
+                    appealUntil: string | null;
+                    appeal: {
+                        status: 'pending' | 'won' | 'lost' | 'closed';
+                        filedAt: string;
+                        decidedAt: string | null;
+                    } | null;
+                }>;
+            };
+            duplicates: Array<{
+                imageId: string;
+                matchImageId: string;
+                accountId: string;
+                displayName: string | null;
+                listingId: string | null;
+            }>;
+            sharedDeviceAccounts: Array<{
+                accountId: string;
+                displayName: string | null;
+            }>;
+            escalation: {
+                by: string;
+                note: string;
+            } | null;
+            reports: Array<{
+                reportId: string;
+                subjectKind: 'listing' | 'account';
+                listingId: string | null;
+                status: 'open' | 'upheld' | 'dismissed';
+                severe: boolean;
+                autoHidden: boolean;
+                reporterCount: number;
+                entries: Array<{
+                    category: 'fraud' | 'misinformation' | 'harassment' | 'prohibited' | 'other';
+                    reportedAt: string;
+                    conversationId: string | null;
+                }>;
+                createdAt: string;
+                decidedAt: string | null;
+            }>;
+            strike: {
+                id: string;
+                kind: 'normal' | 'severe' | 'serious';
+                status: 'active' | 'expired' | 'cancelled' | 'permanent' | 'lifted';
+                points: number;
+                inForce: boolean;
+                ruleCode: string;
+                ruleText: string;
+                issuedAt: string;
+                expiresAt: string | null;
+                remainingDays: number | null;
+                listingId: string | null;
+                cancelledAt: string | null;
+                cancelCause: 'appeal' | 'amnesty' | 'serious_cancel';
+                seriousDecision: 'permanent' | 'downgrade' | 'cancel';
+                appealable: boolean;
+                appealUntil: string | null;
+                appeal: {
+                    status: 'pending' | 'won' | 'lost' | 'closed';
+                    filedAt: string;
+                    decidedAt: string | null;
+                } | null;
+                accountId: string;
+                issuedBy: string;
+                issuedByRole: 'master' | 'staff' | 'moderator' | 'owner';
+                categoryId: string | null;
+                fromReport: boolean;
+                statement: string | null;
+                comments: Array<{
+                    id: string;
+                    authorId: string;
+                    authorName: string | null;
+                    body: string;
+                    createdAt: string;
+                }>;
+                permanentReviewAt: string | null;
+            } | null;
+            conversations: Array<{
+                id: string;
+                listingId: string;
+                buyerId: string;
+                sellerId: string;
+                messages: Array<{
+                    id: string;
+                    senderId: string;
+                    body: string;
+                    flagged: boolean;
+                    createdAt: string;
+                }>;
+            }>;
+        };
+    };
+};
+
+export type GetApiV1GroupsByGroupIdReviewTasksByTaskIdResponse = GetApiV1GroupsByGroupIdReviewTasksByTaskIdResponses[keyof GetApiV1GroupsByGroupIdReviewTasksByTaskIdResponses];
+
+export type PostApiV1GroupsByGroupIdReviewTasksByTaskIdClaimData = {
+    body?: never;
+    path: {
+        groupId: string;
+        taskId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/review/tasks/{taskId}/claim';
+};
+
+export type PostApiV1GroupsByGroupIdReviewTasksByTaskIdClaimErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdReviewTasksByTaskIdClaimError = PostApiV1GroupsByGroupIdReviewTasksByTaskIdClaimErrors[keyof PostApiV1GroupsByGroupIdReviewTasksByTaskIdClaimErrors];
+
+export type PostApiV1GroupsByGroupIdReviewTasksByTaskIdClaimResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            taskId: string;
+            claimExpiresAt: string;
+            listingVersion: number | null;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdReviewTasksByTaskIdClaimResponse = PostApiV1GroupsByGroupIdReviewTasksByTaskIdClaimResponses[keyof PostApiV1GroupsByGroupIdReviewTasksByTaskIdClaimResponses];
+
+export type PostApiV1GroupsByGroupIdReviewTasksByTaskIdDecisionData = {
+    body: {
+        outcome: 'pass' | 'mistake' | 'detach' | 'dismiss' | 'keep' | 'violation';
+        machineJudgment?: 'machine_right' | 'machine_overreach';
+        reasonTemplateId?: string;
+        report?: {
+            verdict: 'upheld' | 'dismissed';
+            banFromGroup?: boolean;
+            lockAccount?: boolean;
+        };
+        strike?: {
+            kind: 'normal' | 'severe' | 'serious';
+            ruleArticleId: string;
+        };
+        appeal?: {
+            verdict: 'won' | 'lost';
+        };
+        serious?: {
+            decision: 'permanent' | 'downgrade' | 'cancel';
+        };
+        permanent?: {
+            decision: 'keep' | 'lift';
+        };
+        platformViolation?: boolean;
+        note?: string;
+    };
+    path: {
+        groupId: string;
+        taskId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/review/tasks/{taskId}/decision';
+};
+
+export type PostApiV1GroupsByGroupIdReviewTasksByTaskIdDecisionErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdReviewTasksByTaskIdDecisionError = PostApiV1GroupsByGroupIdReviewTasksByTaskIdDecisionErrors[keyof PostApiV1GroupsByGroupIdReviewTasksByTaskIdDecisionErrors];
+
+export type PostApiV1GroupsByGroupIdReviewTasksByTaskIdDecisionResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            decisionId: string;
+            outcome: 'pass' | 'reject' | 'remove' | 'detach' | 'dismiss' | 'restore' | 'keep';
+            listingState: string | null;
+            reportVerdict: 'upheld' | 'dismissed';
+            strikeId: string | null;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdReviewTasksByTaskIdDecisionResponse = PostApiV1GroupsByGroupIdReviewTasksByTaskIdDecisionResponses[keyof PostApiV1GroupsByGroupIdReviewTasksByTaskIdDecisionResponses];
+
+export type PostApiV1GroupsByGroupIdReviewListingsByListingIdDetachData = {
+    body: {
+        platformViolation?: boolean;
+        note?: string;
+    };
+    path: {
+        groupId: string;
+        listingId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/review/listings/{listingId}/detach';
+};
+
+export type PostApiV1GroupsByGroupIdReviewListingsByListingIdDetachErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdReviewListingsByListingIdDetachError = PostApiV1GroupsByGroupIdReviewListingsByListingIdDetachErrors[keyof PostApiV1GroupsByGroupIdReviewListingsByListingIdDetachErrors];
+
+export type PostApiV1GroupsByGroupIdReviewListingsByListingIdDetachResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            decisionId: string;
+            outcome: 'pass' | 'reject' | 'remove' | 'detach' | 'dismiss' | 'restore' | 'keep';
+            listingState: string | null;
+            reportVerdict: 'upheld' | 'dismissed';
+            strikeId: string | null;
+        };
+    };
+};
+
+export type PostApiV1GroupsByGroupIdReviewListingsByListingIdDetachResponse = PostApiV1GroupsByGroupIdReviewListingsByListingIdDetachResponses[keyof PostApiV1GroupsByGroupIdReviewListingsByListingIdDetachResponses];
+
+export type GetApiV1GroupsByGroupIdReviewReasonTemplatesData = {
+    body?: never;
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/review/reason-templates';
+};
+
+export type GetApiV1GroupsByGroupIdReviewReasonTemplatesErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1GroupsByGroupIdReviewReasonTemplatesError = GetApiV1GroupsByGroupIdReviewReasonTemplatesErrors[keyof GetApiV1GroupsByGroupIdReviewReasonTemplatesErrors];
+
+export type GetApiV1GroupsByGroupIdReviewReasonTemplatesResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            id: string;
+            text: string;
+            active: boolean;
+            sort: number;
+        }>;
+    };
+};
+
+export type GetApiV1GroupsByGroupIdReviewReasonTemplatesResponse = GetApiV1GroupsByGroupIdReviewReasonTemplatesResponses[keyof GetApiV1GroupsByGroupIdReviewReasonTemplatesResponses];
+
+export type GetApiV1OpsReviewStatsBoardData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/ops/review/stats/board';
+};
+
+export type GetApiV1OpsReviewStatsBoardErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsReviewStatsBoardError = GetApiV1OpsReviewStatsBoardErrors[keyof GetApiV1OpsReviewStatsBoardErrors];
+
+export type GetApiV1OpsReviewStatsBoardResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            open: number;
+            queues: Array<{
+                queue: number;
+                open: number;
+                overdue: number;
+            }>;
+            atMaster: {
+                open: number;
+                overdue: number;
+                overdueAfterHours: number;
+            };
+        };
+    };
+};
+
+export type GetApiV1OpsReviewStatsBoardResponse = GetApiV1OpsReviewStatsBoardResponses[keyof GetApiV1OpsReviewStatsBoardResponses];
+
+export type GetApiV1OpsReviewStatsReviewersData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/ops/review/stats/reviewers';
+};
+
+export type GetApiV1OpsReviewStatsReviewersErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsReviewStatsReviewersError = GetApiV1OpsReviewStatsReviewersErrors[keyof GetApiV1OpsReviewStatsReviewersErrors];
+
+export type GetApiV1OpsReviewStatsReviewersResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            accountId: string;
+            name: string | null;
+            reviewed: number;
+            overturned: number;
+            rate: number | null;
+        }>;
+    };
+};
+
+export type GetApiV1OpsReviewStatsReviewersResponse = GetApiV1OpsReviewStatsReviewersResponses[keyof GetApiV1OpsReviewStatsReviewersResponses];
+
+export type GetApiV1OpsReviewStatsRulesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/ops/review/stats/rules';
+};
+
+export type GetApiV1OpsReviewStatsRulesErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsReviewStatsRulesError = GetApiV1OpsReviewStatsRulesErrors[keyof GetApiV1OpsReviewStatsRulesErrors];
+
+export type GetApiV1OpsReviewStatsRulesResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            code: string;
+            decided: number;
+            passed: number;
+            overreach: number;
+            passRate: number | null;
+        }>;
+    };
+};
+
+export type GetApiV1OpsReviewStatsRulesResponse = GetApiV1OpsReviewStatsRulesResponses[keyof GetApiV1OpsReviewStatsRulesResponses];
+
+export type PostApiV1ReportsData = {
+    body: {
+        subject: {
+            kind: 'listing';
+            listingId: string;
+        } | {
+            kind: 'account';
+            accountId: string;
+        };
+        category: 'fraud' | 'misinformation' | 'harassment' | 'prohibited' | 'other';
+    };
+    headers?: {
+        'x-device-id'?: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/reports';
+};
+
+export type PostApiV1ReportsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1ReportsError = PostApiV1ReportsErrors[keyof PostApiV1ReportsErrors];
+
+export type PostApiV1ReportsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            reportId: string;
+            subjectKind: 'listing' | 'account';
+            listingId: string | null;
+            accountId: string | null;
+            category: 'fraud' | 'misinformation' | 'harassment' | 'prohibited' | 'other';
+            status: 'open' | 'upheld' | 'dismissed';
+            reportedAt: string;
+            decidedAt: string | null;
+        };
+    };
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            reportId: string;
+            subjectKind: 'listing' | 'account';
+            listingId: string | null;
+            accountId: string | null;
+            category: 'fraud' | 'misinformation' | 'harassment' | 'prohibited' | 'other';
+            status: 'open' | 'upheld' | 'dismissed';
+            reportedAt: string;
+            decidedAt: string | null;
+        };
+    };
+};
+
+export type PostApiV1ReportsResponse = PostApiV1ReportsResponses[keyof PostApiV1ReportsResponses];
+
+export type GetApiV1MeReportsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number;
+        limit?: number;
+    };
+    url: '/api/v1/me/reports';
+};
+
+export type GetApiV1MeReportsErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeReportsError = GetApiV1MeReportsErrors[keyof GetApiV1MeReportsErrors];
+
+export type GetApiV1MeReportsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                reportId: string;
+                subjectKind: 'listing' | 'account';
+                listingId: string | null;
+                accountId: string | null;
+                category: 'fraud' | 'misinformation' | 'harassment' | 'prohibited' | 'other';
+                status: 'open' | 'upheld' | 'dismissed';
+                reportedAt: string;
+                decidedAt: string | null;
+            }>;
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    };
+};
+
+export type GetApiV1MeReportsResponse = GetApiV1MeReportsResponses[keyof GetApiV1MeReportsResponses];
+
+export type PostApiV1ListingsByListingIdConversationData = {
+    body?: never;
+    path: {
+        listingId: string;
+    };
+    query?: never;
+    url: '/api/v1/listings/{listingId}/conversation';
+};
+
+export type PostApiV1ListingsByListingIdConversationErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1ListingsByListingIdConversationError = PostApiV1ListingsByListingIdConversationErrors[keyof PostApiV1ListingsByListingIdConversationErrors];
+
+export type PostApiV1ListingsByListingIdConversationResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            listing: {
+                id: string;
+                title: string | null;
+            };
+            role: 'buyer' | 'seller';
+            counterpart: {
+                accountId: string;
+                displayName: string | null;
+                gone: boolean;
+            };
+            lastMessage: {
+                id: string;
+                conversationId: string;
+                senderId: string;
+                body: string;
+                createdAt: string;
+            } | null;
+            unreadCount: number;
+            locked: boolean;
+            canSend: boolean;
+            createdAt: string;
+            lastActivityAt: string;
+        };
+    };
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            listing: {
+                id: string;
+                title: string | null;
+            };
+            role: 'buyer' | 'seller';
+            counterpart: {
+                accountId: string;
+                displayName: string | null;
+                gone: boolean;
+            };
+            lastMessage: {
+                id: string;
+                conversationId: string;
+                senderId: string;
+                body: string;
+                createdAt: string;
+            } | null;
+            unreadCount: number;
+            locked: boolean;
+            canSend: boolean;
+            createdAt: string;
+            lastActivityAt: string;
+        };
+    };
+};
+
+export type PostApiV1ListingsByListingIdConversationResponse = PostApiV1ListingsByListingIdConversationResponses[keyof PostApiV1ListingsByListingIdConversationResponses];
+
+export type GetApiV1MeConversationsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        cursor?: string;
+        limit?: number;
+    };
+    url: '/api/v1/me/conversations';
+};
+
+export type GetApiV1MeConversationsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeConversationsError = GetApiV1MeConversationsErrors[keyof GetApiV1MeConversationsErrors];
+
+export type GetApiV1MeConversationsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                listing: {
+                    id: string;
+                    title: string | null;
+                };
+                role: 'buyer' | 'seller';
+                counterpart: {
+                    accountId: string;
+                    displayName: string | null;
+                    gone: boolean;
+                };
+                lastMessage: {
+                    id: string;
+                    conversationId: string;
+                    senderId: string;
+                    body: string;
+                    createdAt: string;
+                } | null;
+                unreadCount: number;
+                locked: boolean;
+                canSend: boolean;
+                createdAt: string;
+                lastActivityAt: string;
+            }>;
+            nextCursor: string | null;
+        };
+    };
+};
+
+export type GetApiV1MeConversationsResponse = GetApiV1MeConversationsResponses[keyof GetApiV1MeConversationsResponses];
+
+export type DeleteApiV1MeConversationsByConversationIdData = {
+    body?: never;
+    path: {
+        conversationId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/conversations/{conversationId}';
+};
+
+export type DeleteApiV1MeConversationsByConversationIdErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1MeConversationsByConversationIdError = DeleteApiV1MeConversationsByConversationIdErrors[keyof DeleteApiV1MeConversationsByConversationIdErrors];
+
+export type DeleteApiV1MeConversationsByConversationIdResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1MeConversationsByConversationIdResponse = DeleteApiV1MeConversationsByConversationIdResponses[keyof DeleteApiV1MeConversationsByConversationIdResponses];
+
+export type GetApiV1MeConversationsByConversationIdData = {
+    body?: never;
+    path: {
+        conversationId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/conversations/{conversationId}';
+};
+
+export type GetApiV1MeConversationsByConversationIdErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeConversationsByConversationIdError = GetApiV1MeConversationsByConversationIdErrors[keyof GetApiV1MeConversationsByConversationIdErrors];
+
+export type GetApiV1MeConversationsByConversationIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            listing: {
+                id: string;
+                title: string | null;
+            };
+            role: 'buyer' | 'seller';
+            counterpart: {
+                accountId: string;
+                displayName: string | null;
+                gone: boolean;
+            };
+            lastMessage: {
+                id: string;
+                conversationId: string;
+                senderId: string;
+                body: string;
+                createdAt: string;
+            } | null;
+            unreadCount: number;
+            locked: boolean;
+            canSend: boolean;
+            createdAt: string;
+            lastActivityAt: string;
+        };
+    };
+};
+
+export type GetApiV1MeConversationsByConversationIdResponse = GetApiV1MeConversationsByConversationIdResponses[keyof GetApiV1MeConversationsByConversationIdResponses];
+
+export type GetApiV1MeConversationsByConversationIdMessagesData = {
+    body?: never;
+    path: {
+        conversationId: string;
+    };
+    query?: {
+        cursor?: string;
+        limit?: number;
+    };
+    url: '/api/v1/me/conversations/{conversationId}/messages';
+};
+
+export type GetApiV1MeConversationsByConversationIdMessagesErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeConversationsByConversationIdMessagesError = GetApiV1MeConversationsByConversationIdMessagesErrors[keyof GetApiV1MeConversationsByConversationIdMessagesErrors];
+
+export type GetApiV1MeConversationsByConversationIdMessagesResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                conversationId: string;
+                senderId: string;
+                body: string;
+                createdAt: string;
+            }>;
+            nextCursor: string | null;
+        };
+    };
+};
+
+export type GetApiV1MeConversationsByConversationIdMessagesResponse = GetApiV1MeConversationsByConversationIdMessagesResponses[keyof GetApiV1MeConversationsByConversationIdMessagesResponses];
+
+export type PostApiV1MeConversationsByConversationIdMessagesData = {
+    body: {
+        body: string;
+    };
+    path: {
+        conversationId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/conversations/{conversationId}/messages';
+};
+
+export type PostApiV1MeConversationsByConversationIdMessagesErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1MeConversationsByConversationIdMessagesError = PostApiV1MeConversationsByConversationIdMessagesErrors[keyof PostApiV1MeConversationsByConversationIdMessagesErrors];
+
+export type PostApiV1MeConversationsByConversationIdMessagesResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            conversationId: string;
+            senderId: string;
+            body: string;
+            createdAt: string;
+        };
+    };
+};
+
+export type PostApiV1MeConversationsByConversationIdMessagesResponse = PostApiV1MeConversationsByConversationIdMessagesResponses[keyof PostApiV1MeConversationsByConversationIdMessagesResponses];
+
+export type PostApiV1MeConversationsByConversationIdReadData = {
+    body?: never;
+    path: {
+        conversationId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/conversations/{conversationId}/read';
+};
+
+export type PostApiV1MeConversationsByConversationIdReadErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1MeConversationsByConversationIdReadError = PostApiV1MeConversationsByConversationIdReadErrors[keyof PostApiV1MeConversationsByConversationIdReadErrors];
+
+export type PostApiV1MeConversationsByConversationIdReadResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PostApiV1MeConversationsByConversationIdReadResponse = PostApiV1MeConversationsByConversationIdReadResponses[keyof PostApiV1MeConversationsByConversationIdReadResponses];
+
+export type PostApiV1MeConversationsByConversationIdReportsData = {
+    body: {
+        category: 'fraud' | 'misinformation' | 'harassment' | 'prohibited' | 'other';
+    };
+    headers?: {
+        'x-device-id'?: string;
+    };
+    path: {
+        conversationId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/conversations/{conversationId}/reports';
+};
+
+export type PostApiV1MeConversationsByConversationIdReportsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1MeConversationsByConversationIdReportsError = PostApiV1MeConversationsByConversationIdReportsErrors[keyof PostApiV1MeConversationsByConversationIdReportsErrors];
+
+export type PostApiV1MeConversationsByConversationIdReportsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            reportId: string;
+            subjectKind: 'listing' | 'account';
+            listingId: string | null;
+            accountId: string | null;
+            category: 'fraud' | 'misinformation' | 'harassment' | 'prohibited' | 'other';
+            status: 'open' | 'upheld' | 'dismissed';
+            reportedAt: string;
+            decidedAt: string | null;
+        };
+    };
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            reportId: string;
+            subjectKind: 'listing' | 'account';
+            listingId: string | null;
+            accountId: string | null;
+            category: 'fraud' | 'misinformation' | 'harassment' | 'prohibited' | 'other';
+            status: 'open' | 'upheld' | 'dismissed';
+            reportedAt: string;
+            decidedAt: string | null;
+        };
+    };
+};
+
+export type PostApiV1MeConversationsByConversationIdReportsResponse = PostApiV1MeConversationsByConversationIdReportsResponses[keyof PostApiV1MeConversationsByConversationIdReportsResponses];
+
+export type DeleteApiV1MeConversationsByConversationIdViewingData = {
+    body?: never;
+    path: {
+        conversationId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/conversations/{conversationId}/viewing';
+};
+
+export type DeleteApiV1MeConversationsByConversationIdViewingErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1MeConversationsByConversationIdViewingError = DeleteApiV1MeConversationsByConversationIdViewingErrors[keyof DeleteApiV1MeConversationsByConversationIdViewingErrors];
+
+export type DeleteApiV1MeConversationsByConversationIdViewingResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1MeConversationsByConversationIdViewingResponse = DeleteApiV1MeConversationsByConversationIdViewingResponses[keyof DeleteApiV1MeConversationsByConversationIdViewingResponses];
+
+export type PutApiV1MeConversationsByConversationIdViewingData = {
+    body?: never;
+    path: {
+        conversationId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/conversations/{conversationId}/viewing';
+};
+
+export type PutApiV1MeConversationsByConversationIdViewingErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PutApiV1MeConversationsByConversationIdViewingError = PutApiV1MeConversationsByConversationIdViewingErrors[keyof PutApiV1MeConversationsByConversationIdViewingErrors];
+
+export type PutApiV1MeConversationsByConversationIdViewingResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PutApiV1MeConversationsByConversationIdViewingResponse = PutApiV1MeConversationsByConversationIdViewingResponses[keyof PutApiV1MeConversationsByConversationIdViewingResponses];
+
+export type GetApiV1MeBlocksData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number;
+        limit?: number;
+    };
+    url: '/api/v1/me/blocks';
+};
+
+export type GetApiV1MeBlocksErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeBlocksError = GetApiV1MeBlocksErrors[keyof GetApiV1MeBlocksErrors];
+
+export type GetApiV1MeBlocksResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                accountId: string;
+                displayName: string | null;
+                blockedAt: string;
+            }>;
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    };
+};
+
+export type GetApiV1MeBlocksResponse = GetApiV1MeBlocksResponses[keyof GetApiV1MeBlocksResponses];
+
+export type PostApiV1MeBlocksData = {
+    body: {
+        accountId: string;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/blocks';
+};
+
+export type PostApiV1MeBlocksErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1MeBlocksError = PostApiV1MeBlocksErrors[keyof PostApiV1MeBlocksErrors];
+
+export type PostApiV1MeBlocksResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PostApiV1MeBlocksResponse = PostApiV1MeBlocksResponses[keyof PostApiV1MeBlocksResponses];
+
+export type DeleteApiV1MeBlocksByAccountIdData = {
+    body?: never;
+    path: {
+        accountId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/blocks/{accountId}';
+};
+
+export type DeleteApiV1MeBlocksByAccountIdErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1MeBlocksByAccountIdError = DeleteApiV1MeBlocksByAccountIdErrors[keyof DeleteApiV1MeBlocksByAccountIdErrors];
+
+export type DeleteApiV1MeBlocksByAccountIdResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1MeBlocksByAccountIdResponse = DeleteApiV1MeBlocksByAccountIdResponses[keyof DeleteApiV1MeBlocksByAccountIdResponses];
+
+export type GetApiV1MeNotificationsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number;
+        limit?: number;
+    };
+    url: '/api/v1/me/notifications';
+};
+
+export type GetApiV1MeNotificationsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeNotificationsError = GetApiV1MeNotificationsErrors[keyof GetApiV1MeNotificationsErrors];
+
+export type GetApiV1MeNotificationsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                category: 'messages' | 'your_listings' | 'your_groups' | 'your_reports' | 'account' | 'trust_strikes' | 'group_announcements' | 'group_new_listings' | 'support';
+                type: string;
+                title: string;
+                body: string;
+                detail: string | null;
+                data: {
+                    [key: string]: string | null;
+                };
+                groupId: string | null;
+                count: number;
+                readAt: string | null;
+                createdAt: string;
+                updatedAt: string;
+            }>;
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    };
+};
+
+export type GetApiV1MeNotificationsResponse = GetApiV1MeNotificationsResponses[keyof GetApiV1MeNotificationsResponses];
+
+export type GetApiV1MeNotificationsUnreadCountData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/notifications/unread-count';
+};
+
+export type GetApiV1MeNotificationsUnreadCountErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeNotificationsUnreadCountError = GetApiV1MeNotificationsUnreadCountErrors[keyof GetApiV1MeNotificationsUnreadCountErrors];
+
+export type GetApiV1MeNotificationsUnreadCountResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            count: number;
+        };
+    };
+};
+
+export type GetApiV1MeNotificationsUnreadCountResponse = GetApiV1MeNotificationsUnreadCountResponses[keyof GetApiV1MeNotificationsUnreadCountResponses];
+
+export type PostApiV1MeNotificationsReadData = {
+    body: {
+        ids: Array<string>;
+    } | {
+        all: true;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/notifications/read';
+};
+
+export type PostApiV1MeNotificationsReadErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1MeNotificationsReadError = PostApiV1MeNotificationsReadErrors[keyof PostApiV1MeNotificationsReadErrors];
+
+export type PostApiV1MeNotificationsReadResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            marked: number;
+        };
+    };
+};
+
+export type PostApiV1MeNotificationsReadResponse = PostApiV1MeNotificationsReadResponses[keyof PostApiV1MeNotificationsReadResponses];
+
+export type GetApiV1MeNotificationPreferencesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/notification-preferences';
+};
+
+export type GetApiV1MeNotificationPreferencesErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeNotificationPreferencesError = GetApiV1MeNotificationPreferencesErrors[keyof GetApiV1MeNotificationPreferencesErrors];
+
+export type GetApiV1MeNotificationPreferencesResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            categories: Array<{
+                category: 'messages' | 'your_listings' | 'your_groups' | 'your_reports' | 'account' | 'trust_strikes' | 'group_announcements' | 'group_new_listings' | 'support';
+                enabled: boolean;
+            }>;
+            mutedGroupIds: Array<string>;
+        };
+    };
+};
+
+export type GetApiV1MeNotificationPreferencesResponse = GetApiV1MeNotificationPreferencesResponses[keyof GetApiV1MeNotificationPreferencesResponses];
+
+export type PutApiV1MeNotificationPreferencesByCategoryData = {
+    body: {
+        enabled: boolean;
+    };
+    path: {
+        category: 'messages' | 'your_listings' | 'your_groups' | 'your_reports' | 'account' | 'trust_strikes' | 'group_announcements' | 'group_new_listings' | 'support';
+    };
+    query?: never;
+    url: '/api/v1/me/notification-preferences/{category}';
+};
+
+export type PutApiV1MeNotificationPreferencesByCategoryErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PutApiV1MeNotificationPreferencesByCategoryError = PutApiV1MeNotificationPreferencesByCategoryErrors[keyof PutApiV1MeNotificationPreferencesByCategoryErrors];
+
+export type PutApiV1MeNotificationPreferencesByCategoryResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PutApiV1MeNotificationPreferencesByCategoryResponse = PutApiV1MeNotificationPreferencesByCategoryResponses[keyof PutApiV1MeNotificationPreferencesByCategoryResponses];
+
+export type DeleteApiV1MeGroupMutesByGroupIdData = {
+    body?: never;
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/group-mutes/{groupId}';
+};
+
+export type DeleteApiV1MeGroupMutesByGroupIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1MeGroupMutesByGroupIdError = DeleteApiV1MeGroupMutesByGroupIdErrors[keyof DeleteApiV1MeGroupMutesByGroupIdErrors];
+
+export type DeleteApiV1MeGroupMutesByGroupIdResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1MeGroupMutesByGroupIdResponse = DeleteApiV1MeGroupMutesByGroupIdResponses[keyof DeleteApiV1MeGroupMutesByGroupIdResponses];
+
+export type PutApiV1MeGroupMutesByGroupIdData = {
+    body?: never;
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/group-mutes/{groupId}';
+};
+
+export type PutApiV1MeGroupMutesByGroupIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PutApiV1MeGroupMutesByGroupIdError = PutApiV1MeGroupMutesByGroupIdErrors[keyof PutApiV1MeGroupMutesByGroupIdErrors];
+
+export type PutApiV1MeGroupMutesByGroupIdResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PutApiV1MeGroupMutesByGroupIdResponse = PutApiV1MeGroupMutesByGroupIdResponses[keyof PutApiV1MeGroupMutesByGroupIdResponses];
+
+export type GetApiV1OpsJobsRunsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        name?: string;
+        limit?: number;
+    };
+    url: '/api/v1/ops/jobs/runs';
+};
+
+export type GetApiV1OpsJobsRunsErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsJobsRunsError = GetApiV1OpsJobsRunsErrors[keyof GetApiV1OpsJobsRunsErrors];
+
+export type GetApiV1OpsJobsRunsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            id: string;
+            name: string;
+            status: 'done' | 'partial' | 'failed';
+            startedAt: string;
+            finishedAt: string;
+            summary: {
+                [key: string]: number | string | boolean | null;
+            };
+            error: string | null;
+        }>;
+    };
+};
+
+export type GetApiV1OpsJobsRunsResponse = GetApiV1OpsJobsRunsResponses[keyof GetApiV1OpsJobsRunsResponses];
