@@ -3576,10 +3576,20 @@ export type GetApiV1GroupsByGroupIdResponses = {
                 joinedAt: string;
                 badgeEligible: boolean;
             } | null;
+            joinRequest: {
+                id: string;
+                createdAt: string;
+                expiresAt: string;
+            } | null;
         } | {
             visibility: 'name_only';
             id: string;
             name: string;
+            joinRequest: {
+                id: string;
+                createdAt: string;
+                expiresAt: string;
+            } | null;
         };
     };
 };
