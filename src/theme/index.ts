@@ -84,22 +84,12 @@ export const C = {
   glass: 'rgba(255,255,255,0.14)',
 } as const;
 
-/**
- * Cặp nền/chữ cho ô tròn chữ cái (avatar) và ô danh mục. Avatar lấy tông theo băm tên — backend không
- * gửi màu; danh mục lấy theo bảng cố định ở `CategoryGrid`.
- */
+/** Cặp nền/chữ cho ô tròn chữ cái (avatar). Avatar lấy tông theo băm tên — backend không gửi màu. */
 export const TONE = {
   /** Avatar của chính người dùng, nhóm trên nền hero. */
   brand: { bg: C.brandLt, fg: C.brandDark },
   /** Avatar người bán / người chat ở cỡ lớn: nền thương hiệu đặc, chữ trắng. */
   solid: { bg: C.brand, fg: C.paperWarm },
-  indigo: { bg: '#E0EAFF', fg: '#2952CC' },
-  purple: { bg: '#EDE7FB', fg: '#6B3FD0' },
-  pink: { bg: '#FDE4EC', fg: '#BE2457' },
-  amber: { bg: '#FBEBD3', fg: '#9A5806' },
-  teal: { bg: '#D6F0EC', fg: '#0F766E' },
-  green: { bg: '#DDF3E4', fg: '#15803D' },
-  navy: { bg: '#E3E8F7', fg: '#3445A8' },
   slate: { bg: '#F1F5F9', fg: '#0F172A' },
   blue: { bg: '#DBEAFE', fg: '#1E40AF' },
   rose: { bg: '#FCE7F3', fg: '#9D174D' },
