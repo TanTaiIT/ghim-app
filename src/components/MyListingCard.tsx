@@ -1,8 +1,9 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
-import type { MyListing } from '@/api/client';
+import { myListingActions, type MyListing, type MyListingAction } from '@/api/client';
 import { Photo } from './Photo';
-import { Price, Tag } from './ui';
+import { PickerSheet } from './PickerSheet';
+import { IconButton, Price, Tag } from './ui';
 import { C, F, R, S } from '@/theme';
 import { daysUntil } from '@/utils/format';
 
@@ -30,7 +31,11 @@ function status(item: MyListing): { label: string; tone: Tone } {
 
 /**
  * Tin của tôi ở trang Cá nhân. Hàng nút chỉ có khi tin đang hiển thị — nháp, đang kiểm, chờ duyệt, bị từ chối
- * chưa lên sàn nên không có gì để đẩy hay đánh dấu đã bán; tin đã bán không sửa nữa.
+ * chưa lên sàn nên không có gì để đẩy hay đánh dấu đã bán; tin đã bán không sửa nữa. Hành động theo trạng thái
+ * (rút, gia hạn, chuyển, xoá) nằm sau nút "⋯", vì tin nào cũng xoá được.
+ *
+ * Xoá không lấy lại được nên hỏi lại ngay trên thẻ (`confirmDelete`), không mở bảng thứ hai: trên iOS, Modal mở ngay
+ * lúc Modal trước đang đóng thường không hiện, còn `Alert` không chạy trên web.
  */
 export function MyListingCard({
   item,
@@ -38,36 +43,48 @@ export function MyListingCard({
   onEdit,
   onBoost,
   onSold,
+  onMore,
+  confirmDelete,
 }: {
   item: MyListing;
   onPress: () => void;
   onEdit: () => void;
   onBoost: () => void;
   onSold: () => void;
+  onMore: () => void;
+  confirmDelete: { onConfirm: () => void; onCancel: () => void } | null;
 }) {
   const s = status(item);
   return (
     <View style={styles.card}>
-      <Pressable accessibilityRole="link" onPress={onPress} style={styles.top}>
-        <Photo picture={item.cover} style={styles.thumb} />
-        <View style={styles.body}>
-          {/* Nháp được tạo ngay khi chọn ảnh đầu tiên, nên có thể chưa có tiêu đề hay giá. */}
-          <Text style={[styles.title, !item.title && styles.untitled]} numberOfLines={2}>
-            {item.title || 'Nháp chưa có tiêu đề'}
-          </Text>
-          {item.price > 0 && <Price value={item.price} />}
-          {item.views !== null && item.saves !== null && (
-            <View style={styles.stats}>
-              <Feather name="eye" size={14} color={C.inkSoft} />
-              <Text style={styles.stat}>{item.views}</Text>
-              <Feather name="heart" size={14} color={C.inkSoft} />
-              <Text style={styles.stat}>{item.saves}</Text>
-            </View>
-          )}
-          <Tag label={s.label} tone={s.tone} />
-          {item.note && <Text style={styles.note}>{item.note}</Text>}
-        </View>
-      </Pressable>
+      <View style={styles.top}>
+        <Pressable accessibilityRole="link" onPress={onPress} style={styles.link}>
+          <Photo picture={item.cover} style={styles.thumb} />
+          <View style={styles.body}>
+            {/* Nháp được tạo ngay khi chọn ảnh đầu tiên, nên có thể chưa có tiêu đề hay giá. */}
+            <Text style={[styles.title, !item.title && styles.untitled]} numberOfLines={2}>
+              {item.title || 'Nháp chưa có tiêu đề'}
+            </Text>
+            {item.price > 0 && <Price value={item.price} />}
+            {item.views !== null && item.saves !== null && (
+              <View style={styles.stats}>
+                <Feather name="eye" size={14} color={C.inkSoft} />
+                <Text style={styles.stat}>{item.views}</Text>
+                <Feather name="heart" size={14} color={C.inkSoft} />
+                <Text style={styles.stat}>{item.saves}</Text>
+              </View>
+            )}
+            <Tag label={s.label} tone={s.tone} />
+            {item.note && <Text style={styles.note}>{item.note}</Text>}
+          </View>
+        </Pressable>
+        <IconButton
+          icon="more-horizontal"
+          label="Thao tác khác"
+          color={C.inkSoft}
+          onPress={onMore}
+        />
+      </View>
       {item.state === 'live' && (
         <View style={styles.actions}>
           <Pressable accessibilityRole="button" onPress={onEdit} style={[styles.btn, styles.edit]}>
@@ -86,7 +103,57 @@ export function MyListingCard({
           </Pressable>
         </View>
       )}
+      {confirmDelete && (
+        <View style={styles.confirm}>
+          <Text style={styles.confirmText}>Xoá hẳn tin này? Không khôi phục được.</Text>
+          <View style={styles.actions}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={confirmDelete.onCancel}
+              style={[styles.btn, styles.edit]}
+            >
+              <Text style={styles.editText}>Không xoá</Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              onPress={confirmDelete.onConfirm}
+              style={[styles.btn, styles.danger]}
+            >
+              <Text style={styles.dangerText}>Xoá tin</Text>
+            </Pressable>
+          </View>
+        </View>
+      )}
     </View>
+  );
+}
+
+const ACTION: Record<MyListingAction, { label: string; note: string }> = {
+  withdraw: { label: 'Rút về nháp', note: 'Tin thôi chờ duyệt; sửa xong thì gửi lại' },
+  renew: { label: 'Gia hạn tin', note: 'Tin được kiểm tra lại như một lượt đăng' },
+  move: { label: 'Chuyển lên chợ chung', note: 'Đăng thành tin mới, tin cũ giữ nguyên' },
+  delete: { label: 'Xoá tin', note: 'Không ai thấy tin này nữa, kể cả bạn' },
+};
+
+/** Bảng "⋯": chỉ hành động server nhận cho tin này. Gọi API là việc của route — sheet chỉ trả lựa chọn. */
+export function MyListingActionSheet({
+  item,
+  onSelect,
+  onClose,
+}: {
+  item: MyListing | null;
+  onSelect: (action: MyListingAction) => void;
+  onClose: () => void;
+}) {
+  return (
+    <PickerSheet
+      visible={item !== null}
+      title={item?.title || 'Nháp chưa có tiêu đề'}
+      options={(item ? myListingActions(item) : []).map((value) => ({ value, ...ACTION[value] }))}
+      value={null}
+      onSelect={onSelect}
+      onClose={onClose}
+    />
   );
 }
 
@@ -99,7 +166,8 @@ const styles = StyleSheet.create({
     borderColor: C.line,
     backgroundColor: C.paperWarm,
   },
-  top: { flexDirection: 'row', gap: S.md },
+  top: { flexDirection: 'row', alignItems: 'flex-start' },
+  link: { flex: 1, flexDirection: 'row', gap: S.md },
   thumb: { width: 76, height: 76, borderRadius: R.sm },
   body: { flex: 1, minWidth: 0, gap: 3 },
   title: { fontFamily: F.uiSemi, fontSize: 14, color: C.ink },
@@ -123,4 +191,13 @@ const styles = StyleSheet.create({
   boostText: { fontFamily: F.uiBold, fontSize: 13, color: C.boostTx },
   sold: { backgroundColor: C.brandLt },
   soldText: { fontFamily: F.uiBold, fontSize: 13, color: C.brandDark },
+  confirm: {
+    gap: S.sm,
+    padding: S.md,
+    borderRadius: R.sm,
+    backgroundColor: C.pinLight,
+  },
+  confirmText: { fontFamily: F.uiSemi, fontSize: 13, color: C.ink },
+  danger: { backgroundColor: C.pin },
+  dangerText: { fontFamily: F.uiBold, fontSize: 13, color: C.paperWarm },
 });

@@ -1,5 +1,13 @@
 import { afterEach, describe, expect, it, jest } from '@jest/globals';
-import { api, NO_FILTERS, unwrap, unwrapEmpty, type Lookups } from './client';
+import {
+  api,
+  myListingActions,
+  NO_FILTERS,
+  unwrap,
+  unwrapEmpty,
+  type Lookups,
+  type MyListing,
+} from './client';
 import { ApiError, setHttpAccessToken, setHttpDeviceId } from './http';
 
 const response = (status: number) => ({ status, ok: status >= 200 && status < 300 }) as Response;
@@ -500,6 +508,70 @@ describe('lưu và gửi tin', () => {
       device: 'may-1',
       body: { version: 1 },
     });
+  });
+});
+
+const myListing = (overrides: Partial<MyListing> = {}): MyListing => ({
+  id: 'l-1',
+  title: 'Bàn học gỗ sồi',
+  price: 300000,
+  cover: { uri: 'https://img.test/1.jpg' },
+  place: { ward: null, province: 'Hà Nội' },
+  postedAt: '2026-10-12T17:00:00.000Z',
+  boosted: false,
+  seller: null,
+  groupName: null,
+  state: 'live',
+  views: null,
+  saves: null,
+  expiresAt: '2026-11-01T00:00:00.000Z',
+  note: null,
+  version: 4,
+  renewal: null,
+  moveUntil: null,
+  ...overrides,
+});
+
+describe('hành động trên tin của tôi', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+    setHttpDeviceId(null);
+  });
+
+  it('chỉ hành động server nhận: rút khi chờ duyệt, gia hạn khi server mở, chuyển khi còn hạn; xoá luôn có', () => {
+    const now = Date.parse('2026-10-20T00:00:00.000Z');
+    expect(myListingActions(myListing({ state: 'pending' }), now)).toEqual(['withdraw', 'delete']);
+    expect(myListingActions(myListing({ renewal: 'early' }), now)).toEqual(['renew', 'delete']);
+    expect(myListingActions(myListing({ moveUntil: '2026-10-25T00:00:00.000Z' }), now)).toEqual([
+      'move',
+      'delete',
+    ]);
+    expect(myListingActions(myListing({ moveUntil: '2026-10-19T00:00:00.000Z' }), now)).toEqual([
+      'delete',
+    ]);
+  });
+
+  it('gia hạn mang phiên bản và mã máy, chuyển lên chợ chung mang mã máy, rút và xoá theo mã tin', async () => {
+    setHttpDeviceId('may-1');
+    const calls = record();
+    const item = myListing();
+
+    await api.actOnMyListing('withdraw', item);
+    await api.actOnMyListing('renew', item);
+    await api.actOnMyListing('move', item);
+    await api.actOnMyListing('delete', item);
+
+    expect(calls).toEqual([
+      { method: 'POST', path: '/api/v1/listings/l-1/withdraw', device: null, body: null },
+      { method: 'POST', path: '/api/v1/listings/l-1/renew', device: 'may-1', body: { version: 4 } },
+      {
+        method: 'POST',
+        path: '/api/v1/listings/l-1/move-to-marketplace',
+        device: 'may-1',
+        body: {},
+      },
+      { method: 'DELETE', path: '/api/v1/listings/l-1', device: null, body: null },
+    ]);
   });
 });
 

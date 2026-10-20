@@ -3,22 +3,31 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { MyListing, MyListingAction } from '@/api/client';
 import { GuestGate } from '@/components/GuestGate';
 import { ListingRow } from '@/components/ListingCard';
-import { MyListingCard } from '@/components/MyListingCard';
+import { MyListingActionSheet, MyListingCard } from '@/components/MyListingCard';
+import { ProfileHeader } from '@/components/ProfileHeader';
 import { SegmentedTabs } from '@/components/TabStrip';
 import { useToast } from '@/components/Toast';
-import { Avatar, Verified } from '@/components/Avatar';
-import { EmptyState, GhostButton, IconButton, Loading, type IconName } from '@/components/ui';
+import { EmptyState, GhostButton, Loading, type IconName } from '@/components/ui';
 import { useMe, useSetShowActivity } from '@/queries/account';
 import { useSignOut } from '@/queries/auth';
 import { useSavedListings } from '@/queries/listings';
 import { useOpenForEdit } from '@/queries/posting';
-import { useMarkSold, useMyListings } from '@/queries/selling';
+import { useMarkSold, useMyListingAction, useMyListings } from '@/queries/selling';
 import { useIsAuthenticated } from '@/stores/auth';
 import { C, F, R, S } from '@/theme';
 
 type Shelf = 'active' | 'sold' | 'saved';
+
+/** Gia hạn và chuyển lên chợ chung đi qua máy duyệt: tin chưa hiện ngay, nên câu báo nói rõ là đang kiểm. */
+const DONE: Record<MyListingAction, string> = {
+  withdraw: 'Đã rút tin về nháp',
+  renew: 'Đã gửi gia hạn, tin đang được kiểm tra',
+  move: 'Đã gửi tin lên chợ chung, tin đang được kiểm tra',
+  delete: 'Đã xoá tin',
+};
 
 export default function Profile() {
   const router = useRouter();
@@ -33,6 +42,14 @@ export default function Profile() {
   const sold = useMyListings('sold');
   const saved = useSavedListings();
   const markSold = useMarkSold();
+  const act = useMyListingAction();
+  const [acting, setActing] = useState<MyListing | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const run = (action: MyListingAction, item: MyListing) =>
+    act.mutate(
+      { action, item },
+      { onSuccess: () => toast(DONE[action]), onError: (e) => toast(e.message) },
+    );
   const openForEdit = useOpenForEdit();
   /** Nháp thì làm tiếp, tin đang hiển thị thì sửa — cùng một luồng, form nạp sẵn từ server. */
   const openEditor = (id: string) =>
@@ -84,31 +101,12 @@ export default function Profile() {
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
       <ScrollView>
-        <View style={styles.header}>
-          <View style={styles.idRow}>
-            <Avatar name={me.data.name} size={68} tone="solid" />
-            <View style={styles.id}>
-              <View style={styles.nameRow}>
-                <Text style={styles.name}>{me.data.name}</Text>
-                {me.data.verified && <Verified size={17} />}
-              </View>
-              <Text style={styles.small}>
-                {me.data.idVerified ? 'Đã xác minh CCCD · ' : ''}Thành viên từ {me.data.memberSince}
-              </Text>
-            </View>
-            <IconButton
-              variant="outline"
-              icon="sliders"
-              label="Cài đặt"
-              onPress={() => toast('Cài đặt sẽ có ở bản sau')}
-            />
-          </View>
-          <View style={styles.stats}>
-            <Stat value={String(stats.active)} label="Đang đăng" />
-            <Stat value={String(stats.sold)} label="Đã bán" />
-            <Stat value={me.data.rating === null ? '—' : `${me.data.rating} ★`} label="Đánh giá" />
-          </View>
-        </View>
+        <ProfileHeader
+          me={me.data}
+          active={stats.active}
+          sold={stats.sold}
+          onSettings={() => toast('Cài đặt sẽ có ở bản sau')}
+        />
 
         <View style={styles.main}>
           <SegmentedTabs
@@ -149,6 +147,18 @@ export default function Profile() {
                     onError: (e) => toast(e.message),
                   })
                 }
+                onMore={() => setActing(l)}
+                confirmDelete={
+                  deleting === l.id
+                    ? {
+                        onConfirm: () => {
+                          setDeleting(null);
+                          run('delete', l);
+                        },
+                        onCancel: () => setDeleting(null),
+                      }
+                    : null
+                }
               />
             ))
           ) : (
@@ -177,46 +187,22 @@ export default function Profile() {
           />
         </View>
       </ScrollView>
+      <MyListingActionSheet
+        item={acting}
+        onClose={() => setActing(null)}
+        onSelect={(action) => {
+          if (!acting) return;
+          if (action === 'delete') setDeleting(acting.id);
+          else run(action, acting);
+        }}
+      />
     </SafeAreaView>
-  );
-}
-
-function Stat({ value, label }: { value: string; label: string }) {
-  return (
-    <View style={styles.stat}>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.small}>{label}</Text>
-    </View>
   );
 }
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: C.paper },
   guestTitle: { padding: S.lg, fontFamily: F.uiBlack, fontSize: 24, color: C.ink },
-  header: {
-    paddingHorizontal: S.lg,
-    paddingTop: S.sm,
-    paddingBottom: S.lg,
-    gap: S.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: C.line,
-    backgroundColor: C.paperWarm,
-  },
-  idRow: { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  id: { flex: 1, gap: 3 },
-  nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  name: { flexShrink: 1, fontFamily: F.uiBlack, fontSize: 19, color: C.ink },
-  small: { fontFamily: F.ui, fontSize: 12, color: C.inkSoft },
-  stats: { flexDirection: 'row', gap: S.sm },
-  stat: {
-    flex: 1,
-    padding: 10,
-    gap: 2,
-    alignItems: 'center',
-    borderRadius: R.sm,
-    backgroundColor: C.sand,
-  },
-  statValue: { fontFamily: F.uiBlack, fontSize: 18, color: C.ink },
   main: { padding: S.lg, gap: S.md },
   menu: {
     marginTop: S.xs,

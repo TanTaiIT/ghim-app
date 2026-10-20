@@ -3,6 +3,7 @@ import { File } from 'expo-file-system';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import {
   deleteApiV1GroupsByGroupIdJoinRequest,
+  deleteApiV1ListingsById,
   deleteApiV1MeGroupMutesByGroupId,
   getApiV1Categories,
   getApiV1CategoriesByIdTemplate,
@@ -41,8 +42,11 @@ import {
   postApiV1GroupsByGroupIdLeave,
   postApiV1GroupsLookupCode,
   postApiV1Listings,
+  postApiV1ListingsByIdMoveToMarketplace,
+  postApiV1ListingsByIdRenew,
   postApiV1ListingsByIdSold,
   postApiV1ListingsByIdSubmit,
+  postApiV1ListingsByIdWithdraw,
   postApiV1ListingsByListingIdConversation,
   postApiV1MeConversationsByConversationIdMessages,
   postApiV1MeConversationsByConversationIdOffers,
@@ -258,7 +262,25 @@ export type MyListing = ListingCard & {
   expiresAt: string | null;
   /** Lời của máy duyệt / người duyệt gửi người đăng: vì sao còn chờ, vì sao bị từ chối. */
   note: string | null;
+  /** Gia hạn gửi kèm phiên bản như mọi lượt sửa: hai máy của một người không ghi đè nhau. */
+  version: number;
+  /** Server mở gia hạn trong 7 ngày cuối (`early`) hay sau khi hết hạn (`expired`); null = chưa gia hạn được. */
+  renewal: 'early' | 'expired' | null;
+  /** Hạn chuyển lên chợ chung — chỉ có với tin đã rời nhóm hẳn. */
+  moveUntil: string | null;
 };
+
+export type MyListingAction = 'withdraw' | 'renew' | 'move' | 'delete';
+
+/** Hành động server sẽ nhận cho tin này; xoá thì mọi trạng thái đều được. */
+export function myListingActions(l: MyListing, now: number = Date.now()): MyListingAction[] {
+  const actions: MyListingAction[] = [];
+  if (l.state === 'pending') actions.push('withdraw');
+  if (l.renewal !== null) actions.push('renew');
+  if (l.moveUntil !== null && Date.parse(l.moveUntil) > now) actions.push('move');
+  actions.push('delete');
+  return actions;
+}
 
 /** Một ô của mẫu thông số danh mục (`/categories/{id}/template`) — danh mục chưa có mẫu thì không có ô nào. */
 export type TemplateField = {
@@ -1047,6 +1069,9 @@ export const api = {
               saves: null,
               expiresAt: w.expiresAt,
               note: w.machineNotice?.message ?? w.faultReason ?? null,
+              version: w.version,
+              renewal: w.renewal,
+              moveUntil: w.moveUntil,
             },
           ],
     );
@@ -1054,6 +1079,35 @@ export const api = {
 
   markSold: async (id: string): Promise<void> => {
     await unwrap(postApiV1ListingsByIdSold({ path: { id } }));
+  },
+
+  /**
+   * Gia hạn và chuyển lên chợ chung đi qua máy duyệt như một lượt gửi nên mang mã máy; chuyển lên chợ chung tạo tin
+   * MỚI, tin cũ giữ nguyên. Xoá thì không ai thấy tin nữa, kể cả người đăng.
+   */
+  actOnMyListing: async (action: MyListingAction, l: MyListing): Promise<void> => {
+    const path = { id: l.id };
+    switch (action) {
+      case 'withdraw':
+        await unwrap(postApiV1ListingsByIdWithdraw({ path }));
+        return;
+      case 'renew':
+        await unwrap(
+          postApiV1ListingsByIdRenew({
+            path,
+            headers: deviceHeaders(),
+            body: { version: l.version },
+          }),
+        );
+        return;
+      case 'move':
+        await unwrap(
+          postApiV1ListingsByIdMoveToMarketplace({ path, headers: deviceHeaders(), body: {} }),
+        );
+        return;
+      case 'delete':
+        await unwrapEmpty(deleteApiV1ListingsById({ path }));
+    }
   },
 
   getTemplate: async (categoryId: string): Promise<TemplateField[]> =>
