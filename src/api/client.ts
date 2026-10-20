@@ -4,9 +4,14 @@ import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import {
   deleteApiV1GroupsByGroupIdJoinRequest,
   deleteApiV1ListingsById,
+  deleteApiV1Me,
+  deleteApiV1MeAvatar,
+  deleteApiV1MeBlocksByAccountId,
   deleteApiV1MeConversationsByConversationId,
   deleteApiV1MeConversationsByConversationIdViewing,
   deleteApiV1MeGroupMutesByGroupId,
+  deleteApiV1MeSessions,
+  deleteApiV1MeSessionsById,
   getApiV1Categories,
   getApiV1CategoriesByIdTemplate,
   getApiV1CategoriesByIdTemplateVersionsByVersion,
@@ -19,6 +24,7 @@ import {
   getApiV1ListingsById,
   getApiV1ListingsByIdSuggestions,
   getApiV1Me,
+  getApiV1MeBlocks,
   getApiV1MeConversations,
   getApiV1MeConversationsByConversationId,
   getApiV1MeConversationsByConversationIdMessages,
@@ -28,6 +34,7 @@ import {
   getApiV1MeNotificationPreferences,
   getApiV1MeNotifications,
   getApiV1MeNotificationsUnreadCount,
+  getApiV1MeSessions,
   getApiV1RegionsProvinces,
   getApiV1RegionsProvincesByCodeWards,
   getApiV1UsersById,
@@ -61,8 +68,10 @@ import {
   postApiV1MeNotificationsRead,
   postApiV1MeSupportConversation,
   postApiV1Reports,
+  putApiV1MeAvatar,
   putApiV1MeConversationsByConversationIdViewing,
   putApiV1MeGroupMutesByGroupId,
+  putApiV1MePassword,
 } from './generated/sdk.gen';
 import type {
   GetApiV1GroupsByGroupIdResponses,
@@ -476,7 +485,19 @@ export type Me = Person & {
   rating: number | null;
   /** Hiện trạng thái hoạt động trong chat — tắt là hai chiều: mình cũng không thấy của ai. */
   showActivity: boolean;
+  avatarUrl: string | null;
 };
+
+/** Một thiết bị đang đăng nhập. `current` = chính máy này — đăng xuất máy này là việc của nút Đăng xuất. */
+export type DeviceSession = {
+  id: string;
+  deviceName: string;
+  lastActiveAt: string;
+  current: boolean;
+};
+
+/** `name` null khi tài khoản kia đã xoá — vẫn gỡ chặn được. */
+export type BlockedPerson = { id: string; name: string | null; blockedAt: string };
 
 export type HelpTopic = { id: string; label: string; faqs: { q: string; a: string }[] };
 
@@ -578,6 +599,7 @@ function toMe(u: WireMe): Me {
     place: null,
     rating: null,
     showActivity: u.showActivity,
+    avatarUrl: u.avatarUrl,
   };
 }
 
@@ -696,12 +718,43 @@ async function fileOf(uri: string): Promise<{ body: Blob; size: number }> {
   return { body: file as unknown as Blob, size: file.size ?? 0 };
 }
 
+/**
+ * Nén → xin quyền tải cho đúng một ảnh → tải thẳng lên kho (`ghim-server/docs/media.md`). Ảnh chỉ thuộc về chủ của
+ * nó (tin, hồ sơ) khi được gắn bằng `imageId`; không gắn trong 48 giờ thì server dọn.
+ */
+async function uploadImage(
+  owner: { kind: 'listing' | 'profile'; id: string },
+  photo: PickedPhoto,
+): Promise<string> {
+  const { body, size } = await fileOf(await preparePhoto(photo));
+  const grant = await unwrap(
+    postApiV1MediaUploads({
+      body: { ownerKind: owner.kind, ownerId: owner.id, contentType: 'image/jpeg', byteSize: size },
+    }),
+  );
+  const { method, url, headers, fields } = grant.upload;
+  let res: Response;
+  if (method === 'POST') {
+    // Đúng nguyên văn các trường đã ký, tệp đứng cuối — thừa, thiếu hay đổi thứ tự là chữ ký sai.
+    const form = new FormData();
+    for (const [key, value] of Object.entries(fields)) form.append(key, value);
+    form.append('file', body, 'photo.jpg');
+    res = await fetch(url, { method, body: form, headers });
+  } else {
+    res = await fetch(url, { method, body, headers });
+  }
+  if (!res.ok) throw new ApiError('UPLOAD_FAILED', 'Không tải được ảnh lên, thử lại', res.status);
+  return grant.imageId;
+}
+
 /* --------------------------------- tin nhắn -------------------------------- */
 
 /** Đủ cho một hội thoại đang mở; cũ hơn nữa thì chưa có nút tải thêm (server phân trang bằng con trỏ). */
 const MESSAGE_PAGE = 100;
 /** Trần một trang của server (`MAX_LIMIT`). */
 const CONVERSATION_PAGE = 100;
+/** Trần một trang của server (`MAX_LIMIT`): danh sách chặn chưa có nút tải thêm. */
+const BLOCK_PAGE = 100;
 
 const toMessage = (w: WireMessage): Message =>
   w.kind === 'offer' && w.offer
@@ -972,6 +1025,43 @@ export const api = {
   setShowActivity: async (showActivity: boolean): Promise<Me> =>
     toMe(await unwrap(patchApiV1Me({ body: { showActivity } }))),
 
+  /** Ảnh hồ sơ tải lên cho chính hồ sơ của mình (`profile`), rồi gắn bằng `imageId`. */
+  setAvatar: async (accountId: string, photo: PickedPhoto): Promise<Me> => {
+    const imageId = await uploadImage({ kind: 'profile', id: accountId }, photo);
+    return toMe(await unwrap(putApiV1MeAvatar({ body: { imageId } })));
+  },
+
+  clearAvatar: async (): Promise<Me> => toMe(await unwrap(deleteApiV1MeAvatar())),
+
+  /** Server thu hồi mọi phiên khác — máy này vẫn đăng nhập. */
+  changePassword: (currentPassword: string, newPassword: string): Promise<void> =>
+    unwrapEmpty(putApiV1MePassword({ body: { currentPassword, newPassword } })),
+
+  getSessions: async (): Promise<DeviceSession[]> =>
+    (await unwrap(getApiV1MeSessions())).map(({ id, deviceName, lastActiveAt, current }) => ({
+      id,
+      deviceName,
+      lastActiveAt,
+      current,
+    })),
+
+  /** `'others'` = mọi thiết bị khác, giữ máy này. */
+  revokeSession: (id: string | 'others'): Promise<void> =>
+    unwrapEmpty(
+      id === 'others' ? deleteApiV1MeSessions() : deleteApiV1MeSessionsById({ path: { id } }),
+    ),
+
+  getBlocks: async (): Promise<BlockedPerson[]> =>
+    (await unwrap(getApiV1MeBlocks({ query: { limit: BLOCK_PAGE } }))).items.map(
+      ({ accountId, displayName, blockedAt }) => ({ id: accountId, name: displayName, blockedAt }),
+    ),
+
+  unblock: (accountId: string): Promise<void> =>
+    unwrapEmpty(deleteApiV1MeBlocksByAccountId({ path: { accountId } })),
+
+  /** Server thu hồi mọi phiên, kể cả máy này: app chỉ còn việc dọn phiên ở máy. */
+  deleteAccount: (): Promise<void> => unwrapEmpty(deleteApiV1Me()),
+
   getNotices: async (): Promise<Notice[]> =>
     (await unwrap(getApiV1MeNotifications({ query: { limit: NOTICE_PAGE } }))).items.map(toNotice),
 
@@ -1159,36 +1249,9 @@ export const api = {
   getEditable: async (id: string): Promise<EditableListing> =>
     toEditable(await unwrap(getApiV1ListingsById({ path: { id } }))),
 
-  /**
-   * Nén → xin quyền tải cho đúng một ảnh → tải thẳng lên kho (`ghim-server/docs/media.md`). Ảnh chỉ thành
-   * ảnh của tin khi nháp được lưu kèm `imageId`; không lưu trong 48 giờ thì server dọn.
-   */
-  uploadPhoto: async (listingId: string, photo: PickedPhoto): Promise<string> => {
-    const { body, size } = await fileOf(await preparePhoto(photo));
-    const grant = await unwrap(
-      postApiV1MediaUploads({
-        body: {
-          ownerKind: 'listing',
-          ownerId: listingId,
-          contentType: 'image/jpeg',
-          byteSize: size,
-        },
-      }),
-    );
-    const { method, url, headers, fields } = grant.upload;
-    let res: Response;
-    if (method === 'POST') {
-      // Đúng nguyên văn các trường đã ký, tệp đứng cuối — thừa, thiếu hay đổi thứ tự là chữ ký sai.
-      const form = new FormData();
-      for (const [key, value] of Object.entries(fields)) form.append(key, value);
-      form.append('file', body, 'photo.jpg');
-      res = await fetch(url, { method, body: form, headers });
-    } else {
-      res = await fetch(url, { method, body, headers });
-    }
-    if (!res.ok) throw new ApiError('UPLOAD_FAILED', 'Không tải được ảnh lên, thử lại', res.status);
-    return grant.imageId;
-  },
+  /** Ảnh chỉ thành ảnh của tin khi nháp được lưu kèm `imageId` trả về. */
+  uploadPhoto: (listingId: string, photo: PickedPhoto): Promise<string> =>
+    uploadImage({ kind: 'listing', id: listingId }, photo),
 
   getConversations: async (): Promise<ConversationSummary[]> =>
     (await unwrap(getApiV1MeConversations({ query: { limit: CONVERSATION_PAGE } }))).items.map(

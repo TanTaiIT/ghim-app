@@ -598,6 +598,68 @@ describe('hành động trên tin của tôi', () => {
   });
 });
 
+describe('cài đặt', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('thiết bị và người đã chặn: đúng trường server trả; người đã xoá tài khoản không còn tên', async () => {
+    const calls = serve({
+      '/api/v1/me/sessions': [
+        {
+          id: 's-1',
+          deviceName: 'iPhone của Tài',
+          createdAt: '2026-10-01T00:00:00.000Z',
+          lastActiveAt: '2026-10-20T00:00:00.000Z',
+          current: true,
+        },
+      ],
+      '/api/v1/me/blocks': {
+        items: [{ accountId: 'u-2', displayName: null, blockedAt: '2026-10-19T00:00:00.000Z' }],
+        page: 1,
+        limit: 100,
+        total: 1,
+        totalPages: 1,
+      },
+    });
+
+    await expect(api.getSessions()).resolves.toEqual([
+      {
+        id: 's-1',
+        deviceName: 'iPhone của Tài',
+        lastActiveAt: '2026-10-20T00:00:00.000Z',
+        current: true,
+      },
+    ]);
+    await expect(api.getBlocks()).resolves.toEqual([
+      { id: 'u-2', name: null, blockedAt: '2026-10-19T00:00:00.000Z' },
+    ]);
+    expect(calls[1]?.url.searchParams.get('limit')).toBe('100');
+  });
+
+  it('đổi mật khẩu, đăng xuất một máy hay mọi máy khác, gỡ chặn, xoá tài khoản', async () => {
+    const calls = record();
+
+    await api.changePassword('cu-12345678', 'moi-12345678');
+    await api.revokeSession('s-2');
+    await api.revokeSession('others');
+    await api.unblock('u-2');
+    await api.deleteAccount();
+
+    expect(calls.map(({ method, path, body }) => ({ method, path, body }))).toEqual([
+      {
+        method: 'PUT',
+        path: '/api/v1/me/password',
+        body: { currentPassword: 'cu-12345678', newPassword: 'moi-12345678' },
+      },
+      { method: 'DELETE', path: '/api/v1/me/sessions/s-2', body: null },
+      { method: 'DELETE', path: '/api/v1/me/sessions', body: null },
+      { method: 'DELETE', path: '/api/v1/me/blocks/u-2', body: null },
+      { method: 'DELETE', path: '/api/v1/me', body: null },
+    ]);
+  });
+});
+
 describe('báo cáo', () => {
   afterEach(() => {
     jest.restoreAllMocks();

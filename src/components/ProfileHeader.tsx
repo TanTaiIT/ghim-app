@@ -19,7 +19,7 @@ export function ProfileHeader({
   return (
     <View style={styles.header}>
       <View style={styles.idRow}>
-        <Avatar name={me.name} size={68} tone="solid" />
+        <Avatar name={me.name} size={68} tone="solid" uri={me.avatarUrl} />
         <View style={styles.id}>
           <View style={styles.nameRow}>
             <Text style={styles.name}>{me.name}</Text>

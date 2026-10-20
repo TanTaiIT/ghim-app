@@ -1,23 +1,23 @@
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import Feather from '@expo/vector-icons/Feather';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { MyListing, MyListingAction } from '@/api/client';
 import { GuestGate } from '@/components/GuestGate';
 import { ListingRow } from '@/components/ListingCard';
+import { MenuList, type MenuItem } from '@/components/MenuList';
 import { MyListingActionSheet, MyListingCard } from '@/components/MyListingCard';
 import { ProfileHeader } from '@/components/ProfileHeader';
 import { SegmentedTabs } from '@/components/TabStrip';
 import { useToast } from '@/components/Toast';
-import { EmptyState, GhostButton, Loading, type IconName } from '@/components/ui';
+import { EmptyState, GhostButton, Loading } from '@/components/ui';
 import { useMe, useSetShowActivity } from '@/queries/account';
 import { useSignOut } from '@/queries/auth';
 import { useSavedListings } from '@/queries/listings';
 import { useOpenForEdit } from '@/queries/posting';
 import { useMarkSold, useMyListingAction, useMyListings } from '@/queries/selling';
 import { useIsAuthenticated } from '@/stores/auth';
-import { C, F, R, S } from '@/theme';
+import { C, F, S } from '@/theme';
 
 type Shelf = 'active' | 'sold' | 'saved';
 
@@ -74,7 +74,7 @@ export default function Profile() {
     sold: sold.data?.length ?? 0,
     saved: saved.data?.length ?? 0,
   };
-  const menu: { icon: IconName; label: string; onPress: () => void }[] = [
+  const menu: MenuItem[] = [
     {
       icon: 'check-circle',
       label: 'Xác minh tài khoản',
@@ -105,7 +105,7 @@ export default function Profile() {
           me={me.data}
           active={stats.active}
           sold={stats.sold}
-          onSettings={() => toast('Cài đặt sẽ có ở bản sau')}
+          onSettings={() => router.push('/settings')}
         />
 
         <View style={styles.main}>
@@ -165,22 +165,7 @@ export default function Profile() {
             <EmptyState icon="package" text="Chưa có tin nào ở mục này." />
           )}
 
-          <View style={styles.menu}>
-            {menu.map((m, i) => (
-              <Pressable
-                key={m.label}
-                accessibilityRole="link"
-                onPress={m.onPress}
-                style={[styles.menuItem, i < menu.length - 1 && styles.menuLine]}
-              >
-                <View style={styles.menuIcon}>
-                  <Feather name={m.icon} size={17} color={C.brand} />
-                </View>
-                <Text style={styles.menuLabel}>{m.label}</Text>
-                <Feather name="chevron-right" size={16} color={C.muted} />
-              </Pressable>
-            ))}
-          </View>
+          <MenuList items={menu} />
           <GhostButton
             label="Đăng xuất"
             onPress={() => signOut.mutate(undefined, { onError: (e) => toast(e.message) })}
@@ -204,29 +189,4 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: C.paper },
   guestTitle: { padding: S.lg, fontFamily: F.uiBlack, fontSize: 24, color: C.ink },
   main: { padding: S.lg, gap: S.md },
-  menu: {
-    marginTop: S.xs,
-    borderRadius: R.lg,
-    borderWidth: 1,
-    borderColor: C.line,
-    backgroundColor: C.paperWarm,
-    overflow: 'hidden',
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: S.md,
-    minHeight: 54,
-    paddingHorizontal: 14,
-  },
-  menuLine: { borderBottomWidth: 1, borderBottomColor: C.line },
-  menuIcon: {
-    width: 34,
-    height: 34,
-    borderRadius: R.sm,
-    backgroundColor: C.sand,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  menuLabel: { flex: 1, fontFamily: F.uiMedium, fontSize: 14, color: C.ink },
 });

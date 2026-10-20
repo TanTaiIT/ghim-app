@@ -1,8 +1,9 @@
 import { StyleSheet, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { Image } from 'expo-image';
 import { C, F, TONE, type Tone } from '@/theme';
 
-/* Dấu hiệu danh tính: ô chữ cái thay ảnh đại diện, tích xanh đã xác minh. */
+/* Dấu hiệu danh tính: ảnh đại diện (hay ô chữ cái khi chưa có ảnh), tích xanh đã xác minh. */
 
 const AVATAR_TONES: Tone[] = ['blue', 'rose', 'gold', 'violet', 'mint', 'red'];
 
@@ -13,8 +14,28 @@ function toneOf(seed: string): Tone {
   return AVATAR_TONES[Math.abs(h) % AVATAR_TONES.length] ?? 'slate';
 }
 
-export function Avatar({ name, size = 18, tone }: { name: string; size?: number; tone?: Tone }) {
+export function Avatar({
+  name,
+  size = 18,
+  tone,
+  uri,
+}: {
+  name: string;
+  size?: number;
+  tone?: Tone;
+  uri?: string | null;
+}) {
   const t = TONE[tone ?? toneOf(name)];
+  if (uri) {
+    return (
+      <Image
+        source={{ uri }}
+        accessibilityLabel={name}
+        style={{ width: size, height: size, borderRadius: size / 2, backgroundColor: C.sand }}
+        contentFit="cover"
+      />
+    );
+  }
   return (
     <View
       style={[

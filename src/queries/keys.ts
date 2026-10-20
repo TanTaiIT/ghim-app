@@ -10,6 +10,8 @@ import type { SearchFilters } from '@/api/client';
 export const qk = {
   health: () => ['health'] as const,
   me: () => ['me'] as const,
+  sessions: () => ['me', 'sessions'] as const,
+  blocks: () => ['me', 'blocks'] as const,
   categories: () => ['categories'] as const,
   provinces: () => ['regions', 'provinces'] as const,
   wards: (provinceCode: number) => ['regions', 'wards', provinceCode] as const,

@@ -93,6 +93,7 @@ export default function RootLayout() {
                 <Stack.Screen name="chat/[id]" />
                 <Stack.Screen name="groups" />
                 <Stack.Screen name="help" />
+                <Stack.Screen name="settings" />
                 {/* Luồng đăng tin là một stack con; đóng bằng nút X ở bước 1 như thiết kế. */}
                 <Stack.Screen name="post" options={{ presentation: 'fullScreenModal' }} />
               </Stack.Protected>
