@@ -79,6 +79,23 @@ export function useSimilar(id: string | undefined) {
   });
 }
 
+export function useSeller(id: string | undefined) {
+  return useQuery({
+    queryKey: qk.seller(id ?? ''),
+    queryFn: () => api.getSeller(id ?? ''),
+    enabled: Boolean(id),
+  });
+}
+
+export function useSellerListings(id: string | undefined) {
+  const qc = useQueryClient();
+  return useQuery({
+    queryKey: qk.listings.bySeller(id ?? ''),
+    queryFn: () => api.getSellerListings(id ?? '', lookupsFrom(qc)),
+    enabled: Boolean(id),
+  });
+}
+
 /** Tập id tin đã lưu — trái tim trên mọi thẻ đọc chung một key, lưu ở đâu cũng đổi ở mọi nơi. */
 export function useSavedIds() {
   const authed = useIsAuthenticated();

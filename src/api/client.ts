@@ -29,6 +29,7 @@ import {
   getApiV1RegionsProvinces,
   getApiV1RegionsProvincesByCodeWards,
   getApiV1UsersById,
+  getApiV1UsersByIdListings,
   getHealthReady,
   patchApiV1ListingsById,
   patchApiV1Me,
@@ -936,6 +937,18 @@ export const api = {
 
   getSimilar: async (id: string, load: LoadLookups): Promise<ListingCard[]> =>
     toCards(await unwrap(getApiV1ListingsByIdSuggestions({ path: { id } })), load),
+
+  /** Trang người bán không có tin cụ thể nào để cho phép hiện số điện thoại, nên số luôn ẩn. */
+  getSeller: async (id: string): Promise<Seller> =>
+    toSeller(await unwrap(getApiV1UsersById({ path: { id } })), false),
+
+  /** Chỉ tin đang hiển thị mà người xem được phép thấy: server lọc theo phiên, khách thấy ít hơn thành viên nhóm. */
+  getSellerListings: async (id: string, load: LoadLookups): Promise<ListingCard[]> =>
+    toCards(
+      (await unwrap(getApiV1UsersByIdListings({ path: { id }, query: { limit: PAGE_SIZE } })))
+        .items,
+      load,
+    ),
 
   /**
    * Báo lại đúng tin mình đã báo khi báo cáo cũ còn mở thì server trả 200 thay vì 201 — với người báo hai trường hợp

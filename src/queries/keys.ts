@@ -22,7 +22,9 @@ export const qk = {
     mine: () => ['listings', 'mine'] as const,
     editable: (id: string) => ['listings', 'editable', id] as const,
     saved: () => ['listings', 'saved'] as const,
+    bySeller: (id: string) => ['listings', 'seller', id] as const,
   },
+  seller: (id: string) => ['users', id] as const,
   savedIds: () => ['saved-ids'] as const,
   savedSearches: () => ['saved-searches'] as const,
   groups: {

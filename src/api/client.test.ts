@@ -183,6 +183,29 @@ describe('đọc tin đăng từ server', () => {
       verified: false,
     });
   });
+
+  it('trang người bán: hồ sơ không lộ số điện thoại, tin đang hiển thị theo trang', async () => {
+    const calls = serve({
+      '/api/v1/users/u-1': {
+        id: 'u-1',
+        displayName: 'Chị Lan',
+        avatarUrl: null,
+        joinedAt: '2025-03-01T00:00:00.000Z',
+        phone: { number: '0901234567', verified: false },
+      },
+      '/api/v1/users/u-1/listings': { items: [wireListing], nextCursor: null },
+    });
+
+    await expect(api.getSeller('u-1')).resolves.toMatchObject({
+      id: 'u-1',
+      name: 'Chị Lan',
+      phone: null,
+      joinedAt: '2025-03-01T00:00:00.000Z',
+    });
+    const cards = await api.getSellerListings('u-1', loadLookups);
+    expect(cards.map((c) => c.id)).toEqual([wireListing.id]);
+    expect(calls[1]?.url.searchParams.get('limit')).toBe('30');
+  });
 });
 
 /** Server giả trả bản tin với `version` tăng dần; ghi lại method, đường dẫn, header máy và body. */

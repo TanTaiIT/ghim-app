@@ -55,7 +55,8 @@ function sellerLine(s: Seller): string | null {
   return s.joinedAt ? `Thành viên từ ${new Date(s.joinedAt).getFullYear()}` : null;
 }
 
-export function SellerCard({ seller, onOpen }: { seller: Seller; onOpen: () => void }) {
+/** Không có `onOpen` = đang ở chính trang người bán, không còn chỗ nào để mở. */
+export function SellerCard({ seller, onOpen }: { seller: Seller; onOpen?: () => void }) {
   const line = sellerLine(seller);
   return (
     <View style={styles.seller}>
@@ -67,7 +68,7 @@ export function SellerCard({ seller, onOpen }: { seller: Seller; onOpen: () => v
         </View>
         {line && <Text style={styles.small}>{line}</Text>}
       </View>
-      <OutlineButton compact label="Xem trang" onPress={onOpen} />
+      {onOpen && <OutlineButton compact label="Xem trang" onPress={onOpen} />}
     </View>
   );
 }

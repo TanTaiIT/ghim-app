@@ -77,10 +77,7 @@ export default function ListingDetail() {
         <Gallery photos={l.photos} height={320} />
         <View style={styles.sheet}>
           <ListingSummary listing={l} />
-          <SellerCard
-            seller={l.seller}
-            onOpen={() => toast('Trang người bán sẽ có khi nối backend')}
-          />
+          <SellerCard seller={l.seller} onOpen={() => router.push(`/user/${l.seller.id}`)} />
           {l.specs.length > 0 && <SpecGrid specs={l.specs} />}
           {l.description !== '' && (
             <View style={styles.block}>
