@@ -4,6 +4,8 @@ import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import {
   deleteApiV1GroupsByGroupIdJoinRequest,
   deleteApiV1ListingsById,
+  deleteApiV1MeConversationsByConversationId,
+  deleteApiV1MeConversationsByConversationIdViewing,
   deleteApiV1MeGroupMutesByGroupId,
   getApiV1Categories,
   getApiV1CategoriesByIdTemplate,
@@ -54,10 +56,12 @@ import {
   postApiV1MeConversationsByConversationIdOffersByMessageIdAccept,
   postApiV1MeConversationsByConversationIdOffersByMessageIdDecline,
   postApiV1MeConversationsByConversationIdRead,
+  postApiV1MeConversationsByConversationIdReports,
   postApiV1MediaUploads,
   postApiV1MeNotificationsRead,
   postApiV1MeSupportConversation,
   postApiV1Reports,
+  putApiV1MeConversationsByConversationIdViewing,
   putApiV1MeGroupMutesByGroupId,
 } from './generated/sdk.gen';
 import type {
@@ -1211,6 +1215,31 @@ export const api = {
 
   markConversationRead: (id: string): Promise<void> =>
     unwrapEmpty(postApiV1MeConversationsByConversationIdRead({ path: { conversationId: id } })),
+
+  /** Máy này đang mở hội thoại: server không đẩy tin của nó lên máy này — cờ tự hết sau 10 phút. */
+  setConversationViewing: (id: string, viewing: boolean): Promise<void> => {
+    const path = { conversationId: id };
+    return unwrapEmpty(
+      viewing
+        ? putApiV1MeConversationsByConversationIdViewing({ path })
+        : deleteApiV1MeConversationsByConversationIdViewing({ path }),
+    );
+  },
+
+  /** Chỉ xoá khỏi danh sách của mình — bên kia vẫn thấy đủ tin nhắn. */
+  deleteConversation: (id: string): Promise<void> =>
+    unwrapEmpty(deleteApiV1MeConversationsByConversationId({ path: { conversationId: id } })),
+
+  /** Báo cáo bên kia từ hội thoại về tin; hội thoại với một đội (Hỗ trợ Ghim, quản trị nhóm) thì server trả 409. */
+  reportConversation: async (id: string, category: ReportCategory): Promise<void> => {
+    await unwrap(
+      postApiV1MeConversationsByConversationIdReports({
+        path: { conversationId: id },
+        headers: deviceHeaders(),
+        body: { category },
+      }),
+    );
+  },
 
   sendMessage: async (conversationId: string, text: string): Promise<Message> =>
     toMessage(

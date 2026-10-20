@@ -604,6 +604,28 @@ describe('báo cáo', () => {
     setHttpDeviceId(null);
   });
 
+  it('hội thoại: báo cáo bên kia mang mã máy; đang xem, thôi xem và xoá theo mã hội thoại', async () => {
+    setHttpDeviceId('may-1');
+    const calls = record();
+
+    await api.reportConversation('c-1', 'harassment');
+    await api.setConversationViewing('c-1', true);
+    await api.setConversationViewing('c-1', false);
+    await api.deleteConversation('c-1');
+
+    expect(calls).toEqual([
+      {
+        method: 'POST',
+        path: '/api/v1/me/conversations/c-1/reports',
+        device: 'may-1',
+        body: { category: 'harassment' },
+      },
+      { method: 'PUT', path: '/api/v1/me/conversations/c-1/viewing', device: null, body: null },
+      { method: 'DELETE', path: '/api/v1/me/conversations/c-1/viewing', device: null, body: null },
+      { method: 'DELETE', path: '/api/v1/me/conversations/c-1', device: null, body: null },
+    ]);
+  });
+
   it('báo cáo tin: đối tượng là tin, loại của server, mang mã máy', async () => {
     setHttpDeviceId('may-1');
     const calls = record();

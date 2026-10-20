@@ -5,6 +5,18 @@ import { connectRealtime } from '@/api/realtime';
 import { useIsAuthenticated } from '@/stores/auth';
 import { qk } from './keys';
 
+/** App đang ở trước mặt người dùng — cái gì báo server "người này đang nhìn" đều phải thôi khi app xuống nền. */
+export function useForeground(): boolean {
+  const [foreground, setForeground] = useState(AppState.currentState === 'active');
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (state) =>
+      setForeground(state === 'active'),
+    );
+    return () => subscription.remove();
+  }, []);
+  return foreground;
+}
+
 /**
  * Cầu nối kênh realtime ↔ cache query: gọi MỘT lần ở `app/_layout.tsx`, cạnh `useAuthBridge` (layout nằm ngoài
  * `QueryClientProvider` nên `qc` đi qua tham số).
@@ -15,14 +27,7 @@ import { qk } from './keys';
  */
 export function useRealtimeBridge(qc: QueryClient): void {
   const authed = useIsAuthenticated();
-  const [foreground, setForeground] = useState(AppState.currentState === 'active');
-
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', (state) =>
-      setForeground(state === 'active'),
-    );
-    return () => subscription.remove();
-  }, []);
+  const foreground = useForeground();
 
   useEffect(() => {
     if (!authed || !foreground) return undefined;

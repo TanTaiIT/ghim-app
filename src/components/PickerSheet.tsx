@@ -60,6 +60,40 @@ export function PickerSheet<T extends string>({
   );
 }
 
+/**
+ * Hỏi lại trước thao tác không lấy lại được, bằng chính bảng chọn: `Alert` không chạy trên web. Mở thẳng từ một nút,
+ * đừng mở ngay lúc một bảng khác đang đóng — trên iOS, Modal mở lúc đó thường không hiện.
+ */
+export function ConfirmSheet({
+  visible,
+  title,
+  confirmLabel,
+  note,
+  onConfirm,
+  onClose,
+}: {
+  visible: boolean;
+  title: string;
+  confirmLabel: string;
+  note: string;
+  onConfirm: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <PickerSheet
+      visible={visible}
+      title={title}
+      options={[
+        { value: 'confirm', label: confirmLabel, note },
+        { value: 'cancel', label: 'Không' },
+      ]}
+      value={null}
+      onSelect={(v) => v === 'confirm' && onConfirm()}
+      onClose={onClose}
+    />
+  );
+}
+
 const styles = StyleSheet.create({
   backdrop: { flex: 1, backgroundColor: C.scrim },
   sheet: {

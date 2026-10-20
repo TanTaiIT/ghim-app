@@ -5,7 +5,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Gallery } from '@/components/Gallery';
 import { useGuarded } from '@/components/GuestGate';
 import { ListingTile } from '@/components/ListingCard';
-import { ListingSummary, ReportSheet, SellerCard, SpecGrid } from '@/components/ListingInfo';
+import { ListingSummary, SellerCard, SpecGrid } from '@/components/ListingInfo';
+import { ReportSheet } from '@/components/ReportSheet';
 import { useToast } from '@/components/Toast';
 import {
   EmptyState,
@@ -171,6 +172,7 @@ export default function ListingDetail() {
 
       <ReportSheet
         visible={reporting}
+        title="Báo cáo tin này vì…"
         onClose={() => setReporting(false)}
         onSelect={(category) =>
           report.mutate(

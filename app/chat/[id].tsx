@@ -1,38 +1,30 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  FlatList,
-  KeyboardAvoidingView,
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import type { Activity } from '@/api/client';
 import { ChatComposer } from '@/components/ChatComposer';
+import { ChatHeader } from '@/components/ChatHeader';
 import { OfferBubble } from '@/components/OfferBubble';
-import { Photo } from '@/components/Photo';
+import { ConfirmSheet } from '@/components/PickerSheet';
+import { ReportSheet } from '@/components/ReportSheet';
 import { useToast } from '@/components/Toast';
-import { Avatar } from '@/components/Avatar';
-import { EmptyState, IconButton, Loading, Price, SafetyNote, useBack } from '@/components/ui';
+import { EmptyState, IconButton, Loading, SafetyNote, useBack } from '@/components/ui';
 import {
   useConversation,
+  useConversationViewing,
+  useDeleteConversation,
   useMarkConversationRead,
+  useReportConversation,
   useRespondOffer,
   useSendMessage,
   useSendOffer,
 } from '@/queries/messages';
+import { useForeground } from '@/queries/realtime';
 import { C, F, R, S } from '@/theme';
-import { formatAgo, formatDay } from '@/utils/format';
+import { formatDay } from '@/utils/format';
 
-/** Không có trạng thái (đội, có chặn, ai đó tắt) thì không viết gì — "Ngoại tuyến" là đoán, không phải dữ kiện. */
-const activityText = (activity: Activity | null): string | null => {
-  if (!activity) return null;
-  if (activity.online) return 'Đang hoạt động';
-  return activity.lastActiveAt ? `Hoạt động ${formatAgo(activity.lastActiveAt)}` : null;
-};
+/** Server giữ cờ "đang xem" 10 phút: gọi lại giữa chừng để cờ không tắt khi người dùng còn đọc. */
+const VIEWING_RENEW_MS = 5 * 60_000;
 
 export default function Chat() {
   const { id = '', offer } = useLocalSearchParams<{ id: string; offer?: string }>();
@@ -42,18 +34,35 @@ export default function Chat() {
   const insets = useSafeAreaInsets();
   const list = useRef<FlatList>(null);
   const [mode, setMode] = useState<'text' | 'offer'>(offer ? 'offer' : 'text');
+  const [sheet, setSheet] = useState<'report' | 'delete' | null>(null);
 
   const conversation = useConversation(id);
   const send = useSendMessage(id);
   const sendOffer = useSendOffer(id);
   const respond = useRespondOffer(id);
+  const report = useReportConversation();
+  const remove = useDeleteConversation();
   const { mutate: markRead } = useMarkConversationRead();
+  const { mutate: setViewing } = useConversationViewing();
+  const foreground = useForeground();
   const latest = conversation.data?.messages.at(-1)?.id;
 
   // Đang mở là đã đọc — cả tin tới qua realtime khi màn còn mở; badge đếm lại khi danh sách refetch.
   useEffect(() => {
     if (id && latest) markRead(id);
   }, [id, latest, markRead]);
+
+  // Tin của hội thoại đang mở không đẩy lên máy này. Rời màn hay app xuống nền thì gỡ cờ ngay, kẻo tin tới lúc không
+  // ai nhìn màn hình lại không có thông báo.
+  useEffect(() => {
+    if (!id || !foreground) return undefined;
+    setViewing({ id, viewing: true });
+    const timer = setInterval(() => setViewing({ id, viewing: true }), VIEWING_RENEW_MS);
+    return () => {
+      clearInterval(timer);
+      setViewing({ id, viewing: false });
+    };
+  }, [id, foreground, setViewing]);
 
   if (conversation.isPending) return <Loading />;
   if (conversation.isError) {
@@ -65,48 +74,18 @@ export default function Chat() {
     );
   }
 
-  const { kind, peer, listing, messages, isSeller, canOffer, readOnly } = conversation.data;
+  const { kind, messages, isSeller, canOffer, readOnly } = conversation.data;
   const first = messages[0];
-  const activity = activityText(peer.activity);
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
-      <View style={styles.header}>
-        <IconButton icon="chevron-left" label="Quay lại" onPress={back} />
-        <View>
-          <Avatar name={peer.name} size={42} tone="solid" />
-          {peer.activity?.online && <View style={styles.online} />}
-        </View>
-        <View style={styles.peer}>
-          <Text style={styles.name} numberOfLines={1}>
-            {peer.name}
-          </Text>
-          {activity && (
-            <Text style={[styles.status, peer.activity?.online && styles.statusOn]}>
-              {activity}
-            </Text>
-          )}
-        </View>
-      </View>
-
-      {listing && (
-        <Pressable
-          accessibilityRole="link"
-          onPress={() => router.push(`/listing/${listing.id}`)}
-          style={styles.strip}
-        >
-          <Photo picture={listing.cover} style={styles.stripThumb} />
-          <View style={styles.stripBody}>
-            <Text style={styles.stripTitle} numberOfLines={1}>
-              {listing.title}
-            </Text>
-            {listing.price !== null && <Price value={listing.price} size={14} />}
-          </View>
-          <View style={styles.stripCta}>
-            <Text style={styles.stripCtaText}>Xem tin</Text>
-          </View>
-        </Pressable>
-      )}
+      <ChatHeader
+        conversation={conversation.data}
+        onBack={back}
+        onOpenListing={(listingId) => router.push(`/listing/${listingId}`)}
+        onReport={kind === 'listing' ? () => setSheet('report') : undefined}
+        onDelete={() => setSheet('delete')}
+      />
 
       <KeyboardAvoidingView
         style={styles.flex}
@@ -156,6 +135,37 @@ export default function Chat() {
           onSendOffer={(amount) => sendOffer.mutate(amount, { onError: (e) => toast(e.message) })}
         />
       </KeyboardAvoidingView>
+
+      <ReportSheet
+        visible={sheet === 'report'}
+        title="Báo cáo người này vì…"
+        onClose={() => setSheet(null)}
+        onSelect={(category) =>
+          report.mutate(
+            { id, category },
+            {
+              onSuccess: () => toast('Đã gửi báo cáo, đội kiểm duyệt sẽ xem xét'),
+              onError: (e) => toast(e.message),
+            },
+          )
+        }
+      />
+      <ConfirmSheet
+        visible={sheet === 'delete'}
+        title="Xoá hội thoại này?"
+        confirmLabel="Xoá hội thoại"
+        note="Chỉ xoá khỏi danh sách của bạn — bên kia vẫn thấy đủ tin nhắn"
+        onClose={() => setSheet(null)}
+        onConfirm={() =>
+          remove.mutate(id, {
+            onSuccess: () => {
+              toast('Đã xoá hội thoại');
+              back();
+            },
+            onError: (e) => toast(e.message),
+          })
+        }
+      />
     </SafeAreaView>
   );
 }
@@ -163,54 +173,6 @@ export default function Chat() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: C.paper },
   flex: { flex: 1 },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    paddingTop: S.xs,
-    paddingBottom: 10,
-    paddingRight: S.sm,
-    paddingLeft: S.xs,
-    borderBottomWidth: 1,
-    borderBottomColor: C.line,
-    backgroundColor: C.paperWarm,
-  },
-  online: {
-    position: 'absolute',
-    right: 0,
-    bottom: 0,
-    width: 11,
-    height: 11,
-    borderRadius: R.full,
-    borderWidth: 2,
-    borderColor: C.paperWarm,
-    backgroundColor: C.brandBright,
-  },
-  peer: { flex: 1, gap: 1 },
-  name: { flexShrink: 1, fontFamily: F.uiBold, fontSize: 15, color: C.ink },
-  status: { fontFamily: F.uiMedium, fontSize: 12, color: C.muted },
-  statusOn: { color: C.brandTx },
-  strip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: S.md,
-    paddingVertical: 10,
-    paddingHorizontal: S.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: C.line,
-    backgroundColor: C.paperWarm,
-  },
-  stripThumb: { width: 48, height: 48, borderRadius: R.sm },
-  stripBody: { flex: 1, minWidth: 0, gap: 2 },
-  stripTitle: { fontFamily: F.uiSemi, fontSize: 14, color: C.ink },
-  stripCta: {
-    height: 32,
-    paddingHorizontal: S.md,
-    borderRadius: R.sm,
-    backgroundColor: C.sand,
-    justifyContent: 'center',
-  },
-  stripCtaText: { fontFamily: F.uiBold, fontSize: 12, color: C.ink },
   messages: { paddingVertical: 14, paddingHorizontal: S.lg, gap: 10 },
   listHead: { gap: 10 },
   day: {

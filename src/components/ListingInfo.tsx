@@ -1,15 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
-import {
-  CONDITION_LABEL,
-  REPORT_CATEGORIES,
-  REPORT_CATEGORY_LABEL,
-  type ListingDetail,
-  type ReportCategory,
-  type Seller,
-} from '@/api/client';
+import { CONDITION_LABEL, type ListingDetail, type Seller } from '@/api/client';
 import { Avatar, Verified } from './Avatar';
-import { PickerSheet } from './PickerSheet';
 import { OutlineButton, Price, Tag, type IconName } from './ui';
 import { C, F, R, S } from '@/theme';
 import { formatAgo, formatPlace } from '@/utils/format';
@@ -86,33 +78,6 @@ export function SpecGrid({ specs }: { specs: ListingDetail['specs'] }) {
         ))}
       </View>
     </View>
-  );
-}
-
-const REPORT_REASONS = REPORT_CATEGORIES.map((value) => ({
-  value,
-  label: REPORT_CATEGORY_LABEL[value],
-}));
-
-/** Bảng lý do báo cáo (nút lá cờ). Gửi báo cáo là việc của route — sheet chỉ trả lý do đã chọn. */
-export function ReportSheet({
-  visible,
-  onSelect,
-  onClose,
-}: {
-  visible: boolean;
-  onSelect: (category: ReportCategory) => void;
-  onClose: () => void;
-}) {
-  return (
-    <PickerSheet
-      visible={visible}
-      title="Báo cáo tin này vì…"
-      options={REPORT_REASONS}
-      value={null}
-      onSelect={onSelect}
-      onClose={onClose}
-    />
   );
 }
 

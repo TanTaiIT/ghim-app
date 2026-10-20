@@ -5,6 +5,7 @@ import {
   type ConversationTarget,
   type Message,
   type Notice,
+  type ReportCategory,
 } from '@/api/client';
 import { useIsAuthenticated } from '@/stores/auth';
 import { qk } from './keys';
@@ -57,6 +58,33 @@ export function useMarkConversationRead() {
       void qc.invalidateQueries({ queryKey: qk.conversations.list() });
       void qc.invalidateQueries({ queryKey: qk.notices.all() });
     },
+  });
+}
+
+/** Cờ "đang xem" chỉ là tín hiệu cho việc đẩy thông báo — không có gì trong cache phải đọc lại. */
+export function useConversationViewing() {
+  return useMutation({
+    mutationFn: ({ id, viewing }: { id: string; viewing: boolean }) =>
+      api.setConversationViewing(id, viewing),
+  });
+}
+
+/** Hội thoại đã xoá không còn trong danh sách; route rời màn nên chi tiết chỉ cần bỏ khỏi cache. */
+export function useDeleteConversation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.deleteConversation(id),
+    onSuccess: (_v, id) => {
+      qc.removeQueries({ queryKey: qk.conversations.detail(id) });
+      void qc.invalidateQueries({ queryKey: qk.conversations.list() });
+    },
+  });
+}
+
+export function useReportConversation() {
+  return useMutation({
+    mutationFn: ({ id, category }: { id: string; category: ReportCategory }) =>
+      api.reportConversation(id, category),
   });
 }
 
