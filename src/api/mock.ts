@@ -75,7 +75,5 @@ export const mockApi = {
     return wait(undefined);
   },
 
-  reportListing: (_id: string, _reason: string): Promise<void> => wait(undefined),
-
   getHelpTopics: (): Promise<HelpTopic[]> => wait(D.HELP_TOPICS),
 };

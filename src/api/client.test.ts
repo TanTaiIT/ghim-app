@@ -503,6 +503,27 @@ describe('lưu và gửi tin', () => {
   });
 });
 
+describe('báo cáo', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+    setHttpDeviceId(null);
+  });
+
+  it('báo cáo tin: đối tượng là tin, loại của server, mang mã máy', async () => {
+    setHttpDeviceId('may-1');
+    const calls = record();
+
+    await api.reportListing('l-1', 'fraud');
+
+    expect(calls[0]).toEqual({
+      method: 'POST',
+      path: '/api/v1/reports',
+      device: 'may-1',
+      body: { subject: { kind: 'listing', listingId: 'l-1' }, category: 'fraud' },
+    });
+  });
+});
+
 /** Đúng hình dạng hồ sơ nhóm của `GET /groups/{groupId}` (ghim-server `616af63`). */
 const wireGroup = (overrides: Record<string, unknown> = {}) => ({
   id: 'g-1',

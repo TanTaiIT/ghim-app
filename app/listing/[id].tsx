@@ -175,9 +175,9 @@ export default function ListingDetail() {
       <ReportSheet
         visible={reporting}
         onClose={() => setReporting(false)}
-        onSelect={(reason) =>
+        onSelect={(category) =>
           report.mutate(
-            { id: l.id, reason },
+            { id: l.id, category },
             {
               onSuccess: () => toast('Đã gửi báo cáo, đội kiểm duyệt sẽ xem xét'),
               onError: (e) => toast(e.message),

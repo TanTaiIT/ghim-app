@@ -52,6 +52,7 @@ import {
   postApiV1MediaUploads,
   postApiV1MeNotificationsRead,
   postApiV1MeSupportConversation,
+  postApiV1Reports,
   putApiV1MeGroupMutesByGroupId,
 } from './generated/sdk.gen';
 import type {
@@ -153,6 +154,25 @@ export const CONDITION_LABEL: Record<Condition, string> = {
   new: 'Mới',
   'like-new': 'Như mới',
   used: 'Đã dùng',
+};
+
+/** Năm loại cố định của server (TK 23): server thống kê theo loại, nên app không tự đặt thêm lý do nào. */
+export const REPORT_CATEGORIES = [
+  'fraud',
+  'misinformation',
+  'harassment',
+  'prohibited',
+  'other',
+] as const;
+
+export type ReportCategory = (typeof REPORT_CATEGORIES)[number];
+
+export const REPORT_CATEGORY_LABEL: Record<ReportCategory, string> = {
+  fraud: 'Có dấu hiệu lừa đảo',
+  misinformation: 'Ảnh hoặc thông tin không thật',
+  harassment: 'Quấy rối, xúc phạm',
+  prohibited: 'Hàng cấm mua bán',
+  other: 'Lý do khác',
 };
 
 /** Danh mục của server: uuid do master tạo lúc chạy — không có bộ khoá cố định nào để app dựa vào. */
@@ -894,6 +914,19 @@ export const api = {
 
   getSimilar: async (id: string, load: LoadLookups): Promise<ListingCard[]> =>
     toCards(await unwrap(getApiV1ListingsByIdSuggestions({ path: { id } })), load),
+
+  /**
+   * Báo lại đúng tin mình đã báo khi báo cáo cũ còn mở thì server trả 200 thay vì 201 — với người báo hai trường hợp
+   * như nhau. Mã máy tuỳ chọn, nhưng thiếu thì lượt báo không được tính vào ngưỡng tạm ẩn tin.
+   */
+  reportListing: async (listingId: string, category: ReportCategory): Promise<void> => {
+    await unwrap(
+      postApiV1Reports({
+        headers: deviceHeaders(),
+        body: { subject: { kind: 'listing', listingId }, category },
+      }),
+    );
+  },
 
   getMe: async (): Promise<Me> => toMe(await unwrap(getApiV1Me())),
 

@@ -1,5 +1,11 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { api, NO_FILTERS, type ListingCard, type SearchFilters } from '@/api/client';
+import {
+  api,
+  NO_FILTERS,
+  type ListingCard,
+  type ReportCategory,
+  type SearchFilters,
+} from '@/api/client';
 import { mockApi } from '@/api/mock';
 import { useIsAuthenticated } from '@/stores/auth';
 import { lookupsFrom } from './catalog';
@@ -133,7 +139,7 @@ export function useSaveSearch() {
 
 export function useReportListing() {
   return useMutation({
-    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
-      mockApi.reportListing(id, reason),
+    mutationFn: ({ id, category }: { id: string; category: ReportCategory }) =>
+      api.reportListing(id, category),
   });
 }
