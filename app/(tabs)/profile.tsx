@@ -106,6 +106,7 @@ export default function Profile() {
           active={stats.active}
           sold={stats.sold}
           onSettings={() => router.push('/settings')}
+          onVerifyEmail={() => router.push('/verify-email')}
         />
 
         <View style={styles.main}>

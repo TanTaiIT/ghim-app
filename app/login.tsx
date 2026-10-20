@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Field } from '@/components/Field';
 import { useToast } from '@/components/Toast';
-import { PinButton, ScreenHeader } from '@/components/ui';
+import { GhostButton, PinButton, ScreenHeader } from '@/components/ui';
 import { useLogin } from '@/queries/auth';
 import { C, S } from '@/theme';
 
@@ -12,6 +13,7 @@ import { C, S } from '@/theme';
  * (HARD#18).
  */
 export default function Login() {
+  const router = useRouter();
   const toast = useToast();
   const login = useLogin();
   const [form, setForm] = useState({ email: '', password: '' });
@@ -48,6 +50,12 @@ export default function Login() {
             disabled={!canSubmit}
             loading={login.isPending}
             onPress={() => login.mutate(form, { onError: (e) => toast(e.message) })}
+          />
+          <GhostButton label="Quên mật khẩu?" onPress={() => router.push('/forgot-password')} />
+          {/* Thay chứ không chồng: qua lại giữa đăng nhập và đăng ký không xếp thêm màn nào. */}
+          <GhostButton
+            label="Chưa có tài khoản? Đăng ký"
+            onPress={() => router.replace('/register')}
           />
         </ScrollView>
       </KeyboardAvoidingView>

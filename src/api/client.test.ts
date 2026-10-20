@@ -181,6 +181,8 @@ describe('đọc tin đăng từ server', () => {
       place: null,
       rating: null,
       verified: false,
+      emailVerified: true,
+      avatarUrl: null,
     });
   });
 
@@ -594,6 +596,42 @@ describe('hành động trên tin của tôi', () => {
         body: {},
       },
       { method: 'DELETE', path: '/api/v1/listings/l-1', device: null, body: null },
+    ]);
+  });
+});
+
+describe('đăng ký và quên mật khẩu', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('email bỏ khoảng trắng, tên gọn lại; mật khẩu gửi nguyên văn; mã đi kèm đúng email', async () => {
+    const calls = record();
+
+    await api.register({ email: ' ban@vi-du.vn ', password: ' mat khau 1 ', displayName: ' Tài ' });
+    await api.verifyEmail('ban@vi-du.vn ', '123456');
+    await api.resendCode('ban@vi-du.vn');
+    await api.forgotPassword(' ban@vi-du.vn');
+    await api.resetPassword('ban@vi-du.vn', '654321', 'moi-12345678');
+
+    expect(calls.map(({ method, path, body }) => ({ method, path, body }))).toEqual([
+      {
+        method: 'POST',
+        path: '/api/v1/auth/register',
+        body: { email: 'ban@vi-du.vn', password: ' mat khau 1 ', displayName: 'Tài' },
+      },
+      {
+        method: 'POST',
+        path: '/api/v1/auth/verify-email',
+        body: { email: 'ban@vi-du.vn', code: '123456' },
+      },
+      { method: 'POST', path: '/api/v1/auth/resend-code', body: { email: 'ban@vi-du.vn' } },
+      { method: 'POST', path: '/api/v1/auth/forgot-password', body: { email: 'ban@vi-du.vn' } },
+      {
+        method: 'POST',
+        path: '/api/v1/auth/reset-password',
+        body: { email: 'ban@vi-du.vn', code: '654321', password: 'moi-12345678' },
+      },
     ]);
   });
 });

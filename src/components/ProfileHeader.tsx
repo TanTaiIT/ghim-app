@@ -1,20 +1,26 @@
 import { StyleSheet, Text, View } from 'react-native';
+import Feather from '@expo/vector-icons/Feather';
 import type { Me } from '@/api/client';
 import { Avatar, Verified } from './Avatar';
-import { IconButton } from './ui';
+import { IconButton, OutlineButton } from './ui';
 import { C, F, R, S } from '@/theme';
 
-/** Đầu trang Cá nhân: danh tính và ba con số. Số tin do route đếm từ chính danh sách đang hiện. */
+/**
+ * Đầu trang Cá nhân: danh tính và ba con số. Số tin do route đếm từ chính danh sách đang hiện. Email chưa xác nhận
+ * thì nhắc ngay ở đây — tài khoản như thế bị server chặn đăng tin, tải ảnh, nhắn tin, vào nhóm.
+ */
 export function ProfileHeader({
   me,
   active,
   sold,
   onSettings,
+  onVerifyEmail,
 }: {
   me: Me;
   active: number;
   sold: number;
   onSettings: () => void;
+  onVerifyEmail: () => void;
 }) {
   return (
     <View style={styles.header}>
@@ -36,6 +42,15 @@ export function ProfileHeader({
         <Stat value={String(sold)} label="Đã bán" />
         <Stat value={me.rating === null ? '—' : `${me.rating} ★`} label="Đánh giá" />
       </View>
+      {!me.emailVerified && (
+        <View style={styles.verify}>
+          <Feather name="mail" size={18} color={C.warnTx} />
+          <Text style={styles.verifyText}>
+            Email chưa xác nhận. Xác nhận để đăng tin, nhắn tin và vào nhóm.
+          </Text>
+          <OutlineButton compact label="Xác nhận" onPress={onVerifyEmail} />
+        </View>
+      )}
     </View>
   );
 }
@@ -74,4 +89,15 @@ const styles = StyleSheet.create({
     backgroundColor: C.sand,
   },
   statValue: { fontFamily: F.uiBlack, fontSize: 18, color: C.ink },
+  verify: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: S.sm,
+    padding: S.md,
+    borderRadius: R.sm,
+    borderWidth: 1,
+    borderColor: C.warnLine,
+    backgroundColor: C.warnWash,
+  },
+  verifyText: { flex: 1, fontFamily: F.ui, fontSize: 13, lineHeight: 18, color: C.warnTx },
 });

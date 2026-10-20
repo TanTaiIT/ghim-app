@@ -81,9 +81,11 @@ export default function RootLayout() {
             >
               <Stack.Screen name="index" />
               <Stack.Screen name="(tabs)" />
-              {/* Chỉ khách mới thấy màn đăng nhập; đã có phiên thì route này biến mất khỏi stack. */}
+              {/* Chỉ khách mới thấy các màn này; đã có phiên thì chúng biến mất khỏi stack. */}
               <Stack.Protected guard={!isAuthenticated}>
                 <Stack.Screen name="login" options={{ presentation: 'modal' }} />
+                <Stack.Screen name="register" options={{ presentation: 'modal' }} />
+                <Stack.Screen name="forgot-password" options={{ presentation: 'modal' }} />
               </Stack.Protected>
               {/*
                * Route cần đăng nhập khai trong khối này (HARD#17). Screen không nằm đây vẫn được
@@ -94,6 +96,7 @@ export default function RootLayout() {
                 <Stack.Screen name="groups" />
                 <Stack.Screen name="help" />
                 <Stack.Screen name="settings" />
+                <Stack.Screen name="verify-email" />
                 {/* Luồng đăng tin là một stack con; đóng bằng nút X ở bước 1 như thiết kế. */}
                 <Stack.Screen name="post" options={{ presentation: 'fullScreenModal' }} />
               </Stack.Protected>

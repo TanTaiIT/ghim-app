@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
-import { useMutation, type QueryClient } from '@tanstack/react-query';
-import { api } from '@/api/client';
+import { useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query';
+import { api, type Registration } from '@/api/client';
 import { ApiError, setHttpAccessToken, setHttpDeviceId, setSessionRefresher } from '@/api/http';
 import { useAuthStore } from '@/stores/auth';
+import { qk } from './keys';
 
 /**
  * Lượt làm mới phiên mà `http.ts` gọi khi một request có Bearer nhận 401.
@@ -60,6 +61,36 @@ export function useLogin() {
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       api.login(email.trim(), password),
     onSuccess: (session) => useAuthStore.getState().signIn(session),
+  });
+}
+
+/* Đăng ký và quên mật khẩu không mở phiên: route gọi `useLogin` sau bước cuối, bằng mật khẩu người dùng vừa gõ. */
+
+export function useRegister() {
+  return useMutation({ mutationFn: (r: Registration) => api.register(r) });
+}
+
+/** Người đang đăng nhập xác nhận email: hồ sơ đổi `emailVerified`, dải nhắc ở trang Cá nhân phải biến mất. */
+export function useVerifyEmail() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ email, code }: { email: string; code: string }) => api.verifyEmail(email, code),
+    onSuccess: () => qc.invalidateQueries({ queryKey: qk.me() }),
+  });
+}
+
+export function useResendCode() {
+  return useMutation({ mutationFn: (email: string) => api.resendCode(email) });
+}
+
+export function useForgotPassword() {
+  return useMutation({ mutationFn: (email: string) => api.forgotPassword(email) });
+}
+
+export function useResetPassword() {
+  return useMutation({
+    mutationFn: ({ email, code, password }: { email: string; code: string; password: string }) =>
+      api.resetPassword(email, code, password),
   });
 }
 

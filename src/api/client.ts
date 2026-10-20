@@ -42,9 +42,14 @@ import {
   getHealthReady,
   patchApiV1ListingsById,
   patchApiV1Me,
+  postApiV1AuthForgotPassword,
   postApiV1AuthLogin,
   postApiV1AuthLogout,
   postApiV1AuthRefresh,
+  postApiV1AuthRegister,
+  postApiV1AuthResendCode,
+  postApiV1AuthResetPassword,
+  postApiV1AuthVerifyEmail,
   postApiV1GroupInvitationsByIdAccept,
   postApiV1GroupInvitationsByIdDecline,
   postApiV1GroupsByGroupIdConversation,
@@ -486,6 +491,8 @@ export type Me = Person & {
   /** Hiện trạng thái hoạt động trong chat — tắt là hai chiều: mình cũng không thấy của ai. */
   showActivity: boolean;
   avatarUrl: string | null;
+  /** Chưa xác nhận thì đăng nhập được nhưng đăng tin, tải ảnh, nhắn tin, vào nhóm đều bị server chặn. */
+  emailVerified: boolean;
 };
 
 /** Một thiết bị đang đăng nhập. `current` = chính máy này — đăng xuất máy này là việc của nút Đăng xuất. */
@@ -502,6 +509,8 @@ export type BlockedPerson = { id: string; name: string | null; blockedAt: string
 export type HelpTopic = { id: string; label: string; faqs: { q: string; a: string }[] };
 
 export type Session = { accessToken: string; refreshToken: string };
+
+export type Registration = { email: string; password: string; displayName: string };
 
 /** Refresh token null chỉ xảy ra với `client: 'web'` (server cất vào cookie); app luôn xin `'app'`. */
 function toSession(d: { accessToken: string; refreshToken: string | null }): Session {
@@ -600,6 +609,7 @@ function toMe(u: WireMe): Me {
     rating: null,
     showActivity: u.showActivity,
     avatarUrl: u.avatarUrl,
+    emailVerified: u.emailVerified,
   };
 }
 
@@ -1350,6 +1360,33 @@ export const api = {
     }
     return (await unwrap(postApiV1GroupsByGroupIdConversation({ path: { groupId: to.id } }))).id;
   },
+
+  /**
+   * Tài khoản mới ở trạng thái chờ xác nhận và mã 6 số đã gửi tới email: đăng nhập được ngay, nhưng đăng tin, tải
+   * ảnh, nhắn tin, vào nhóm đều bị chặn (`EMAIL_NOT_VERIFIED`) tới khi nhập mã.
+   */
+  register: async (r: Registration): Promise<void> => {
+    await unwrap(
+      postApiV1AuthRegister({
+        body: { email: r.email.trim(), password: r.password, displayName: r.displayName.trim() },
+      }),
+    );
+  },
+
+  verifyEmail: (email: string, code: string): Promise<void> =>
+    unwrapEmpty(postApiV1AuthVerifyEmail({ body: { email: email.trim(), code } })),
+
+  /** Server trả 200 cả khi email chưa đăng ký hay đã xác nhận — không lộ ai có tài khoản; gửi quá dày thì 429. */
+  resendCode: (email: string): Promise<void> =>
+    unwrapEmpty(postApiV1AuthResendCode({ body: { email: email.trim() } })),
+
+  /** Như `resendCode`: trả lời giống nhau dù email có tài khoản hay không. */
+  forgotPassword: (email: string): Promise<void> =>
+    unwrapEmpty(postApiV1AuthForgotPassword({ body: { email: email.trim() } })),
+
+  /** Đặt lại mật khẩu thu hồi mọi phiên của tài khoản. */
+  resetPassword: (email: string, code: string, password: string): Promise<void> =>
+    unwrapEmpty(postApiV1AuthResetPassword({ body: { email: email.trim(), code, password } })),
 
   login: (email: string, password: string): Promise<Session> =>
     unwrap(postApiV1AuthLogin({ body: { email, password, client: 'app' } })).then(toSession),
