@@ -45,6 +45,9 @@ export function PinButton({
   return (
     <Pressable
       accessibilityRole="button"
+      // Android tự ghép mô tả từ chữ con + state và giữ nguyên "busy" sau khi hết loading (đo trên máy ảo
+      // 21/10/2026): TalkBack đọc "busy" thay cho tên nút. Ghi tên rõ thì mô tả luôn là nhãn.
+      accessibilityLabel={label}
       accessibilityState={{ disabled: inactive, busy: loading }}
       onPress={onPress}
       disabled={inactive}
