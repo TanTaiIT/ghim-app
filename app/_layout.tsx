@@ -97,6 +97,8 @@ export default function RootLayout() {
                 <Stack.Screen name="help" />
                 <Stack.Screen name="settings" />
                 <Stack.Screen name="verify-email" />
+                {/* Bàn vận hành: server mới là cổng thật (quyền staff / master + lớp thứ hai), xem `app/ops/_layout.tsx`. */}
+                <Stack.Screen name="ops" />
                 {/* Luồng đăng tin là một stack con; đóng bằng nút X ở bước 1 như thiết kế. */}
                 <Stack.Screen name="post" options={{ presentation: 'fullScreenModal' }} />
               </Stack.Protected>

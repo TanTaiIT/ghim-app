@@ -10,7 +10,10 @@ import { Platform } from 'react-native';
  */
 export const C = {
   // ── Chữ ─────────────────────────────────────────────────────────
+  /** Chữ chính; cũng là nền header của bàn vận hành — tối để người duyệt luôn biết mình đang ở khu quản trị. */
   ink: '#0F172A',
+  /** Ô nổi trên nền `ink` (ô thống kê, ô tìm kiếm của header bàn vận hành). */
+  inkRaised: '#1E293B',
   /** Đoạn văn dài (mô tả, nội dung thông báo) — đậm hơn chữ phụ để đọc lâu không mỏi. */
   inkMid: '#334155',
   /** Chữ phụ, nhãn, chú thích. */

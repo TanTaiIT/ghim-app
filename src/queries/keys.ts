@@ -52,4 +52,23 @@ export const qk = {
     unread: () => ['notices', 'unread'] as const,
   },
   help: () => ['help'] as const,
+  /** Bàn vận hành: một gốc `ops` để đăng xuất / mất quyền thì quét được cả nhánh. */
+  ops: {
+    all: () => ['ops'] as const,
+    board: () => ['ops', 'board'] as const,
+    tasks: (queue: number | null) => ['ops', 'tasks', queue] as const,
+    task: (id: string) => ['ops', 'task', id] as const,
+    reasons: () => ['ops', 'reasons'] as const,
+    idChecksAll: () => ['ops', 'id-checks'] as const,
+    idChecks: (status: string | null) => ['ops', 'id-checks', status] as const,
+    strikes: (accountId: string) => ['ops', 'strikes', accountId] as const,
+    /** Danh sách theo trạng thái lẫn hồ sơ từng nhóm — đổi trạng thái nhóm làm lệch cả hai. */
+    groupsAll: () => ['ops', 'groups'] as const,
+    groups: (state: string | null) => ['ops', 'groups', 'list', state] as const,
+    group: (id: string) => ['ops', 'groups', 'detail', id] as const,
+    supportAll: () => ['ops', 'support'] as const,
+    support: (pendingOnly: boolean) => ['ops', 'support', pendingOnly] as const,
+    thread: (id: string) => ['ops', 'thread', id] as const,
+    categories: () => ['ops', 'categories'] as const,
+  },
 };

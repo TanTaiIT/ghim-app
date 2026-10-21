@@ -70,6 +70,22 @@ export function formatDay(iso: string, now: number = Date.now()): string {
   return dmy(d);
 }
 
+/**
+ * Hạn xử của một việc trên bàn vận hành. Đơn vị lớn nhất còn ý nghĩa, làm tròn xuống: "còn 1 giờ" lúc còn 1 giờ 50
+ * phút là hối người duyệt sớm một chút — điều ngược lại (báo dư) mới hại.
+ */
+export function formatDue(iso: string, now: number = Date.now()): string {
+  const diff = new Date(iso).getTime() - now;
+  const span = Math.abs(diff);
+  const amount =
+    span < HOUR
+      ? `${Math.max(1, Math.floor(span / MINUTE))} phút`
+      : span < DAY
+        ? `${Math.floor(span / HOUR)} giờ`
+        : `${Math.floor(span / DAY)} ngày`;
+  return diff >= 0 ? `Còn ${amount}` : `Quá hạn ${amount}`;
+}
+
 /** Số ngày còn lại tới `iso`, làm tròn lên: còn 1 giờ vẫn là "1 ngày", không phải "0 ngày". */
 export function daysUntil(iso: string, now: number = Date.now()): number {
   return Math.max(0, Math.ceil((new Date(iso).getTime() - now) / DAY));

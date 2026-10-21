@@ -16,9 +16,14 @@ export default function Login() {
   const router = useRouter();
   const toast = useToast();
   const login = useLogin();
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ email: '', password: '', totp: '' });
+  // Ẩn sẵn: người dùng thường không bao giờ có mã này, hiện ô thứ ba cho họ chỉ thêm câu hỏi "mã gì?".
+  const [privileged, setPrivileged] = useState(false);
   const set = (k: keyof typeof form) => (v: string) => setForm((f) => ({ ...f, [k]: v }));
-  const canSubmit = form.email.includes('@') && form.password.length >= 8;
+  const canSubmit =
+    form.email.includes('@') &&
+    form.password.length >= 8 &&
+    (!privileged || form.totp.length === 6);
 
   return (
     <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
@@ -45,13 +50,34 @@ export default function Login() {
             autoComplete="password"
             placeholder="Từ 8 ký tự"
           />
+          {privileged && (
+            <Field
+              label="Mã từ ứng dụng tạo mã"
+              value={form.totp}
+              onChangeText={(v) => set('totp')(v.replace(/\D/g, '').slice(0, 6))}
+              keyboardType="number-pad"
+              autoComplete="one-time-code"
+              placeholder="6 chữ số"
+            />
+          )}
           <PinButton
             label="Đăng nhập"
             disabled={!canSubmit}
             loading={login.isPending}
-            onPress={() => login.mutate(form, { onError: (e) => toast(e.message) })}
+            onPress={() =>
+              login.mutate(
+                { ...form, totp: privileged ? form.totp : '' },
+                { onError: (e) => toast(e.message) },
+              )
+            }
           />
           <GhostButton label="Quên mật khẩu?" onPress={() => router.push('/forgot-password')} />
+          {!privileged && (
+            <GhostButton
+              label="Đăng nhập quản trị (master, staff)"
+              onPress={() => setPrivileged(true)}
+            />
+          )}
           {/* Thay chứ không chồng: qua lại giữa đăng nhập và đăng ký không xếp thêm màn nào. */}
           <GhostButton
             label="Chưa có tài khoản? Đăng ký"

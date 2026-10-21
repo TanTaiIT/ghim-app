@@ -58,8 +58,8 @@ export function useAuthBridge(qc: QueryClient): void {
 /** Đăng nhập. Không điều hướng sau khi `signIn` (HARD#18): `Stack.Protected` gỡ màn login khỏi stack. */
 export function useLogin() {
   return useMutation({
-    mutationFn: ({ email, password }: { email: string; password: string }) =>
-      api.login(email.trim(), password),
+    mutationFn: ({ email, password, totp }: { email: string; password: string; totp?: string }) =>
+      api.login(email.trim(), password, totp?.trim() || undefined),
     onSuccess: (session) => useAuthStore.getState().signIn(session),
   });
 }

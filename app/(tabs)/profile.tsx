@@ -75,6 +75,15 @@ export default function Profile() {
     saved: saved.data?.length ?? 0,
   };
   const menu: MenuItem[] = [
+    ...(me.data.opsAccess
+      ? [
+          {
+            icon: 'shield',
+            label: 'Bàn vận hành',
+            onPress: () => router.push('/ops/home'),
+          } as const,
+        ]
+      : []),
     {
       icon: 'check-circle',
       label: 'Xác minh tài khoản',

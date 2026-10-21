@@ -13,7 +13,8 @@ Chỉ tồn tại hai gốc, không thêm gốc thứ ba:
 app/            — routes. expo-router resolve theo file path. KHÔNG chứa gì ngoài route + layout.
 src/
 ├── api/        — http.ts (base URL, token, ApiError) · client.ts (gọi SDK, unwrap, mapper, domain type)
-│                 · realtime.ts (kênh socket.io, chỉ báo hiệu) · generated/ (sinh)
+│                 · ops.ts (như client.ts, cho bàn vận hành `/ops/*`) · realtime.ts (kênh socket.io, chỉ báo hiệu)
+│                 · generated/ (sinh)
 │                 · mock*.ts (dữ liệu mẫu tới khi backend có endpoint — xem README §4)
 ├── queries/    — TanStack hook + key factory (keys.ts)
 ├── stores/     — Zustand store cho client state sống lâu hơn màn hình
@@ -36,7 +37,7 @@ Một helper dùng một chỗ thì để ngay trong file dùng nó, đừng pro
 | Route thường              | lowercase, chính là URL segment | `login.tsx`, `(tabs)/home.tsx`              |
 | Route động                | `[param].tsx`                   | (chưa có) `listing/[id].tsx`                |
 | Layout                    | `_layout.tsx`                   | `app/_layout.tsx`, `app/(tabs)/_layout.tsx` |
-| Group không ảnh hưởng URL | `(name)/`                       | `app/(tabs)/`                               |
+| Group không ảnh hưởng URL | `(name)/`                       | `app/(tabs)/`, `app/ops/(tabs)/`            |
 | Entry redirect            | `index.tsx`                     | `app/index.tsx` → redirect `/(tabs)/home`   |
 
 Quy tắc:
@@ -57,14 +58,14 @@ Quy tắc:
 
 ## 3. `src/**` — đặt tên file
 
-| Thư mục       | Casing     | Nội dung một file                                                         |
-| ------------- | ---------- | ------------------------------------------------------------------------- |
-| `components/` | PascalCase | Một component (hoặc một cụm Provider + hook của nó)                       |
-| `queries/`    | lowercase  | Hook theo domain (`listings.ts`, `auth.ts`) + `keys.ts`                   |
-| `stores/`     | lowercase  | Một store một domain (`auth.ts`)                                          |
-| `api/`        | lowercase  | `http.ts`, `client.ts`, `realtime.ts`, `generated/` (sinh, không sửa tay) |
-| `theme/`      | lowercase  | `index.ts`                                                                |
-| `utils/`      | lowercase  | Hàm thuần theo chủ đề (`format.ts`)                                       |
+| Thư mục       | Casing     | Nội dung một file                                                                   |
+| ------------- | ---------- | ----------------------------------------------------------------------------------- |
+| `components/` | PascalCase | Một component (hoặc một cụm Provider + hook của nó)                                 |
+| `queries/`    | lowercase  | Hook theo domain (`listings.ts`, `auth.ts`) + `keys.ts`                             |
+| `stores/`     | lowercase  | Một store một domain (`auth.ts`)                                                    |
+| `api/`        | lowercase  | `http.ts`, `client.ts`, `ops.ts`, `realtime.ts`, `generated/` (sinh, không sửa tay) |
+| `theme/`      | lowercase  | `index.ts`                                                                          |
+| `utils/`      | lowercase  | Hàm thuần theo chủ đề (`format.ts`)                                                 |
 
 - Tên file PascalCase **là tên tính năng**, không bắt buộc là tên export duy nhất: `Toast.tsx` export
   `ToastProvider` + `useToast`.

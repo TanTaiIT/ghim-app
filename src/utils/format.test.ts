@@ -3,6 +3,7 @@ import {
   daysUntil,
   formatAgo,
   formatDay,
+  formatDue,
   formatMillionRange,
   formatPlace,
   formatVnd,
@@ -77,5 +78,20 @@ describe('daysUntil', () => {
     expect(daysUntil(new Date(NOW + 60 * MIN).toISOString(), NOW)).toBe(1);
     expect(daysUntil(new Date(NOW + 2 * 24 * 60 * MIN).toISOString(), NOW)).toBe(2);
     expect(daysUntil(new Date(NOW - MIN).toISOString(), NOW)).toBe(0);
+  });
+});
+
+const at = (ms: number) => new Date(NOW + ms).toISOString();
+
+describe('formatDue', () => {
+  it('đếm ngược theo đơn vị lớn nhất, làm tròn xuống', () => {
+    expect(formatDue(at(110 * MIN), NOW)).toBe('Còn 1 giờ');
+    expect(formatDue(at(30 * MIN), NOW)).toBe('Còn 30 phút');
+    expect(formatDue(at(3 * 24 * 60 * MIN + MIN), NOW)).toBe('Còn 3 ngày');
+  });
+
+  it('qua hạn thì nói đã quá bao lâu; sát hạn vẫn là 1 phút chứ không 0', () => {
+    expect(formatDue(at(-5 * 60 * MIN), NOW)).toBe('Quá hạn 5 giờ');
+    expect(formatDue(at(10_000), NOW)).toBe('Còn 1 phút');
   });
 });

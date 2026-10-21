@@ -60,9 +60,11 @@ app/                    routes (expo-router) — chỉ route + layout, export de
   chat/[id].tsx         chat với người bán, trả giá (cần phiên)
   post/                 đăng tin 3 bước: index → details → preview (cần phiên)
   help.tsx              trợ giúp (cần phiên)
+  ops/                  bàn vận hành cho master, staff (cần phiên + lớp thứ hai; lối vào ở Cá nhân)
 src/
   api/http.ts           base URL, token, ApiError, createClientConfig (hey-api)
   api/client.ts         gọi SDK + unwrap + domain type
+  api/ops.ts            như client.ts, cho bàn vận hành (/ops/*): duyệt tin, báo cáo, giấy tờ, nhóm, hỗ trợ, danh mục
   api/mock*.ts          dữ liệu mẫu + tranh minh hoạ SVG — xoá dần khi backend có endpoint
   api/generated/        SDK sinh, không sửa tay
   queries/keys.ts       key factory `qk`
