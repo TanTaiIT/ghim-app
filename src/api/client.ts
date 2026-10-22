@@ -474,6 +474,11 @@ export type Notice = {
   kind: NoticeKind;
   title: string;
   body: string;
+  /**
+   * Phần chỉ xem trong app — điều luật, ngày hết hạn, hạn khiếu nại, lý do từ chối: server cố ý để ngoài `body` vì
+   * `body` lên cả màn hình khoá (ghim-server `docs/realtime.md`).
+   */
+  detail: string | null;
   /** Dòng gộp nổi lên theo lần cập nhật cuối, không theo lúc tạo. */
   at: string;
   read: boolean;
@@ -886,6 +891,7 @@ const toNotice = (w: WireNotice): Notice => ({
   kind: kindOf(w),
   title: w.title,
   body: w.body,
+  detail: w.detail,
   at: w.updatedAt,
   read: w.readAt !== null,
   target: targetOf(w),

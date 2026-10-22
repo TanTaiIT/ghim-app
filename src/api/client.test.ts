@@ -442,10 +442,19 @@ describe('thông báo', () => {
             type: 'messaging.message.received',
             data: { conversationId: 'c-9' },
           }),
+          wireNotice({
+            id: 'n-7',
+            category: 'trust_strikes',
+            type: 'trust.strike.issued',
+            title: 'Ghim',
+            body: 'Bạn nhận một gậy thường liên quan tới tin «Xe đạp cũ».',
+            detail: 'Điều Q1: Không đăng hàng cấm. Gậy thường 1 điểm, hết hạn ngày 20/01/2027.',
+            data: { strikeId: 's-1', listingId: 'l-3' },
+          }),
         ],
         page: 1,
         limit: 100,
-        total: 6,
+        total: 7,
         totalPages: 1,
       },
     });
@@ -459,8 +468,14 @@ describe('thông báo', () => {
       ['n-4', 'deal', 'listing', { screen: 'listing', id: 'l-2' }, false],
       ['n-5', 'system', 'group', { screen: 'group', id: 'g-1' }, false],
       ['n-6', 'system', 'message', { screen: 'chat', id: 'c-9' }, false],
+      ['n-7', 'system', 'account', { screen: 'profile' }, false],
     ]);
     expect(notices[0]?.at).toBe('2026-10-18T09:05:00.000Z');
+    // Phần chỉ xem trong app đi nguyên từ server; dòng không có thì null.
+    expect(notices[6]?.detail).toBe(
+      'Điều Q1: Không đăng hàng cấm. Gậy thường 1 điểm, hết hạn ngày 20/01/2027.',
+    );
+    expect(notices[0]?.detail).toBeNull();
   });
 
   it('đánh dấu đã đọc: theo mã, hay tất cả', async () => {

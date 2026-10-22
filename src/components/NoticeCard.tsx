@@ -37,6 +37,11 @@ export function NoticeCard({ notice, onPress }: { notice: Notice; onPress: () =>
           {unread && <View accessibilityLabel="Chưa đọc" style={styles.dot} />}
         </View>
         <Text style={styles.text}>{notice.body}</Text>
+        {notice.detail ? (
+          <View style={styles.detail}>
+            <Text style={styles.detailText}>{notice.detail}</Text>
+          </View>
+        ) : null}
         <Text style={styles.time}>{formatAgo(notice.at)}</Text>
       </View>
     </Pressable>
@@ -66,5 +71,7 @@ const styles = StyleSheet.create({
   title: { flexShrink: 1, fontFamily: F.uiBold, fontSize: 14, color: C.ink },
   dot: { width: 8, height: 8, borderRadius: R.full, backgroundColor: C.brand },
   text: { fontFamily: F.ui, fontSize: 13, lineHeight: 19, color: C.inkMid },
+  detail: { marginTop: 2, padding: S.sm, borderRadius: R.sm, backgroundColor: C.paper },
+  detailText: { fontFamily: F.ui, fontSize: 12.5, lineHeight: 18, color: C.inkMid },
   time: { fontFamily: F.ui, fontSize: 12, color: C.muted },
 });
