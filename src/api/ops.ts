@@ -14,8 +14,6 @@ import {
   getApiV1OpsTrustAccountsByAccountIdStrikes,
   patchApiV1OpsCategoriesById,
   patchApiV1OpsReviewReasonTemplatesByTemplateId,
-  postApiV1MeTwoFactorConfirm,
-  postApiV1MeTwoFactorSetup,
   postApiV1OpsAccountsByIdLock,
   postApiV1OpsAccountsByIdUnlock,
   postApiV1OpsCategories,
@@ -693,14 +691,4 @@ export const opsApi = {
         ? postApiV1OpsCategoriesByIdEnable({ path: { id } })
         : postApiV1OpsCategoriesByIdDisable({ path: { id } }),
     ),
-
-  /** URI `otpauth://` cho ứng dụng tạo mã; khoá bí mật nằm trong tham số `secret` để nhập tay khi không quét được. */
-  startTwoFactor: async (): Promise<{ uri: string; secret: string }> => {
-    const { otpauthUri } = await unwrap(postApiV1MeTwoFactorSetup());
-    return { uri: otpauthUri, secret: /[?&]secret=([^&]+)/.exec(otpauthUri)?.[1] ?? '' };
-  },
-
-  /** Phiên đang dùng được mở bàn vận hành ngay sau mã đầu tiên đúng — không phải đăng nhập lại. */
-  confirmTwoFactor: (code: string): Promise<void> =>
-    unwrapEmpty(postApiV1MeTwoFactorConfirm({ body: { code: code.trim() } })),
 };

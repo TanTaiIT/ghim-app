@@ -112,12 +112,4 @@ describe('gọi bàn vận hành', () => {
     ]);
     expect(calls[1]?.body).toEqual({ outcome: 'pass' });
   });
-
-  it('thiết lập lớp thứ hai: tách khoá bí mật khỏi URI otpauth để nhập tay', async () => {
-    serve({ otpauthUri: 'otpauth://totp/Ghim:a%40b.vn?secret=JBSWY3DPEHPK3PXP&issuer=Ghim' });
-    await expect(opsApi.startTwoFactor()).resolves.toEqual({
-      uri: 'otpauth://totp/Ghim:a%40b.vn?secret=JBSWY3DPEHPK3PXP&issuer=Ghim',
-      secret: 'JBSWY3DPEHPK3PXP',
-    });
-  });
 });

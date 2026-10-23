@@ -2,7 +2,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import { opsApi, type IdCheck } from '@/api/ops';
 import { qk } from './keys';
 
-/* Người dùng trên bàn vận hành: xác minh giấy tờ, lịch sử gậy, khoá / mở khoá, lớp thứ hai của chính mình. */
+/* Người dùng trên bàn vận hành: xác minh giấy tờ, lịch sử gậy, khoá / mở khoá. */
 
 export function useIdChecks(status: IdCheck['status'] | null) {
   return useQuery({
@@ -39,23 +39,4 @@ export function useLockAccount() {
 
 export function useUnlockAccount() {
   return useMutation({ mutationFn: (id: string) => opsApi.unlockAccount(id) });
-}
-
-export function useStartTwoFactor() {
-  return useMutation({ mutationFn: opsApi.startTwoFactor });
-}
-
-/**
- * Mã đầu tiên đúng mở bàn vận hành cho chính phiên này: hỏi lại hồ sơ (`twoFactorEnabled` → có lối vào) và mọi thứ
- * của `ops` đang nằm trong cache với lỗi `TWO_FACTOR_REQUIRED`.
- */
-export function useConfirmTwoFactor() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (code: string) => opsApi.confirmTwoFactor(code),
-    onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: qk.me() });
-      void qc.invalidateQueries({ queryKey: qk.ops.all() });
-    },
-  });
 }

@@ -292,7 +292,6 @@ export type PostApiV1AuthLoginData = {
     body: {
         email: string;
         password: string;
-        totpCode?: string;
         deviceName?: string;
         client?: 'app' | 'web';
     };
@@ -767,9 +766,9 @@ export type GetApiV1MeResponses = {
             email: string;
             emailVerified: boolean;
             role: 'user' | 'master';
-            twoFactorEnabled: boolean;
             nameHidden: boolean;
             showActivity: boolean;
+            staff: boolean;
         };
     };
 };
@@ -832,9 +831,9 @@ export type PatchApiV1MeResponses = {
             email: string;
             emailVerified: boolean;
             role: 'user' | 'master';
-            twoFactorEnabled: boolean;
             nameHidden: boolean;
             showActivity: boolean;
+            staff: boolean;
         };
     };
 };
@@ -882,9 +881,9 @@ export type DeleteApiV1MeAvatarResponses = {
             email: string;
             emailVerified: boolean;
             role: 'user' | 'master';
-            twoFactorEnabled: boolean;
             nameHidden: boolean;
             showActivity: boolean;
+            staff: boolean;
         };
     };
 };
@@ -947,9 +946,9 @@ export type PutApiV1MeAvatarResponses = {
             email: string;
             emailVerified: boolean;
             role: 'user' | 'master';
-            twoFactorEnabled: boolean;
             nameHidden: boolean;
             showActivity: boolean;
+            staff: boolean;
         };
     };
 };
@@ -960,7 +959,6 @@ export type PostApiV1MeEmailChangeData = {
     body: {
         email: string;
         currentPassword: string;
-        totpCode?: string;
     };
     path?: never;
     query?: never;
@@ -1375,99 +1373,6 @@ export type PutApiV1MePasswordResponses = {
 };
 
 export type PutApiV1MePasswordResponse = PutApiV1MePasswordResponses[keyof PutApiV1MePasswordResponses];
-
-export type PostApiV1MeTwoFactorSetupData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/api/v1/me/two-factor/setup';
-};
-
-export type PostApiV1MeTwoFactorSetupErrors = {
-    /**
-     * Default Response
-     */
-    401: {
-        success: false;
-        error: {
-            code: string;
-            message: string;
-            details?: unknown;
-        };
-    };
-    /**
-     * Default Response
-     */
-    403: {
-        success: false;
-        error: {
-            code: string;
-            message: string;
-            details?: unknown;
-        };
-    };
-};
-
-export type PostApiV1MeTwoFactorSetupError = PostApiV1MeTwoFactorSetupErrors[keyof PostApiV1MeTwoFactorSetupErrors];
-
-export type PostApiV1MeTwoFactorSetupResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        success: true;
-        data: {
-            otpauthUri: string;
-        };
-    };
-};
-
-export type PostApiV1MeTwoFactorSetupResponse = PostApiV1MeTwoFactorSetupResponses[keyof PostApiV1MeTwoFactorSetupResponses];
-
-export type PostApiV1MeTwoFactorConfirmData = {
-    body: {
-        code: string;
-    };
-    path?: never;
-    query?: never;
-    url: '/api/v1/me/two-factor/confirm';
-};
-
-export type PostApiV1MeTwoFactorConfirmErrors = {
-    /**
-     * Default Response
-     */
-    400: {
-        success: false;
-        error: {
-            code: string;
-            message: string;
-            details?: unknown;
-        };
-    };
-    /**
-     * Default Response
-     */
-    401: {
-        success: false;
-        error: {
-            code: string;
-            message: string;
-            details?: unknown;
-        };
-    };
-};
-
-export type PostApiV1MeTwoFactorConfirmError = PostApiV1MeTwoFactorConfirmErrors[keyof PostApiV1MeTwoFactorConfirmErrors];
-
-export type PostApiV1MeTwoFactorConfirmResponses = {
-    /**
-     * Default Response
-     */
-    204: null;
-};
-
-export type PostApiV1MeTwoFactorConfirmResponse = PostApiV1MeTwoFactorConfirmResponses[keyof PostApiV1MeTwoFactorConfirmResponses];
 
 export type PostApiV1OpsAccountsByIdLockData = {
     body: {

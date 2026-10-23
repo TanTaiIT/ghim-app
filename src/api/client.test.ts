@@ -45,6 +45,19 @@ const lookups: Lookups = {
 };
 const loadLookups = async () => lookups;
 
+const wireMe = {
+  id: 'u-1',
+  displayName: 'Tài Nguyễn',
+  avatarUrl: null,
+  joinedAt: '2026-10-18T00:00:00.000Z',
+  phone: null,
+  email: 'app.dev@ghim.local',
+  emailVerified: true,
+  role: 'user',
+  staff: false,
+  nameHidden: false,
+};
+
 /** Server giả theo đường dẫn; ghi lại URL và header phiên của từng lượt gọi. */
 function serve(routes: Record<string, unknown>) {
   const calls: { url: URL; authorization: string | null }[] = [];
@@ -153,18 +166,7 @@ describe('đọc tin đăng từ server', () => {
         ],
         nextCursor: null,
       },
-      '/api/v1/me': {
-        id: 'u-1',
-        displayName: 'Tài Nguyễn',
-        avatarUrl: null,
-        joinedAt: '2026-10-18T00:00:00.000Z',
-        phone: null,
-        email: 'app.dev@ghim.local',
-        emailVerified: true,
-        role: 'user',
-        twoFactorEnabled: false,
-        nameHidden: false,
-      },
+      '/api/v1/me': wireMe,
     });
 
     const mine = await api.getMyListings(loadLookups);
@@ -183,7 +185,15 @@ describe('đọc tin đăng từ server', () => {
       verified: false,
       emailVerified: true,
       avatarUrl: null,
+      opsAccess: false,
     });
+  });
+
+  it('lối vào bàn vận hành: staff có quyền hiệu lực hoặc master', async () => {
+    serve({ '/api/v1/me': { ...wireMe, staff: true } });
+    await expect(api.getMe()).resolves.toMatchObject({ opsAccess: true, isMaster: false });
+    serve({ '/api/v1/me': { ...wireMe, role: 'master' } });
+    await expect(api.getMe()).resolves.toMatchObject({ opsAccess: true, isMaster: true });
   });
 
   it('trang người bán: hồ sơ không lộ số điện thoại, tin đang hiển thị theo trang', async () => {

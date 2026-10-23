@@ -499,10 +499,7 @@ export type Me = Person & {
   /** Chưa xác nhận thì đăng nhập được nhưng đăng tin, tải ảnh, nhắn tin, vào nhóm đều bị server chặn. */
   emailVerified: boolean;
   isMaster: boolean;
-  /**
-   * Có lối vào bàn vận hành. `/me` không nói ai là staff, nhưng chỉ master và staff bật được lớp thứ hai — đã bật là
-   * staff. Staff mới chưa thiết lập lớp thứ hai thì chưa thấy lối vào: server chưa trả cờ nào khác để biết.
-   */
+  /** Có lối vào bàn vận hành: master, hoặc staff có quyền đang hiệu lực — quyền đang treo thì bàn không làm được gì. */
   opsAccess: boolean;
 };
 
@@ -622,7 +619,7 @@ function toMe(u: WireMe): Me {
     avatarUrl: u.avatarUrl,
     emailVerified: u.emailVerified,
     isMaster: u.role === 'master',
-    opsAccess: u.role === 'master' || u.twoFactorEnabled,
+    opsAccess: u.role === 'master' || u.staff,
   };
 }
 
@@ -1402,13 +1399,8 @@ export const api = {
   resetPassword: (email: string, code: string, password: string): Promise<void> =>
     unwrapEmpty(postApiV1AuthResetPassword({ body: { email: email.trim(), code, password } })),
 
-  /** `totpCode` chỉ master, staff đã bật lớp thứ hai mới cần; thiếu thì server trả 401 kèm câu nhắc nhập mã. */
-  login: (email: string, password: string, totpCode?: string): Promise<Session> =>
-    unwrap(
-      postApiV1AuthLogin({
-        body: { email, password, client: 'app', ...(totpCode && { totpCode }) },
-      }),
-    ).then(toSession),
+  login: (email: string, password: string): Promise<Session> =>
+    unwrap(postApiV1AuthLogin({ body: { email, password, client: 'app' } })).then(toSession),
 
   refresh: (refreshToken: string): Promise<Session> =>
     unwrap(postApiV1AuthRefresh({ body: { refreshToken } })).then(toSession),
