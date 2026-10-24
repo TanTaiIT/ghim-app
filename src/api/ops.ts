@@ -6,6 +6,7 @@ import {
   getApiV1OpsIdVerifications,
   getApiV1OpsReviewReasonTemplates,
   getApiV1OpsReviewStatsBoard,
+  getApiV1OpsStatsDaily,
   getApiV1OpsReviewTasks,
   getApiV1OpsReviewTasksByTaskId,
   getApiV1OpsScreeningRules,
@@ -374,6 +375,16 @@ export type ReviewBoard = {
   atMaster: { open: number; overdue: number };
 };
 
+/** Một ngày Việt Nam trên bảng số của master (`/ops/stats/daily`); `day` là `YYYY-MM-DD`. */
+export type DayStats = {
+  day: string;
+  newAccounts: number;
+  submissions: number;
+  firstLive: number;
+  machine: { passFull: number; passLimited: number; hold: number };
+  decisions: { passed: number; rejected: number };
+};
+
 /* ------------------------------ người & giấy tờ ------------------------------ */
 
 export type IdCheck = {
@@ -549,6 +560,10 @@ export type NewCategory = PostApiV1OpsCategoriesData['body'];
 /* ------------------------------------- api ------------------------------------- */
 
 export const opsApi = {
+  /** Hôm nay trước, kể cả hôm nay đang dở; server đã điền 0 cho ngày trống. */
+  dailyStats: async (days: number): Promise<DayStats[]> =>
+    (await unwrap(getApiV1OpsStatsDaily({ query: { days } }))).days,
+
   board: async (): Promise<ReviewBoard> => {
     const d = await unwrap(getApiV1OpsReviewStatsBoard());
     return {

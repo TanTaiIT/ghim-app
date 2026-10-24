@@ -114,6 +114,26 @@ describe('gọi bàn vận hành', () => {
   });
 });
 
+describe('bảng số theo ngày', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('hỏi đúng route, trả mảng ngày của server nguyên vẹn (hôm nay trước)', async () => {
+    const day = {
+      day: '2026-10-24',
+      newAccounts: 1,
+      submissions: 3,
+      firstLive: 2,
+      machine: { passFull: 1, passLimited: 1, hold: 1 },
+      decisions: { passed: 1, rejected: 2 },
+    };
+    const calls = serve({ timeZone: 'Asia/Ho_Chi_Minh', days: [day] });
+    await expect(opsApi.dailyStats(7)).resolves.toEqual([day]);
+    expect(calls[0]).toMatchObject({ method: 'GET', path: '/api/v1/ops/stats/daily' });
+  });
+});
+
 describe('luật máy duyệt', () => {
   afterEach(() => {
     jest.restoreAllMocks();

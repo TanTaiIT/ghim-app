@@ -2,10 +2,12 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import { useRouter, type Href } from 'expo-router';
 import { OpsHeader, OpsStats, type OpsStat } from '@/components/OpsHeader';
-import { EmptyState, type IconName } from '@/components/ui';
+import { OpsDaily } from '@/components/OpsDaily';
+import type { IconName } from '@/components/ui';
 import { useMe } from '@/queries/account';
 import { useIdChecks } from '@/queries/ops-people';
 import { useOpsTasks, useReviewBoard } from '@/queries/ops-review';
+import { useDailyStats } from '@/queries/ops-stats';
 import { useSupportQueue } from '@/queries/ops-support';
 import { C, F, R, S } from '@/theme';
 
@@ -28,6 +30,7 @@ export default function OpsHome() {
   const mine = useOpsTasks(null).data;
   const ids = useIdChecks('pending');
   const support = useSupportQueue(true);
+  const daily = useDailyStats(isMaster);
 
   const queues = (list: number[]) =>
     (board?.queues ?? [])
@@ -99,13 +102,12 @@ export default function OpsHome() {
           </View>
 
           <Text style={styles.section}>Hôm nay</Text>
-          <View style={styles.pending}>
-            <EmptyState
-              icon="bar-chart-2"
-              title="Chưa có API"
-              text="Tin mới, thành viên mới, tỉ lệ từ chối và doanh thu đẩy tin theo ngày cần server mở thống kê — hiện chỉ có bảng đếm việc duyệt."
-            />
-          </View>
+          <OpsDaily
+            master={isMaster}
+            days={daily.data}
+            pending={daily.isPending && isMaster}
+            error={daily.error?.message ?? null}
+          />
         </View>
       </ScrollView>
     </View>
@@ -187,10 +189,4 @@ const styles = StyleSheet.create({
   track: { height: 8, borderRadius: R.xs, backgroundColor: C.sand, overflow: 'hidden' },
   fill: { height: '100%', borderRadius: R.xs, backgroundColor: C.price },
   caption: { fontFamily: F.uiMedium, fontSize: 12, color: C.inkSoft },
-  pending: {
-    borderRadius: R.lg,
-    borderWidth: 1,
-    borderColor: C.line,
-    backgroundColor: C.paperWarm,
-  },
 });

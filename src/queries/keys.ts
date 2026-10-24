@@ -57,6 +57,7 @@ export const qk = {
   ops: {
     all: () => ['ops'] as const,
     board: () => ['ops', 'board'] as const,
+    daily: (days: number) => ['ops', 'daily', days] as const,
     tasks: (queue: number | null) => ['ops', 'tasks', queue] as const,
     task: (id: string) => ['ops', 'task', id] as const,
     reasons: () => ['ops', 'reasons'] as const,

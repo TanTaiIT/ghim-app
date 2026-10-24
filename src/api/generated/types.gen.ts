@@ -1993,101 +1993,6 @@ export type GetApiV1CategoriesByIdTemplateVersionsByVersionResponses = {
 
 export type GetApiV1CategoriesByIdTemplateVersionsByVersionResponse = GetApiV1CategoriesByIdTemplateVersionsByVersionResponses[keyof GetApiV1CategoriesByIdTemplateVersionsByVersionResponses];
 
-export type GetApiV1RegionsProvincesData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/api/v1/regions/provinces';
-};
-
-export type GetApiV1RegionsProvincesResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        success: true;
-        data: Array<{
-            code: number;
-            name: string;
-            fullName: string;
-            formerNames: Array<string>;
-            aliases: Array<string>;
-        }>;
-    };
-};
-
-export type GetApiV1RegionsProvincesResponse = GetApiV1RegionsProvincesResponses[keyof GetApiV1RegionsProvincesResponses];
-
-export type GetApiV1RegionsProvincesByCodeWardsData = {
-    body?: never;
-    path: {
-        code: number;
-    };
-    query?: never;
-    url: '/api/v1/regions/provinces/{code}/wards';
-};
-
-export type GetApiV1RegionsProvincesByCodeWardsErrors = {
-    /**
-     * Default Response
-     */
-    404: {
-        success: false;
-        error: {
-            code: string;
-            message: string;
-            details?: unknown;
-        };
-    };
-};
-
-export type GetApiV1RegionsProvincesByCodeWardsError = GetApiV1RegionsProvincesByCodeWardsErrors[keyof GetApiV1RegionsProvincesByCodeWardsErrors];
-
-export type GetApiV1RegionsProvincesByCodeWardsResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        success: true;
-        data: Array<{
-            code: number;
-            provinceCode: number;
-            name: string;
-            formerNames: Array<string>;
-        }>;
-    };
-};
-
-export type GetApiV1RegionsProvincesByCodeWardsResponse = GetApiV1RegionsProvincesByCodeWardsResponses[keyof GetApiV1RegionsProvincesByCodeWardsResponses];
-
-export type GetApiV1RegionsSearchData = {
-    body?: never;
-    path?: never;
-    query: {
-        q: string;
-    };
-    url: '/api/v1/regions/search';
-};
-
-export type GetApiV1RegionsSearchResponses = {
-    /**
-     * Default Response
-     */
-    200: {
-        success: true;
-        data: Array<{
-            kind: 'province' | 'ward';
-            code: number;
-            name: string;
-            provinceCode: number;
-            provinceName: string;
-            formerNames: Array<string>;
-        }>;
-    };
-};
-
-export type GetApiV1RegionsSearchResponse = GetApiV1RegionsSearchResponses[keyof GetApiV1RegionsSearchResponses];
-
 export type GetApiV1OpsCategoriesData = {
     body?: never;
     path?: never;
@@ -2889,6 +2794,101 @@ export type PostApiV1OpsCategoriesByIdTemplatePublishResponses = {
 };
 
 export type PostApiV1OpsCategoriesByIdTemplatePublishResponse = PostApiV1OpsCategoriesByIdTemplatePublishResponses[keyof PostApiV1OpsCategoriesByIdTemplatePublishResponses];
+
+export type GetApiV1RegionsProvincesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/regions/provinces';
+};
+
+export type GetApiV1RegionsProvincesResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            code: number;
+            name: string;
+            fullName: string;
+            formerNames: Array<string>;
+            aliases: Array<string>;
+        }>;
+    };
+};
+
+export type GetApiV1RegionsProvincesResponse = GetApiV1RegionsProvincesResponses[keyof GetApiV1RegionsProvincesResponses];
+
+export type GetApiV1RegionsProvincesByCodeWardsData = {
+    body?: never;
+    path: {
+        code: number;
+    };
+    query?: never;
+    url: '/api/v1/regions/provinces/{code}/wards';
+};
+
+export type GetApiV1RegionsProvincesByCodeWardsErrors = {
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1RegionsProvincesByCodeWardsError = GetApiV1RegionsProvincesByCodeWardsErrors[keyof GetApiV1RegionsProvincesByCodeWardsErrors];
+
+export type GetApiV1RegionsProvincesByCodeWardsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            code: number;
+            provinceCode: number;
+            name: string;
+            formerNames: Array<string>;
+        }>;
+    };
+};
+
+export type GetApiV1RegionsProvincesByCodeWardsResponse = GetApiV1RegionsProvincesByCodeWardsResponses[keyof GetApiV1RegionsProvincesByCodeWardsResponses];
+
+export type GetApiV1RegionsSearchData = {
+    body?: never;
+    path?: never;
+    query: {
+        q: string;
+    };
+    url: '/api/v1/regions/search';
+};
+
+export type GetApiV1RegionsSearchResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            kind: 'province' | 'ward';
+            code: number;
+            name: string;
+            provinceCode: number;
+            provinceName: string;
+            formerNames: Array<string>;
+        }>;
+    };
+};
+
+export type GetApiV1RegionsSearchResponse = GetApiV1RegionsSearchResponses[keyof GetApiV1RegionsSearchResponses];
 
 export type GetApiV1OpsStaffData = {
     body?: never;
@@ -15800,3 +15800,68 @@ export type GetApiV1OpsJobsRunsResponses = {
 };
 
 export type GetApiV1OpsJobsRunsResponse = GetApiV1OpsJobsRunsResponses[keyof GetApiV1OpsJobsRunsResponses];
+
+export type GetApiV1OpsStatsDailyData = {
+    body?: never;
+    path?: never;
+    query?: {
+        days?: number;
+    };
+    url: '/api/v1/ops/stats/daily';
+};
+
+export type GetApiV1OpsStatsDailyErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsStatsDailyError = GetApiV1OpsStatsDailyErrors[keyof GetApiV1OpsStatsDailyErrors];
+
+export type GetApiV1OpsStatsDailyResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            timeZone: string;
+            days: Array<{
+                day: string;
+                newAccounts: number;
+                submissions: number;
+                firstLive: number;
+                machine: {
+                    passFull: number;
+                    passLimited: number;
+                    hold: number;
+                };
+                decisions: {
+                    passed: number;
+                    rejected: number;
+                };
+            }>;
+        };
+    };
+};
+
+export type GetApiV1OpsStatsDailyResponse = GetApiV1OpsStatsDailyResponses[keyof GetApiV1OpsStatsDailyResponses];
