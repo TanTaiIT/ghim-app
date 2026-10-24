@@ -12,6 +12,7 @@ export const qk = {
   me: () => ['me'] as const,
   sessions: () => ['me', 'sessions'] as const,
   blocks: () => ['me', 'blocks'] as const,
+  standing: () => ['me', 'standing'] as const,
   categories: () => ['categories'] as const,
   provinces: () => ['regions', 'provinces'] as const,
   wards: (provinceCode: number) => ['regions', 'wards', provinceCode] as const,

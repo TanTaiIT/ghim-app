@@ -2,6 +2,7 @@ import { describe, expect, it } from '@jest/globals';
 import {
   daysUntil,
   formatAgo,
+  formatDate,
   formatDay,
   formatDue,
   formatMillionRange,
@@ -60,6 +61,12 @@ describe('formatDay', () => {
     // 23:50 hôm trước mới cách 40 phút nhưng đã là "Hôm qua".
     expect(formatDay(new Date(2026, 9, 8, 23, 50).toISOString(), now)).toBe('Hôm qua');
     expect(formatDay(new Date(2026, 9, 1, 12, 0).toISOString(), now)).toBe('01/10/2026');
+  });
+});
+
+describe('formatDate', () => {
+  it('dd/mm/yyyy theo giờ của máy', () => {
+    expect(formatDate(new Date(2026, 0, 5, 23, 30).toISOString())).toBe('05/01/2026');
   });
 });
 

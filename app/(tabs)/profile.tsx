@@ -97,6 +97,11 @@ export default function Profile() {
       label: 'Nhóm của tôi',
       onPress: () => router.push('/groups'),
     },
+    {
+      icon: 'alert-triangle',
+      label: 'Cảnh cáo của tôi',
+      onPress: () => router.push('/warnings'),
+    },
     { icon: 'help-circle', label: 'Trợ giúp & hỗ trợ', onPress: () => router.push('/help') },
     {
       icon: 'activity',

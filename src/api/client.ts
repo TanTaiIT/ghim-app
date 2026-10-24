@@ -35,6 +35,7 @@ import {
   getApiV1MeNotifications,
   getApiV1MeNotificationsUnreadCount,
   getApiV1MeSessions,
+  getApiV1MeTrust,
   getApiV1RegionsProvinces,
   getApiV1RegionsProvincesByCodeWards,
   getApiV1UsersById,
@@ -71,6 +72,7 @@ import {
   postApiV1MeConversationsByConversationIdReports,
   postApiV1MediaUploads,
   postApiV1MeNotificationsRead,
+  postApiV1MeStrikesByStrikeIdAppeal,
   postApiV1MeSupportConversation,
   postApiV1Reports,
   putApiV1MeAvatar,
@@ -88,6 +90,7 @@ import type {
   GetApiV1MeGroupsResponses,
   GetApiV1MeNotificationsResponses,
   GetApiV1MeResponses,
+  GetApiV1MeTrustResponses,
   GetApiV1UsersByIdResponses,
 } from './generated/types.gen';
 import { ApiError, deviceHeaders } from './http';
@@ -468,7 +471,8 @@ export type NoticeTarget =
   | { screen: 'chat'; id: string }
   | { screen: 'listing'; id: string }
   | { screen: 'group'; id: string }
-  | { screen: 'profile' };
+  | { screen: 'profile' }
+  | { screen: 'warnings' };
 
 export type Notice = {
   id: string;
@@ -518,6 +522,36 @@ export type BlockedPerson = { id: string; name: string | null; blockedAt: string
 
 export type HelpTopic = { id: string; label: string; faqs: { q: string; a: string }[] };
 
+/**
+ * Một cảnh cáo của chính mình. API gọi là "gậy" (`strike`); mọi chữ người dùng đọc gọi là cảnh cáo
+ * (ghim-server rename-strike-to-warning).
+ */
+export type MyStrike = {
+  id: string;
+  kind: WireStrike['kind'];
+  status: WireStrike['status'];
+  points: number;
+  /** Đang tính vào điểm vi phạm lúc đọc. */
+  inForce: boolean;
+  rule: string;
+  issuedAt: string;
+  expiresAt: string | null;
+  /** Server trả `null` khi chưa huỷ — SDK sinh từ enum nullable làm mất `| null`. */
+  cancelCause: WireStrike['cancelCause'] | null;
+  /** Server đã xét: cảnh cáo thường / nặng, còn trong hạn, chưa khiếu nại lần nào. */
+  appealable: boolean;
+  appealUntil: string | null;
+  appeal: NonNullable<WireStrike['appeal']>['status'] | null;
+};
+
+/** Phần cảnh cáo của bảng uy tín (`GET /me/trust`). */
+export type MyStanding = {
+  points: number;
+  /** Đang tạm dừng đăng tin mới: ngày điểm vi phạm về dưới ngưỡng. */
+  postingLockedUntil: string | null;
+  strikes: MyStrike[];
+};
+
 export type Session = { accessToken: string; refreshToken: string };
 
 export type Registration = { email: string; password: string; displayName: string };
@@ -554,6 +588,8 @@ type WireNotice = GetApiV1MeNotificationsResponses[200]['data']['items'][number]
 type WireGroupSummary = GetApiV1GroupsResponses[200]['data']['items'][number];
 type WireMyGroup = GetApiV1MeGroupsResponses[200]['data'][number];
 type WireGroupView = GetApiV1GroupsByGroupIdResponses[200]['data'];
+type WireTrust = GetApiV1MeTrustResponses[200]['data'];
+type WireStrike = WireTrust['strikes'][number];
 
 /** Trang đầu đủ cho trang chủ và một màn kết quả; cuộn tải thêm (`nextCursor`) chưa làm. */
 const PAGE_SIZE = 30;
@@ -866,6 +902,9 @@ const EXPIRING_TYPES: ReadonlySet<string> = new Set([
   'listing.purge.reminder',
 ]);
 
+/** `trust.strike.*`, `trust.appeal.*` (N49–N55); mức tin cậy và thời gian chờ vẫn mở trang Cá nhân. */
+const WARNING_TYPES = /^trust\.(strike|appeal)\./;
+
 /**
  * Lời trả giá tới dưới `messaging.message.received` như mọi tin, thân "Trả giá …" đã tự nói — không đoán theo câu chữ
  * của server; chỉ kết quả trả giá có loại riêng.
@@ -882,12 +921,14 @@ function kindOf(w: WireNotice): NoticeKind {
 /**
  * Màn mở theo mã trong `data` (`ghim-server/docs/realtime.md`): hội thoại trước, rồi tin. Tin của chính mình (duyệt,
  * hết hạn) mở "Tin của tôi" — ở đó có trạng thái và lời giải thích. Mọi chuyện còn lại của nhóm mở trang nhóm, kể cả
- * lời mời và danh sách lớp: trang nhóm tự đưa nút "Nhận lời mời" / "Vào nhóm".
+ * lời mời và danh sách lớp: trang nhóm tự đưa nút "Nhận lời mời" / "Vào nhóm". Cảnh cáo và kết quả khiếu nại mở
+ * "Cảnh cáo của tôi" — nơi duy nhất có nút khiếu nại mà câu nhắc hứa hẹn.
  */
 function targetOf(w: WireNotice): NoticeTarget | null {
   const { conversationId, listingId } = w.data;
   if (conversationId) return { screen: 'chat', id: conversationId };
   if (w.category === 'group_new_listings' && listingId) return { screen: 'listing', id: listingId };
+  if (WARNING_TYPES.test(w.type)) return { screen: 'warnings' };
   if (
     w.category === 'your_listings' ||
     w.category === 'account' ||
@@ -897,6 +938,30 @@ function targetOf(w: WireNotice): NoticeTarget | null {
   }
   return w.groupId ? { screen: 'group', id: w.groupId } : null;
 }
+
+const toStrike = (s: WireStrike): MyStrike => ({
+  id: s.id,
+  kind: s.kind,
+  status: s.status,
+  points: s.points,
+  inForce: s.inForce,
+  rule: `Điều ${s.ruleCode}: ${s.ruleText}`,
+  issuedAt: s.issuedAt,
+  expiresAt: s.expiresAt,
+  cancelCause: s.cancelCause,
+  appealable: s.appealable,
+  appealUntil: s.appealUntil,
+  appeal: s.appeal?.status ?? null,
+});
+
+/** Cảnh cáo còn tính điểm lên đầu, rồi mới nhất trước — server trả theo thứ tự ra cảnh cáo. */
+const toStanding = (w: WireTrust): MyStanding => ({
+  points: w.strikePoints,
+  postingLockedUntil: w.postingLockedUntil,
+  strikes: w.strikes
+    .map(toStrike)
+    .sort((a, b) => Number(b.inForce) - Number(a.inForce) || b.issuedAt.localeCompare(a.issuedAt)),
+});
 
 const toNotice = (w: WireNotice): Notice => ({
   id: w.id,
@@ -1073,6 +1138,18 @@ export const api = {
   /** Server thu hồi mọi phiên khác — máy này vẫn đăng nhập. */
   changePassword: (currentPassword: string, newPassword: string): Promise<void> =>
     unwrapEmpty(putApiV1MePassword({ body: { currentPassword, newPassword } })),
+
+  getMyStanding: async (): Promise<MyStanding> => toStanding(await unwrap(getApiV1MeTrust())),
+
+  /** 409 khi hết hạn, đã khiếu nại, hay là vi phạm nghiêm trọng (đi qua Hỗ trợ) — toast nói lý do của server. */
+  appealStrike: async (strikeId: string, statement: string): Promise<void> => {
+    await unwrap(
+      postApiV1MeStrikesByStrikeIdAppeal({
+        path: { strikeId },
+        body: { statement: statement.trim() },
+      }),
+    );
+  },
 
   getSessions: async (): Promise<DeviceSession[]> =>
     (await unwrap(getApiV1MeSessions())).map(({ id, deviceName, lastActiveAt, current }) => ({

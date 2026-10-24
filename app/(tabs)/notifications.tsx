@@ -38,6 +38,8 @@ export default function Notifications() {
         return router.push(`/group/${target.id}`);
       case 'profile':
         return router.navigate('/(tabs)/profile');
+      case 'warnings':
+        return router.push('/warnings');
     }
   };
 

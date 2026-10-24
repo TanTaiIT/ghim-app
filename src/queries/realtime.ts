@@ -43,8 +43,10 @@ export function useRealtimeBridge(qc: QueryClient): void {
             return;
           case 'notification:changed':
             void qc.invalidateQueries({ queryKey: qk.notices.list() });
-            // Đơn được duyệt, lời mời mới, nhóm bị khoá chỉ tới qua thông báo: trang nhóm đang mở đọc lại luôn.
+            // Đơn được duyệt, lời mời mới, nhóm bị khoá, cảnh cáo và kết quả khiếu nại chỉ tới qua thông báo: màn
+            // đang mở đọc lại luôn.
             void qc.invalidateQueries({ queryKey: qk.groups.all() });
+            void qc.invalidateQueries({ queryKey: qk.standing() });
             return;
           case 'message:new':
             void qc.invalidateQueries({ queryKey: qk.conversations.list() });

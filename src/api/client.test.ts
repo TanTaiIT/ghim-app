@@ -495,10 +495,18 @@ describe('thông báo', () => {
             detail: 'Điều Q1: Không đăng hàng cấm. Cảnh cáo 1 điểm, hết hạn ngày 20/01/2027.',
             data: { strikeId: 's-1', listingId: 'l-3' },
           }),
+          wireNotice({
+            id: 'n-8',
+            category: 'trust_strikes',
+            type: 'trust.tier.lowered',
+            title: 'Ghim',
+            body: 'Tài khoản đang ở mức T1.',
+            data: {},
+          }),
         ],
         page: 1,
         limit: 100,
-        total: 7,
+        total: 8,
         totalPages: 1,
       },
     });
@@ -512,7 +520,8 @@ describe('thông báo', () => {
       ['n-4', 'deal', 'listing', { screen: 'listing', id: 'l-2' }, false],
       ['n-5', 'system', 'group', { screen: 'group', id: 'g-1' }, false],
       ['n-6', 'system', 'message', { screen: 'chat', id: 'c-9' }, false],
-      ['n-7', 'system', 'account', { screen: 'profile' }, false],
+      ['n-7', 'system', 'account', { screen: 'warnings' }, false],
+      ['n-8', 'system', 'account', { screen: 'profile' }, false],
     ]);
     expect(notices[0]?.at).toBe('2026-10-18T09:05:00.000Z');
     // Phần chỉ xem trong app đi nguyên từ server; dòng không có thì null.
@@ -534,6 +543,96 @@ describe('thông báo', () => {
     await api.markNoticesRead(['n-1']);
     await api.markNoticesRead('all');
     expect(bodies).toEqual([{ ids: ['n-1'] }, { all: true }]);
+  });
+});
+
+/** Đúng hình dạng một gậy của `GET /me/trust` (ghim-server `strike.schema`). */
+const wireStrike = (overrides: Record<string, unknown>) => ({
+  id: 's-1',
+  kind: 'normal',
+  status: 'active',
+  points: 1,
+  inForce: true,
+  ruleCode: 'Q1',
+  ruleText: 'Không đăng hàng cấm',
+  issuedAt: '2026-10-20T00:00:00.000Z',
+  expiresAt: '2027-01-18T00:00:00.000Z',
+  remainingDays: 86,
+  listingId: 'l-3',
+  cancelledAt: null,
+  cancelCause: null,
+  seriousDecision: null,
+  appealable: true,
+  appealUntil: '2026-11-03T00:00:00.000Z',
+  appeal: null,
+  ...overrides,
+});
+
+describe('cảnh cáo', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('cảnh cáo còn tính điểm lên đầu, rồi mới nhất trước; điều quy định ghép mã và chữ', async () => {
+    serve({
+      '/api/v1/me/trust': {
+        strikes: [
+          wireStrike({
+            id: 's-old',
+            status: 'expired',
+            inForce: false,
+            issuedAt: '2026-10-25T00:00:00.000Z',
+            appealable: false,
+            appealUntil: null,
+            appeal: { status: 'lost', filedAt: '2026-10-26T00:00:00.000Z', decidedAt: null },
+          }),
+          wireStrike({ id: 's-1' }),
+          wireStrike({
+            id: 's-2',
+            kind: 'severe',
+            points: 2,
+            issuedAt: '2026-10-22T00:00:00.000Z',
+          }),
+        ],
+        strikePoints: 3,
+        postingLockedUntil: '2026-11-20T00:00:00.000Z',
+      },
+    });
+
+    const standing = await api.getMyStanding();
+
+    expect(standing.points).toBe(3);
+    expect(standing.postingLockedUntil).toBe('2026-11-20T00:00:00.000Z');
+    expect(standing.strikes.map((s) => s.id)).toEqual(['s-2', 's-1', 's-old']);
+    expect(standing.strikes[1]).toEqual({
+      id: 's-1',
+      kind: 'normal',
+      status: 'active',
+      points: 1,
+      inForce: true,
+      rule: 'Điều Q1: Không đăng hàng cấm',
+      issuedAt: '2026-10-20T00:00:00.000Z',
+      expiresAt: '2027-01-18T00:00:00.000Z',
+      cancelCause: null,
+      appealable: true,
+      appealUntil: '2026-11-03T00:00:00.000Z',
+      appeal: null,
+    });
+    expect(standing.strikes[2]?.appeal).toBe('lost');
+  });
+
+  it('khiếu nại gửi lời trình bày đã bỏ khoảng trắng hai đầu', async () => {
+    const calls = record();
+
+    await api.appealStrike('s-1', '  Tin này không phải hàng cấm  ');
+
+    expect(calls.map(({ method, path, body }) => ({ method, path, body }))).toEqual([
+      {
+        method: 'POST',
+        path: '/api/v1/me/strikes/s-1/appeal',
+        body: { statement: 'Tin này không phải hàng cấm' },
+      },
+    ]);
   });
 });
 
