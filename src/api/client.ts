@@ -256,12 +256,21 @@ export type ListingDetail = Omit<ListingCard, 'seller'> & {
 };
 
 /** Đúng bộ lọc mà `GET /listings` nhận — server chưa có sắp xếp hay lọc theo tình trạng. */
+/** Khoảng số của một mục mẫu: một hay cả hai đầu. */
+export type AttributeRange = { min?: number; max?: number };
+/**
+ * Bộ lọc theo mẫu thông tin của danh mục (TK 11): tên mục → các giá trị đã chọn (mục chọn một / chọn nhiều, tin
+ * khớp khi có một trong số đó) hay khoảng số. Chỉ có nghĩa khi đã chọn danh mục; đổi danh mục thì bỏ.
+ */
+export type AttributeFilters = Record<string, string[] | AttributeRange>;
+
 export type SearchFilters = {
   q: string;
   categoryId: string | null;
   provinceCode: number | null;
   minPrice: number | null;
   maxPrice: number | null;
+  attrs: AttributeFilters;
 };
 
 export const NO_FILTERS: SearchFilters = {
@@ -270,7 +279,20 @@ export const NO_FILTERS: SearchFilters = {
   provinceCode: null,
   minPrice: null,
   maxPrice: null,
+  attrs: {},
 };
+
+/**
+ * Server không nhận một mục lọc — 400 `VALIDATION_ERROR` kèm `details.field`: mẫu của danh mục đổi giữa hai lượt
+ * tìm, mục đã bị bỏ. Lỗi khác trả `null` để màn hiện như mọi lỗi tìm kiếm.
+ */
+export function staleFilterField(error: unknown): { field: string; message: string } | null {
+  if (!(error instanceof ApiError) || error.code !== 'VALIDATION_ERROR') return null;
+  const details: unknown = error.details;
+  const field =
+    typeof details === 'object' && details !== null && 'field' in details ? details.field : null;
+  return typeof field === 'string' ? { field, message: error.message } : null;
+}
 
 /** Trạng thái của server, trừ `removed` (tin đã gỡ không hiện ở "Tin của tôi"). */
 export type MyListingState =
@@ -1057,6 +1079,7 @@ export const api = {
           provinceCode: f.provinceCode ?? undefined,
           priceMin: f.minPrice ?? undefined,
           priceMax: f.maxPrice ?? undefined,
+          attrs: Object.keys(f.attrs).length > 0 ? JSON.stringify(f.attrs) : undefined,
           limit: PAGE_SIZE,
         },
       }),

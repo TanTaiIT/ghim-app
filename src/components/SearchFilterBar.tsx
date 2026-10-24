@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { PickerSheet } from './PickerSheet';
 import { Chip } from './Chip';
+import { filterableFields, TemplateFilterSheet } from './TemplateFilterSheet';
 import { NO_FILTERS, type SearchFilters } from '@/api/client';
-import { useCategories, useProvinces } from '@/queries/catalog';
+import { useCategories, useCategoryTemplate, useProvinces } from '@/queries/catalog';
 import { S } from '@/theme';
 import { formatMillionRange } from '@/utils/format';
 
@@ -22,11 +23,12 @@ type PriceKey = (typeof PRICES)[number]['value'];
 
 const ANYWHERE = 'all';
 
-type Sheet = 'province' | 'price' | 'category' | null;
+type Sheet = 'province' | 'price' | 'category' | 'attrs' | null;
 
 /**
  * Hàng chip lọc của màn tìm kiếm cùng các bảng chọn của nó. Chip đầu tối màu đếm số bộ lọc đang bật;
- * bấm vào thì xoá hết — thiết kế chưa có màn bộ lọc đầy đủ, mỗi chip sau đã là một bộ lọc riêng.
+ * bấm vào thì xoá hết — thiết kế chưa có màn bộ lọc đầy đủ, mỗi chip sau đã là một bộ lọc riêng. Chip "Thông tin"
+ * chỉ có khi đã chọn danh mục và mẫu của nó có mục lọc được (TK 11); đổi danh mục thì bộ lọc đó bỏ theo.
  * Thiết kế có thêm chip "Tình trạng", nhưng `GET /listings` chưa lọc được theo đó nên chưa hiện.
  */
 export function SearchFilterBar({
@@ -39,6 +41,7 @@ export function SearchFilterBar({
   const [sheet, setSheet] = useState<Sheet>(null);
   const categories = useCategories();
   const provinces = useProvinces();
+  const template = useCategoryTemplate(filters.categoryId);
   const set = (patch: Partial<SearchFilters>) => onChange({ ...filters, ...patch });
   const close = () => setSheet(null);
 
@@ -46,8 +49,10 @@ export function SearchFilterBar({
   const priceOn = filters.minPrice !== null || filters.maxPrice !== null;
   const category = categories.data?.find((c) => c.id === filters.categoryId);
   const province = provinces.data?.find((p) => p.code === filters.provinceCode);
+  const attrFields = filterableFields(template.data ?? []);
+  const attrsOn = Object.keys(filters.attrs).length;
   const active = [filters.provinceCode, filters.categoryId].filter((v) => v !== null).length;
-  const count = active + (priceOn ? 1 : 0);
+  const count = active + (priceOn ? 1 : 0) + attrsOn;
 
   return (
     <>
@@ -61,6 +66,14 @@ export function SearchFilterBar({
           />
           {category && (
             <Chip selected chevron label={category.name} onPress={() => setSheet('category')} />
+          )}
+          {category && attrFields.length > 0 && (
+            <Chip
+              chevron
+              selected={attrsOn > 0}
+              label={attrsOn > 0 ? `Thông tin · ${attrsOn}` : 'Thông tin'}
+              onPress={() => setSheet('attrs')}
+            />
           )}
           <Chip
             chevron
@@ -104,7 +117,16 @@ export function SearchFilterBar({
         title="Danh mục"
         options={(categories.data ?? []).map((c) => ({ value: c.id, label: c.name }))}
         value={filters.categoryId}
-        onSelect={(id) => set({ categoryId: id })}
+        onSelect={(id) =>
+          set(id === filters.categoryId ? { categoryId: id } : { categoryId: id, attrs: {} })
+        }
+        onClose={close}
+      />
+      <TemplateFilterSheet
+        visible={sheet === 'attrs'}
+        fields={attrFields}
+        value={filters.attrs}
+        onApply={(attrs) => set({ attrs })}
         onClose={close}
       />
     </>

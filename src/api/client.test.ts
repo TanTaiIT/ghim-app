@@ -4,6 +4,7 @@ import {
   IMAGE_TOO_SMALL,
   myListingActions,
   NO_FILTERS,
+  staleFilterField,
   unwrap,
   unwrapEmpty,
   type Lookups,
@@ -88,7 +89,11 @@ describe('đọc tin đăng từ server', () => {
     const calls = serve({ '/api/v1/listings': { items: [wireListing], nextCursor: null } });
     const load = jest.fn(async (_codes: number[]) => lookups);
 
-    const [card] = await api.searchListings({ ...NO_FILTERS, q: '  bàn ', provinceCode: 1 }, load);
+    const attrs = { hang: ['Apple', 'Samsung'], nam_san_xuat: { min: 2018 } };
+    const [card] = await api.searchListings(
+      { ...NO_FILTERS, q: '  bàn ', provinceCode: 1, attrs },
+      load,
+    );
 
     expect(card).toEqual({
       id: wireListing.id,
@@ -105,6 +110,8 @@ describe('đọc tin đăng từ server', () => {
     expect(calls[0]?.url.searchParams.get('q')).toBe('bàn');
     expect(calls[0]?.url.searchParams.get('provinceCode')).toBe('1');
     expect(calls[0]?.url.searchParams.has('categoryId')).toBe(false);
+    // Bộ lọc theo mẫu đi trong MỘT tham số JSON (ghim-server add-listing-filters).
+    expect(JSON.parse(calls[0]?.url.searchParams.get('attrs') ?? '')).toEqual(attrs);
   });
 
   // Route xem tin trả theo người xem: thiếu phiên thì chủ tin không mở được nháp của mình (404).
@@ -120,6 +127,20 @@ describe('đọc tin đăng từ server', () => {
     await api.searchListings(NO_FILTERS, loadLookups);
 
     expect(calls.map((c) => c.authorization)).toEqual(['Bearer tok-1', 'Bearer tok-1', null]);
+    expect(calls[0]?.url.searchParams.has('attrs')).toBe(false);
+  });
+
+  it('mục lọc server không còn nhận: đọc được tên mục; lỗi khác thì không', () => {
+    const stale = new ApiError('VALIDATION_ERROR', 'Mục "hang" không có trong mẫu', 400, {
+      field: 'hang',
+    });
+    expect(staleFilterField(stale)).toEqual({
+      field: 'hang',
+      message: 'Mục "hang" không có trong mẫu',
+    });
+    expect(staleFilterField(new ApiError('VALIDATION_ERROR', 'Sai', 400))).toBeNull();
+    expect(staleFilterField(new ApiError('NOT_FOUND', 'Không có', 404, { field: 'x' }))).toBeNull();
+    expect(staleFilterField(new Error('mạng'))).toBeNull();
   });
 
   it('chi tiết: thông số theo đúng phiên bản mẫu, bỏ ô trống; số điện thoại chỉ khi người bán cho hiện', async () => {

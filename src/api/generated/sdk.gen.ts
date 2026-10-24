@@ -1117,6 +1117,8 @@ export const postApiV1OpsGroupsByGroupIdClose = <ThrowOnError extends boolean = 
 
 /**
  * Không `q` = bảng tin / danh mục (tin hiện đầy đủ); có `q` = tìm kiếm (gồm tin hạn chế)
+ *
+ * Lọc theo mẫu thông tin của danh mục (TK 11) qua `attrs` — JSON, chỉ khi có `categoryId`: mục chọn một / chọn nhiều nhận mảng giá trị (tin khớp khi có một trong số đó), mục số nhận `{ "min", "max" }` (một hay cả hai đầu). Ví dụ `attrs={"hang":["Apple","Samsung"],"nam_san_xuat":{"min":2018,"max":2020}}`. Mục chữ, mục không có trong mẫu hiện hành, giá trị ngoài lựa chọn → 400 `VALIDATION_ERROR` kèm `details.field`. Tin không có mục đang lọc không hiện; thứ tự và luật ai thấy tin giữ nguyên.
  */
 export const getApiV1Listings = <ThrowOnError extends boolean = false>(options?: Options<GetApiV1ListingsData, ThrowOnError>): RequestResult<GetApiV1ListingsResponses, GetApiV1ListingsErrors, ThrowOnError> => (options?.client ?? client).get<GetApiV1ListingsResponses, GetApiV1ListingsErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],

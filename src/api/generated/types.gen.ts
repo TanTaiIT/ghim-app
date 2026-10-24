@@ -7268,6 +7268,7 @@ export type GetApiV1ListingsData = {
         wardCode?: number;
         priceMin?: number;
         priceMax?: number;
+        attrs?: string;
     };
     url: '/api/v1/listings';
 };

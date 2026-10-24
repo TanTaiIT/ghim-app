@@ -12,6 +12,7 @@ import {
   useSaveSearch,
   useSavedIds,
   useSavedSearches,
+  useDropStaleFilter,
   useSearch,
   useToggleSaved,
 } from '@/queries/listings';
@@ -37,6 +38,7 @@ export default function Search() {
   });
 
   const results = useSearch(filters);
+  useDropStaleFilter(results.error, filters, setFilters, toast);
   const savedIds = useSavedIds();
   const toggleSaved = useToggleSaved();
   const savedSearches = useSavedSearches();

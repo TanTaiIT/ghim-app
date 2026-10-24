@@ -1,7 +1,9 @@
+import { useEffect } from 'react';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   api,
   NO_FILTERS,
+  staleFilterField,
   type ListingCard,
   type ReportCategory,
   type SearchFilters,
@@ -53,6 +55,32 @@ export function useSearch(filters: SearchFilters) {
     queryFn: () => api.searchListings(filters, lookupsFrom(qc)),
     placeholderData: keepPreviousData,
   });
+}
+
+/**
+ * Mẫu đổi giữa hai lượt tìm: server trả 400 nêu mục không còn nhận (design add-listing-filters, Risks) — bỏ mục đó
+ * khỏi bộ lọc, đọc lại mẫu cho bảng "Thông tin" khớp bản mới, và báo câu của server. Có mục để bỏ mới làm, nên lượt
+ * tìm kế tiếp cùng lỗi không lặp.
+ */
+export function useDropStaleFilter(
+  error: unknown,
+  filters: SearchFilters,
+  onChange: (next: SearchFilters) => void,
+  onDropped: (message: string) => void,
+): void {
+  const qc = useQueryClient();
+  const stale = staleFilterField(error);
+  useEffect(() => {
+    if (stale === null || !(stale.field in filters.attrs)) return;
+    const attrs = Object.fromEntries(
+      Object.entries(filters.attrs).filter(([name]) => name !== stale.field),
+    );
+    onChange({ ...filters, attrs });
+    if (filters.categoryId !== null) {
+      void qc.invalidateQueries({ queryKey: qk.template(filters.categoryId) });
+    }
+    onDropped(stale.message);
+  }, [stale, filters, onChange, onDropped, qc]);
 }
 
 export function useListing(id: string | undefined) {
