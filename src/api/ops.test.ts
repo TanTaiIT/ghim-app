@@ -113,3 +113,40 @@ describe('gọi bàn vận hành', () => {
     expect(calls[1]?.body).toEqual({ outcome: 'pass' });
   });
 });
+
+describe('luật máy duyệt', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  const wireRules = {
+    version: 7,
+    rules: [
+      { code: 'image_too_small', label: 'Ảnh quá nhỏ', kind: 'quality', weight: 0, mode: 'trial' },
+      { code: 'burst', label: 'Đăng dồn', kind: 'signal', weight: 20, mode: 'on' },
+      { code: 'duplicate_image', label: 'Ảnh trùng', kind: 'gate', weight: 0, mode: 'on' },
+    ],
+    overrides: [],
+    bands: [],
+    defaultBands: { mediumFrom: 30, highFrom: 60 },
+  };
+
+  it('chỉ giữ luật chung, xếp theo tên', async () => {
+    serve(wireRules);
+    expect((await opsApi.screeningRules()).map((r) => [r.label, r.kind, r.mode])).toEqual([
+      ['Ảnh quá nhỏ', 'quality', 'trial'],
+      ['Ảnh trùng', 'gate', 'on'],
+      ['Đăng dồn', 'signal', 'on'],
+    ]);
+  });
+
+  it('đổi chế độ: PATCH đúng mã luật, chỉ gửi chế độ, trả bộ luật mới', async () => {
+    const calls = serve(wireRules);
+    const rules = await opsApi.setRuleMode({ code: 'image_too_small', mode: 'on' });
+    expect(calls.map((c) => `${c.method} ${c.path}`)).toEqual([
+      'PATCH /api/v1/ops/screening/rules/image_too_small',
+    ]);
+    expect(calls[0]?.body).toEqual({ mode: 'on' });
+    expect(rules).toHaveLength(3);
+  });
+});

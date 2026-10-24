@@ -70,5 +70,6 @@ export const qk = {
     support: (pendingOnly: boolean) => ['ops', 'support', pendingOnly] as const,
     thread: (id: string) => ['ops', 'thread', id] as const,
     categories: () => ['ops', 'categories'] as const,
+    screeningRules: () => ['ops', 'screening-rules'] as const,
   },
 };

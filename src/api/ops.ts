@@ -8,12 +8,14 @@ import {
   getApiV1OpsReviewStatsBoard,
   getApiV1OpsReviewTasks,
   getApiV1OpsReviewTasksByTaskId,
+  getApiV1OpsScreeningRules,
   getApiV1OpsSupportConversations,
   getApiV1OpsSupportConversationsByConversationId,
   getApiV1OpsSupportConversationsByConversationIdMessages,
   getApiV1OpsTrustAccountsByAccountIdStrikes,
   patchApiV1OpsCategoriesById,
   patchApiV1OpsReviewReasonTemplatesByTemplateId,
+  patchApiV1OpsScreeningRulesByCode,
   postApiV1OpsAccountsByIdLock,
   postApiV1OpsAccountsByIdUnlock,
   postApiV1OpsCategories,
@@ -37,6 +39,7 @@ import type {
   GetApiV1OpsIdVerificationsResponses,
   GetApiV1OpsReviewTasksByTaskIdResponses,
   GetApiV1OpsReviewTasksResponses,
+  GetApiV1OpsScreeningRulesResponses,
   GetApiV1OpsSupportConversationsResponses,
   GetApiV1OpsSupportConversationsByConversationIdMessagesResponses,
   GetApiV1OpsTrustAccountsByAccountIdStrikesResponses,
@@ -56,6 +59,7 @@ type WireTaskDetail = GetApiV1OpsReviewTasksByTaskIdResponses[200]['data'];
 type WireStrike = GetApiV1OpsTrustAccountsByAccountIdStrikesResponses[200]['data'][number];
 type WireIdCheck = GetApiV1OpsIdVerificationsResponses[200]['data']['items'][number];
 type WireGroup = GetApiV1OpsGroupsResponses[200]['data']['items'][number];
+type WireRule = GetApiV1OpsScreeningRulesResponses[200]['data']['rules'][number];
 type WireGroupDetail = GetApiV1OpsGroupsByGroupIdResponses[200]['data'];
 type WireSupport = GetApiV1OpsSupportConversationsResponses[200]['data']['items'][number];
 type WireSupportMessage =
@@ -347,6 +351,23 @@ export function toDecisionBody(
 
 export type ReasonTemplate = { id: string; text: string; active: boolean };
 
+/**
+ * Một luật của máy duyệt. `signal` cộng điểm rủi ro; `gate` (cổng cứng) giữ tin và tính dò, chạy thử được nhưng không
+ * tắt được; `quality` (chất lượng ảnh) giữ tin, không tính dò, tắt được. Chạy thử = máy chỉ ghi lại, không đổi kết quả.
+ */
+export type ScreeningRule = {
+  code: WireRule['code'];
+  label: string;
+  kind: WireRule['kind'];
+  weight: number;
+  mode: WireRule['mode'];
+};
+
+const toRules = (rules: WireRule[]): ScreeningRule[] =>
+  rules
+    .map(({ code, label, kind, weight, mode }) => ({ code, label, kind, weight, mode }))
+    .sort((a, b) => a.label.localeCompare(b.label, 'vi'));
+
 export type ReviewBoard = {
   open: number;
   queues: { queue: number; open: number; overdue: number }[];
@@ -576,6 +597,19 @@ export const opsApi = {
         path: { templateId: id },
         body: { active },
       }),
+    ),
+
+  /** Luật của phiên bản hiện hành (chỉ master); mỗi lần đổi là một phiên bản luật mới, có hiệu lực từ lượt gửi kế tiếp. */
+  screeningRules: async (): Promise<ScreeningRule[]> =>
+    toRules((await unwrap(getApiV1OpsScreeningRules())).rules),
+
+  /** Server trả lại cả bộ luật sau khi đổi — dùng thẳng, không phải đọc lại. */
+  setRuleMode: async ({
+    code,
+    mode,
+  }: Pick<ScreeningRule, 'code' | 'mode'>): Promise<ScreeningRule[]> =>
+    toRules(
+      (await unwrap(patchApiV1OpsScreeningRulesByCode({ path: { code }, body: { mode } }))).rules,
     ),
 
   idChecks: async (status: IdCheck['status'] | null, pageNo = 1): Promise<OpsPage<IdCheck>> =>
