@@ -56,7 +56,8 @@ app/                    routes (expo-router) — chỉ route + layout, export de
   search.tsx            kết quả tìm kiếm + bộ lọc
   listing/[id].tsx      chi tiết tin
   group/[id].tsx        trang nhóm: vào theo chế độ, đơn chờ, mã nhóm, tắt tiếng, rời
-  group/manage/[id]/    quản trị nhóm: đơn xin vào, lời mời, đổi mã (chủ nhóm, điều hành viên; cần phiên)
+  group/manage/[id]/    quản trị nhóm: đơn xin vào, lời mời, mã, thành viên, cấm, lớp, danh sách lớp, cài đặt, chuyển chủ,
+                        đóng nhóm, thông báo (chủ nhóm, điều hành viên; cần phiên)
   groups.tsx            nhóm của tôi: lời mời, nhóm đang ở, tìm nhóm, nhập mã (cần phiên)
   chat/[id].tsx         chat với người bán, trả giá (cần phiên)
   post/                 đăng tin 3 bước: index → details → preview (cần phiên)
@@ -66,7 +67,7 @@ src/
   api/http.ts           base URL, token, ApiError, createClientConfig (hey-api)
   api/client.ts         gọi SDK + unwrap + domain type
   api/ops.ts            như client.ts, cho bàn vận hành (/ops/*): duyệt tin, báo cáo, giấy tờ, nhóm, hỗ trợ, danh mục
-  api/group-manage.ts   như client.ts, cho chủ nhóm / điều hành viên: đơn xin vào, lời mời, mã nhóm
+  api/group-manage.ts   như client.ts, cho chủ nhóm / điều hành viên (mọi route /groups/:id/* của quản trị)
   api/mock*.ts          dữ liệu mẫu + tranh minh hoạ SVG — xoá dần khi backend có endpoint
   api/generated/        SDK sinh, không sửa tay
   queries/keys.ts       key factory `qk`

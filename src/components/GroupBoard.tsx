@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
-import type { Group, GroupRole } from '@/api/client';
+import { GROUP_ROLE_TAG, type Group } from '@/api/client';
 import { Avatar } from './Avatar';
 import { ListingRow, ListingTile } from './ListingCard';
 import { MemberRow } from './MemberRow';
@@ -13,11 +13,6 @@ import { formatAgo } from '@/utils/format';
 export type GroupTab = 'posts' | 'about' | 'members';
 
 type VisibleGroup = Extract<Group, { visible: true }>;
-
-const ROLE_TAG: Partial<Record<GroupRole, string>> = {
-  owner: 'Chủ nhóm',
-  moderator: 'Điều hành viên',
-};
 
 /**
  * Thân trang nhóm theo tab. Mỗi phần chỉ tải khi người xem được thấy: thông báo nhóm cho thành viên, danh sách
@@ -62,7 +57,9 @@ export function GroupBoard({
         {members.isPending ? (
           <Loading />
         ) : (
-          members.data?.map((m) => <MemberRow key={m.id} name={m.name} tag={ROLE_TAG[m.role]} />)
+          members.data?.map((m) => (
+            <MemberRow key={m.id} name={m.name} tag={GROUP_ROLE_TAG[m.role]} />
+          ))
         )}
       </View>
     );

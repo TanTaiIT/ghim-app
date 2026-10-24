@@ -9,6 +9,7 @@ import { useToast } from '@/components/Toast';
 import { EmptyState, IconButton, Loading, ScreenHeader } from '@/components/ui';
 import { useInvite, usePendingInvitations, useRevokeInvitation } from '@/queries/group-manage';
 import { useGroup } from '@/queries/groups';
+import { isWholeManager, managerOf } from '@/api/group-manage';
 import { C, F, S } from '@/theme';
 import { daysUntil, formatAgo } from '@/utils/format';
 
@@ -27,10 +28,9 @@ export default function GroupInvites() {
   const [unitId, setUnitId] = useState<string | null>(null);
   const [composing, setComposing] = useState(false);
 
-  const g = group.data?.visible ? group.data : null;
+  const g = managerOf(group.data);
   const units = g?.units ?? [];
-  const canPickUnit =
-    g !== null && units.length > 0 && (g.role === 'owner' || g.moderatorUnitId === null);
+  const canPickUnit = g !== null && units.length > 0 && isWholeManager(g);
   const unitNameOf = (uid: string | null) =>
     uid === null ? 'Cả nhóm' : (units.find((u) => u.id === uid)?.name ?? 'Một lớp');
   const fail = (e: Error) => toast(e.message);

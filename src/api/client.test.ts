@@ -972,12 +972,14 @@ describe('nhóm', () => {
       id: 'g-1',
       name: 'Phụ huynh lớp 5B',
       initials: 'PH',
+      kind: 'school',
       mode: 'public_review',
       state: 'active',
       memberCount: 42,
       description: 'Trao đổi sách vở, đồng phục',
       boardStyle: 'grid',
       allowOutsiders: false,
+      showNameOnMarketplace: false,
       lockedReason: null,
       code: null,
       units: [],
@@ -986,6 +988,40 @@ describe('nhóm', () => {
       badgeEligible: false,
       joinRequest: { id: 'r-1', expiresAt: '2026-11-08T09:00:00.000Z' },
     });
+  });
+
+  it('thành viên mang lớp, lớp phụ trách và đường vào', async () => {
+    serve({
+      '/api/v1/groups/g-1/members': {
+        items: [
+          {
+            accountId: 'u-2',
+            displayName: 'An',
+            role: 'moderator',
+            unitId: 'un-1',
+            moderatorUnitId: null,
+            joinedVia: 'invited',
+            joinedAt: '2026-10-01T00:00:00.000Z',
+          },
+        ],
+        page: 1,
+        limit: 100,
+        total: 1,
+        totalPages: 1,
+      },
+    });
+
+    expect(await api.getGroupMembers('g-1')).toEqual([
+      {
+        id: 'u-2',
+        name: 'An',
+        role: 'moderator',
+        unitId: 'un-1',
+        moderatorUnitId: null,
+        joinedVia: 'invited',
+        joinedAt: '2026-10-01T00:00:00.000Z',
+      },
+    ]);
   });
 
   it('người ngoài nhóm riêng tư chỉ có tên', async () => {

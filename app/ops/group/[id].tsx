@@ -13,7 +13,8 @@ import {
   useOpsGroup,
   useUnlockOpsGroup,
 } from '@/queries/ops-groups';
-import { GROUP_KIND_LABEL, GROUP_MODE_LABEL, GROUP_STATE_LABEL } from '@/api/ops';
+import { GROUP_MODE_LABEL } from '@/api/client';
+import { GROUP_KIND_LABEL, GROUP_STATE_LABEL } from '@/api/ops';
 import { C, F, R, S } from '@/theme';
 import { formatAgo } from '@/utils/format';
 

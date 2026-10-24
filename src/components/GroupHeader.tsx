@@ -2,17 +2,10 @@ import type { ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import { SvgXml } from 'react-native-svg';
-import { isPublicGroup, type Group, type GroupMode, type GroupState } from '@/api/client';
+import { GROUP_MODE_LABEL, isPublicGroup, type Group, type GroupState } from '@/api/client';
 import { IconButton } from './ui';
 import { C, F, R, S, TONE } from '@/theme';
 import { groupThousands } from '@/utils/format';
-
-const MODE_LABEL: Record<GroupMode, string> = {
-  public_open: 'Công khai · mở cửa',
-  public_review: 'Công khai · xét duyệt',
-  private_code: 'Riêng tư · có mã',
-  private_invite: 'Riêng tư · chỉ lời mời',
-};
 
 /** Trạng thái làm nút "vào nhóm" không dùng được — nói trước, đừng để người xem bấm rồi mới nhận lỗi. */
 const STATE_NOTE: Partial<Record<GroupState, string>> = {
@@ -76,7 +69,7 @@ export function GroupHeader({
             />
             <Text style={styles.meta}>
               {g.visible
-                ? `${MODE_LABEL[g.mode]} · ${groupThousands(g.memberCount)} thành viên`
+                ? `${GROUP_MODE_LABEL[g.mode]} · ${groupThousands(g.memberCount)} thành viên`
                 : 'Nhóm riêng tư'}
             </Text>
           </View>

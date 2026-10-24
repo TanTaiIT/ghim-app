@@ -465,13 +465,6 @@ export const GROUP_KIND_LABEL: Record<OpsGroupKind, string> = {
   other: 'Khác',
 };
 
-export const GROUP_MODE_LABEL: Record<OpsGroupMode, string> = {
-  public_open: 'Công khai, vào tự do',
-  public_review: 'Công khai, duyệt thành viên',
-  private_code: 'Riêng tư, vào bằng mã',
-  private_invite: 'Riêng tư, chỉ mời',
-};
-
 export type OpsGroup = {
   id: string;
   name: string;

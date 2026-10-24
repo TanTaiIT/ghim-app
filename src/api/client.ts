@@ -377,6 +377,8 @@ export type Placement = 'marketplace' | 'group_public' | 'members_only';
 /** "Riêng tư · mở cửa" không tồn tại (spec group-modes). */
 export type GroupMode = 'public_open' | 'public_review' | 'private_code' | 'private_invite';
 export type GroupRole = 'member' | 'moderator' | 'owner';
+/** Loại chỉ để chọn sẵn cài đặt lúc lập; trường học và công ty mới có lớp / phòng ban (spec membership). */
+export type GroupKind = 'school' | 'company' | 'community' | 'other';
 /** `closed` không bao giờ tới app — server trả 404 cho nhóm đã đóng. */
 export type GroupState =
   'pending_owner' | 'active' | 'going_private' | 'ownerless' | 'locked' | 'closed';
@@ -384,11 +386,26 @@ export type GroupState =
 export const isPublicGroup = (mode: GroupMode): boolean =>
   mode === 'public_open' || mode === 'public_review';
 
+/** Chữ của spec group-modes, dùng chung cho trang nhóm, cài đặt nhóm và bàn vận hành. */
+export const GROUP_MODE_LABEL: Record<GroupMode, string> = {
+  public_open: 'Công khai · mở cửa',
+  public_review: 'Công khai · xét duyệt',
+  private_code: 'Riêng tư · có mã',
+  private_invite: 'Riêng tư · chỉ lời mời',
+};
+
+/** Thành viên thường không mang nhãn. */
+export const GROUP_ROLE_TAG: Partial<Record<GroupRole, string>> = {
+  owner: 'Chủ nhóm',
+  moderator: 'Điều hành viên',
+};
+
 export type GroupSummary = {
   id: string;
   name: string;
   /** Server không có ảnh đại diện nhóm: ô chữ cái thay. */
   initials: string;
+  kind: GroupKind;
   mode: GroupMode;
   state: GroupState;
   memberCount: number;
@@ -415,6 +432,8 @@ export type Group =
       boardStyle: 'list' | 'grid';
       /** Người ngoài đăng được tin "công khai trong nhóm". */
       allowOutsiders: boolean;
+      /** Tin sàn của thành viên mang tên nhóm — chỉ bật được ở nhóm riêng tư. */
+      showNameOnMarketplace: boolean;
       /** Chỉ chủ nhóm và điều hành viên được biết lý do khoá. */
       lockedReason: string | null;
       /** Mã vào nhóm — chỉ chủ nhóm và điều hành viên thấy; nhóm không dùng mã thì null. */
@@ -431,7 +450,17 @@ export type Group =
 /** Lớp / đơn vị con của nhóm (lớp 12A1, phòng ban). */
 export type GroupUnit = { id: string; name: string };
 
-export type GroupMember = { id: string; name: string; role: GroupRole };
+export type GroupMember = {
+  id: string;
+  name: string;
+  role: GroupRole;
+  unitId: string | null;
+  /** Điều hành viên phụ trách một lớp; null = cả nhóm (hay không phải điều hành viên). */
+  moderatorUnitId: string | null;
+  /** Đường vào được ghi lại lúc vào và không đổi (spec membership). */
+  joinedVia: 'joined' | 'approved' | 'invited' | 'roster' | 'assigned';
+  joinedAt: string;
+};
 
 export type GroupAnnouncement = { id: string; body: string; at: string };
 
@@ -1025,6 +1054,7 @@ const toGroupSummary = (w: WireGroupSummary): GroupSummary => ({
   id: w.id,
   name: w.name,
   initials: initialsOf(w.name),
+  kind: w.kind,
   mode: w.mode,
   state: w.state,
   memberCount: w.memberCount,
@@ -1055,6 +1085,7 @@ function toGroup(w: WireGroupView): Group {
     visible: true,
     boardStyle: w.boardStyle,
     allowOutsiders: w.allowOutsiders,
+    showNameOnMarketplace: w.showNameOnMarketplace,
     lockedReason: w.lockedReason,
     code: w.code,
     units: w.units.map(({ id, name }) => ({ id, name })),
@@ -1243,7 +1274,15 @@ export const api = {
     const { items } = await unwrap(
       getApiV1GroupsByGroupIdMembers({ path: { groupId: id }, query: { limit: GROUP_PAGE } }),
     );
-    return items.map((m) => ({ id: m.accountId, name: m.displayName, role: m.role }));
+    return items.map((m) => ({
+      id: m.accountId,
+      name: m.displayName,
+      role: m.role,
+      unitId: m.unitId,
+      moderatorUnitId: m.moderatorUnitId,
+      joinedVia: m.joinedVia,
+      joinedAt: m.joinedAt,
+    }));
   },
 
   /** Chỉ thành viên; server đã lọc theo đơn vị của người xem, mới nhất trước. */

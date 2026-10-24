@@ -21,14 +21,9 @@ import {
   useJoinFromRoster,
   useMyGroups,
 } from '@/queries/groups';
-import { type GroupRole, type GroupSummary } from '@/api/client';
+import { GROUP_ROLE_TAG, type GroupSummary } from '@/api/client';
 import { C, F, S } from '@/theme';
 import { daysUntil, groupThousands } from '@/utils/format';
-
-const ROLE_TAG: Partial<Record<GroupRole, string>> = {
-  owner: 'Chủ nhóm',
-  moderator: 'Điều hành viên',
-};
 
 const metaOf = (g: GroupSummary) =>
   `${groupThousands(g.memberCount)} thành viên${g.description ? ` · ${g.description}` : ''}`;
@@ -118,7 +113,7 @@ export default function MyGroups() {
               name={g.name}
               initials={g.initials}
               meta={metaOf(g)}
-              tag={ROLE_TAG[g.role]}
+              tag={GROUP_ROLE_TAG[g.role]}
               onPress={() => open(g.id)}
             />
           ))

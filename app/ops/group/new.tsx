@@ -6,12 +6,8 @@ import { OpsHeader, useOpsBack } from '@/components/OpsHeader';
 import { useToast } from '@/components/Toast';
 import { PinButton } from '@/components/ui';
 import { useCreateOpsGroup } from '@/queries/ops-groups';
-import {
-  GROUP_KIND_LABEL,
-  GROUP_MODE_LABEL,
-  type OpsGroupKind,
-  type OpsGroupMode,
-} from '@/api/ops';
+import { GROUP_MODE_LABEL } from '@/api/client';
+import { GROUP_KIND_LABEL, type OpsGroupKind, type OpsGroupMode } from '@/api/ops';
 import { C, F, S } from '@/theme';
 
 const KINDS = Object.keys(GROUP_KIND_LABEL) as OpsGroupKind[];
