@@ -155,6 +155,39 @@ describe('đọc tin đăng từ server', () => {
     expect(l.photos).toEqual([{ uri: 'https://img.test/1.jpg' }]);
   });
 
+  it('tin của tôi bị máy giữ vì ảnh: câu chờ và từng câu sửa ảnh của server', async () => {
+    serve({
+      '/api/v1/me/listings': {
+        items: [
+          {
+            ...wireListing,
+            id: 'giu',
+            state: 'pending',
+            machineNotice: {
+              kind: 'plain',
+              message: 'Tin đang chờ người duyệt, thường trong 24 giờ',
+              estimatedWait: 'Thường trong 24 giờ',
+              lookupCode: null,
+              fixes: [
+                { code: 'image_too_dark', message: 'Ảnh 1 quá tối. Chụp lại ở nơi đủ sáng.' },
+                { code: 'image_too_small', message: 'Ảnh 2 quá nhỏ. Thay bằng ảnh chụp rõ hơn.' },
+              ],
+            },
+          },
+        ],
+        nextCursor: null,
+      },
+    });
+    const [held] = await api.getMyListings(loadLookups);
+    expect(held).toMatchObject({
+      note: 'Tin đang chờ người duyệt, thường trong 24 giờ',
+      fixes: [
+        'Ảnh 1 quá tối. Chụp lại ở nơi đủ sáng.',
+        'Ảnh 2 quá nhỏ. Thay bằng ảnh chụp rõ hơn.',
+      ],
+    });
+  });
+
   it('tin của tôi: giữ trạng thái của server, bỏ tin đã gỡ; hồ sơ chưa có khu vực và đánh giá', async () => {
     const calls = serve({
       '/api/v1/me/listings': {
@@ -576,6 +609,7 @@ const myListing = (overrides: Partial<MyListing> = {}): MyListing => ({
   saves: null,
   expiresAt: '2026-11-01T00:00:00.000Z',
   note: null,
+  fixes: [],
   version: 4,
   renewal: null,
   moveUntil: null,

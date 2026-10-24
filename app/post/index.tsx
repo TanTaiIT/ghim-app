@@ -105,6 +105,7 @@ export default function PostPhotos() {
             uri: p.uri,
             uploaded: p.imageId !== null,
             failed: p.failed,
+            rejected: p.rejected,
           }))}
           max={MAX_PHOTOS}
           onAdd={() => void pick().catch((e: Error) => toast(e.message))}

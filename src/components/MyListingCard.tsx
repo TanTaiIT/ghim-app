@@ -76,6 +76,11 @@ export function MyListingCard({
             )}
             <Tag label={s.label} tone={s.tone} />
             {item.note && <Text style={styles.note}>{item.note}</Text>}
+            {item.fixes.map((fix) => (
+              <Text key={fix} style={styles.fix}>
+                {fix}
+              </Text>
+            ))}
           </View>
         </Pressable>
         <IconButton
@@ -175,6 +180,7 @@ const styles = StyleSheet.create({
   stats: { flexDirection: 'row', alignItems: 'center', gap: S.xs },
   stat: { marginRight: S.sm, fontFamily: F.ui, fontSize: 12, color: C.inkSoft },
   note: { fontFamily: F.ui, fontSize: 12, lineHeight: 17, color: C.inkSoft },
+  fix: { fontFamily: F.uiBold, fontSize: 12, lineHeight: 17, color: C.warnTx },
   actions: { flexDirection: 'row', gap: S.sm },
   btn: {
     flex: 1,

@@ -3,7 +3,14 @@ import Feather from '@expo/vector-icons/Feather';
 import { Photo } from './Photo';
 import { C, F, R, S } from '@/theme';
 
-export type GridPhoto = { key: string; uri: string; uploaded: boolean; failed: boolean };
+export type GridPhoto = {
+  key: string;
+  uri: string;
+  uploaded: boolean;
+  failed: boolean;
+  /** Ảnh không dùng được (vd quá nhỏ): ô nói lý do, không cho tải lại — chỉ còn nút xoá. */
+  rejected: string | null;
+};
 
 /**
  * Lưới ảnh 3 × 2 của bước 1 đăng tin: ô "Thêm ảnh" đứng đầu, ảnh đầu tiên gắn nhãn "Ảnh bìa", ô trống
@@ -49,7 +56,13 @@ export function PhotoGrid({
                 <ActivityIndicator color={C.paperWarm} />
               </View>
             )}
-            {p.failed && (
+            {p.rejected !== null && (
+              <View style={styles.veil}>
+                <Feather name="alert-circle" size={20} color={C.paperWarm} />
+                <Text style={styles.veilText}>{p.rejected}</Text>
+              </View>
+            )}
+            {p.failed && p.rejected === null && (
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel="Tải lại ảnh"
@@ -118,7 +131,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: S.xs,
   },
-  veilText: { fontFamily: F.uiBold, fontSize: 11, color: C.paperWarm },
+  veilText: {
+    fontFamily: F.uiBold,
+    fontSize: 11,
+    color: C.paperWarm,
+    textAlign: 'center',
+    paddingHorizontal: S.xs,
+  },
   cover: {
     position: 'absolute',
     left: 6,

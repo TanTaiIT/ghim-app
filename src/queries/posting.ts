@@ -1,5 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { api, type DraftRef, type ListingContent, type PickedPhoto } from '@/api/client';
+import {
+  api,
+  type DraftRef,
+  IMAGE_TOO_SMALL,
+  type ListingContent,
+  type PickedPhoto,
+} from '@/api/client';
+import { ApiError } from '@/api/http';
 import { uploadedImageIds, useDraftStore, type Draft } from '@/stores/draft';
 import { qk } from './keys';
 
@@ -61,8 +68,12 @@ export function useUploadPhoto() {
     mutationFn: async ({ photo }: { key: string; photo: PickedPhoto }) =>
       api.uploadPhoto((await ensureDraft()).id, photo),
     onSuccess: (imageId, { key }) =>
-      useDraftStore.getState().setPhoto(key, { imageId, failed: false }),
-    onError: (_e, { key }) => useDraftStore.getState().setPhoto(key, { failed: true }),
+      useDraftStore.getState().setPhoto(key, { imageId, failed: false, rejected: null }),
+    onError: (e, { key }) =>
+      useDraftStore.getState().setPhoto(key, {
+        failed: true,
+        rejected: e instanceof ApiError && e.code === IMAGE_TOO_SMALL ? e.message : null,
+      }),
   });
 }
 
@@ -109,6 +120,7 @@ export function useOpenForEdit() {
         height: 0,
         imageId: p.imageId,
         failed: false,
+        rejected: null,
       })),
       title: l.title,
       categoryId: l.categoryId,

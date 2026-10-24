@@ -144,6 +144,7 @@ export type PostApiV1MediaUploadsResponses = {
         success: true;
         data: {
             imageId: string;
+            minShortSide: number;
             upload: {
                 method: 'PUT' | 'POST';
                 url: string;
@@ -10094,14 +10095,14 @@ export type GetApiV1OpsScreeningRulesResponses = {
         data: {
             version: number;
             rules: Array<{
-                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap';
+                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap' | 'image_unreadable' | 'image_too_small' | 'image_blurry' | 'image_too_dark' | 'image_too_bright';
                 label: string;
-                kind: 'signal' | 'gate';
+                kind: 'signal' | 'gate' | 'quality';
                 weight: number;
                 mode: 'on' | 'trial' | 'off';
             }>;
             overrides: Array<{
-                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap';
+                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap' | 'image_unreadable' | 'image_too_small' | 'image_blurry' | 'image_too_dark' | 'image_too_bright';
                 categoryId: string;
                 weight: number | null;
                 mode: 'on' | 'trial' | 'off';
@@ -10180,14 +10181,14 @@ export type PatchApiV1OpsScreeningRulesByCodeResponses = {
         data: {
             version: number;
             rules: Array<{
-                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap';
+                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap' | 'image_unreadable' | 'image_too_small' | 'image_blurry' | 'image_too_dark' | 'image_too_bright';
                 label: string;
-                kind: 'signal' | 'gate';
+                kind: 'signal' | 'gate' | 'quality';
                 weight: number;
                 mode: 'on' | 'trial' | 'off';
             }>;
             overrides: Array<{
-                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap';
+                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap' | 'image_unreadable' | 'image_too_small' | 'image_blurry' | 'image_too_dark' | 'image_too_bright';
                 categoryId: string;
                 weight: number | null;
                 mode: 'on' | 'trial' | 'off';
@@ -10313,14 +10314,14 @@ export type PutApiV1OpsScreeningRulesByCodeCategoriesByCategoryIdResponses = {
         data: {
             version: number;
             rules: Array<{
-                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap';
+                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap' | 'image_unreadable' | 'image_too_small' | 'image_blurry' | 'image_too_dark' | 'image_too_bright';
                 label: string;
-                kind: 'signal' | 'gate';
+                kind: 'signal' | 'gate' | 'quality';
                 weight: number;
                 mode: 'on' | 'trial' | 'off';
             }>;
             overrides: Array<{
-                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap';
+                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap' | 'image_unreadable' | 'image_too_small' | 'image_blurry' | 'image_too_dark' | 'image_too_bright';
                 categoryId: string;
                 weight: number | null;
                 mode: 'on' | 'trial' | 'off';
@@ -10399,14 +10400,14 @@ export type PutApiV1OpsScreeningBandsByCategoryIdResponses = {
         data: {
             version: number;
             rules: Array<{
-                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap';
+                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap' | 'image_unreadable' | 'image_too_small' | 'image_blurry' | 'image_too_dark' | 'image_too_bright';
                 label: string;
-                kind: 'signal' | 'gate';
+                kind: 'signal' | 'gate' | 'quality';
                 weight: number;
                 mode: 'on' | 'trial' | 'off';
             }>;
             overrides: Array<{
-                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap';
+                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap' | 'image_unreadable' | 'image_too_small' | 'image_blurry' | 'image_too_dark' | 'image_too_bright';
                 categoryId: string;
                 weight: number | null;
                 mode: 'on' | 'trial' | 'off';
@@ -10995,14 +10996,14 @@ export type GetApiV1OpsScreeningLookupsByCodeResponses = {
             trigger: 'submission' | 'recall';
             decidedAt: string;
             outcome: 'pass_full' | 'pass_limited' | 'hold';
-            cause: 'score' | 'gate' | 'always_manual' | 'device' | 'error' | 'timeout';
+            cause: 'score' | 'gate' | 'image_quality' | 'always_manual' | 'device' | 'error' | 'timeout';
             score: number | null;
             band: 'low' | 'medium' | 'high';
             tier: 'T0' | 'T1' | 'T2' | 'T3';
             ruleVersion: number;
             configVersion: number;
             hits: Array<{
-                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap';
+                code: 'gibberish' | 'zero_price_high_value' | 'shared_device_locked' | 'shared_device_strike' | 'ambiguous_phrase' | 'abnormal_price' | 'off_platform_contact' | 'own_duplicate' | 'burst' | 'high_risk_category' | 'held_many' | 'wrong_category' | 'new_account' | 'certain_phrase' | 'duplicate_image' | 'price_over_cap' | 'image_unreadable' | 'image_too_small' | 'image_blurry' | 'image_too_dark' | 'image_too_bright';
                 label: string;
                 weight: number;
                 mode: 'on' | 'trial';

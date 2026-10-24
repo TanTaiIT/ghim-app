@@ -281,6 +281,8 @@ export type MyListing = ListingCard & {
   expiresAt: string | null;
   /** Lời của máy duyệt / người duyệt gửi người đăng: vì sao còn chờ, vì sao bị từ chối. */
   note: string | null;
+  /** Lỗi người đăng tự sửa được, mỗi lỗi một câu của server — vd "Ảnh 2 quá nhỏ. Thay bằng ảnh chụp rõ hơn." */
+  fixes: string[];
   /** Gia hạn gửi kèm phiên bản như mọi lượt sửa: hai máy của một người không ghi đè nhau. */
   version: number;
   /** Server mở gia hạn trong 7 ngày cuối (`early`) hay sau khi hết hạn (`expired`); null = chưa gia hạn được. */
@@ -706,6 +708,9 @@ function toEditable(w: WireDetail): EditableListing {
   };
 }
 
+/** Mã lỗi của app khi ảnh nén xong vẫn nhỏ hơn cạnh ngắn tối thiểu server trả trong phiếu tải ảnh. */
+export const IMAGE_TOO_SMALL = 'IMAGE_TOO_SMALL';
+
 /** Màn rộng nhất ~430pt × 3 = 1290px; 1600 đủ cho màn chi tiết và phóng nhẹ. */
 const PHOTO_MAX_EDGE = 1600;
 const PHOTO_QUALITY = 0.75;
@@ -715,13 +720,14 @@ const PHOTO_QUALITY = 0.75;
  * thứ gỡ EXIF — trong đó có toạ độ GPS chỗ chụp, thường là nhà người bán; ảnh đi thẳng vào kho nên server
  * không gỡ hộ được. Nén hỏng thì để lỗi nổi lên, không tải ảnh gốc (`docs/media.md` bước 1).
  */
-async function preparePhoto(p: PickedPhoto): Promise<string> {
+async function preparePhoto(p: PickedPhoto): Promise<{ uri: string; shortSide: number }> {
   const context = ImageManipulator.manipulate(p.uri);
   if (Math.max(p.width, p.height) > PHOTO_MAX_EDGE) {
     context.resize(p.width >= p.height ? { width: PHOTO_MAX_EDGE } : { height: PHOTO_MAX_EDGE });
   }
   const image = await context.renderAsync();
-  return (await image.saveAsync({ compress: PHOTO_QUALITY, format: SaveFormat.JPEG })).uri;
+  const saved = await image.saveAsync({ compress: PHOTO_QUALITY, format: SaveFormat.JPEG });
+  return { uri: saved.uri, shortSide: Math.min(saved.width, saved.height) };
 }
 
 /**
@@ -746,12 +752,22 @@ async function uploadImage(
   owner: { kind: 'listing' | 'profile'; id: string },
   photo: PickedPhoto,
 ): Promise<string> {
-  const { body, size } = await fileOf(await preparePhoto(photo));
+  const prepared = await preparePhoto(photo);
+  const { body, size } = await fileOf(prepared.uri);
   const grant = await unwrap(
     postApiV1MediaUploads({
       body: { ownerKind: owner.kind, ownerId: owner.id, contentType: 'image/jpeg', byteSize: size },
     }),
   );
+  // Máy duyệt giữ tin có ảnh quá nhỏ (add-image-quality-checks): chặn ngay ở ô ảnh thay vì để tin chờ duyệt.
+  // Ảnh đại diện không bị kiểm. Phiếu chưa dùng thì server tự dọn sau 48 giờ.
+  if (owner.kind === 'listing' && prepared.shortSide < grant.minShortSide) {
+    throw new ApiError(
+      IMAGE_TOO_SMALL,
+      `Ảnh quá nhỏ, cần cạnh ngắn từ ${grant.minShortSide}px`,
+      400,
+    );
+  }
   const { method, url, headers, fields } = grant.upload;
   let res: Response;
   if (method === 'POST') {
@@ -1197,6 +1213,7 @@ export const api = {
               saves: null,
               expiresAt: w.expiresAt,
               note: w.machineNotice?.message ?? w.faultReason ?? null,
+              fixes: w.machineNotice?.fixes.map((fix) => fix.message) ?? [],
               version: w.version,
               renewal: w.renewal,
               moveUntil: w.moveUntil,

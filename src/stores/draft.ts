@@ -8,7 +8,10 @@ import { create } from 'zustand';
  * Khai lại type thay vì import từ `@/api`: store là lá, không import layer khác (folder §6).
  */
 
-/** Ảnh trong lưới: có `imageId` khi đã tải xong; `failed` thì người đăng chạm để tải lại từ `uri`. */
+/**
+ * Ảnh trong lưới: có `imageId` khi đã tải xong; `failed` thì người đăng chạm để tải lại từ `uri` — trừ khi có
+ * `rejected`: ảnh không dùng được (quá nhỏ), tải lại vẫn vậy, chỉ còn xoá.
+ */
 export type DraftPhoto = {
   key: string;
   uri: string;
@@ -16,6 +19,7 @@ export type DraftPhoto = {
   height: number;
   imageId: string | null;
   failed: boolean;
+  rejected: string | null;
 };
 
 export type Draft = {
@@ -68,7 +72,10 @@ type DraftState = Draft & {
   patch: (next: Partial<Draft>) => void;
   /** Trả key của những ảnh nhận được — chọn quá số chỗ còn lại thì phần thừa bị bỏ. */
   addPhotos: (picked: { uri: string; width: number; height: number }[]) => string[];
-  setPhoto: (key: string, next: Partial<Pick<DraftPhoto, 'imageId' | 'failed'>>) => void;
+  setPhoto: (
+    key: string,
+    next: Partial<Pick<DraftPhoto, 'imageId' | 'failed' | 'rejected'>>,
+  ) => void;
   removePhoto: (key: string) => void;
   load: (draft: Draft) => void;
   reset: () => void;
@@ -81,7 +88,7 @@ export const useDraftStore = create<DraftState>()((set, get) => ({
     const room = Math.max(0, MAX_PHOTOS - get().photos.length);
     const added = picked
       .slice(0, room)
-      .map((p) => ({ ...p, key: nextKey(), imageId: null, failed: false }));
+      .map((p) => ({ ...p, key: nextKey(), imageId: null, failed: false, rejected: null }));
     set((s) => ({ photos: [...s.photos, ...added] }));
     return added.map((p) => p.key);
   },
