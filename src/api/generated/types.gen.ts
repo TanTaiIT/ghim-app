@@ -15865,3 +15865,131 @@ export type GetApiV1OpsStatsDailyResponses = {
 };
 
 export type GetApiV1OpsStatsDailyResponse = GetApiV1OpsStatsDailyResponses[keyof GetApiV1OpsStatsDailyResponses];
+
+export type GetApiV1OpsAccountsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        page?: number;
+        limit?: number;
+        q?: string;
+        status?: 'pending_verification' | 'active' | 'locked';
+    };
+    url: '/api/v1/ops/accounts';
+};
+
+export type GetApiV1OpsAccountsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsAccountsError = GetApiV1OpsAccountsErrors[keyof GetApiV1OpsAccountsErrors];
+
+export type GetApiV1OpsAccountsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                displayName: string;
+                email: string;
+                role: 'user' | 'master';
+                status: 'pending_verification' | 'active' | 'locked';
+                createdAt: string;
+                lockedAt: string | null;
+                lockedReason: string | null;
+                tier: 'T0' | 'T1' | 'T2' | 'T3';
+                struck: boolean;
+            }>;
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
+    };
+};
+
+export type GetApiV1OpsAccountsResponse = GetApiV1OpsAccountsResponses[keyof GetApiV1OpsAccountsResponses];
+
+export type GetApiV1OpsAccountsByIdData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/accounts/{id}';
+};
+
+export type GetApiV1OpsAccountsByIdErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsAccountsByIdError = GetApiV1OpsAccountsByIdErrors[keyof GetApiV1OpsAccountsByIdErrors];
+
+export type GetApiV1OpsAccountsByIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            displayName: string;
+            email: string;
+            role: 'user' | 'master';
+            status: 'pending_verification' | 'active' | 'locked';
+            createdAt: string;
+            lockedAt: string | null;
+            lockedReason: string | null;
+            tier: 'T0' | 'T1' | 'T2' | 'T3';
+            struck: boolean;
+            strikePoints: number;
+        };
+    };
+};
+
+export type GetApiV1OpsAccountsByIdResponse = GetApiV1OpsAccountsByIdResponses[keyof GetApiV1OpsAccountsByIdResponses];

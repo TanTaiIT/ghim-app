@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { BarButton } from '@/components/ActionBar';
 import { Avatar } from '@/components/Avatar';
 import { InputSheet } from '@/components/InputSheet';
+import { OpsAccountList } from '@/components/OpsAccountList';
 import { OpsHeader } from '@/components/OpsHeader';
 import { SegmentedTabs } from '@/components/TabStrip';
 import { useToast } from '@/components/Toast';
@@ -26,9 +27,9 @@ const STATUS_TAG: Record<
 };
 
 /**
- * Người dùng trên bàn vận hành. Server chưa có endpoint liệt kê hay tìm tài khoản, nên tab "Tất cả" chỉ nói rõ điều đó;
- * hồ sơ một người mở được từ việc duyệt (người đăng, người bị báo cáo) và từ hồ sơ giấy tờ ở đây. Server chỉ giữ loại
- * giấy, họ tên, số đã mã hoá — không có ảnh giấy tờ hay ảnh chân dung để so như bộ UI vẽ.
+ * Người dùng trên bàn vận hành: ba mục đầu là hồ sơ giấy tờ, mục "Tất cả" là danh bạ (`/ops/accounts`, master và
+ * staff hỗ trợ). Hồ sơ một người mở từ đây, từ việc duyệt (người đăng, người bị báo cáo) và từ hồ sơ giấy tờ. Server
+ * chỉ giữ loại giấy, họ tên, số đã mã hoá — không có ảnh giấy tờ hay ảnh chân dung để so như bộ UI vẽ.
  */
 export default function OpsPeople() {
   const router = useRouter();
@@ -56,10 +57,10 @@ export default function OpsPeople() {
         />
       </OpsHeader>
       {tab === 'all' ? (
-        <EmptyState
-          icon="search"
-          title="Chưa có API"
-          text="Server chưa có endpoint liệt kê hay tìm người dùng theo tên, email. Mở hồ sơ một người từ việc duyệt hoặc từ hồ sơ giấy tờ."
+        <OpsAccountList
+          onOpen={(a) =>
+            router.push({ pathname: '/ops/user/[id]', params: { id: a.id, name: a.displayName } })
+          }
         />
       ) : checks.isPending ? (
         <Loading />

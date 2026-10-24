@@ -1,5 +1,7 @@
 import { unwrap, unwrapEmpty, type Picture } from './client';
 import {
+  getApiV1OpsAccounts,
+  getApiV1OpsAccountsById,
   getApiV1OpsCategories,
   getApiV1OpsGroups,
   getApiV1OpsGroupsByGroupId,
@@ -34,6 +36,7 @@ import {
   postApiV1OpsSupportConversationsByConversationIdRead,
 } from './generated/sdk.gen';
 import type {
+  GetApiV1OpsAccountsResponses,
   GetApiV1OpsCategoriesResponses,
   GetApiV1OpsGroupsByGroupIdResponses,
   GetApiV1OpsGroupsResponses,
@@ -59,6 +62,7 @@ type WireTask = GetApiV1OpsReviewTasksResponses[200]['data']['items'][number];
 type WireTaskDetail = GetApiV1OpsReviewTasksByTaskIdResponses[200]['data'];
 type WireStrike = GetApiV1OpsTrustAccountsByAccountIdStrikesResponses[200]['data'][number];
 type WireIdCheck = GetApiV1OpsIdVerificationsResponses[200]['data']['items'][number];
+type WireAccount = GetApiV1OpsAccountsResponses[200]['data']['items'][number];
 type WireGroup = GetApiV1OpsGroupsResponses[200]['data']['items'][number];
 type WireRule = GetApiV1OpsScreeningRulesResponses[200]['data']['rules'][number];
 type WireGroupDetail = GetApiV1OpsGroupsByGroupIdResponses[200]['data'];
@@ -397,6 +401,38 @@ export type IdCheck = {
   reason: string | null;
 };
 
+export type OpsAccountStatus = WireAccount['status'];
+
+/** Một dòng danh bạ (`/ops/accounts`): có email vì hỗ trợ cần đối chiếu thư; không dấu băm, không mã máy. */
+export type OpsAccount = {
+  id: string;
+  displayName: string;
+  email: string;
+  role: WireAccount['role'];
+  status: OpsAccountStatus;
+  createdAt: string;
+  lockedAt: string | null;
+  lockedReason: string | null;
+  tier: WireAccount['tier'];
+  /** Đang có cảnh cáo tính điểm. */
+  struck: boolean;
+};
+
+export type OpsAccountCard = OpsAccount & { strikePoints: number };
+
+const toAccount = (w: WireAccount): OpsAccount => ({
+  id: w.id,
+  displayName: w.displayName,
+  email: w.email,
+  role: w.role,
+  status: w.status,
+  createdAt: w.createdAt,
+  lockedAt: w.lockedAt,
+  lockedReason: w.lockedReason,
+  tier: w.tier,
+  struck: w.struck,
+});
+
 const toIdCheck = (w: WireIdCheck): IdCheck => ({
   id: w.id,
   accountId: w.accountId,
@@ -626,6 +662,26 @@ export const opsApi = {
     toRules(
       (await unwrap(patchApiV1OpsScreeningRulesByCode({ path: { code }, body: { mode } }))).rules,
     ),
+
+  /** Danh bạ cho master và staff hỗ trợ: `q` khớp tên đúng dấu hay email; vai khác server trả 403. */
+  accounts: async (
+    q: string,
+    status: OpsAccountStatus | null,
+    pageNo = 1,
+  ): Promise<OpsPage<OpsAccount>> =>
+    page(
+      await unwrap(
+        getApiV1OpsAccounts({
+          query: { page: pageNo, ...(q && { q }), ...(status && { status }) },
+        }),
+      ),
+      toAccount,
+    ),
+
+  account: async (id: string): Promise<OpsAccountCard> => {
+    const w = await unwrap(getApiV1OpsAccountsById({ path: { id } }));
+    return { ...toAccount(w), strikePoints: w.strikePoints };
+  },
 
   idChecks: async (status: IdCheck['status'] | null, pageNo = 1): Promise<OpsPage<IdCheck>> =>
     page(

@@ -64,6 +64,11 @@ export const qk = {
     idChecksAll: () => ['ops', 'id-checks'] as const,
     idChecks: (status: string | null) => ['ops', 'id-checks', status] as const,
     strikes: (accountId: string) => ['ops', 'strikes', accountId] as const,
+    /** Danh bạ và thẻ tài khoản chung một gốc: khoá / mở khoá đổi trạng thái ở cả hai. */
+    accountsAll: () => ['ops', 'accounts'] as const,
+    accounts: (q: string, status: string | null, page: number) =>
+      ['ops', 'accounts', 'list', q, status, page] as const,
+    account: (id: string) => ['ops', 'accounts', 'card', id] as const,
     /** Danh sách theo trạng thái lẫn hồ sơ từng nhóm — đổi trạng thái nhóm làm lệch cả hai. */
     groupsAll: () => ['ops', 'groups'] as const,
     groups: (state: string | null) => ['ops', 'groups', 'list', state] as const,

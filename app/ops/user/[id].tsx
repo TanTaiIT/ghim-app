@@ -9,10 +9,16 @@ import { ConfirmSheet } from '@/components/PickerSheet';
 import { useToast } from '@/components/Toast';
 import { EmptyState, Loading, Tag } from '@/components/ui';
 import { useMe } from '@/queries/account';
-import { useAccountStrikes, useLockAccount, useUnlockAccount } from '@/queries/ops-people';
+import { ACCOUNT_STATUS } from '@/components/OpsAccountList';
+import {
+  useAccountStrikes,
+  useLockAccount,
+  useOpsAccount,
+  useUnlockAccount,
+} from '@/queries/ops-people';
 import type { OpsStrike } from '@/api/ops';
 import { C, F, R, S } from '@/theme';
-import { daysUntil, formatAgo } from '@/utils/format';
+import { daysUntil, formatAgo, formatDate } from '@/utils/format';
 
 const STATUS: Record<OpsStrike['status'], string> = {
   active: 'Đang tính',
@@ -29,9 +35,9 @@ const KIND: Record<OpsStrike['kind'], string> = {
 };
 
 /**
- * Hồ sơ vi phạm của một người. Tên đến theo tham số từ màn trước: server không có endpoint đọc hồ sơ tài khoản cho bàn
- * vận hành, cũng không cho biết tài khoản đang khoá hay không — nên cả hai nút Khoá / Mở khoá luôn hiện với master và
- * server trả lỗi nếu trạng thái không hợp.
+ * Hồ sơ một người: thẻ tài khoản (`/ops/accounts/:id` — trạng thái, email, mức tin cậy, điểm vi phạm) và lịch sử
+ * cảnh cáo. Tên theo tham số từ màn trước chỉ là chỗ dựa lúc thẻ chưa tải. Master thấy đúng một nút theo trạng thái:
+ * Khoá khi đang mở, Mở khoá khi đang khoá.
  */
 export default function OpsUser() {
   const { id = '', name } = useLocalSearchParams<{ id: string; name?: string }>();
@@ -41,7 +47,9 @@ export default function OpsUser() {
   const lock = useLockAccount();
   const unlock = useUnlockAccount();
   const [sheet, setSheet] = useState<'lock' | 'unlock' | null>(null);
-  const display = name || 'Người dùng';
+  const account = useOpsAccount(id).data;
+  const display = account?.displayName || name || 'Người dùng';
+  const statusTag = account ? ACCOUNT_STATUS[account.status] : null;
   const inForce = strikes.data?.filter((s) => s.inForce) ?? [];
 
   return (
@@ -52,6 +60,21 @@ export default function OpsUser() {
           <Avatar name={display} size={64} />
           <View style={styles.cardBody}>
             <Text style={styles.name}>{display}</Text>
+            {account && statusTag && (
+              <>
+                <Text style={styles.meta}>{account.email}</Text>
+                <Text style={styles.meta}>
+                  {account.tier} · {account.strikePoints} điểm vi phạm · tham gia{' '}
+                  {formatDate(account.createdAt)}
+                </Text>
+                <View style={styles.tags}>
+                  <Tag label={statusTag.label} tone={statusTag.tone} />
+                </View>
+                {account.lockedReason && (
+                  <Text style={styles.meta}>Lý do khoá: {account.lockedReason}</Text>
+                )}
+              </>
+            )}
             <Text style={styles.meta}>
               {strikes.data
                 ? `${inForce.length} cảnh cáo đang tính · ${strikes.data.length} cảnh cáo từng nhận`
@@ -85,22 +108,25 @@ export default function OpsUser() {
         )}
       </ScrollView>
 
-      {isMaster && (
+      {isMaster && account && (
         <ActionBar>
-          <BarButton
-            tone="ghost"
-            icon="unlock"
-            label="Mở khoá"
-            loading={unlock.isPending}
-            onPress={() => setSheet('unlock')}
-          />
-          <BarButton
-            tone="danger"
-            icon="lock"
-            label="Khoá tài khoản"
-            loading={lock.isPending}
-            onPress={() => setSheet('lock')}
-          />
+          {account.status === 'locked' ? (
+            <BarButton
+              tone="ghost"
+              icon="unlock"
+              label="Mở khoá"
+              loading={unlock.isPending}
+              onPress={() => setSheet('unlock')}
+            />
+          ) : (
+            <BarButton
+              tone="danger"
+              icon="lock"
+              label="Khoá tài khoản"
+              loading={lock.isPending}
+              onPress={() => setSheet('lock')}
+            />
+          )}
         </ActionBar>
       )}
 

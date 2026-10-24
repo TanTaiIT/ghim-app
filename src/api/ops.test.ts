@@ -134,6 +134,37 @@ describe('bảng số theo ngày', () => {
   });
 });
 
+describe('danh bạ tài khoản', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  const wire = {
+    id: 'u-1',
+    displayName: 'Bình Người Mua',
+    email: 'app.buyer@ghim.local',
+    role: 'user',
+    status: 'locked',
+    createdAt: '2026-10-20T00:00:00.000Z',
+    lockedAt: '2026-10-23T00:00:00.000Z',
+    lockedReason: 'Lừa đặt cọc',
+    tier: 'T1',
+    struck: true,
+  };
+
+  it('trang danh bạ giữ nguyên các trường server trả; hỏi đúng route', async () => {
+    const calls = serve({ items: [wire], total: 1, page: 1, limit: 20, totalPages: 1 });
+    const result = await opsApi.accounts('bình', 'locked', 1);
+    expect(result).toEqual({ items: [wire], total: 1, page: 1, totalPages: 1 });
+    expect(calls[0]).toMatchObject({ method: 'GET', path: '/api/v1/ops/accounts' });
+  });
+
+  it('thẻ tài khoản thêm điểm vi phạm', async () => {
+    serve({ ...wire, strikePoints: 2 });
+    await expect(opsApi.account('u-1')).resolves.toEqual({ ...wire, strikePoints: 2 });
+  });
+});
+
 describe('luật máy duyệt', () => {
   afterEach(() => {
     jest.restoreAllMocks();
