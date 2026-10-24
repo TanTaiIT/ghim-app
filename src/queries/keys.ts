@@ -41,6 +41,8 @@ export const qk = {
     listings: (id: string) => ['groups', 'listings', id] as const,
     announcements: (id: string) => ['groups', 'announcements', id] as const,
     members: (id: string) => ['groups', 'members', id] as const,
+    joinRequests: (id: string) => ['groups', 'join-requests', id] as const,
+    pendingInvitations: (id: string) => ['groups', 'pending-invitations', id] as const,
   },
   conversations: {
     all: () => ['conversations'] as const,

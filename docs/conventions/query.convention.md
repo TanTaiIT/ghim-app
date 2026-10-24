@@ -7,13 +7,14 @@ optimistic update, bề mặt lỗi. Đây là layer chịu nhiều HARD rule nh
 
 ## 1. Phân vai các file
 
-| File                   | Chịu trách nhiệm                                                                | Cấm                                   |
-| ---------------------- | ------------------------------------------------------------------------------- | ------------------------------------- |
-| `src/api/http.ts`      | Base URL, Bearer token (`setHttpAccessToken`), `ApiError`, `createClientConfig` | Import `stores/**`                    |
-| `src/api/generated/**` | Output của `npm run api:sync` — **không sửa tay**, oxlint và Prettier đã ignore | Bị import ngoài `client.ts`, `ops.ts` |
-| `src/api/client.ts`    | Mọi hàm truy cập dữ liệu: gọi SDK, `unwrap()`, map wire → domain, domain type   | Import React / TanStack / component   |
-| `src/api/ops.ts`       | Như `client.ts` nhưng cho bàn vận hành (`/ops/*`, master + staff): `opsApi`     | Như `client.ts`                       |
-| `src/queries/*.ts`     | Hook `useQuery`/`useMutation`, quản lý cache                                    | Chứa business rule của màn hình       |
+| File                      | Chịu trách nhiệm                                                                     | Cấm                                                      |
+| ------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------- |
+| `src/api/http.ts`         | Base URL, Bearer token (`setHttpAccessToken`), `ApiError`, `createClientConfig`      | Import `stores/**`                                       |
+| `src/api/generated/**`    | Output của `npm run api:sync` — **không sửa tay**, oxlint và Prettier đã ignore      | Bị import ngoài `client.ts`, `ops.ts`, `group-manage.ts` |
+| `src/api/client.ts`       | Mọi hàm truy cập dữ liệu: gọi SDK, `unwrap()`, map wire → domain, domain type        | Import React / TanStack / component                      |
+| `src/api/ops.ts`          | Như `client.ts` nhưng cho bàn vận hành (`/ops/*`, master + staff): `opsApi`          | Như `client.ts`                                          |
+| `src/api/group-manage.ts` | Như `client.ts` nhưng cho quản trị nhóm (chủ nhóm, điều hành viên): `groupManageApi` | Như `client.ts`                                          |
+| `src/queries/*.ts`        | Hook `useQuery`/`useMutation`, quản lý cache                                         | Chứa business rule của màn hình                          |
 
 **SDK đến từ backend thật**: `npm run api:sync` đọc `http://localhost:3100/docs/json` của `ghim-server` đang chạy
 (tài liệu sinh từ chính schema Zod của nó, nên không có bản tĩnh nào để lệch). Backend thêm endpoint → chạy lại

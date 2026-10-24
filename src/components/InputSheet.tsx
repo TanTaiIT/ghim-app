@@ -7,11 +7,14 @@ import {
   StyleSheet,
   Text,
   View,
+  type TextInputProps,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BarButton, type BarTone } from './ActionBar';
 import { Field } from './Field';
 import { C, F, R, S } from '@/theme';
+
+type SheetInputProps = Pick<TextInputProps, 'keyboardType' | 'autoCapitalize' | 'autoCorrect'>;
 
 /**
  * Bảng hỏi một dòng chữ trước một thao tác: lý do khoá, lý do từ chối giấy tờ, ghi chú bác việc nhóm chuyển lên, tên
@@ -30,6 +33,7 @@ export function InputSheet({
   minLength = 1,
   multiline = false,
   busy = false,
+  inputProps,
   onSubmit,
   onClose,
 }: {
@@ -44,6 +48,8 @@ export function InputSheet({
   minLength?: number;
   multiline?: boolean;
   busy?: boolean;
+  /** Bàn phím và tự viết hoa theo thứ gõ vào: email thì bàn phím email, không viết hoa. */
+  inputProps?: SheetInputProps;
   onSubmit: (text: string) => void;
   onClose: () => void;
 }) {
@@ -66,6 +72,7 @@ export function InputSheet({
               minLength={minLength}
               multiline={multiline}
               busy={busy}
+              inputProps={inputProps}
               onSubmit={onSubmit}
               onClose={onClose}
             />
@@ -86,6 +93,7 @@ function SheetForm({
   minLength,
   multiline,
   busy,
+  inputProps,
   onSubmit,
   onClose,
 }: {
@@ -97,6 +105,7 @@ function SheetForm({
   minLength: number;
   multiline: boolean;
   busy: boolean;
+  inputProps: SheetInputProps | undefined;
   onSubmit: (text: string) => void;
   onClose: () => void;
 }) {
@@ -111,6 +120,7 @@ function SheetForm({
         placeholder={placeholder}
         multiline={multiline}
         autoFocus
+        {...inputProps}
       />
       <View style={styles.row}>
         <BarButton label="Huỷ" tone="ghost" onPress={onClose} />

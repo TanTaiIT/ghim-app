@@ -3,7 +3,8 @@ import Feather from '@expo/vector-icons/Feather';
 import type { Group, GroupRole } from '@/api/client';
 import { Avatar } from './Avatar';
 import { ListingRow, ListingTile } from './ListingCard';
-import { EmptyState, Loading, Tag } from './ui';
+import { MemberRow } from './MemberRow';
+import { EmptyState, Loading } from './ui';
 import { useMe } from '@/queries/account';
 import { useGroupAnnouncements, useGroupListings, useGroupMembers } from '@/queries/groups';
 import { C, F, R, S } from '@/theme';
@@ -61,16 +62,7 @@ export function GroupBoard({
         {members.isPending ? (
           <Loading />
         ) : (
-          members.data?.map((m) => {
-            const role = ROLE_TAG[m.role];
-            return (
-              <View key={m.id} style={styles.member}>
-                <Avatar name={m.name} size={40} />
-                <Text style={styles.memberName}>{m.name}</Text>
-                {role && <Tag label={role} tone="brand" />}
-              </View>
-            );
-          })
+          members.data?.map((m) => <MemberRow key={m.id} name={m.name} tag={ROLE_TAG[m.role]} />)
         )}
       </View>
     );
@@ -155,15 +147,4 @@ const styles = StyleSheet.create({
   },
   announcementText: { fontFamily: F.ui, fontSize: 14, lineHeight: 20, color: C.ink },
   time: { fontFamily: F.ui, fontSize: 12, color: C.muted },
-  member: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    padding: S.md,
-    borderRadius: R.lg,
-    borderWidth: 1,
-    borderColor: C.line,
-    backgroundColor: C.paperWarm,
-  },
-  memberName: { flex: 1, fontFamily: F.uiSemi, fontSize: 14, color: C.ink },
 });

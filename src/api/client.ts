@@ -417,11 +417,19 @@ export type Group =
       allowOutsiders: boolean;
       /** Chỉ chủ nhóm và điều hành viên được biết lý do khoá. */
       lockedReason: string | null;
+      /** Mã vào nhóm — chỉ chủ nhóm và điều hành viên thấy; nhóm không dùng mã thì null. */
+      code: string | null;
+      units: GroupUnit[];
       /** null = chưa vào nhóm. */
       role: GroupRole | null;
+      /** Điều hành viên phụ trách một lớp chỉ xử việc trong lớp đó; null = cả nhóm (hay không phải điều hành viên). */
+      moderatorUnitId: string | null;
       badgeEligible: boolean;
       joinRequest: JoinRequest | null;
     });
+
+/** Lớp / đơn vị con của nhóm (lớp 12A1, phòng ban). */
+export type GroupUnit = { id: string; name: string };
 
 export type GroupMember = { id: string; name: string; role: GroupRole };
 
@@ -1048,7 +1056,10 @@ function toGroup(w: WireGroupView): Group {
     boardStyle: w.boardStyle,
     allowOutsiders: w.allowOutsiders,
     lockedReason: w.lockedReason,
+    code: w.code,
+    units: w.units.map(({ id, name }) => ({ id, name })),
     role: w.membership?.role ?? null,
+    moderatorUnitId: w.membership?.moderatorUnitId ?? null,
     badgeEligible: w.membership?.badgeEligible ?? false,
     joinRequest: toJoinRequest(w.joinRequest),
   };

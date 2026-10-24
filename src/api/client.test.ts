@@ -979,7 +979,10 @@ describe('nhóm', () => {
       boardStyle: 'grid',
       allowOutsiders: false,
       lockedReason: null,
+      code: null,
+      units: [],
       role: null,
+      moderatorUnitId: null,
       badgeEligible: false,
       joinRequest: { id: 'r-1', expiresAt: '2026-11-08T09:00:00.000Z' },
     });

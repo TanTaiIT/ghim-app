@@ -94,6 +94,8 @@ export default function RootLayout() {
               <Stack.Protected guard={isAuthenticated}>
                 <Stack.Screen name="chat/[id]" />
                 <Stack.Screen name="groups" />
+                {/* Quản trị nhóm là stack con sau chốt này; trang nhóm `group/[id]` khách cũng xem được nên không nằm đây. */}
+                <Stack.Screen name="group/manage" />
                 <Stack.Screen name="help" />
                 <Stack.Screen name="settings" />
                 <Stack.Screen name="verify-email" />

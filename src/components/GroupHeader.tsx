@@ -24,18 +24,21 @@ const STATE_NOTE: Partial<Record<GroupState, string>> = {
 /**
  * Đầu trang nhóm: bìa, ô chữ cái đè lên mép bìa, tên, chế độ và số thành viên. Nút hành động do route truyền
  * vào (`children`) vì mutation khởi phát từ route. Server không có ảnh bìa nhóm: mọi nhóm dùng tranh bìa của bộ UI.
+ * `onManage` chỉ có với chủ nhóm và điều hành viên — lối vào khu quản trị nhóm.
  */
 export function GroupHeader({
   group: g,
   topInset,
   onBack,
   onShare,
+  onManage,
   children,
 }: {
   group: Group;
   topInset: number;
   onBack: () => void;
   onShare: () => void;
+  onManage?: () => void;
   children: ReactNode;
 }) {
   const note = g.visible ? STATE_NOTE[g.state] : undefined;
@@ -46,7 +49,17 @@ export function GroupHeader({
         <SvgXml xml={COVER_ART} width="100%" height="100%" />
         <View style={[styles.coverBar, { top: topInset + S.xs }]}>
           <IconButton variant="glass" icon="chevron-left" label="Quay lại" onPress={onBack} />
-          <IconButton variant="glass" icon="share" label="Chia sẻ nhóm" onPress={onShare} />
+          <View style={styles.coverActions}>
+            {onManage && (
+              <IconButton
+                variant="glass"
+                icon="settings"
+                label="Quản trị nhóm"
+                onPress={onManage}
+              />
+            )}
+            <IconButton variant="glass" icon="share" label="Chia sẻ nhóm" onPress={onShare} />
+          </View>
         </View>
       </View>
       <View style={styles.head}>
@@ -97,6 +110,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  coverActions: { flexDirection: 'row', gap: S.sm },
   head: { marginTop: -36, paddingHorizontal: S.lg, gap: S.md },
   badge: {
     width: 72,

@@ -178,6 +178,7 @@ export default function GroupPage() {
           topInset={insets.top}
           onBack={back}
           onShare={() => void Share.share({ message: `Nhóm ${g.name} trên Ghim` })}
+          onManage={manager ? () => router.push(`/group/manage/${id}`) : undefined}
         >
           <GroupActions
             action={action}
