@@ -296,6 +296,9 @@ export type PostApiV1AuthLoginData = {
         deviceName?: string;
         client?: 'app' | 'web';
     };
+    headers?: {
+        'x-device-id'?: string;
+    };
     path?: never;
     query?: never;
     url: '/api/v1/auth/login';
@@ -349,6 +352,9 @@ export type PostApiV1AuthGoogleData = {
         idToken: string;
         deviceName?: string;
         client?: 'app' | 'web';
+    };
+    headers?: {
+        'x-device-id'?: string;
     };
     path?: never;
     query?: never;

@@ -23,7 +23,7 @@ export function setHttpDeviceId(next: string | null): void {
   deviceId = next;
 }
 
-/** Header mà các route đăng tin đòi (lưu nội dung, gửi duyệt); request khác không cần nên không gửi kèm. */
+/** Header các route đăng tin đòi (lưu nội dung, gửi duyệt) và đăng nhập gửi kèm để server ghi dấu máy; request khác không cần. */
 export const deviceHeaders = (): { 'x-device-id': string } | undefined =>
   deviceId ? { 'x-device-id': deviceId } : undefined;
 

@@ -1091,6 +1091,33 @@ describe('nhóm', () => {
   });
 });
 
+describe('đăng nhập', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+    setHttpDeviceId(null);
+  });
+
+  it('mang mã máy như lượt gửi tin — server ghi dấu đăng nhập cho luật chung máy', async () => {
+    setHttpDeviceId('may-1');
+    let device: string | null = null;
+    jest.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      device = (input as Request).headers.get('x-device-id');
+      return new Response(
+        JSON.stringify({
+          success: true,
+          data: { accessToken: 'a', refreshToken: 'r', expiresIn: 900 },
+        }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    });
+    await expect(api.login('a@ghim.local', 'mat-khau-2026')).resolves.toEqual({
+      accessToken: 'a',
+      refreshToken: 'r',
+    });
+    expect(device).toBe('may-1');
+  });
+});
+
 describe('unwrap', () => {
   it('trả data khi vỏ success', async () => {
     const result = unwrap(

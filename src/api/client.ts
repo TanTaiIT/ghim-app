@@ -1516,8 +1516,11 @@ export const api = {
   resetPassword: (email: string, code: string, password: string): Promise<void> =>
     unwrapEmpty(postApiV1AuthResetPassword({ body: { email: email.trim(), code, password } })),
 
+  /** Mang mã máy như lượt gửi tin: server ghi dấu đăng nhập cho luật "không xử việc của tài khoản chung máy". */
   login: (email: string, password: string): Promise<Session> =>
-    unwrap(postApiV1AuthLogin({ body: { email, password, client: 'app' } })).then(toSession),
+    unwrap(
+      postApiV1AuthLogin({ headers: deviceHeaders(), body: { email, password, client: 'app' } }),
+    ).then(toSession),
 
   refresh: (refreshToken: string): Promise<Session> =>
     unwrap(postApiV1AuthRefresh({ body: { refreshToken } })).then(toSession),
