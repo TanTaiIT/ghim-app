@@ -23,9 +23,9 @@ const STATUS: Record<OpsStrike['status'], string> = {
 };
 
 const KIND: Record<OpsStrike['kind'], string> = {
-  normal: 'Gậy thường',
-  severe: 'Gậy nặng',
-  serious: 'Gậy nghiêm trọng',
+  normal: 'Cảnh cáo',
+  severe: 'Cảnh cáo nặng',
+  serious: 'Vi phạm nghiêm trọng',
 };
 
 /**
@@ -54,19 +54,19 @@ export default function OpsUser() {
             <Text style={styles.name}>{display}</Text>
             <Text style={styles.meta}>
               {strikes.data
-                ? `${inForce.length} gậy đang tính · ${strikes.data.length} gậy từng nhận`
-                : 'Đang tải hồ sơ gậy'}
+                ? `${inForce.length} cảnh cáo đang tính · ${strikes.data.length} cảnh cáo từng nhận`
+                : 'Đang tải hồ sơ cảnh cáo'}
             </Text>
           </View>
         </View>
 
-        <Text style={styles.section}>Lịch sử gậy</Text>
+        <Text style={styles.section}>Lịch sử cảnh cáo</Text>
         {strikes.isPending ? (
           <Loading />
         ) : strikes.isError ? (
           <EmptyState icon="alert-circle" text={strikes.error.message} />
         ) : strikes.data.length === 0 ? (
-          <EmptyState icon="shield" text="Chưa từng nhận gậy nào." />
+          <EmptyState icon="shield" text="Chưa từng nhận cảnh cáo nào." />
         ) : (
           strikes.data.map((s) => (
             <View key={s.id} style={styles.strike}>

@@ -150,17 +150,17 @@ export default function OpsTask() {
           <>
             <BarButton
               tone="ghost"
-              label="Giữ gậy"
+              label="Giữ cảnh cáo"
               disabled={busy}
               onPress={() =>
-                run({ kind: 'appeal', verdict: 'lost' }, 'Đã giữ gậy — khiếu nại thua')
+                run({ kind: 'appeal', verdict: 'lost' }, 'Đã giữ cảnh cáo — khiếu nại thua')
               }
             />
             <BarButton
-              label="Huỷ gậy"
+              label="Xoá cảnh cáo"
               loading={busy}
               onPress={() =>
-                run({ kind: 'appeal', verdict: 'won' }, 'Đã huỷ gậy — khiếu nại thắng')
+                run({ kind: 'appeal', verdict: 'won' }, 'Đã xoá cảnh cáo — khiếu nại thắng')
               }
             />
           </>
@@ -174,7 +174,7 @@ export default function OpsTask() {
     t.claim === 'taken'
       ? 'Người khác đang xử việc này — chờ họ xong hoặc hết 10 phút giữ việc.'
       : kind === 'other'
-        ? 'Gậy nghiêm trọng và xét khoá vĩnh viễn chưa xử được trên app.'
+        ? 'Vi phạm nghiêm trọng và xét khoá vĩnh viễn chưa xử được trên app.'
         : null;
 
   return (
@@ -224,7 +224,7 @@ export default function OpsTask() {
       <InputSheet
         visible={sheet?.kind === 'note'}
         title="Bác việc nhóm chuyển lên"
-        note="Tin vẫn ở ngoài nhóm như nhóm đã quyết. Xác nhận vi phạm (ra gậy cho người đăng) chưa có trên app."
+        note="Tin vẫn ở ngoài nhóm như nhóm đã quyết. Xác nhận vi phạm (ghi cảnh cáo cho người đăng) chưa có trên app."
         label="Ghi chú"
         placeholder="Không thấy dấu hiệu vi phạm quy định sàn"
         confirmLabel="Bác"

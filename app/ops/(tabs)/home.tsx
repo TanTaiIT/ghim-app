@@ -59,7 +59,7 @@ export default function OpsHome() {
     },
     {
       icon: 'flag',
-      label: 'Báo cáo & gậy',
+      label: 'Báo cáo & cảnh cáo',
       count: board ? queues([1, 2]) : null,
       href: '/ops/reports',
     },

@@ -338,6 +338,32 @@ export const HELP_TOPICS: HelpTopic[] = [
     ],
   },
   {
+    id: 'warning',
+    label: 'Cảnh cáo & khiếu nại',
+    faqs: [
+      {
+        q: 'Cảnh cáo là gì?',
+        a: 'Cảnh cáo được ghi khi tin hoặc tài khoản của bạn vi phạm quy định sàn. Người duyệt ghi, kèm điều quy định bị vi phạm; máy không bao giờ tự ghi cảnh cáo. Bị từ chối vì sai sót (thiếu ảnh, sai danh mục…) thì không phải cảnh cáo.',
+      },
+      {
+        q: 'Cảnh cáo ảnh hưởng gì tới tôi?',
+        a: 'Mỗi cảnh cáo có điểm vi phạm: cảnh cáo 1 điểm, cảnh cáo nặng 2 điểm. Khi còn điểm, tin mới chỉ hiển thị hạn chế; đủ 3 điểm thì tạm dừng đăng tin mới cho tới khi điểm giảm. Thông báo cảnh cáo cho biết con số đang áp dụng.',
+      },
+      {
+        q: 'Bao lâu thì cảnh cáo hết?',
+        a: 'Cảnh cáo tự hết hạn — thường 90 ngày, cảnh cáo nặng 180 ngày. Hết hạn thì điểm tự giảm và hạn chế tự gỡ. Ngày hết hạn có trong thông báo cảnh cáo.',
+      },
+      {
+        q: 'Không đồng ý thì sao?',
+        a: 'Mỗi cảnh cáo được khiếu nại một lần, trong 14 ngày kể từ khi nhận. Một người khác người đã ghi cảnh cáo sẽ xét lại; được chấp nhận thì cảnh cáo được xoá và tin bị gỡ được khôi phục.',
+      },
+      {
+        q: 'Vi phạm nghiêm trọng là gì?',
+        a: 'Hàng cấm hoặc lừa đảo đã xác nhận. Tài khoản bị khoá ngay và chờ quản trị viên quyết; khiếu nại qua đội hỗ trợ trong 30 ngày.',
+      },
+    ],
+  },
+  {
     id: 'boost',
     label: 'Đẩy tin & gói',
     faqs: [

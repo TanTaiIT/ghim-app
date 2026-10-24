@@ -37,7 +37,7 @@ export default function OpsReports() {
           onChange={setTab}
           tabs={[
             { id: 'reports', label: 'Báo cáo' },
-            { id: 'strikes', label: 'Việc về gậy' },
+            { id: 'strikes', label: 'Việc về cảnh cáo' },
           ]}
         />
       </OpsHeader>

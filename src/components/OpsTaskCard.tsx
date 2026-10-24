@@ -30,7 +30,7 @@ export function OpsTaskCard({
     (task.subject === 'account'
       ? 'Một người dùng'
       : task.subject === 'strike'
-        ? 'Gậy cần xét'
+        ? 'Cảnh cáo cần xét'
         : 'Tin chưa có tiêu đề');
   return (
     <View style={styles.card}>

@@ -81,7 +81,7 @@ export function OpsTaskBody({
               <Text style={styles.personName}>{task.seller.name ?? 'Tài khoản đã xoá'}</Text>
               <Text style={styles.caption}>
                 Mức {task.seller.tier} · {task.seller.cleanListings} tin sạch ·{' '}
-                {task.seller.strikesInForce} gậy đang tính
+                {task.seller.strikesInForce} cảnh cáo đang tính
               </Text>
             </View>
             <Feather name="chevron-right" size={20} color={C.muted} />
@@ -123,7 +123,7 @@ export function OpsTaskBody({
         )}
 
         {task.strike && (
-          <Section title="Gậy">
+          <Section title="Cảnh cáo">
             <Text style={styles.text}>{task.strike.rule}</Text>
             <Text style={styles.caption}>
               {STRIKE_KIND[task.strike.kind]} · {task.strike.points} điểm · ra{' '}
@@ -155,9 +155,9 @@ export function OpsTaskBody({
 }
 
 const STRIKE_KIND = {
-  normal: 'Gậy thường',
-  severe: 'Gậy nặng',
-  serious: 'Gậy nghiêm trọng',
+  normal: 'Cảnh cáo',
+  severe: 'Cảnh cáo nặng',
+  serious: 'Vi phạm nghiêm trọng',
 } as const;
 
 const names = (list: { name: string | null }[]) =>

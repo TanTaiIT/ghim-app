@@ -84,7 +84,7 @@ export type TaskClaim = WireTask['claim']['state'];
 export const QUEUE_LABEL: Record<number, string> = {
   0: 'Máy giữ',
   1: 'Báo cáo',
-  2: 'Việc về gậy',
+  2: 'Việc về cảnh cáo',
   3: 'Máy hạn chế',
   4: 'Nhóm chuyển lên',
   5: 'Hậu kiểm',
@@ -98,8 +98,8 @@ export const REASON_LABEL: Record<TaskReason, string> = {
   sample_reviewer: 'Hậu kiểm người duyệt',
   report: 'Bị báo cáo',
   report_severe: 'Báo cáo lừa đảo / hàng cấm',
-  appeal: 'Khiếu nại gậy',
-  serious_strike: 'Gậy nghiêm trọng',
+  appeal: 'Khiếu nại cảnh cáo',
+  serious_strike: 'Vi phạm nghiêm trọng',
   permanent_review: 'Xét khoá vĩnh viễn',
 };
 
@@ -108,7 +108,7 @@ const HIT_LABEL: Record<string, string> = {
   gibberish: 'Nội dung vô nghĩa',
   zero_price_high_value: 'Giá 0 đồng cho món giá trị cao',
   shared_device_locked: 'Dùng chung máy với tài khoản bị khoá',
-  shared_device_strike: 'Dùng chung máy với tài khoản có gậy',
+  shared_device_strike: 'Dùng chung máy với tài khoản có cảnh cáo',
   ambiguous_phrase: 'Có cụm từ đáng ngờ',
   abnormal_price: 'Giá bất thường so với danh mục',
   off_platform_contact: 'Kéo liên hệ ra ngoài Ghim',
