@@ -9,8 +9,8 @@ import { qk } from './keys';
 const QUEUE_REFRESH_MS = 60_000;
 
 /**
- * Hàng chờ theo số hàng; `null` = mọi việc tôi thấy. Cũng là "cổng" của khu quản trị: lỗi `TWO_FACTOR_REQUIRED` /
- * `FORBIDDEN` của query này quyết định có cho vào không (`app/ops/_layout.tsx`).
+ * Hàng chờ theo số hàng; `null` = mọi việc tôi thấy. Cổng khu quản trị (`app/ops/_layout.tsx`) đọc lỗi của query này để
+ * chặn cả khu khi server đòi xác thực hai lớp; 403 thì không chặn — staff không có danh mục nào cũng nhận 403 ở đây.
  */
 export function useOpsTasks(queue: number | null) {
   return useQuery({

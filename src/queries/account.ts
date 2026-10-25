@@ -11,6 +11,20 @@ export function useMe() {
   return useQuery({ queryKey: qk.me(), queryFn: api.getMe, enabled: authed });
 }
 
+/**
+ * Hồ sơ đọc lại mỗi lần màn mở, dù cache còn mới: cổng bàn vận hành hỏi "còn quyền không", mà master có thể vừa gắn hay
+ * thu quyền staff — đọc bản cache 30 giây là cho vào nhầm hay chặn nhầm.
+ */
+export function useFreshMe() {
+  const authed = useIsAuthenticated();
+  return useQuery({
+    queryKey: qk.me(),
+    queryFn: api.getMe,
+    enabled: authed,
+    refetchOnMount: 'always',
+  });
+}
+
 /** Công tắc trạng thái hoạt động: server trả lại hồ sơ mới, ghi thẳng vào cache thay vì tải lại. */
 export function useSetShowActivity() {
   const qc = useQueryClient();
