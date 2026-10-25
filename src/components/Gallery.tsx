@@ -5,22 +5,34 @@ import { Photo } from './Photo';
 import { C, F, R, S } from '@/theme';
 
 /** Ảnh tin đăng lướt ngang từng tấm, chấm vị trí ở giữa và bộ đếm "1 / 6" góc phải. */
-export function Gallery({ photos, height }: { photos: Picture[]; height: number }) {
+export function Gallery({
+  photos,
+  height,
+  fit,
+  start = 0,
+}: {
+  photos: Picture[];
+  height: number;
+  fit?: 'cover' | 'contain';
+  /** Ảnh mở đầu tiên — màn xem lớn mở đúng ảnh vừa bấm. */
+  start?: number;
+}) {
   const { width } = useWindowDimensions();
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(start);
 
   return (
     <View style={{ height }}>
       <ScrollView
         horizontal
         pagingEnabled
+        contentOffset={{ x: start * width, y: 0 }}
         showsHorizontalScrollIndicator={false}
         onMomentumScrollEnd={(e) => setIndex(Math.round(e.nativeEvent.contentOffset.x / width))}
       >
         {photos.map((p, i) => (
           // Ảnh không có id riêng và thứ tự cố định trong một tin — index là danh tính.
           // oxlint-disable-next-line react/no-array-index-key
-          <Photo key={i} picture={p} style={{ width, height }} />
+          <Photo key={i} picture={p} fit={fit} style={{ width, height }} />
         ))}
       </ScrollView>
       {photos.length > 1 && (

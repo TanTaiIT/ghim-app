@@ -103,5 +103,6 @@ Không có secret nào trong repo (HARD#19); credential push/ảnh đặt ở EA
   trả domain type → hook trong `src/queries/**`. Sau mỗi lần sync, khởi động lại Metro với `--clear`.
 - Push: chưa xin token Expo. Realtime: socket.io (`src/api/realtime.ts`), chỉ để báo hiệu — dữ liệu luôn tải lại qua
   HTTP.
-- Chưa có: đẩy tin (báo "sẽ có" — chờ giá gói), gọi trong app ("Gọi người bán" mở trình gọi của máy), gửi ảnh trong
-  chat (server chưa nhận ảnh trong tin nhắn). Hộp thư (tab Tin nhắn) không có trong bộ UI gốc — dựng theo thẻ của các màn khác.
+- Chưa có: đẩy tin (báo "sẽ có" — chờ giá gói), gọi trong app ("Gọi người bán" mở trình gọi của máy). Chat gửi được tối
+  đa 4 ảnh một tin (ghim-server `add-message-images`), tải với chủ là hội thoại lúc bấm gửi. Hộp thư (tab Tin nhắn) không
+  có trong bộ UI gốc — dựng theo thẻ của các màn khác.

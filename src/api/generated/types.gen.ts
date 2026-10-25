@@ -66,7 +66,7 @@ export type GetHealthReadyResponse = GetHealthReadyResponses[keyof GetHealthRead
 
 export type PostApiV1MediaUploadsData = {
     body: {
-        ownerKind: 'profile' | 'listing';
+        ownerKind: 'profile' | 'listing' | 'conversation';
         ownerId: string;
         contentType: 'image/jpeg' | 'image/png' | 'image/webp';
         byteSize: number;
@@ -12267,6 +12267,10 @@ export type GetApiV1OpsReviewTasksByTaskIdResponses = {
                     id: string;
                     senderId: string;
                     body: string;
+                    images: Array<{
+                        id: string;
+                        url: string;
+                    }>;
                     flagged: boolean;
                     createdAt: string;
                 }>;
@@ -13240,6 +13244,10 @@ export type GetApiV1GroupsByGroupIdReviewTasksByTaskIdResponses = {
                     id: string;
                     senderId: string;
                     body: string;
+                    images: Array<{
+                        id: string;
+                        url: string;
+                    }>;
                     flagged: boolean;
                     createdAt: string;
                 }>;
@@ -14038,6 +14046,10 @@ export type PostApiV1ListingsByListingIdConversationResponses = {
                 fromMe: boolean;
                 kind: 'text' | 'offer';
                 body: string;
+                images: Array<{
+                    id: string;
+                    url: string;
+                }>;
                 offer: {
                     /**
                      * Số tiền, đơn vị đồng
@@ -14101,6 +14113,10 @@ export type PostApiV1ListingsByListingIdConversationResponses = {
                 fromMe: boolean;
                 kind: 'text' | 'offer';
                 body: string;
+                images: Array<{
+                    id: string;
+                    url: string;
+                }>;
                 offer: {
                     /**
                      * Số tiền, đơn vị đồng
@@ -14214,6 +14230,10 @@ export type PostApiV1MeSupportConversationResponses = {
                 fromMe: boolean;
                 kind: 'text' | 'offer';
                 body: string;
+                images: Array<{
+                    id: string;
+                    url: string;
+                }>;
                 offer: {
                     /**
                      * Số tiền, đơn vị đồng
@@ -14277,6 +14297,10 @@ export type PostApiV1MeSupportConversationResponses = {
                 fromMe: boolean;
                 kind: 'text' | 'offer';
                 body: string;
+                images: Array<{
+                    id: string;
+                    url: string;
+                }>;
                 offer: {
                     /**
                      * Số tiền, đơn vị đồng
@@ -14403,6 +14427,10 @@ export type PostApiV1GroupsByGroupIdConversationResponses = {
                 fromMe: boolean;
                 kind: 'text' | 'offer';
                 body: string;
+                images: Array<{
+                    id: string;
+                    url: string;
+                }>;
                 offer: {
                     /**
                      * Số tiền, đơn vị đồng
@@ -14466,6 +14494,10 @@ export type PostApiV1GroupsByGroupIdConversationResponses = {
                 fromMe: boolean;
                 kind: 'text' | 'offer';
                 body: string;
+                images: Array<{
+                    id: string;
+                    url: string;
+                }>;
                 offer: {
                     /**
                      * Số tiền, đơn vị đồng
@@ -14572,6 +14604,10 @@ export type GetApiV1MeConversationsResponses = {
                     fromMe: boolean;
                     kind: 'text' | 'offer';
                     body: string;
+                    images: Array<{
+                        id: string;
+                        url: string;
+                    }>;
                     offer: {
                         /**
                          * Số tiền, đơn vị đồng
@@ -14745,6 +14781,10 @@ export type GetApiV1MeConversationsByConversationIdResponses = {
                 fromMe: boolean;
                 kind: 'text' | 'offer';
                 body: string;
+                images: Array<{
+                    id: string;
+                    url: string;
+                }>;
                 offer: {
                     /**
                      * Số tiền, đơn vị đồng
@@ -14842,6 +14882,10 @@ export type GetApiV1MeConversationsByConversationIdMessagesResponses = {
                 fromMe: boolean;
                 kind: 'text' | 'offer';
                 body: string;
+                images: Array<{
+                    id: string;
+                    url: string;
+                }>;
                 offer: {
                     /**
                      * Số tiền, đơn vị đồng
@@ -14861,7 +14905,8 @@ export type GetApiV1MeConversationsByConversationIdMessagesResponse = GetApiV1Me
 
 export type PostApiV1MeConversationsByConversationIdMessagesData = {
     body: {
-        body: string;
+        body?: string;
+        imageIds?: Array<string>;
     };
     path: {
         conversationId: string;
@@ -14943,6 +14988,10 @@ export type PostApiV1MeConversationsByConversationIdMessagesResponses = {
             fromMe: boolean;
             kind: 'text' | 'offer';
             body: string;
+            images: Array<{
+                id: string;
+                url: string;
+            }>;
             offer: {
                 /**
                  * Số tiền, đơn vị đồng
@@ -15045,6 +15094,10 @@ export type PostApiV1MeConversationsByConversationIdOffersResponses = {
             fromMe: boolean;
             kind: 'text' | 'offer';
             body: string;
+            images: Array<{
+                id: string;
+                url: string;
+            }>;
             offer: {
                 /**
                  * Số tiền, đơn vị đồng
@@ -15132,6 +15185,10 @@ export type PostApiV1MeConversationsByConversationIdOffersByMessageIdAcceptRespo
             fromMe: boolean;
             kind: 'text' | 'offer';
             body: string;
+            images: Array<{
+                id: string;
+                url: string;
+            }>;
             offer: {
                 /**
                  * Số tiền, đơn vị đồng
@@ -15219,6 +15276,10 @@ export type PostApiV1MeConversationsByConversationIdOffersByMessageIdDeclineResp
             fromMe: boolean;
             kind: 'text' | 'offer';
             body: string;
+            images: Array<{
+                id: string;
+                url: string;
+            }>;
             offer: {
                 /**
                  * Số tiền, đơn vị đồng
@@ -15791,6 +15852,10 @@ export type GetApiV1OpsSupportConversationsResponses = {
                     fromMe: boolean;
                     kind: 'text' | 'offer';
                     body: string;
+                    images: Array<{
+                        id: string;
+                        url: string;
+                    }>;
                     offer: {
                         /**
                          * Số tiền, đơn vị đồng
@@ -15911,6 +15976,10 @@ export type GetApiV1OpsSupportConversationsByConversationIdResponses = {
                 fromMe: boolean;
                 kind: 'text' | 'offer';
                 body: string;
+                images: Array<{
+                    id: string;
+                    url: string;
+                }>;
                 offer: {
                     /**
                      * Số tiền, đơn vị đồng
@@ -16008,6 +16077,10 @@ export type GetApiV1OpsSupportConversationsByConversationIdMessagesResponses = {
                 fromMe: boolean;
                 kind: 'text' | 'offer';
                 body: string;
+                images: Array<{
+                    id: string;
+                    url: string;
+                }>;
                 offer: {
                     /**
                      * Số tiền, đơn vị đồng
@@ -16109,6 +16182,10 @@ export type PostApiV1OpsSupportConversationsByConversationIdMessagesResponses = 
             fromMe: boolean;
             kind: 'text' | 'offer';
             body: string;
+            images: Array<{
+                id: string;
+                url: string;
+            }>;
             offer: {
                 /**
                  * Số tiền, đơn vị đồng

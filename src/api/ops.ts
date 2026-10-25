@@ -264,7 +264,14 @@ export type OpsTaskDetail = OpsTask & {
   evidence: {
     id: string;
     sellerId: string;
-    messages: { id: string; fromSeller: boolean; body: string; flagged: boolean; at: string }[];
+    messages: {
+      id: string;
+      fromSeller: boolean;
+      body: string;
+      photos: Picture[];
+      flagged: boolean;
+      at: string;
+    }[];
   }[];
 };
 
@@ -313,6 +320,7 @@ export function toTaskDetail(w: WireTaskDetail): OpsTaskDetail {
         id: m.id,
         fromSeller: m.senderId === c.sellerId,
         body: m.body,
+        photos: m.images.map((img) => ({ uri: img.url })),
         flagged: m.flagged,
         at: m.createdAt,
       })),
@@ -694,7 +702,7 @@ const toThread = (w: WireSupport): SupportThread => ({
   personId: w.counterpart.accountId,
   personName: w.counterpart.displayName ?? 'Người dùng đã xoá tài khoản',
   gone: w.counterpart.gone,
-  lastMessage: w.lastMessage?.body ?? null,
+  lastMessage: w.lastMessage && (w.lastMessage.body || `Đã gửi ${w.lastMessage.images.length} ảnh`),
   lastAt: w.lastActivityAt,
   unread: w.unreadCount,
   canSend: w.canSend,
@@ -706,6 +714,8 @@ export type SupportMessage = {
   fromTeam: boolean;
   system: boolean;
   body: string;
+  /** Người dùng gửi ảnh cho đội được (add-message-images); đội trả lời chỉ bằng chữ. */
+  photos: Picture[];
   at: string;
 };
 
@@ -716,6 +726,7 @@ const toSupportMessage =
     fromTeam: w.senderId !== null && w.senderId !== personId,
     system: w.senderId === null,
     body: w.body,
+    photos: w.images.map((img) => ({ uri: img.url })),
     at: w.createdAt,
   });
 

@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import { Avatar } from './Avatar';
 import { Gallery } from './Gallery';
+import { MessagePhotos } from './MessagePhotos';
 import { Price, Tag } from './ui';
 import { REPORT_CATEGORY_LABEL } from '@/api/client';
 import { QUEUE_LABEL, REASON_LABEL, hitLabel, type OpsTaskDetail } from '@/api/ops';
@@ -143,7 +144,8 @@ export function OpsTaskBody({
                 key={m.id}
                 style={[styles.bubble, m.fromSeller ? styles.bubbleSeller : styles.bubbleOther]}
               >
-                <Text style={styles.bubbleText}>{m.body}</Text>
+                <MessagePhotos photos={m.photos} />
+                {m.body !== '' && <Text style={styles.bubbleText}>{m.body}</Text>}
                 <Text style={styles.caption}>
                   {m.fromSeller ? 'Người bị báo cáo' : 'Người kia'} · {formatAgo(m.at)}
                   {m.flagged ? ' · trúng cụm đáng ngờ' : ''}

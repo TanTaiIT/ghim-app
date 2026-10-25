@@ -5,6 +5,7 @@ import {
   type ConversationTarget,
   type Message,
   type Notice,
+  type PickedPhoto,
   type ReportCategory,
 } from '@/api/client';
 import { useIsAuthenticated } from '@/stores/auth';
@@ -93,8 +94,13 @@ export function useSendMessage(conversationId: string) {
   const qc = useQueryClient();
   const key = qk.conversations.detail(conversationId);
   return useMutation({
-    mutationFn: (text: string) => api.sendMessage(conversationId, text),
-    onMutate: async (text) => {
+    /** Ảnh tải lúc gửi, song song; một ảnh hỏng (quá nhỏ, mất mạng) thì cả tin không gửi. */
+    mutationFn: async ({ text, photos }: { text: string; photos: PickedPhoto[] }) =>
+      api.sendMessage(conversationId, {
+        text,
+        imageIds: await Promise.all(photos.map((p) => api.uploadChatPhoto(conversationId, p))),
+      }),
+    onMutate: async ({ text, photos }) => {
       await qc.cancelQueries({ queryKey: key });
       const prev = qc.getQueryData<Conversation>(key);
       const temp: Message = {
@@ -102,6 +108,7 @@ export function useSendMessage(conversationId: string) {
         kind: 'text',
         mine: true,
         text,
+        photos: photos.map((p) => ({ uri: p.uri })),
         at: new Date().toISOString(),
       };
       qc.setQueryData<Conversation>(key, (c) => c && { ...c, messages: [...c.messages, temp] });

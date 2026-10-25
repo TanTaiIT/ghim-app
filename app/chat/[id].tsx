@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChatComposer } from '@/components/ChatComposer';
 import { ChatHeader } from '@/components/ChatHeader';
+import { MessageBubble } from '@/components/MessageBubble';
 import { OfferBubble } from '@/components/OfferBubble';
 import { ConfirmSheet } from '@/components/PickerSheet';
 import { ReportSheet } from '@/components/ReportSheet';
@@ -21,7 +22,7 @@ import {
 } from '@/queries/messages';
 import { useForeground } from '@/queries/realtime';
 import { useBlock } from '@/queries/settings';
-import { C, F, R, S } from '@/theme';
+import { C, F, S } from '@/theme';
 import { formatDay } from '@/utils/format';
 
 /** Server giữ cờ "đang xem" 10 phút: gọi lại giữa chừng để cờ không tắt khi người dùng còn đọc. */
@@ -34,6 +35,14 @@ export default function Chat() {
   const toast = useToast();
   const insets = useSafeAreaInsets();
   const list = useRef<FlatList>(null);
+  // `scrollToEnd` đo theo ô FlatList đã biết, ô cuối chưa đo thì lấy chiều cao ước lượng nên tin cuối bị che một nửa
+  // (rõ nhất với tin có ảnh). Cuộn theo chiều cao nội dung thật trừ khung nhìn, cả khi khung co lại (hàng ảnh đã chọn).
+  const extent = useRef({ content: 0, viewport: 0 });
+  const toEnd = () =>
+    list.current?.scrollToOffset({
+      offset: Math.max(0, extent.current.content - extent.current.viewport),
+      animated: false,
+    });
   const [mode, setMode] = useState<'text' | 'offer'>(offer ? 'offer' : 'text');
   const [sheet, setSheet] = useState<'report' | 'block' | 'delete' | null>(null);
 
@@ -99,7 +108,14 @@ export default function Chat() {
           data={messages}
           keyExtractor={(m) => m.id}
           contentContainerStyle={styles.messages}
-          onContentSizeChange={() => list.current?.scrollToEnd({ animated: false })}
+          onLayout={(e) => {
+            extent.current.viewport = e.nativeEvent.layout.height;
+            toEnd();
+          }}
+          onContentSizeChange={(_, height) => {
+            extent.current.content = height;
+            toEnd();
+          }}
           ListHeaderComponent={
             <View style={styles.listHead}>
               <SafetyNote text="Không chuyển khoản đặt cọc trước khi xem hàng. Admin không bao giờ yêu cầu chuyển khoản qua tin nhắn." />
@@ -120,9 +136,7 @@ export default function Chat() {
                 }
               />
             ) : (
-              <View style={[styles.bubble, item.mine ? styles.mine : styles.theirs]}>
-                <Text style={[styles.bubbleText, item.mine && styles.mineText]}>{item.text}</Text>
-              </View>
+              <MessageBubble message={item} />
             )
           }
         />
@@ -134,7 +148,7 @@ export default function Chat() {
           readOnly={readOnly}
           sending={send.isPending || sendOffer.isPending}
           bottomInset={insets.bottom}
-          onSendText={(text) => send.mutate(text, { onError: (e) => toast(e.message) })}
+          onSendText={(message) => send.mutate(message, { onError: (e) => toast(e.message) })}
           onSendOffer={(amount) => sendOffer.mutate(amount, { onError: (e) => toast(e.message) })}
         />
       </KeyboardAvoidingView>
@@ -198,21 +212,4 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: C.muted,
   },
-  bubble: { maxWidth: '78%', paddingVertical: 10, paddingHorizontal: 14 },
-  mine: {
-    alignSelf: 'flex-end',
-    backgroundColor: C.brand,
-    borderRadius: R.lg,
-    borderBottomRightRadius: R.xs,
-  },
-  theirs: {
-    alignSelf: 'flex-start',
-    backgroundColor: C.paperWarm,
-    borderWidth: 1,
-    borderColor: C.line,
-    borderRadius: R.lg,
-    borderBottomLeftRadius: R.xs,
-  },
-  bubbleText: { fontFamily: F.ui, fontSize: 14, lineHeight: 20, color: C.ink },
-  mineText: { color: C.paperWarm },
 });

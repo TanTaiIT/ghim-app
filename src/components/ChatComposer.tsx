@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
+import * as ImagePicker from 'expo-image-picker';
+import { MESSAGE_PHOTOS, type PickedPhoto } from '@/api/client';
 import { Chip } from './Chip';
+import { Photo } from './Photo';
 import { C, F, R, S } from '@/theme';
 import { groupThousands, parseDigits } from '@/utils/format';
 
@@ -14,8 +17,9 @@ const VIEWING = 'Mình hẹn qua xem hàng được không ạ?';
  *
  * `canOffer` theo cờ của server (người mua, tin đang hiển thị, cho thương lượng, giá > 0): app không tự đoán luật
  * trả giá. `asBuyer`: câu "Hẹn xem hàng" là của người mua hỏi về một tin — người bán hay hội thoại với đội không có.
- * Không có nút gửi ảnh — server chưa nhận ảnh trong tin nhắn. `readOnly`: server không cho gửi (có chặn, bên kia đã
- * rời, nhóm đóng…) — thay ô soạn bằng đúng câu giải thích, không để người dùng gõ rồi mới nhận lỗi.
+ * Ảnh (ghim-server add-message-images): chọn tối đa `MESSAGE_PHOTOS`, gửi cùng chữ trong một tin; route tải ảnh lúc
+ * gửi. `readOnly`: server không cho gửi (có chặn, bên kia đã rời, nhóm đóng…) — thay ô soạn bằng đúng câu giải thích,
+ * không để người dùng gõ rồi mới nhận lỗi.
  */
 export function ChatComposer({
   mode,
@@ -30,7 +34,7 @@ export function ChatComposer({
 }: {
   mode: 'text' | 'offer';
   onModeChange: (mode: 'text' | 'offer') => void;
-  onSendText: (text: string) => void;
+  onSendText: (message: { text: string; photos: PickedPhoto[] }) => void;
   onSendOffer: (amount: number) => void;
   canOffer: boolean;
   asBuyer: boolean;
@@ -39,9 +43,10 @@ export function ChatComposer({
   bottomInset: number;
 }) {
   const [text, setText] = useState('');
+  const [photos, setPhotos] = useState<PickedPhoto[]>([]);
   const offer = canOffer && mode === 'offer';
   const amount = parseDigits(text);
-  const canSend = !sending && (offer ? amount > 0 : text.trim() !== '');
+  const canSend = !sending && (offer ? amount > 0 : text.trim() !== '' || photos.length > 0);
 
   const send = () => {
     if (!canSend) return;
@@ -49,9 +54,23 @@ export function ChatComposer({
       onSendOffer(amount);
       onModeChange('text');
     } else {
-      onSendText(text.trim());
+      onSendText({ text: text.trim(), photos });
+      setPhotos([]);
     }
     setText('');
+  };
+
+  /** Picker trả bản gốc (`quality: 1`): nén một lần duy nhất lúc tải, như ảnh tin. */
+  const pick = async () => {
+    const res = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsMultipleSelection: true,
+      selectionLimit: MESSAGE_PHOTOS - photos.length,
+      quality: 1,
+    });
+    if (res.canceled) return;
+    const picked = res.assets.map((a) => ({ uri: a.uri, width: a.width, height: a.height }));
+    setPhotos((now) => [...now, ...picked].slice(0, MESSAGE_PHOTOS));
   };
 
   if (readOnly) {
@@ -67,7 +86,12 @@ export function ChatComposer({
       {(asBuyer || canOffer) && (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.quick}>
           <View style={styles.quickRow}>
-            {asBuyer && <Chip label="Hẹn xem hàng" onPress={() => onSendText(VIEWING)} />}
+            {asBuyer && (
+              <Chip
+                label="Hẹn xem hàng"
+                onPress={() => onSendText({ text: VIEWING, photos: [] })}
+              />
+            )}
             {canOffer && (
               <Chip
                 label={offer ? 'Huỷ trả giá' : 'Trả giá'}
@@ -81,7 +105,37 @@ export function ChatComposer({
           </View>
         </ScrollView>
       )}
+      {!offer && photos.length > 0 && (
+        <View style={styles.picked}>
+          {photos.map((p, i) => (
+            <View key={p.uri}>
+              <Photo picture={p} style={styles.thumb} />
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel={`Bỏ ảnh ${i + 1}`}
+                hitSlop={8}
+                onPress={() => setPhotos(photos.filter((x) => x.uri !== p.uri))}
+                style={styles.unpick}
+              >
+                <Feather name="x" size={12} color={C.paperWarm} />
+              </Pressable>
+            </View>
+          ))}
+        </View>
+      )}
       <View style={[styles.bar, { paddingBottom: bottomInset + S.sm }]}>
+        {!offer && (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Gửi ảnh"
+            accessibilityState={{ disabled: photos.length >= MESSAGE_PHOTOS }}
+            disabled={photos.length >= MESSAGE_PHOTOS}
+            onPress={() => void pick()}
+            style={[styles.attach, photos.length >= MESSAGE_PHOTOS && styles.sendOff]}
+          >
+            <Feather name="image" size={20} color={C.inkSoft} />
+          </Pressable>
+        )}
         <View style={[styles.input, offer && styles.inputOffer]}>
           <TextInput
             accessibilityLabel={offer ? 'Nhập giá muốn trả' : 'Nhập tin nhắn'}
@@ -142,6 +196,28 @@ const styles = StyleSheet.create({
     backgroundColor: C.sand,
   },
   inputOffer: { borderWidth: 1.5, borderColor: C.price, backgroundColor: C.warnWash },
+  picked: {
+    flexDirection: 'row',
+    gap: S.sm,
+    paddingTop: S.sm,
+    paddingHorizontal: S.md,
+    borderTopWidth: 1,
+    borderTopColor: C.line,
+    backgroundColor: C.paperWarm,
+  },
+  thumb: { width: 56, height: 56, borderRadius: R.sm },
+  unpick: {
+    position: 'absolute',
+    top: -6,
+    right: -6,
+    width: 20,
+    height: 20,
+    borderRadius: R.full,
+    backgroundColor: C.ink,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  attach: { width: 36, height: 44, alignItems: 'center', justifyContent: 'center' },
   inputText: { flex: 1, fontFamily: F.ui, fontSize: 14, color: C.ink, paddingVertical: 0 },
   unit: { fontFamily: F.uiBold, fontSize: 14, color: C.inkSoft },
   send: {

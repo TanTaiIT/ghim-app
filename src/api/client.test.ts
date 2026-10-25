@@ -413,6 +413,7 @@ const wireMessage = (id: string, overrides: Record<string, unknown> = {}) => ({
   fromMe: true,
   kind: 'text',
   body: `Tin ${id}`,
+  images: [],
   offer: null,
   createdAt: '2026-10-18T10:00:00.000Z',
   ...overrides,
@@ -436,7 +437,12 @@ describe('tin nhắn', () => {
             body: '',
             offer: { amount: 250000, status: 'pending', respondedAt: null },
           }),
-          wireMessage('m1'),
+          wireMessage('m1', {
+            images: [
+              { id: 'a-1', url: 'https://img.test/a1.jpg' },
+              { id: 'a-2', url: 'https://img.test/a2.jpg' },
+            ],
+          }),
         ],
         nextCursor: null,
       },
@@ -445,7 +451,14 @@ describe('tin nhắn', () => {
     const c = await api.getConversation('c-1');
 
     expect(c.messages).toEqual([
-      { id: 'm1', kind: 'text', mine: true, text: 'Tin m1', at: '2026-10-18T10:00:00.000Z' },
+      {
+        id: 'm1',
+        kind: 'text',
+        mine: true,
+        text: 'Tin m1',
+        photos: [{ uri: 'https://img.test/a1.jpg' }, { uri: 'https://img.test/a2.jpg' }],
+        at: '2026-10-18T10:00:00.000Z',
+      },
       {
         id: 'm2',
         kind: 'offer',
@@ -495,12 +508,23 @@ describe('tin nhắn', () => {
               offer: { amount: 250000, status: 'declined', respondedAt: null },
             }),
           }),
+          wireConversation({
+            id: 'c-4',
+            lastMessage: wireMessage('m7', {
+              fromMe: false,
+              body: '',
+              images: [
+                { id: 'a-1', url: 'https://img.test/a1.jpg' },
+                { id: 'a-2', url: 'https://img.test/a2.jpg' },
+              ],
+            }),
+          }),
         ],
         nextCursor: null,
       },
     });
 
-    const [support, locked] = await api.getConversations();
+    const [support, locked, photosOnly] = await api.getConversations();
 
     expect(support).toMatchObject({
       kind: 'support',
@@ -510,6 +534,7 @@ describe('tin nhắn', () => {
       unread: 2,
     });
     expect(locked?.lastMessage).toBe('Bạn: Trả giá 250.000 đ');
+    expect(photosOnly?.lastMessage).toBe('Đã gửi 2 ảnh');
   });
 
   it('chỉ còn để đọc: câu theo lý do, không nói ai chặn', async () => {
@@ -1526,6 +1551,15 @@ describe('tải ảnh của tin', () => {
       code: IMAGE_TOO_SMALL,
       message: 'Ảnh quá nhỏ, cần cạnh ngắn từ 480px',
     });
+    expect(calls).not.toContain(STORAGE_URL);
+  });
+
+  it('ảnh tin nhắn cũng qua cạnh ngắn tối thiểu: 640×360 bị chặn trước khi tải (add-message-images)', async () => {
+    Object.assign(mockSaved, { width: 640, height: 360 });
+    const calls = serveUpload();
+    await expect(
+      api.uploadChatPhoto('c-1', { uri: 'file:///goc.jpg', width: 640, height: 360 }),
+    ).rejects.toMatchObject({ code: IMAGE_TOO_SMALL });
     expect(calls).not.toContain(STORAGE_URL);
   });
 

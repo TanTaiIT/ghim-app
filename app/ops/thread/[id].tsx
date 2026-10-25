@@ -12,6 +12,7 @@ import {
 import Feather from '@expo/vector-icons/Feather';
 import { useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MessagePhotos } from '@/components/MessagePhotos';
 import { OpsHeader } from '@/components/OpsHeader';
 import { useToast } from '@/components/Toast';
 import { EmptyState, Loading } from '@/components/ui';
@@ -83,7 +84,10 @@ export default function OpsSupportThread() {
                 m.fromTeam ? styles.out : m.system ? styles.system : styles.in,
               ]}
             >
-              <Text style={[styles.text, m.fromTeam && styles.outText]}>{m.body}</Text>
+              <MessagePhotos photos={m.photos} />
+              {m.body !== '' && (
+                <Text style={[styles.text, m.fromTeam && styles.outText]}>{m.body}</Text>
+              )}
               <Text style={[styles.time, m.fromTeam && styles.outTime]}>
                 {m.fromTeam ? 'Đội hỗ trợ' : m.system ? 'Hệ thống' : head.personName} ·{' '}
                 {formatAgo(m.at)}

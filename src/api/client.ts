@@ -613,8 +613,12 @@ export type JoinOutcome = 'member' | 'request';
 
 export type OfferStatus = 'pending' | 'accepted' | 'declined' | 'superseded';
 
+/** Trần ảnh một tin nhắn của server (`MESSAGE_IMAGES_MAX`, ghim-server add-message-images). */
+export const MESSAGE_PHOTOS = 4;
+
+/** Tin chữ mang tối đa `MESSAGE_PHOTOS` ảnh; chỉ có ảnh thì `text` rỗng. */
 export type Message =
-  | { id: string; kind: 'text'; mine: boolean; text: string; at: string }
+  | { id: string; kind: 'text'; mine: boolean; text: string; photos: Picture[]; at: string }
   | { id: string; kind: 'offer'; mine: boolean; amount: number; status: OfferStatus; at: string };
 
 /**
@@ -992,10 +996,10 @@ async function fileOf(uri: string): Promise<{ body: Blob; size: number }> {
 
 /**
  * Nén → xin quyền tải cho đúng một ảnh → tải thẳng lên kho (`ghim-server/docs/media.md`). Ảnh chỉ thuộc về chủ của
- * nó (tin, hồ sơ) khi được gắn bằng `imageId`; không gắn trong 48 giờ thì server dọn.
+ * nó (tin, hồ sơ, hội thoại) khi được gắn bằng `imageId`; không gắn trong 48 giờ thì server dọn.
  */
 async function uploadImage(
-  owner: { kind: 'listing' | 'profile'; id: string },
+  owner: { kind: 'listing' | 'profile' | 'conversation'; id: string },
   photo: PickedPhoto,
 ): Promise<string> {
   const prepared = await preparePhoto(photo);
@@ -1005,9 +1009,9 @@ async function uploadImage(
       body: { ownerKind: owner.kind, ownerId: owner.id, contentType: 'image/jpeg', byteSize: size },
     }),
   );
-  // Máy duyệt giữ tin có ảnh quá nhỏ (add-image-quality-checks): chặn ngay ở ô ảnh thay vì để tin chờ duyệt.
-  // Ảnh đại diện không bị kiểm. Phiếu chưa dùng thì server tự dọn sau 48 giờ.
-  if (owner.kind === 'listing' && prepared.shortSide < grant.minShortSide) {
+  // Máy duyệt giữ tin có ảnh quá nhỏ (add-image-quality-checks), và chặn tin nhắn có ảnh quá nhỏ khi luật bật
+  // (add-message-images): chặn ngay ở ô ảnh. Ảnh đại diện không bị kiểm. Phiếu chưa dùng thì server tự dọn sau 48 giờ.
+  if (owner.kind !== 'profile' && prepared.shortSide < grant.minShortSide) {
     throw new ApiError(
       IMAGE_TOO_SMALL,
       `Ảnh quá nhỏ, cần cạnh ngắn từ ${grant.minShortSide}px`,
@@ -1050,7 +1054,14 @@ const toMessage = (w: WireMessage): Message =>
         status: w.offer.status,
         at: w.createdAt,
       }
-    : { id: w.id, kind: 'text', mine: w.fromMe, text: w.body, at: w.createdAt };
+    : {
+        id: w.id,
+        kind: 'text',
+        mine: w.fromMe,
+        text: w.body,
+        photos: w.images.map(toPicture),
+        at: w.createdAt,
+      };
 
 function toPeer({ counterpart }: WireConversation): Peer {
   const fallback = counterpart.gone ? 'Tài khoản đã xoá' : 'Người dùng Ghim';
@@ -1074,7 +1085,11 @@ const toListingRef = (listing: WireConversation['listing']): ListingRef | null =
 const previewOf = (last: WireMessage | null): string => {
   if (!last) return 'Chưa có tin nhắn';
   const text =
-    last.kind === 'offer' && last.offer ? `Trả giá ${formatVnd(last.offer.amount)}` : last.body;
+    last.kind === 'offer' && last.offer
+      ? `Trả giá ${formatVnd(last.offer.amount)}`
+      : last.body === ''
+        ? `Đã gửi ${last.images.length} ảnh`
+        : last.body;
   return last.fromMe ? `Bạn: ${text}` : text;
 };
 
@@ -1766,15 +1781,23 @@ export const api = {
     );
   },
 
-  sendMessage: async (conversationId: string, text: string): Promise<Message> =>
+  /** Chữ, ảnh đã tải bằng `uploadChatPhoto`, hay cả hai — server từ chối tin không có cả hai. */
+  sendMessage: async (
+    conversationId: string,
+    message: { text: string; imageIds: string[] },
+  ): Promise<Message> =>
     toMessage(
       await unwrap(
         postApiV1MeConversationsByConversationIdMessages({
           path: { conversationId },
-          body: { body: text },
+          body: { body: message.text, imageIds: message.imageIds },
         }),
       ),
     ),
+
+  /** Ảnh chỉ vào hội thoại khi được gửi kèm `imageId` trả về; mỗi ảnh gửi được một lần. */
+  uploadChatPhoto: (conversationId: string, photo: PickedPhoto): Promise<string> =>
+    uploadImage({ kind: 'conversation', id: conversationId }, photo),
 
   sendOffer: async (conversationId: string, amount: number): Promise<Message> =>
     toMessage(

@@ -1983,7 +1983,7 @@ export const getApiV1MeConversationsByConversationIdMessages = <ThrowOnError ext
 });
 
 /**
- * Gửi tin nhắn — qua bộ lọc cụm từ cấm của tin đăng; bị chặn hay bên kia đã rời thì không gửi được
+ * Gửi tin nhắn — chữ, tối đa 4 ảnh, hay cả hai; chữ qua bộ lọc cụm từ cấm, ảnh qua luật chất lượng của ảnh tin; bị chặn hay bên kia đã rời thì không gửi được
  */
 export const postApiV1MeConversationsByConversationIdMessages = <ThrowOnError extends boolean = false>(options: Options<PostApiV1MeConversationsByConversationIdMessagesData, ThrowOnError>): RequestResult<PostApiV1MeConversationsByConversationIdMessagesResponses, PostApiV1MeConversationsByConversationIdMessagesErrors, ThrowOnError> => (options.client ?? client).post<PostApiV1MeConversationsByConversationIdMessagesResponses, PostApiV1MeConversationsByConversationIdMessagesErrors, ThrowOnError>({
     security: [{ scheme: 'bearer', type: 'http' }],
