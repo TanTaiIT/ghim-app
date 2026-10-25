@@ -26,6 +26,14 @@ export function useFreshMe() {
 }
 
 /** Công tắc trạng thái hoạt động: server trả lại hồ sơ mới, ghi thẳng vào cache thay vì tải lại. */
+export function useSetHomeProvince() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (code: number | null) => api.setHomeProvince(code),
+    onSuccess: (me) => qc.setQueryData(qk.me(), me),
+  });
+}
+
 export function useSetShowActivity() {
   const qc = useQueryClient();
   return useMutation({

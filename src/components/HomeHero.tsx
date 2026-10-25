@@ -4,12 +4,14 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Defs, RadialGradient, Rect, Stop, SvgXml } from 'react-native-svg';
 import { Avatar, Verified } from './Avatar';
-import { DEFAULT_CITY } from '@/api/client';
 import { useHasUnreadNotices, useMe } from '@/queries/account';
+import { useProvinces } from '@/queries/catalog';
+import { useHomeFilters } from '@/queries/listings';
 import { useMyGroups } from '@/queries/groups';
 import { useReadiness } from '@/queries/health';
 import { useIsAuthenticated } from '@/stores/auth';
 import { C, F, G, R, S } from '@/theme';
+import { toSearchParams } from '@/utils/search-params';
 
 /**
  * Header xanh của trang chủ: lời chào, khẩu hiệu trên nền tranh đồ cũ, ô tìm kiếm, nhóm của tôi. Khách
@@ -20,6 +22,8 @@ export function HomeHero() {
   const insets = useSafeAreaInsets();
   const authed = useIsAuthenticated();
   const me = useMe();
+  const filters = useHomeFilters();
+  const provinces = useProvinces();
   const groups = useMyGroups();
   const hasNotice = useHasUnreadNotices();
   const name = me.data?.name;
@@ -69,14 +73,16 @@ export function HomeHero() {
 
       <Pressable
         accessibilityRole="search"
-        onPress={() => router.push('/search')}
+        onPress={() => router.push({ pathname: '/search', params: toSearchParams(filters) })}
         style={styles.search}
       >
         <Feather name="search" size={20} color={C.ink} />
         <Text style={styles.searchText}>Bạn muốn tìm gì hôm nay?</Text>
         <View style={styles.city}>
           <Feather name="map-pin" size={14} color={C.brand} />
-          <Text style={styles.cityText}>{me.data?.place?.province ?? DEFAULT_CITY}</Text>
+          <Text style={styles.cityText}>
+            {provinces.data?.find((p) => p.code === filters.provinceCode)?.name ?? 'Toàn quốc'}
+          </Text>
         </View>
       </Pressable>
 

@@ -2,7 +2,9 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SvgXml } from 'react-native-svg';
 import { useCategories } from '@/queries/catalog';
+import { useHomeFilters } from '@/queries/listings';
 import { C, F, S } from '@/theme';
+import { toSearchParams } from '@/utils/search-params';
 
 const ICON = 60;
 
@@ -174,6 +176,7 @@ const artIndex = (name: string) => {
 export function CategoryGrid() {
   const router = useRouter();
   const categories = useCategories();
+  const params = toSearchParams(useHomeFilters());
   const cells = [...(categories.data ?? [])]
     .sort((a, b) => artIndex(a.name) - artIndex(b.name))
     .slice(0, MAX_CELLS);
@@ -185,10 +188,16 @@ export function CategoryGrid() {
           key={c.id}
           label={c.name}
           art={ART.find((a) => a.name === c.name)?.art ?? FALLBACK_ART}
-          onPress={() => router.push({ pathname: '/search', params: { category: c.id } })}
+          onPress={() =>
+            router.push({ pathname: '/search', params: { ...params, category: c.id } })
+          }
         />
       ))}
-      <Tile label="Tất cả" art={ALL_ART} onPress={() => router.push('/search')} />
+      <Tile
+        label="Tất cả"
+        art={ALL_ART}
+        onPress={() => router.push({ pathname: '/search', params })}
+      />
     </View>
   );
 }

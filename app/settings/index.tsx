@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Avatar } from '@/components/Avatar';
 import { MenuList } from '@/components/MenuList';
-import { ConfirmSheet } from '@/components/PickerSheet';
+import { ConfirmSheet, PickerSheet } from '@/components/PickerSheet';
 import { useToast } from '@/components/Toast';
 import {
   EmptyState,
@@ -15,11 +15,12 @@ import {
   PinButton,
   ScreenHeader,
 } from '@/components/ui';
-import { useMe } from '@/queries/account';
+import { useMe, useSetHomeProvince } from '@/queries/account';
+import { useProvinces } from '@/queries/catalog';
 import { useDeleteAccount, useSetAvatar } from '@/queries/settings';
 import { C, S } from '@/theme';
 
-/** Cài đặt tài khoản: ảnh đại diện, lối vào mật khẩu / thiết bị / người đã chặn, xoá tài khoản. */
+/** Cài đặt tài khoản: ảnh đại diện, khu vực của tôi, lối vào mật khẩu / thiết bị / người đã chặn, xoá tài khoản. */
 export default function Settings() {
   const router = useRouter();
   const toast = useToast();
@@ -27,6 +28,9 @@ export default function Settings() {
   const avatar = useSetAvatar();
   const removeAccount = useDeleteAccount();
   const [confirming, setConfirming] = useState(false);
+  const provinces = useProvinces();
+  const setHome = useSetHomeProvince();
+  const [pickingHome, setPickingHome] = useState(false);
 
   /** Khung vuông vì ảnh hiện trong vòng tròn; picker trả bản gốc, nén một lần duy nhất ở `api.setAvatar`. */
   const pick = async () => {
@@ -85,6 +89,14 @@ export default function Settings() {
         <MenuList
           items={[
             {
+              icon: 'map-pin',
+              label: `Khu vực của tôi: ${
+                provinces.data?.find((p) => p.code === me.data.homeProvinceCode)?.name ??
+                'Toàn quốc'
+              }`,
+              onPress: () => setPickingHome(true),
+            },
+            {
               icon: 'lock',
               label: 'Đổi mật khẩu',
               onPress: () => router.push('/settings/password'),
@@ -114,6 +126,26 @@ export default function Settings() {
         <GhostButton label="Xoá tài khoản" onPress={() => setConfirming(true)} />
       </ScrollView>
 
+      <PickerSheet
+        visible={pickingHome}
+        title="Khu vực của tôi"
+        options={[
+          {
+            value: 'all',
+            label: 'Toàn quốc',
+            note: 'Chỉ bạn thấy khu vực đã chọn — dùng cho mục Gần bạn',
+          },
+          ...(provinces.data ?? []).map((p) => ({ value: String(p.code), label: p.name })),
+        ]}
+        value={me.data.homeProvinceCode === null ? 'all' : String(me.data.homeProvinceCode)}
+        onSelect={(value) =>
+          setHome.mutate(value === 'all' ? null : Number(value), {
+            onSuccess: () => toast('Đã đổi khu vực'),
+            onError: (e) => toast(e.message),
+          })
+        }
+        onClose={() => setPickingHome(false)}
+      />
       <ConfirmSheet
         visible={confirming}
         title="Xoá tài khoản?"

@@ -59,6 +59,7 @@ const wireMe = {
   role: 'user',
   staff: false,
   nameHidden: false,
+  homeProvinceCode: null,
 };
 
 /** Server giả theo đường dẫn; ghi lại URL và header phiên của từng lượt gọi. */
@@ -271,7 +272,24 @@ describe('đọc tin đăng từ server', () => {
     });
   });
 
-  it('tin của tôi: giữ trạng thái của server, bỏ tin đã gỡ; hồ sơ chưa có khu vực và đánh giá', async () => {
+  it('khu vực của tôi: PATCH /me gửi mã tỉnh hay null, hồ sơ trả về mang đúng mã', async () => {
+    const bodies: unknown[] = [];
+    jest.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      const body = JSON.parse(await (input as Request).text()) as {
+        homeProvinceCode: number | null;
+      };
+      bodies.push(body);
+      return Response.json({
+        success: true,
+        data: { ...wireMe, homeProvinceCode: body.homeProvinceCode },
+      });
+    });
+    expect((await api.setHomeProvince(79)).homeProvinceCode).toBe(79);
+    expect((await api.setHomeProvince(null)).homeProvinceCode).toBeNull();
+    expect(bodies).toEqual([{ homeProvinceCode: 79 }, { homeProvinceCode: null }]);
+  });
+
+  it('tin của tôi: giữ trạng thái của server, bỏ tin đã gỡ; hồ sơ chưa có đánh giá', async () => {
     const calls = serve({
       '/api/v1/me/listings': {
         items: [
@@ -296,7 +314,7 @@ describe('đọc tin đăng từ server', () => {
     await expect(api.getMe()).resolves.toMatchObject({
       name: 'Tài Nguyễn',
       memberSince: 2026,
-      place: null,
+      homeProvinceCode: null,
       rating: null,
       verified: false,
       emailVerified: true,

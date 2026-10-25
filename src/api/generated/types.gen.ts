@@ -776,6 +776,7 @@ export type GetApiV1MeResponses = {
             nameHidden: boolean;
             showActivity: boolean;
             staff: boolean;
+            homeProvinceCode: number | null;
         };
     };
 };
@@ -787,6 +788,7 @@ export type PatchApiV1MeData = {
         displayName?: string;
         phone?: string | null;
         showActivity?: boolean;
+        homeProvinceCode?: number | null;
     };
     path?: never;
     query?: never;
@@ -841,6 +843,7 @@ export type PatchApiV1MeResponses = {
             nameHidden: boolean;
             showActivity: boolean;
             staff: boolean;
+            homeProvinceCode: number | null;
         };
     };
 };
@@ -891,6 +894,7 @@ export type DeleteApiV1MeAvatarResponses = {
             nameHidden: boolean;
             showActivity: boolean;
             staff: boolean;
+            homeProvinceCode: number | null;
         };
     };
 };
@@ -956,6 +960,7 @@ export type PutApiV1MeAvatarResponses = {
             nameHidden: boolean;
             showActivity: boolean;
             staff: boolean;
+            homeProvinceCode: number | null;
         };
     };
 };

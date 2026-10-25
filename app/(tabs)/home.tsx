@@ -16,15 +16,17 @@ import { useGuardedPush } from '@/components/GuestGate';
 import { HomeHero } from '@/components/HomeHero';
 import { ListingRow, ListingTile } from '@/components/ListingCard';
 import { EmptyState, Loading, SectionTitle } from '@/components/ui';
-import { useFeatured, useNearby } from '@/queries/listings';
+import { useFeatured, useHomeFilters, useNearby } from '@/queries/listings';
 import { C, F, R, S } from '@/theme';
+import { toSearchParams } from '@/utils/search-params';
 
 /** Trang chủ "Khám phá" — khách xem được (TK 6); chỉ nút đăng tin mới đòi phiên. */
 export default function Home() {
   const router = useRouter();
   const push = useGuardedPush();
-  const featured = useFeatured();
-  const nearby = useNearby();
+  const filters = useHomeFilters();
+  const featured = useFeatured(filters);
+  const nearby = useNearby(filters);
   const open = (id: string) => router.push(`/listing/${id}`);
 
   // Hero xanh đậm cần chữ thanh trạng thái màu sáng; rời màn thì trả lại mặc định tối của app.
@@ -76,7 +78,7 @@ export default function Home() {
             <SectionTitle
               title="Tin nổi bật"
               action="Xem tất cả"
-              onAction={() => router.push('/search')}
+              onAction={() => router.push({ pathname: '/search', params: toSearchParams(filters) })}
             />
             <FlatList
               horizontal
@@ -98,6 +100,11 @@ export default function Home() {
             <Loading />
           ) : nearby.isError ? (
             <EmptyState icon="wifi-off" text={nearby.error.message} />
+          ) : nearby.data.length === 0 ? (
+            <EmptyState
+              icon="map-pin"
+              text="Chưa có tin nào ở khu vực của bạn. Đổi khu vực trong Cài đặt để xem nơi khác."
+            />
           ) : (
             nearby.data.map((l) => <ListingRow key={l.id} item={l} onPress={() => open(l.id)} />)
           )}

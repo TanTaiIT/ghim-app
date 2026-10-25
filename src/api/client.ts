@@ -313,9 +313,6 @@ export type Place = { ward: string | null; province: string };
 export type Province = { code: number; name: string };
 export type Ward = { code: number; name: string };
 
-/** Khu vực khi chưa biết người dùng ở đâu (khách, tài khoản chưa đặt khu vực). */
-export const DEFAULT_CITY = 'TP.HCM';
-
 export type Person = { id: string; name: string; verified: boolean };
 
 export type ListingCard = {
@@ -695,8 +692,8 @@ export type Me = Person & {
   email: string;
   idVerified: boolean;
   memberSince: number;
-  /** Khu vực mặc định khi đăng tin và khi tìm kiếm — server chưa lưu, nên null với tài khoản thật. */
-  place: Place | null;
+  /** Tỉnh/thành người dùng tự chọn, riêng tư (ghim-server add-home-province): "Gần bạn" và bộ lọc mặc định khi tìm. */
+  homeProvinceCode: number | null;
   rating: number | null;
   /** Hiện trạng thái hoạt động trong chat — tắt là hai chiều: mình cũng không thấy của ai. */
   showActivity: boolean;
@@ -858,7 +855,7 @@ function toSpecs(fields: { name: string; label: string }[], attributes: Record<s
   });
 }
 
-/** Server chưa lưu xác minh giấy tờ, đánh giá hay khu vực mặc định của tài khoản. */
+/** Server chưa có đánh giá; xác minh giấy tờ đọc ở màn riêng (`getMyIdVerification`). */
 function toMe(u: WireMe): Me {
   return {
     id: u.id,
@@ -867,7 +864,7 @@ function toMe(u: WireMe): Me {
     email: u.email,
     idVerified: false,
     memberSince: new Date(u.joinedAt).getFullYear(),
-    place: null,
+    homeProvinceCode: u.homeProvinceCode,
     rating: null,
     showActivity: u.showActivity,
     avatarUrl: u.avatarUrl,
@@ -1398,6 +1395,10 @@ export const api = {
 
   setShowActivity: async (showActivity: boolean): Promise<Me> =>
     toMe(await unwrap(patchApiV1Me({ body: { showActivity } }))),
+
+  /** `null` = bỏ chọn, trang chủ về toàn quốc. */
+  setHomeProvince: async (homeProvinceCode: number | null): Promise<Me> =>
+    toMe(await unwrap(patchApiV1Me({ body: { homeProvinceCode } }))),
 
   /** Ảnh hồ sơ tải lên cho chính hồ sơ của mình (`profile`), rồi gắn bằng `imageId`. */
   setAvatar: async (accountId: string, photo: PickedPhoto): Promise<Me> => {
