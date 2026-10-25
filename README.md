@@ -63,7 +63,8 @@ app/                    routes (expo-router) — chỉ route + layout, export de
   post/                 đăng tin 3 bước: index → details → preview (cần phiên)
   help.tsx              trợ giúp (cần phiên)
   ops/                  bàn vận hành cho master, staff (cần phiên master / staff; lối vào ở Cá nhân); ops/staff/ =
-                        quyền staff (master); ops/category/ = cài đặt máy duyệt + soạn, phát hành mẫu thông tin (master)
+                        quyền staff (master); ops/category/ = cài đặt máy duyệt + soạn, phát hành mẫu thông tin (master);
+                        ops/lookup.tsx = tra mã tra cứu, gỡ đánh dấu thiết bị (master, staff hỗ trợ)
 src/
   api/http.ts           base URL, token, ApiError, createClientConfig (hey-api)
   api/client.ts         gọi SDK + unwrap + domain type

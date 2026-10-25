@@ -308,6 +308,8 @@ export type MyListing = ListingCard & {
   note: string | null;
   /** Lỗi người đăng tự sửa được, mỗi lỗi một câu của server — vd "Ảnh 2 quá nhỏ. Thay bằng ảnh chụp rõ hơn." */
   fixes: string[];
+  /** Mã tra cứu của lần máy giữ vì dấu hiệu gian lận — người đăng gửi cho hỗ trợ khi nghĩ là nhầm (spec explanations). */
+  lookupCode: string | null;
   /** Gia hạn gửi kèm phiên bản như mọi lượt sửa: hai máy của một người không ghi đè nhau. */
   version: number;
   /** Server mở gia hạn trong 7 ngày cuối (`early`) hay sau khi hết hạn (`expired`); null = chưa gia hạn được. */
@@ -1364,6 +1366,7 @@ export const api = {
               expiresAt: w.expiresAt,
               note: w.machineNotice?.message ?? w.faultReason ?? null,
               fixes: w.machineNotice?.fixes.map((fix) => fix.message) ?? [],
+              lookupCode: w.machineNotice?.lookupCode ?? null,
               version: w.version,
               renewal: w.renewal,
               moveUntil: w.moveUntil,

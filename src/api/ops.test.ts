@@ -1,5 +1,12 @@
 import { afterEach, describe, expect, it, jest } from '@jest/globals';
-import { fieldNameOf, opsApi, taskKind, templateIssue, toDecisionBody } from './ops';
+import {
+  fieldNameOf,
+  normalizeLookupCode,
+  opsApi,
+  taskKind,
+  templateIssue,
+  toDecisionBody,
+} from './ops';
 
 /** Server giả: ghi lại phương thức, đường dẫn, body của từng lượt gọi; mọi lượt trả `data`. */
 function serve(data: unknown = {}) {
@@ -77,6 +84,72 @@ describe('mẫu thông tin của danh mục', () => {
           { name: 'nam', label: 'Năm', type: 'number', required: true },
         ],
       },
+    });
+  });
+});
+
+describe('tra mã tra cứu', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('mã gõ tay: bỏ khoảng trắng và gạch nối, viết hoa', () => {
+    expect(normalizeLookupCode(' s7kq-2m9x a ')).toBe('S7KQ2M9XA');
+  });
+
+  it('lần giữ: luật chạy thử thành cờ, cụm từ thành chữ, đánh dấu mang mã của nó', async () => {
+    serve({
+      lookupCode: 'AB12CD34',
+      listingId: 'l-1',
+      listingVersion: 2,
+      accountId: 'u-1',
+      trigger: 'submission',
+      decidedAt: '2026-10-25T00:00:00.000Z',
+      outcome: 'hold',
+      cause: 'device',
+      score: 40,
+      band: 'medium',
+      tier: 'T0',
+      ruleVersion: 3,
+      configVersion: 5,
+      hits: [
+        {
+          code: 'ambiguous_phrase',
+          label: 'Cụm từ cần xem',
+          weight: 20,
+          mode: 'trial',
+          refs: [],
+          phrases: [{ id: 'p-1', text: 'cọc trước' }],
+        },
+      ],
+      deviceFlags: [
+        {
+          kind: 'many_accounts_on_device',
+          label: 'Nhiều tài khoản trên một máy',
+          flagLookupCode: 'FL9X',
+        },
+      ],
+    });
+    const hold = await opsApi.holdLookup('AB12CD34');
+    expect(hold.hits).toEqual([
+      {
+        code: 'ambiguous_phrase',
+        label: 'Cụm từ cần xem',
+        weight: 20,
+        trial: true,
+        phrases: ['cọc trước'],
+      },
+    ]);
+    expect(hold.deviceFlags).toEqual([{ label: 'Nhiều tài khoản trên một máy', flagCode: 'FL9X' }]);
+  });
+
+  it('gỡ đánh dấu gửi lý do theo mã', async () => {
+    const calls = serve({ cleared: true });
+    await opsApi.clearFlag('FL9X', 'Máy mua lại');
+    expect(calls[0]).toMatchObject({
+      method: 'POST',
+      path: '/api/v1/ops/flags/FL9X/clear',
+      body: { reason: 'Máy mua lại' },
     });
   });
 });

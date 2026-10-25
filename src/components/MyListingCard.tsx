@@ -81,6 +81,12 @@ export function MyListingCard({
                 {fix}
               </Text>
             ))}
+            {item.lookupCode && (
+              <Text selectable style={styles.note}>
+                Mã tra cứu <Text style={styles.code}>{item.lookupCode}</Text> — gửi mã này cho Hỗ
+                trợ nếu bạn nghĩ đây là nhầm lẫn.
+              </Text>
+            )}
           </View>
         </Pressable>
         <IconButton
@@ -181,6 +187,7 @@ const styles = StyleSheet.create({
   stat: { marginRight: S.sm, fontFamily: F.ui, fontSize: 12, color: C.inkSoft },
   note: { fontFamily: F.ui, fontSize: 12, lineHeight: 17, color: C.inkSoft },
   fix: { fontFamily: F.uiBold, fontSize: 12, lineHeight: 17, color: C.warnTx },
+  code: { fontFamily: F.uiBold, color: C.ink, letterSpacing: 1 },
   actions: { flexDirection: 'row', gap: S.sm },
   btn: {
     flex: 1,

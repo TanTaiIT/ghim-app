@@ -3,6 +3,9 @@ import {
   getApiV1OpsAccounts,
   getApiV1OpsAccountsById,
   getApiV1OpsCategories,
+  getApiV1OpsFlagsByLookupCode,
+  getApiV1OpsScreeningLookupsByCode,
+  postApiV1OpsFlagsByLookupCodeClear,
   getApiV1OpsCategoriesByIdTemplateDraft,
   deleteApiV1OpsCategoriesByIdTemplateDraft,
   getApiV1OpsGroups,
@@ -47,6 +50,8 @@ import {
 import type {
   GetApiV1OpsAccountsResponses,
   GetApiV1OpsCategoriesResponses,
+  GetApiV1OpsFlagsByLookupCodeResponses,
+  GetApiV1OpsScreeningLookupsByCodeResponses,
   GetApiV1OpsGroupsByGroupIdResponses,
   GetApiV1OpsGroupsResponses,
   GetApiV1OpsIdVerificationsResponses,
@@ -82,6 +87,8 @@ type WireSupportMessage =
 type WireCategory = GetApiV1OpsCategoriesResponses[200]['data'][number];
 type WireDecision = PostApiV1OpsReviewTasksByTaskIdDecisionData['body'];
 type WireStaff = GetApiV1OpsStaffResponses[200]['data'][number];
+type WireHold = GetApiV1OpsScreeningLookupsByCodeResponses[200]['data'];
+type WireFlag = GetApiV1OpsFlagsByLookupCodeResponses[200]['data'];
 
 /** Mọi danh sách phân trang của bàn vận hành có cùng vỏ. */
 export type OpsPage<T> = { items: T[]; total: number; page: number; totalPages: number };
@@ -458,6 +465,95 @@ const toIdCheck = (w: WireIdCheck): IdCheck => ({
   status: w.status,
   submittedAt: w.createdAt,
   reason: w.reason,
+});
+
+/* ------------------------------------ tra mã ----------------------------------- */
+
+/**
+ * Mã người dùng đọc lại qua điện thoại hay gõ tay: bỏ khoảng trắng và gạch nối, viết hoa — I/L/O lẫn với 1/0 thì server
+ * tự đổi (`normalizeLookupCode` bên server), app không đổi để mã hiện ra đúng như người dùng gõ.
+ */
+export const normalizeLookupCode = (text: string): string =>
+  text.replace(/[\s-]+/g, '').toUpperCase();
+
+export const HOLD_OUTCOME_LABEL: Record<WireHold['outcome'], string> = {
+  pass_full: 'Cho lên đủ',
+  pass_limited: 'Cho lên, hạn chế hiển thị',
+  hold: 'Giữ chờ người duyệt',
+};
+
+export const HOLD_CAUSE_LABEL: Record<WireHold['cause'], string> = {
+  score: 'Điểm rủi ro',
+  gate: 'Cổng cứng',
+  image_quality: 'Chất lượng ảnh',
+  always_manual: 'Danh mục luôn duyệt tay',
+  device: 'Đánh dấu theo thiết bị',
+  error: 'Máy lỗi',
+  timeout: 'Máy quá giờ',
+};
+
+/** Chữ của server (`screening/ops/lookup.service`) — màn tra đánh dấu không có nhãn đi kèm như màn tra lần giữ. */
+export const FLAG_KIND_LABEL: Record<WireFlag['kind'], string> = {
+  many_accounts_on_device: 'Nhiều tài khoản trên một máy',
+  device_of_locked_account: 'Dùng máy của tài khoản bị khoá',
+  device_of_struck_account: 'Dùng máy của tài khoản có cảnh cáo',
+};
+
+/** Một lần máy giữ theo mã tra cứu: lý do cụ thể, không bao giờ có dấu thiết bị (TK 8, TK 13). */
+export type HoldLookup = {
+  code: string;
+  listingId: string;
+  accountId: string;
+  decidedAt: string;
+  outcome: WireHold['outcome'];
+  cause: WireHold['cause'];
+  score: number | null;
+  band: WireHold['band'];
+  tier: WireHold['tier'];
+  hits: { code: string; label: string; weight: number; trial: boolean; phrases: string[] }[];
+  /** Đánh dấu đang mở kèm mã của nó — tra tiếp để gỡ khi đúng là nhầm (vd máy mua lại). */
+  deviceFlags: { label: string; flagCode: string | null }[];
+};
+
+export type DeviceFlag = {
+  code: string;
+  kind: WireFlag['kind'];
+  accountId: string;
+  /** Tài khoản bị khoá / có cảnh cáo đã dùng chung máy; null với "nhiều tài khoản trên một máy". */
+  relatedAccountId: string | null;
+  createdAt: string;
+  clearedAt: string | null;
+  clearedReason: string | null;
+};
+
+const toHold = (w: WireHold): HoldLookup => ({
+  code: w.lookupCode,
+  listingId: w.listingId,
+  accountId: w.accountId,
+  decidedAt: w.decidedAt,
+  outcome: w.outcome,
+  cause: w.cause,
+  score: w.score,
+  band: w.band,
+  tier: w.tier,
+  hits: w.hits.map((h) => ({
+    code: h.code,
+    label: h.label,
+    weight: h.weight,
+    trial: h.mode === 'trial',
+    phrases: h.phrases.map((p) => p.text),
+  })),
+  deviceFlags: w.deviceFlags.map((f) => ({ label: f.label, flagCode: f.flagLookupCode })),
+});
+
+const toFlag = (w: WireFlag): DeviceFlag => ({
+  code: w.lookupCode,
+  kind: w.kind,
+  accountId: w.accountId,
+  relatedAccountId: w.relatedAccountId,
+  createdAt: w.createdAt,
+  clearedAt: w.clearedAt,
+  clearedReason: w.clearedReason,
 });
 
 /* ------------------------------------ staff ----------------------------------- */
@@ -900,6 +996,19 @@ export const opsApi = {
       active
         ? postApiV1OpsCategoriesByIdEnable({ path: { id } })
         : postApiV1OpsCategoriesByIdDisable({ path: { id } }),
+    ),
+
+  /** Master hay staff có việc hỗ trợ; người khác (kể cả người đăng) nhận 403. Mã không có thì 404. */
+  holdLookup: async (code: string): Promise<HoldLookup> =>
+    toHold(await unwrap(getApiV1OpsScreeningLookupsByCode({ path: { code } }))),
+
+  flag: async (code: string): Promise<DeviceFlag> =>
+    toFlag(await unwrap(getApiV1OpsFlagsByLookupCode({ path: { lookupCode: code } }))),
+
+  /** Gỡ khi đúng là nhầm, kèm lý do; staff không gỡ được đánh dấu trên chính tài khoản mình (403). */
+  clearFlag: (code: string, reason: string): Promise<void> =>
+    unwrapEmpty(
+      postApiV1OpsFlagsByLookupCodeClear({ path: { lookupCode: code }, body: { reason } }),
     ),
 
   /** Gửi đủ năm cài đặt — server tạo phiên bản cài đặt kế tiếp; kết quả máy cũ vẫn trỏ bản nó đã dùng. */

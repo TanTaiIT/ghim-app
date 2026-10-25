@@ -15,6 +15,7 @@ export default function OpsMore() {
 
   const team: MenuItem[] = [
     { icon: 'help-circle', label: 'Hỗ trợ người dùng', onPress: () => router.push('/ops/support') },
+    { icon: 'search', label: 'Tra mã tra cứu', onPress: () => router.push('/ops/lookup') },
     { icon: 'zap', label: 'Đẩy tin & doanh thu', onPress: () => router.push('/ops/promotions') },
   ];
   const master: MenuItem[] = [

@@ -202,6 +202,7 @@ describe('đọc tin đăng từ server', () => {
     });
     const [held] = await api.getMyListings(loadLookups);
     expect(held).toMatchObject({
+      lookupCode: null,
       note: 'Tin đang chờ người duyệt, thường trong 24 giờ',
       fixes: [
         'Ảnh 1 quá tối. Chụp lại ở nơi đủ sáng.',
@@ -731,6 +732,7 @@ const myListing = (overrides: Partial<MyListing> = {}): MyListing => ({
   expiresAt: '2026-11-01T00:00:00.000Z',
   note: null,
   fixes: [],
+  lookupCode: null,
   version: 4,
   renewal: null,
   moveUntil: null,
