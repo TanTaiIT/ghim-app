@@ -53,6 +53,15 @@ describe('body quyết định gửi server', () => {
     });
   });
 
+  it('gỡ khỏi nhóm: chỉ kèm "trái quy định sàn" và lý do khi nhóm muốn chuyển lên staff', () => {
+    expect(toDecisionBody(held, { kind: 'detach', platformViolation: false })).toEqual({
+      outcome: 'detach',
+    });
+    expect(
+      toDecisionBody(held, { kind: 'detach', platformViolation: true, note: 'Bán hàng giả' }),
+    ).toEqual({ outcome: 'detach', platformViolation: true, note: 'Bán hàng giả' });
+  });
+
   it('bác báo cáo về tin đang hiện là giữ nguyên; về tin máy còn giữ phải là cho đạt', () => {
     expect(toDecisionBody(live, { kind: 'report', verdict: 'dismissed' })).toEqual({
       outcome: 'keep',

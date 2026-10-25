@@ -163,7 +163,7 @@ export type OpsTask = {
   claim: TaskClaim;
 };
 
-const toTask = (w: WireTask): OpsTask => ({
+export const toTask = (w: WireTask): OpsTask => ({
   id: w.id,
   subject: w.subjectKind,
   listingId: w.listingId,
@@ -245,7 +245,7 @@ export type OpsTaskDetail = OpsTask & {
   }[];
 };
 
-function toTaskDetail(w: WireTaskDetail): OpsTaskDetail {
+export function toTaskDetail(w: WireTaskDetail): OpsTaskDetail {
   const l = w.listing;
   return {
     ...toTask(w),
@@ -324,7 +324,9 @@ export type TaskDecision =
       judgment?: MachineJudgment;
     }
   | { kind: 'dismissEscalation'; note: string }
-  | { kind: 'appeal'; verdict: 'won' | 'lost' };
+  | { kind: 'appeal'; verdict: 'won' | 'lost' }
+  /** Chỉ tin trong nhóm; kèm "trái quy định sàn" + lý do thì server sinh việc hàng 4 cho staff (spec group-escalation). */
+  | { kind: 'detach'; platformViolation: boolean; note?: string };
 
 /**
  * Bác báo cáo về tin máy đang giữ phải là "cho đạt" chứ không "giữ nguyên" (server: `OUTCOME_NOT_ALLOWED` — tin đang
@@ -343,6 +345,10 @@ export function toDecisionBody(
       return { outcome: 'dismiss', note: d.note };
     case 'appeal':
       return { outcome: 'keep', appeal: { verdict: d.verdict } };
+    case 'detach':
+      return d.platformViolation
+        ? { outcome: 'detach', platformViolation: true, note: d.note }
+        : { outcome: 'detach' };
     case 'report': {
       const report = { verdict: d.verdict, ...(d.lockAccount && { lockAccount: true }) };
       if (d.removeWith) return { outcome: 'mistake', reasonTemplateId: d.removeWith, report };

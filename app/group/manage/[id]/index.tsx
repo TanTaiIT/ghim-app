@@ -10,6 +10,7 @@ import { EmptyState, Loading, OutlineButton, ScreenHeader, SectionTitle } from '
 import {
   useCancelOwnerTransfer,
   useCloseGroup,
+  useGroupReviewTasks,
   useJoinRequests,
   useRotateGroupCode,
 } from '@/queries/group-manage';
@@ -32,7 +33,16 @@ function roleNoteOf(g: ManagedGroup): string {
 
 type Sheet = 'code' | 'cancel-transfer' | 'close' | null;
 type Sub =
-  'requests' | 'invites' | 'members' | 'bans' | 'roster' | 'units' | 'announce' | 'settings';
+  | 'review'
+  | 'listings'
+  | 'requests'
+  | 'invites'
+  | 'members'
+  | 'bans'
+  | 'roster'
+  | 'units'
+  | 'announce'
+  | 'settings';
 
 /**
  * Khu quản trị nhóm: lối vào từng việc theo vai. Ba lượt ghi ở đây đều hỏi lại: đổi mã làm mã cũ chết ngay với người
@@ -46,6 +56,7 @@ export default function GroupManage() {
   const manager = managerOf(group.data);
   const whole = manager !== null && isWholeManager(manager);
   const requests = useJoinRequests(id, whole);
+  const review = useGroupReviewTasks(id, manager !== null);
   const rotate = useRotateGroupCode(id);
   const cancelTransfer = useCancelOwnerTransfer(id);
   const close = useCloseGroup(id);
@@ -66,8 +77,15 @@ export default function GroupManage() {
 
   const owner = manager.role === 'owner';
   const pending = requests.data?.total ?? 0;
+  const waiting = review.data?.total ?? 0;
   const go = (sub: Sub) => router.push(`/group/manage/${id}/${sub}`);
   const items: MenuItem[] = [
+    {
+      icon: 'check-square',
+      label: waiting ? `Hàng chờ duyệt · ${waiting}` : 'Hàng chờ duyệt',
+      onPress: () => go('review'),
+    },
+    { icon: 'tag', label: 'Tin trong nhóm', onPress: () => go('listings') },
     ...(whole
       ? [
           {

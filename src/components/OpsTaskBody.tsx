@@ -24,13 +24,16 @@ export function OpsTaskBody({
   onOpenPerson: (id: string, name: string | null) => void;
 }) {
   const l = task.listing;
+  const queue = QUEUE_LABEL[task.queue] ?? `Hàng ${task.queue}`;
+  // Lý do làm nên chính hàng đó ("Máy giữ" / "Máy giữ tin", "Nhóm chuyển lên") đã nói ở nhãn hàng — bỏ để khỏi lặp.
+  const reasons = task.reasons.filter((r) => !REASON_LABEL[r].startsWith(queue));
   return (
     <View>
       {l && l.pictures.length > 0 && <Gallery photos={l.pictures} height={250} />}
       <View style={styles.main}>
         <View style={styles.tags}>
-          <Tag label={QUEUE_LABEL[task.queue] ?? `Hàng ${task.queue}`} tone="brand" />
-          {task.reasons.map((r) => (
+          <Tag label={queue} tone="brand" />
+          {reasons.map((r) => (
             <Tag
               key={r}
               label={REASON_LABEL[r]}

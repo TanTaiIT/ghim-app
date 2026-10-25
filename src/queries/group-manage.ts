@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { groupManageApi, type GroupSettingsPatch } from '@/api/group-manage';
+import { groupManageApi, type GroupDecision, type GroupSettingsPatch } from '@/api/group-manage';
+import type { OpsTask } from '@/api/ops';
 import { qk } from './keys';
 
 /*
@@ -29,6 +30,34 @@ export function useBans(groupId: string) {
   return useQuery({
     queryKey: qk.groups.bans(groupId),
     queryFn: () => groupManageApi.bans(groupId),
+    enabled: Boolean(groupId),
+  });
+}
+
+/** Hàng chờ đổi do máy và người khác, không có realtime cho phía này — tự tải lại mỗi phút như bàn vận hành. */
+const QUEUE_REFRESH_MS = 60_000;
+
+export function useGroupReviewTasks(groupId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: qk.groups.reviewTasks(groupId),
+    queryFn: () => groupManageApi.reviewTasks(groupId),
+    enabled: enabled && Boolean(groupId),
+    refetchInterval: QUEUE_REFRESH_MS,
+  });
+}
+
+export function useGroupReviewTask(groupId: string, taskId: string) {
+  return useQuery({
+    queryKey: qk.groups.reviewTask(groupId, taskId),
+    queryFn: () => groupManageApi.reviewTask(groupId, taskId),
+    enabled: Boolean(groupId && taskId),
+  });
+}
+
+export function useGroupReasonTemplates(groupId: string) {
+  return useQuery({
+    queryKey: qk.groups.reviewReasons(groupId),
+    queryFn: () => groupManageApi.reviewReasonTemplates(groupId),
     enabled: Boolean(groupId),
   });
 }
@@ -112,6 +141,18 @@ export const useCancelOwnerTransfer = (groupId: string) =>
 
 export const useCloseGroup = (groupId: string) =>
   useManageWrite(() => groupManageApi.closeGroup(groupId));
+
+/** Việc đã quyết rời hàng chờ và tin đổi trạng thái trên bảng tin nhóm — cùng cây `groups`, quét chung. */
+export const useDecideGroupTask = (groupId: string) =>
+  useManageWrite(
+    ({ task, decision }: { task: Pick<OpsTask, 'id' | 'reasons'>; decision: GroupDecision }) =>
+      groupManageApi.decideReviewTask(groupId, task, decision),
+  );
+
+export const useDetachListing = (groupId: string) =>
+  useManageWrite(({ listingId, note }: { listingId: string; note: string }) =>
+    groupManageApi.detachListing(groupId, listingId, note),
+  );
 
 export const usePostAnnouncement = (groupId: string) =>
   useManageWrite(({ body, unitId }: { body: string; unitId: string | null }) =>

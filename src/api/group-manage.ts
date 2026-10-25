@@ -17,6 +17,9 @@ import {
   getApiV1GroupsByGroupIdBans,
   getApiV1GroupsByGroupIdInvitations,
   getApiV1GroupsByGroupIdJoinRequests,
+  getApiV1GroupsByGroupIdReviewReasonTemplates,
+  getApiV1GroupsByGroupIdReviewTasks,
+  getApiV1GroupsByGroupIdReviewTasksByTaskId,
   patchApiV1GroupsByGroupIdMembersByAccountId,
   patchApiV1GroupsByGroupIdSettings,
   patchApiV1GroupsByGroupIdUnitsByUnitId,
@@ -26,6 +29,9 @@ import {
   postApiV1GroupsByGroupIdCode,
   postApiV1GroupsByGroupIdInvitations,
   postApiV1GroupsByGroupIdOwnerTransfer,
+  postApiV1GroupsByGroupIdReviewListingsByListingIdDetach,
+  postApiV1GroupsByGroupIdReviewTasksByTaskIdClaim,
+  postApiV1GroupsByGroupIdReviewTasksByTaskIdDecision,
   postApiV1GroupsByGroupIdRoster,
   postApiV1GroupsByGroupIdRosterRemove,
   postApiV1GroupsByGroupIdUnits,
@@ -37,6 +43,15 @@ import type {
   GetApiV1GroupsByGroupIdInvitationsResponses,
   GetApiV1GroupsByGroupIdJoinRequestsResponses,
 } from './generated/types.gen';
+import {
+  toDecisionBody,
+  toTask,
+  toTaskDetail,
+  type OpsTask,
+  type OpsTaskDetail,
+  type ReasonTemplate,
+  type TaskDecision,
+} from './ops';
 
 /*
  * Mặt quản trị của nhóm — việc của chủ nhóm và điều hành viên (`group.manage.routes.ts` bên server): đơn xin vào, lời
@@ -64,6 +79,18 @@ export type PendingInvitation = {
 };
 
 export type BannedMember = { id: string; name: string; bannedAt: string };
+
+/**
+ * Quyết định của nhóm chỉ có ba: đạt, sai sót (kèm lý do mẫu), gỡ khỏi nhóm — không ra gậy, không đụng tài khoản
+ * (spec group-escalation). Cùng kiểu với bàn vận hành để dùng chung bảng chọn và `toDecisionBody`.
+ */
+export type GroupDecision = Extract<TaskDecision, { kind: 'pass' | 'reject' | 'detach' }>;
+
+/** Lý do gỡ khỏi nhóm: có chữ = "trái quy định sàn", chuyển lên staff; trống = chỉ gỡ. */
+export const detachDecision = (note: string): Extract<GroupDecision, { kind: 'detach' }> =>
+  note.trim()
+    ? { kind: 'detach', platformViolation: true, note: note.trim() }
+    : { kind: 'detach', platformViolation: false };
 
 /** Gửi đúng khoá muốn đổi — server đòi ít nhất một. */
 export type GroupSettingsPatch = {
@@ -317,4 +344,51 @@ export const groupManageApi = {
         body: unitId ? { body, unitId } : { body },
       }),
     ),
+
+  /** Việc đang ở bậc của nhóm mà người xem xử được: điều hành lớp thấy lớp mình, cả nhóm và chủ nhóm thấy phần còn lại. */
+  reviewTasks: async (groupId: string): Promise<Listed<OpsTask>> => {
+    const { items, total } = await unwrap(
+      getApiV1GroupsByGroupIdReviewTasks({ path: { groupId }, query: { limit: MANAGE_PAGE } }),
+    );
+    return { items: items.map(toTask), total };
+  },
+
+  reviewTask: async (groupId: string, taskId: string): Promise<OpsTaskDetail> =>
+    toTaskDetail(
+      await unwrap(getApiV1GroupsByGroupIdReviewTasksByTaskId({ path: { groupId, taskId } })),
+    ),
+
+  /** Nhận rồi quyết trong một lượt như bàn vận hành: server chỉ nhận quyết định của người đang giữ việc. */
+  decideReviewTask: async (
+    groupId: string,
+    task: Pick<OpsTask, 'id' | 'reasons'>,
+    decision: GroupDecision,
+  ): Promise<void> => {
+    await unwrap(
+      postApiV1GroupsByGroupIdReviewTasksByTaskIdClaim({ path: { groupId, taskId: task.id } }),
+    );
+    await unwrap(
+      postApiV1GroupsByGroupIdReviewTasksByTaskIdDecision({
+        path: { groupId, taskId: task.id },
+        body: toDecisionBody(task, decision),
+      }),
+    );
+  },
+
+  /** Gỡ một tin đang hiện trong nhóm (không có việc mở); tin rời nhóm ngay, kèm lý do thì staff xem lại. */
+  detachListing: (groupId: string, listingId: string, note: string): Promise<void> => {
+    const d = detachDecision(note);
+    return unwrapEmpty(
+      postApiV1GroupsByGroupIdReviewListingsByListingIdDetach({
+        path: { groupId, listingId },
+        body: d.platformViolation ? { platformViolation: true, note: d.note } : {},
+      }),
+    );
+  },
+
+  /** Lý do mẫu đang bật — server chỉ trả bản đang dùng cho nhóm. */
+  reviewReasonTemplates: async (groupId: string): Promise<ReasonTemplate[]> =>
+    (await unwrap(getApiV1GroupsByGroupIdReviewReasonTemplates({ path: { groupId } })))
+      .sort((a, b) => a.sort - b.sort)
+      .map(({ id, text, active }) => ({ id, text, active })),
 };

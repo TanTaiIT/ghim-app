@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, jest } from '@jest/globals';
-import { groupManageApi, memberActionsOf, modeNoteOf } from './group-manage';
+import { detachDecision, groupManageApi, memberActionsOf, modeNoteOf } from './group-manage';
 
 /** Server giả: ghi lại phương thức, đường dẫn, query, body của từng lượt gọi; mọi lượt trả `data`. */
 function serve(data: unknown = {}) {
@@ -155,6 +155,35 @@ describe('quản trị nhóm', () => {
       { entries: [{ email: 'an@truong.vn' }, { email: 'binh@truong.vn', unitId: 'un-1' }] },
       { mode: 'public_open', description: null },
     ]);
+  });
+
+  it('duyệt việc của nhóm: nhận rồi quyết, body theo `toDecisionBody`', async () => {
+    const calls = serve({ claimed: true, decisionId: 'd-1' });
+    await groupManageApi.decideReviewTask(
+      'g-1',
+      { id: 't-1', reasons: ['machine_hold'] },
+      { kind: 'reject', reasonTemplateId: 'r-1' },
+    );
+    expect(calls.map((c) => [c.method, c.path, c.body])).toEqual([
+      ['POST', '/api/v1/groups/g-1/review/tasks/t-1/claim', null],
+      [
+        'POST',
+        '/api/v1/groups/g-1/review/tasks/t-1/decision',
+        { outcome: 'mistake', reasonTemplateId: 'r-1' },
+      ],
+    ]);
+  });
+
+  it('gỡ tin đang hiện khỏi nhóm: có lý do thì báo vi phạm quy định sàn, trống thì chỉ gỡ', async () => {
+    const calls = serve({ decisionId: 'd-2' });
+    await groupManageApi.detachListing('g-1', 'l-1', '  ');
+    await groupManageApi.detachListing('g-1', 'l-1', 'Bán hàng giả');
+    expect(calls.map((c) => c.body)).toEqual([
+      {},
+      { platformViolation: true, note: 'Bán hàng giả' },
+    ]);
+    expect(calls[0]?.path).toBe('/api/v1/groups/g-1/review/listings/l-1/detach');
+    expect(detachDecision('')).toEqual({ kind: 'detach', platformViolation: false });
   });
 
   it('chuyển chủ trả về hạn trả lời của người nhận', async () => {
