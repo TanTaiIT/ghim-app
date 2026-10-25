@@ -13,6 +13,7 @@ import { useToast } from '@/components/Toast';
 import { EmptyState, GhostButton, Loading } from '@/components/ui';
 import { useMe, useSetShowActivity } from '@/queries/account';
 import { useSignOut } from '@/queries/auth';
+import { useRefreshShelvesOnFocus } from '@/queries/focus';
 import { useSavedListings } from '@/queries/listings';
 import { useOpenForEdit } from '@/queries/posting';
 import { useMarkSold, useMyListingAction, useMyListings } from '@/queries/selling';
@@ -41,6 +42,7 @@ export default function Profile() {
   const active = useMyListings('active');
   const sold = useMyListings('sold');
   const saved = useSavedListings();
+  useRefreshShelvesOnFocus();
   const markSold = useMarkSold();
   const act = useMyListingAction();
   const [acting, setActing] = useState<MyListing | null>(null);
