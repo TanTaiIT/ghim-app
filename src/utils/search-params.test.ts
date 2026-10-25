@@ -27,6 +27,7 @@ describe('tham số màn tìm kiếm', () => {
       ...NO_FILTERS,
       q: 'bàn',
     });
+    expect(filtersFromParams({ category: '', province: '' })).toEqual(NO_FILTERS);
     expect(toSearchParams(NO_FILTERS)).toEqual({ q: '' });
   });
 });

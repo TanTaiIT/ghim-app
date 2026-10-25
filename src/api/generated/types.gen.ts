@@ -7312,6 +7312,7 @@ export type GetApiV1ListingsData = {
     query?: {
         cursor?: string;
         limit?: number;
+        sort?: 'newest' | 'price_asc' | 'price_desc';
         q?: string;
         categoryId?: string;
         provinceCode?: number;

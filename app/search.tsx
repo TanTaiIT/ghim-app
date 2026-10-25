@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGuarded } from '@/components/GuestGate';
 import { ListingTile } from '@/components/ListingCard';
 import { SearchFilterBar } from '@/components/SearchFilterBar';
+import { SortChip } from '@/components/SortChip';
 import { useToast } from '@/components/Toast';
 import { EmptyState, IconButton, Loading, useBack } from '@/components/ui';
 import {
@@ -21,8 +22,7 @@ import { C, F, R, S } from '@/theme';
 import { filtersFromParams, type SearchParams } from '@/utils/search-params';
 
 /**
- * Kết quả tìm kiếm. Thiết kế có nút sắp xếp (mới nhất / theo giá) nhưng `GET /listings` chưa nhận tham số
- * sắp xếp — server tự xếp, nên màn này chưa hiện nút đó. Khu vực mặc định là toàn quốc vì chưa biết người
+ * Kết quả tìm kiếm, xếp mới nhất hay theo giá (nút sắp xếp). Khu vực mặc định là toàn quốc vì chưa biết người
  * dùng ở đâu (`/me` chưa có khu vực).
  */
 export default function Search() {
@@ -87,6 +87,7 @@ export default function Search() {
           {q ? 'Kết quả cho ' : 'Tất cả tin'}
           {q !== '' && <Text style={styles.resultQ}>“{q}”</Text>}
         </Text>
+        <SortChip value={filters.sort} onChange={(sort) => setFilters({ ...filters, sort })} />
       </View>
     </View>
   );

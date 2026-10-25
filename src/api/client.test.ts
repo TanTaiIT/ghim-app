@@ -110,6 +110,7 @@ describe('đọc tin đăng từ server', () => {
       minPrice: 1_000_000,
       maxPrice: null,
       attrs: {},
+      sort: 'newest' as const,
     };
     expect(await api.getSavedSearches()).toEqual([
       { id: 'ss-1', createdAt: '2026-10-25T00:00:00.000Z', filters },
@@ -165,6 +166,10 @@ describe('đọc tin đăng từ server', () => {
     expect(calls[0]?.url.searchParams.get('q')).toBe('bàn');
     expect(calls[0]?.url.searchParams.get('provinceCode')).toBe('1');
     expect(calls[0]?.url.searchParams.has('categoryId')).toBe(false);
+    // Mới nhất là mặc định của server: không gửi `sort`; xếp theo giá thì gửi.
+    expect(calls[0]?.url.searchParams.has('sort')).toBe(false);
+    await api.searchListings({ ...NO_FILTERS, sort: 'price_desc' }, load);
+    expect(calls[1]?.url.searchParams.get('sort')).toBe('price_desc');
     // Bộ lọc theo mẫu đi trong MỘT tham số JSON (ghim-server add-listing-filters).
     expect(JSON.parse(calls[0]?.url.searchParams.get('attrs') ?? '')).toEqual(attrs);
   });

@@ -363,7 +363,15 @@ export type ListingDetail = Omit<ListingCard, 'seller'> & {
   allowOffers: boolean;
 };
 
-/** Đúng bộ lọc mà `GET /listings` nhận — server chưa có sắp xếp hay lọc theo tình trạng. */
+/** Cách xếp của `GET /listings` (ghim-server add-feed-sort): mới nhất là vị trí trên bảng tin. */
+export const FEED_SORTS = ['newest', 'price_asc', 'price_desc'] as const;
+export type FeedSort = (typeof FEED_SORTS)[number];
+export const FEED_SORT_LABEL: Record<FeedSort, string> = {
+  newest: 'Mới nhất',
+  price_asc: 'Giá thấp trước',
+  price_desc: 'Giá cao trước',
+};
+
 /** Khoảng số của một mục mẫu: một hay cả hai đầu. */
 export type AttributeRange = { min?: number; max?: number };
 /**
@@ -372,6 +380,7 @@ export type AttributeRange = { min?: number; max?: number };
  */
 export type AttributeFilters = Record<string, string[] | AttributeRange>;
 
+/** Đúng bộ lọc và cách xếp mà `GET /listings` nhận — server chưa lọc theo tình trạng. */
 export type SearchFilters = {
   q: string;
   categoryId: string | null;
@@ -379,6 +388,7 @@ export type SearchFilters = {
   minPrice: number | null;
   maxPrice: number | null;
   attrs: AttributeFilters;
+  sort: FeedSort;
 };
 
 export const NO_FILTERS: SearchFilters = {
@@ -388,6 +398,7 @@ export const NO_FILTERS: SearchFilters = {
   minPrice: null,
   maxPrice: null,
   attrs: {},
+  sort: 'newest',
 };
 
 /**
@@ -821,6 +832,7 @@ const toSavedSearch = (w: WireSavedSearch): SavedSearch => ({
     minPrice: w.priceMin,
     maxPrice: w.priceMax,
     attrs: {},
+    sort: 'newest',
   },
 });
 
@@ -1279,6 +1291,7 @@ export const api = {
           priceMin: f.minPrice ?? undefined,
           priceMax: f.maxPrice ?? undefined,
           attrs: Object.keys(f.attrs).length > 0 ? JSON.stringify(f.attrs) : undefined,
+          sort: f.sort === 'newest' ? undefined : f.sort,
           limit: PAGE_SIZE,
         },
       }),
