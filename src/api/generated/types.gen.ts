@@ -3405,6 +3405,319 @@ export type GetApiV1OpsAuditResponses = {
 
 export type GetApiV1OpsAuditResponse = GetApiV1OpsAuditResponses[keyof GetApiV1OpsAuditResponses];
 
+export type GetApiV1HelpTopicsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/help/topics';
+};
+
+export type GetApiV1HelpTopicsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            id: string;
+            label: string;
+            faqs: Array<{
+                q: string;
+                a: string;
+            }>;
+        }>;
+    };
+};
+
+export type GetApiV1HelpTopicsResponse = GetApiV1HelpTopicsResponses[keyof GetApiV1HelpTopicsResponses];
+
+export type PostApiV1OpsHelpTopicsData = {
+    body: {
+        label: string;
+        faqs: Array<{
+            q: string;
+            a: string;
+        }>;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/ops/help/topics';
+};
+
+export type PostApiV1OpsHelpTopicsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsHelpTopicsError = PostApiV1OpsHelpTopicsErrors[keyof PostApiV1OpsHelpTopicsErrors];
+
+export type PostApiV1OpsHelpTopicsResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            label: string;
+            faqs: Array<{
+                q: string;
+                a: string;
+            }>;
+        };
+    };
+};
+
+export type PostApiV1OpsHelpTopicsResponse = PostApiV1OpsHelpTopicsResponses[keyof PostApiV1OpsHelpTopicsResponses];
+
+export type DeleteApiV1OpsHelpTopicsByIdData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/help/topics/{id}';
+};
+
+export type DeleteApiV1OpsHelpTopicsByIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1OpsHelpTopicsByIdError = DeleteApiV1OpsHelpTopicsByIdErrors[keyof DeleteApiV1OpsHelpTopicsByIdErrors];
+
+export type DeleteApiV1OpsHelpTopicsByIdResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1OpsHelpTopicsByIdResponse = DeleteApiV1OpsHelpTopicsByIdResponses[keyof DeleteApiV1OpsHelpTopicsByIdResponses];
+
+export type PutApiV1OpsHelpTopicsByIdData = {
+    body: {
+        label: string;
+        faqs: Array<{
+            q: string;
+            a: string;
+        }>;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/help/topics/{id}';
+};
+
+export type PutApiV1OpsHelpTopicsByIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PutApiV1OpsHelpTopicsByIdError = PutApiV1OpsHelpTopicsByIdErrors[keyof PutApiV1OpsHelpTopicsByIdErrors];
+
+export type PutApiV1OpsHelpTopicsByIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            label: string;
+            faqs: Array<{
+                q: string;
+                a: string;
+            }>;
+        };
+    };
+};
+
+export type PutApiV1OpsHelpTopicsByIdResponse = PutApiV1OpsHelpTopicsByIdResponses[keyof PutApiV1OpsHelpTopicsByIdResponses];
+
+export type PutApiV1OpsHelpOrderData = {
+    body: {
+        ids: Array<string>;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/ops/help/order';
+};
+
+export type PutApiV1OpsHelpOrderErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PutApiV1OpsHelpOrderError = PutApiV1OpsHelpOrderErrors[keyof PutApiV1OpsHelpOrderErrors];
+
+export type PutApiV1OpsHelpOrderResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PutApiV1OpsHelpOrderResponse = PutApiV1OpsHelpOrderResponses[keyof PutApiV1OpsHelpOrderResponses];
+
 export type GetApiV1GroupsData = {
     body?: never;
     path?: never;

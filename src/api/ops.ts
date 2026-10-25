@@ -1,4 +1,4 @@
-import { unwrap, unwrapEmpty, type Picture, type TemplateField } from './client';
+import { unwrap, unwrapEmpty, type HelpTopic, type Picture, type TemplateField } from './client';
 import {
   getApiV1OpsAccounts,
   getApiV1OpsAccountsById,
@@ -8,6 +8,7 @@ import {
   postApiV1OpsFlagsByLookupCodeClear,
   getApiV1OpsCategoriesByIdTemplateDraft,
   deleteApiV1OpsCategoriesByIdTemplateDraft,
+  deleteApiV1OpsHelpTopicsById,
   getApiV1OpsGroups,
   getApiV1OpsGroupsByGroupId,
   getApiV1OpsIdVerifications,
@@ -29,6 +30,9 @@ import {
   postApiV1OpsAccountsByIdLock,
   postApiV1OpsAccountsByIdUnlock,
   postApiV1OpsCategories,
+  postApiV1OpsHelpTopics,
+  putApiV1OpsHelpOrder,
+  putApiV1OpsHelpTopicsById,
   postApiV1OpsCategoriesByIdDisable,
   postApiV1OpsCategoriesByIdEnable,
   postApiV1OpsCategoriesByIdTemplatePublish,
@@ -422,6 +426,9 @@ export type MachineStats = {
   months: MachineMonth[];
   topRules: { code: string; label: string; runs: number }[];
 };
+
+/** Chủ đề trợ giúp như master gửi lên — chưa có mã. */
+export type HelpTopicInput = Omit<HelpTopic, 'id'>;
 
 export type DayStats = {
   day: string;
@@ -856,6 +863,20 @@ export const opsApi = {
       }),
     );
   },
+
+  /** Gửi cả chủ đề một lượt; chủ đề mới đứng cuối danh sách. */
+  createHelpTopic: (topic: HelpTopicInput): Promise<HelpTopic> =>
+    unwrap(postApiV1OpsHelpTopics({ body: topic })),
+
+  updateHelpTopic: (id: string, topic: HelpTopicInput): Promise<HelpTopic> =>
+    unwrap(putApiV1OpsHelpTopicsById({ path: { id }, body: topic })),
+
+  deleteHelpTopic: (id: string): Promise<void> =>
+    unwrapEmpty(deleteApiV1OpsHelpTopicsById({ path: { id } })),
+
+  /** Mã mọi chủ đề theo thứ tự mới; danh sách vừa đổi ở nơi khác thì server trả 409 kèm câu báo. */
+  reorderHelpTopics: (ids: string[]): Promise<void> =>
+    unwrapEmpty(putApiV1OpsHelpOrder({ body: { ids } })),
 
   reasonTemplates: async (): Promise<ReasonTemplate[]> =>
     (await unwrap(getApiV1OpsReviewReasonTemplates()))

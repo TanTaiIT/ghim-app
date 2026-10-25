@@ -71,6 +71,10 @@ export default function Help() {
         </BotBubble>
         {topics.isPending ? (
           <Loading />
+        ) : topics.isError ? (
+          <BotBubble>
+            <BotText>{topics.error.message}</BotText>
+          </BotBubble>
         ) : (
           <View style={styles.topics}>
             {topics.data?.map((t) => (

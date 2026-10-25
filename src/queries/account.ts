@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, type IdDocumentType, type Notice } from '@/api/client';
-import { mockApi } from '@/api/mock';
 import { useIsAuthenticated } from '@/stores/auth';
 import { qk } from './keys';
 
@@ -83,7 +82,7 @@ export function useMarkNoticesRead() {
 }
 
 export function useHelpTopics() {
-  return useQuery({ queryKey: qk.help(), queryFn: mockApi.getHelpTopics, staleTime: Infinity });
+  return useQuery({ queryKey: qk.help(), queryFn: api.getHelpTopics });
 }
 
 export function useMyIdVerification() {

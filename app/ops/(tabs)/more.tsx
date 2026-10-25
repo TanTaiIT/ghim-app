@@ -6,7 +6,7 @@ import { useMe } from '@/queries/account';
 import { C, F, S } from '@/theme';
 
 /**
- * Công cụ vận hành ngoài bốn tab chính. Mục chỉ master dùng được (nhóm, danh mục, lý do mẫu, luật và số liệu máy) ẩn với
+ * Công cụ vận hành ngoài bốn tab chính. Mục chỉ master dùng được (nhóm, danh mục, lý do mẫu, trợ giúp, luật và số liệu máy) ẩn với
  * staff: server trả 403 cho họ, hiện mục đó chỉ để họ bấm vào một màn báo lỗi.
  */
 export default function OpsMore() {
@@ -23,6 +23,7 @@ export default function OpsMore() {
     { icon: 'users', label: 'Nhóm', onPress: () => router.push('/ops/groups') },
     { icon: 'layers', label: 'Danh mục', onPress: () => router.push('/ops/categories') },
     { icon: 'x-octagon', label: 'Lý do từ chối mẫu', onPress: () => router.push('/ops/reasons') },
+    { icon: 'help-circle', label: 'Trợ giúp', onPress: () => router.push('/ops/help') },
     { icon: 'sliders', label: 'Luật máy duyệt', onPress: () => router.push('/ops/rules') },
     { icon: 'bar-chart-2', label: 'Số liệu máy duyệt', onPress: () => router.push('/ops/machine') },
   ];

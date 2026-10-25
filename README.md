@@ -27,10 +27,9 @@ nhập chỉ giữ trong bộ nhớ — tải lại trang là phải đăng nh�
 Backend: `cd ../ghim-server && pnpm dev` (cổng 3100). Bản dev hiện một đèn nhỏ dưới hero trang chủ, gọi
 `/health/ready` để cho thấy đường ống app → SDK → backend → Postgres đang thông.
 
-**Dữ liệu mẫu.** Giao diện theo bộ UI "Chợ Đồ Cũ – bản làm mới" (10 màn + thanh điều hướng) đang chạy trên
-`mockApi` ở phần chưa nối server: trợ giúp. Đăng nhập, tin đăng, tin đã lưu, tìm kiếm đã lưu, đăng tin (cả đăng
-vào nhóm và huy hiệu nhóm), tin của tôi, chat (cả trả giá, Hỗ trợ Ghim), thông báo, nhóm (cả quản trị nhóm) và bàn vận
-hành đã gọi ghim-server thật.
+**Không còn dữ liệu mẫu.** Giao diện theo bộ UI "Chợ Đồ Cũ – bản làm mới" (10 màn + thanh điều hướng); mọi màn —
+đăng nhập, tin đăng, tin đã lưu, tìm kiếm đã lưu, đăng tin, tin của tôi, chat, thông báo, nhóm, trợ giúp và bàn vận
+hành — gọi ghim-server thật.
 
 ## 2. Lệnh
 
@@ -72,7 +71,6 @@ src/
   api/client.ts         gọi SDK + unwrap + domain type
   api/ops.ts            như client.ts, cho bàn vận hành (/ops/*): duyệt tin, báo cáo, giấy tờ, nhóm, hỗ trợ, danh mục
   api/group-manage.ts   như client.ts, cho chủ nhóm / điều hành viên (mọi route /groups/:id/* của quản trị)
-  api/mock*.ts          dữ liệu mẫu (trợ giúp) — xoá khi backend có endpoint
   api/generated/        SDK sinh, không sửa tay
   queries/keys.ts       key factory `qk`
   queries/*.ts          hook TanStack theo domain
@@ -101,8 +99,8 @@ Không có secret nào trong repo (HARD#19); credential push/ảnh đặt ở EA
 
 ## 6. Việc tiếp theo
 
-- Nối backend từng phần: endpoint ra đời → `npm run api:sync` → thêm hàm vào `api` (`client.ts`) trả đúng domain
-  type đang dùng → trong `src/queries/**` đổi `mockApi.x` thành `api.x`. Hết chỗ gọi thì xoá `mock*.ts`.
+- Endpoint mới: `npm run api:sync` (server chạy ở 3100) → thêm hàm vào `api` (`client.ts`) hay `opsApi` (`ops.ts`)
+  trả domain type → hook trong `src/queries/**`. Sau mỗi lần sync, khởi động lại Metro với `--clear`.
 - Push: chưa xin token Expo. Realtime: socket.io (`src/api/realtime.ts`), chỉ để báo hiệu — dữ liệu luôn tải lại qua
   HTTP.
 - Chưa có: đẩy tin (báo "sẽ có" — chờ giá gói), gọi trong app ("Gọi người bán" mở trình gọi của máy), gửi ảnh trong

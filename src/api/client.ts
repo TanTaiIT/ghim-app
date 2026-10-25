@@ -15,6 +15,7 @@ import {
   deleteApiV1MeSessions,
   deleteApiV1MeSessionsById,
   getApiV1Categories,
+  getApiV1HelpTopics,
   getApiV1CategoriesByIdTemplate,
   getApiV1CategoriesByIdTemplateVersionsByVersion,
   getApiV1Groups,
@@ -176,11 +177,7 @@ export async function unwrapEmpty(call: Promise<SdkResult<unknown>>): Promise<vo
 
 export type Readiness = { database: 'up' | 'down' };
 
-/*
- * Các type dưới đây là hợp đồng mà màn hình đang dùng với dữ liệu mẫu (`./mock`). Khi ghim-server mở
- * `add-listings` / `add-groups` / `add-messaging`, mapper wire → domain ở file này phải trả đúng hình
- * dạng này để màn hình không đổi.
- */
+/* Domain type màn hình dùng; mapper wire → domain trong file này giữ màn hình không đổi khi API đổi. */
 
 export type Picture = { uri: string };
 
@@ -336,7 +333,7 @@ export type ListingCard = {
 
 /*
  * Các trường nullable dưới đây là thứ thiết kế có mà server chưa trả (đánh giá, số giao dịch, thời gian phản
- * hồi, tình trạng, lượt xem): màn hình ẩn phần đó khi null thay vì bịa số. Dữ liệu mẫu vẫn điền đủ.
+ * hồi, tình trạng, lượt xem): màn hình ẩn phần đó khi null thay vì bịa số.
  */
 
 export type Seller = Person & {
@@ -1353,6 +1350,9 @@ export const api = {
     ),
 
   /** Lưu gần nhất trước. Tin thôi hiện (đã bán, hết hạn…) server bỏ khỏi trang nhưng giữ lần lưu: hiện lại thì có lại. */
+  /** Master soạn và xếp thứ tự trên bàn vận hành (ghim-server add-help-content); khách cũng đọc được. */
+  getHelpTopics: (): Promise<HelpTopic[]> => unwrap(getApiV1HelpTopics()),
+
   getSavedSearches: async (): Promise<SavedSearch[]> =>
     (await unwrap(getApiV1MeSavedSearches())).map(toSavedSearch),
 

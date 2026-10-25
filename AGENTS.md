@@ -70,9 +70,8 @@ src/api/**  ─────────┘
   `ghim-server` đang chạy bằng `npm run api:sync`), `http.ts` giữ base URL + Bearer token + `ApiError`.
   Backend trả vỏ `{ success, data | error: { code, message, details } }`; `unwrap()` trong `client.ts` là chỗ
   duy nhất bóc vỏ và ném `ApiError`.
-- **Dữ liệu mẫu**: phần app chưa nối server (nhóm, thông báo, trợ giúp, tin đã lưu) chạy trên
-  `mockApi` (`src/api/mock.ts`) — cùng chữ ký và domain type với `api`. Nối backend = đổi `mockApi.x` → `api.x`
-  trong `src/queries/**`; route và component không đổi. Không import `mock*.ts` từ ngoài `src/queries/**`.
+- **Không còn dữ liệu mẫu** (25/10/2026, trợ giúp là phần cuối): mọi màn đọc ghim-server. Tính năng mới mà server chưa
+  có route thì màn ghi "Chưa có API" hay ẩn phần đó — không dựng lại `mockApi`.
 
 ---
 
