@@ -62,6 +62,7 @@ app/                    routes (expo-router) — chỉ route + layout, export de
   chat/[id].tsx         chat với người bán, trả giá (cần phiên)
   post/                 đăng tin 3 bước: index → details → preview (cần phiên)
   help.tsx              trợ giúp (cần phiên)
+  reports.tsx           báo cáo mình đã gửi và kết quả (cần phiên)
   ops/                  bàn vận hành cho master, staff (cần phiên master / staff; lối vào ở Cá nhân); ops/staff/ =
                         quyền staff (master); ops/category/ = cài đặt máy duyệt + soạn, phát hành mẫu thông tin (master);
                         ops/lookup.tsx = tra mã tra cứu, gỡ đánh dấu thiết bị (master, staff hỗ trợ)

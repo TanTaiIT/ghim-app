@@ -32,6 +32,11 @@ import {
   getApiV1MeGroups,
   getApiV1MeListings,
   getApiV1MeNotificationPreferences,
+  putApiV1MeNotificationPreferencesByCategory,
+  postApiV1MeEmailChangeConfirm,
+  postApiV1MeEmailChange,
+  postApiV1MeBlocks,
+  getApiV1MeReports,
   getApiV1MeNotifications,
   getApiV1MeNotificationsUnreadCount,
   getApiV1MeSessions,
@@ -192,6 +197,44 @@ export const REPORT_CATEGORIES = [
 ] as const;
 
 export type ReportCategory = (typeof REPORT_CATEGORIES)[number];
+
+/** Báo cáo mình đã gửi: server không trả tiêu đề tin hay tên người — chỉ mã để mở lại (không lộ gì thêm cho người báo). */
+export type MyReport = {
+  id: string;
+  subject: { kind: 'listing' | 'account'; id: string } | null;
+  category: ReportCategory;
+  status: 'open' | 'upheld' | 'dismissed';
+  reportedAt: string;
+  decidedAt: string | null;
+};
+
+/** Chín nhóm thông báo (spec notification/preferences); "tài khoản" luôn bật. */
+export type NotificationCategory =
+  | 'messages'
+  | 'your_listings'
+  | 'your_groups'
+  | 'your_reports'
+  | 'account'
+  | 'trust_strikes'
+  | 'group_announcements'
+  | 'group_new_listings'
+  | 'support';
+
+export const NOTIFICATION_CATEGORY_LABEL: Record<NotificationCategory, string> = {
+  messages: 'Tin nhắn',
+  your_listings: 'Tin đăng của bạn',
+  your_groups: 'Nhóm của bạn',
+  your_reports: 'Báo cáo bạn đã gửi',
+  account: 'Tài khoản',
+  trust_strikes: 'Mức tin cậy và cảnh cáo',
+  group_announcements: 'Thông báo của nhóm',
+  group_new_listings: 'Tin mới trong nhóm',
+  support: 'Hỗ trợ Ghim',
+};
+
+export const ALWAYS_ON_NOTIFICATIONS: ReadonlySet<NotificationCategory> = new Set(['account']);
+
+export type NotificationPref = { category: NotificationCategory; enabled: boolean };
 
 export const REPORT_CATEGORY_LABEL: Record<ReportCategory, string> = {
   fraud: 'Có dấu hiệu lừa đảo',
@@ -888,6 +931,8 @@ const MESSAGE_PAGE = 100;
 const CONVERSATION_PAGE = 100;
 /** Trần một trang của server (`MAX_LIMIT`): danh sách chặn chưa có nút tải thêm. */
 const BLOCK_PAGE = 100;
+/** Báo cáo mình gửi trong một trang — người dùng hiếm khi báo quá con số này. */
+const MY_REPORT_PAGE = 50;
 
 const toMessage = (w: WireMessage): Message =>
   w.kind === 'offer' && w.offer
@@ -1239,6 +1284,47 @@ export const api = {
 
   unblock: (accountId: string): Promise<void> =>
     unwrapEmpty(deleteApiV1MeBlocksByAccountId({ path: { accountId } })),
+
+  /** Chặn hai chiều, mọi hội thoại về tin giữa hai người ngừng nhận tin; bên kia không được báo (spec blocking). */
+  block: (accountId: string): Promise<void> =>
+    unwrapEmpty(postApiV1MeBlocks({ body: { accountId } })),
+
+  getNotificationPrefs: async (): Promise<NotificationPref[]> =>
+    (await unwrap(getApiV1MeNotificationPreferences())).categories.map(({ category, enabled }) => ({
+      category,
+      enabled,
+    })),
+
+  /** Tắt thì thông báo vẫn vào mục Thông báo, chỉ không nhắc; "tài khoản" server trả 400 nếu tắt. */
+  setNotificationPref: (category: NotificationCategory, enabled: boolean): Promise<void> =>
+    unwrapEmpty(
+      putApiV1MeNotificationPreferencesByCategory({ path: { category }, body: { enabled } }),
+    ),
+
+  getMyReports: async (): Promise<MyReport[]> =>
+    (await unwrap(getApiV1MeReports({ query: { limit: MY_REPORT_PAGE } }))).items.map((w) => ({
+      id: w.reportId,
+      subject:
+        w.subjectKind === 'listing' && w.listingId
+          ? { kind: 'listing', id: w.listingId }
+          : w.accountId
+            ? { kind: 'account', id: w.accountId }
+            : null,
+      category: w.category,
+      status: w.status,
+      reportedAt: w.reportedAt,
+      decidedAt: w.decidedAt,
+    })),
+
+  /** Mã gửi tới email MỚI; email cũ vẫn là email đăng nhập tới khi xác nhận (spec email-change). */
+  requestEmailChange: async (email: string, currentPassword: string): Promise<void> => {
+    await unwrap(postApiV1MeEmailChange({ body: { email, currentPassword } }));
+  },
+
+  /** Xác nhận xong server thu hồi mọi phiên khác; phiên này vẫn dùng được. */
+  confirmEmailChange: async (code: string): Promise<void> => {
+    await unwrap(postApiV1MeEmailChangeConfirm({ body: { code } }));
+  },
 
   /** Server thu hồi mọi phiên, kể cả máy này: app chỉ còn việc dọn phiên ở máy. */
   deleteAccount: (): Promise<void> => unwrapEmpty(deleteApiV1Me()),

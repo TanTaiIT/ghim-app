@@ -90,6 +90,16 @@ export default function Settings() {
               onPress: () => router.push('/settings/password'),
             },
             {
+              icon: 'at-sign',
+              label: 'Đổi email',
+              onPress: () => router.push('/settings/email'),
+            },
+            {
+              icon: 'bell',
+              label: 'Thông báo',
+              onPress: () => router.push('/settings/notifications'),
+            },
+            {
               icon: 'smartphone',
               label: 'Thiết bị đăng nhập',
               onPress: () => router.push('/settings/sessions'),

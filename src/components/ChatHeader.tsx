@@ -22,12 +22,15 @@ export function ChatHeader({
   onBack,
   onOpenListing,
   onReport,
+  onBlock,
   onDelete,
 }: {
   conversation: Pick<Conversation, 'peer' | 'listing'>;
   onBack: () => void;
   onOpenListing: (id: string) => void;
   onReport?: () => void;
+  /** Chỉ hội thoại về tin — hội thoại với Hỗ trợ Ghim hay quản trị nhóm không chặn được (spec blocking). */
+  onBlock?: () => void;
   onDelete: () => void;
 }) {
   const activity = activityText(peer.activity);
@@ -50,6 +53,7 @@ export function ChatHeader({
           )}
         </View>
         {onReport && <IconButton icon="flag" label="Báo cáo người này" onPress={onReport} />}
+        {onBlock && <IconButton icon="user-x" label="Chặn người này" onPress={onBlock} />}
         <IconButton icon="trash-2" label="Xoá hội thoại" onPress={onDelete} />
       </View>
 

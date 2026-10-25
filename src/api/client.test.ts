@@ -739,6 +739,65 @@ const myListing = (overrides: Partial<MyListing> = {}): MyListing => ({
   ...overrides,
 });
 
+describe('cài đặt: chặn, thông báo, báo cáo của tôi, đổi email', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('báo cáo của tôi: tin thì mở tin, người thì mở người', async () => {
+    serve({
+      '/api/v1/me/reports': {
+        items: [
+          {
+            reportId: 'r-1',
+            subjectKind: 'listing',
+            listingId: 'l-1',
+            accountId: null,
+            category: 'fraud',
+            status: 'upheld',
+            reportedAt: '2026-10-20T00:00:00.000Z',
+            decidedAt: '2026-10-21T00:00:00.000Z',
+          },
+          {
+            reportId: 'r-2',
+            subjectKind: 'account',
+            listingId: null,
+            accountId: 'u-2',
+            category: 'harassment',
+            status: 'open',
+            reportedAt: '2026-10-22T00:00:00.000Z',
+            decidedAt: null,
+          },
+        ],
+        page: 1,
+        limit: 50,
+        total: 2,
+        totalPages: 1,
+      },
+    });
+    expect((await api.getMyReports()).map((r) => r.subject)).toEqual([
+      { kind: 'listing', id: 'l-1' },
+      { kind: 'account', id: 'u-2' },
+    ]);
+  });
+
+  it('nhóm thông báo: đọc trạng thái từng nhóm', async () => {
+    serve({
+      '/api/v1/me/notification-preferences': {
+        categories: [
+          { category: 'messages', enabled: true },
+          { category: 'group_new_listings', enabled: false },
+        ],
+        mutedGroupIds: [],
+      },
+    });
+    expect(await api.getNotificationPrefs()).toEqual([
+      { category: 'messages', enabled: true },
+      { category: 'group_new_listings', enabled: false },
+    ]);
+  });
+});
+
 describe('hành động trên tin của tôi', () => {
   afterEach(() => {
     jest.restoreAllMocks();

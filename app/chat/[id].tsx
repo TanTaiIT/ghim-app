@@ -20,6 +20,7 @@ import {
   useSendOffer,
 } from '@/queries/messages';
 import { useForeground } from '@/queries/realtime';
+import { useBlock } from '@/queries/settings';
 import { C, F, R, S } from '@/theme';
 import { formatDay } from '@/utils/format';
 
@@ -34,7 +35,7 @@ export default function Chat() {
   const insets = useSafeAreaInsets();
   const list = useRef<FlatList>(null);
   const [mode, setMode] = useState<'text' | 'offer'>(offer ? 'offer' : 'text');
-  const [sheet, setSheet] = useState<'report' | 'delete' | null>(null);
+  const [sheet, setSheet] = useState<'report' | 'block' | 'delete' | null>(null);
 
   const conversation = useConversation(id);
   const send = useSendMessage(id);
@@ -42,6 +43,7 @@ export default function Chat() {
   const respond = useRespondOffer(id);
   const report = useReportConversation();
   const remove = useDeleteConversation();
+  const block = useBlock();
   const { mutate: markRead } = useMarkConversationRead();
   const { mutate: setViewing } = useConversationViewing();
   const foreground = useForeground();
@@ -84,6 +86,7 @@ export default function Chat() {
         onBack={back}
         onOpenListing={(listingId) => router.push(`/listing/${listingId}`)}
         onReport={kind === 'listing' ? () => setSheet('report') : undefined}
+        onBlock={kind === 'listing' ? () => setSheet('block') : undefined}
         onDelete={() => setSheet('delete')}
       />
 
@@ -148,6 +151,19 @@ export default function Chat() {
               onError: (e) => toast(e.message),
             },
           )
+        }
+      />
+      <ConfirmSheet
+        visible={sheet === 'block'}
+        title={`Chặn ${conversation.data.peer.name}?`}
+        confirmLabel="Chặn"
+        note="Hai bên không nhắn cho nhau được nữa, người đó không được báo. Bỏ chặn ở Cài đặt › Người đã chặn"
+        onClose={() => setSheet(null)}
+        onConfirm={() =>
+          block.mutate(conversation.data.peer.id, {
+            onSuccess: () => toast(`Đã chặn ${conversation.data.peer.name}`),
+            onError: (e) => toast(e.message),
+          })
         }
       />
       <ConfirmSheet

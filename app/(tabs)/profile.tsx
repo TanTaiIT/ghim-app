@@ -102,6 +102,7 @@ export default function Profile() {
       label: 'Cảnh cáo của tôi',
       onPress: () => router.push('/warnings'),
     },
+    { icon: 'flag', label: 'Báo cáo của tôi', onPress: () => router.push('/reports') },
     { icon: 'help-circle', label: 'Trợ giúp & hỗ trợ', onPress: () => router.push('/help') },
     {
       icon: 'activity',
