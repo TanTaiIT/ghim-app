@@ -41,6 +41,7 @@ import {
   getApiV1MeReports,
   getApiV1MeNotifications,
   getApiV1MeNotificationsUnreadCount,
+  getApiV1MeIdVerification,
   getApiV1MeSavedListings,
   getApiV1MeSavedListingsIds,
   getApiV1MeSessions,
@@ -98,6 +99,7 @@ import type {
   GetApiV1MeConversationsByConversationIdMessagesResponses,
   GetApiV1MeConversationsByConversationIdResponses,
   GetApiV1MeGroupsResponses,
+  GetApiV1MeIdVerificationResponses,
   GetApiV1MeNotificationsResponses,
   GetApiV1MeResponses,
   GetApiV1MeTrustResponses,
@@ -224,13 +226,31 @@ export function idNumberIssue(type: IdDocumentType, number: string): string | nu
   return value.length >= 4 && value.length <= 40 ? null : 'Số hộ chiếu từ 4 đến 40 ký tự';
 }
 
-/** Hồ sơ vừa nộp — không có số giấy tờ: server không trả lại số cho ai, kể cả người nộp (TK 27 cam kết 32). */
+/**
+ * Hồ sơ xác minh gần nhất — không có số giấy tờ: server không trả lại số cho ai, kể cả người nộp (TK 27 cam kết 32), và
+ * không nêu ai duyệt.
+ */
 export type IdSubmission = {
   documentType: string;
   fullName: string;
   status: 'pending' | 'verified' | 'rejected';
   submittedAt: string;
+  reviewedAt: string | null;
+  reason: string | null;
 };
+
+type WireIdVerification = NonNullable<GetApiV1MeIdVerificationResponses[200]['data']>;
+
+function toIdSubmission(w: WireIdVerification): IdSubmission {
+  return {
+    documentType: w.documentType,
+    fullName: w.fullName,
+    status: w.status,
+    submittedAt: w.createdAt,
+    reviewedAt: w.reviewedAt,
+    reason: w.reason,
+  };
+}
 
 /** Báo cáo mình đã gửi: server không trả tiêu đề tin hay tên người — chỉ mã để mở lại (không lộ gì thêm cho người báo). */
 export type MyReport = {
@@ -1380,12 +1400,13 @@ export const api = {
         },
       }),
     );
-    return {
-      documentType: w.documentType,
-      fullName: w.fullName,
-      status: w.status,
-      submittedAt: w.createdAt,
-    };
+    return toIdSubmission(w);
+  },
+
+  /** Chưa nộp lần nào → `null`. Bị từ chối thì có lý do; nộp lại được ngay. */
+  getMyIdVerification: async (): Promise<IdSubmission | null> => {
+    const w = await unwrap(getApiV1MeIdVerification());
+    return w ? toIdSubmission(w) : null;
   },
 
   /** Mã gửi tới email MỚI; email cũ vẫn là email đăng nhập tới khi xác nhận (spec email-change). */

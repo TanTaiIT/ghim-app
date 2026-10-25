@@ -784,11 +784,39 @@ describe('xác minh giấy tờ', () => {
       fullName: 'Nguyễn Văn Tài',
       status: 'pending',
       submittedAt: '2026-10-25T00:00:00.000Z',
+      reviewedAt: null,
+      reason: null,
     });
     expect(bodies[0]).toEqual({
       documentType: 'CCCD',
       documentNumber: '079203001234',
       fullName: 'Nguyễn Văn Tài',
+    });
+  });
+
+  it('hồ sơ của tôi: chưa nộp → null; bị từ chối → có lý do và lúc duyệt', async () => {
+    const rejected = {
+      id: 'v-2',
+      accountId: 'u-1',
+      documentType: 'CCCD',
+      fullName: 'Nguyễn Văn Tài',
+      status: 'rejected',
+      createdAt: '2026-10-25T00:00:00.000Z',
+      reviewedAt: '2026-10-25T02:00:00.000Z',
+      reason: 'Ảnh mờ',
+    };
+    jest
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(Response.json({ success: true, data: null }))
+      .mockResolvedValueOnce(Response.json({ success: true, data: rejected }));
+    expect(await api.getMyIdVerification()).toBeNull();
+    expect(await api.getMyIdVerification()).toEqual({
+      documentType: 'CCCD',
+      fullName: 'Nguyễn Văn Tài',
+      status: 'rejected',
+      submittedAt: '2026-10-25T00:00:00.000Z',
+      reviewedAt: '2026-10-25T02:00:00.000Z',
+      reason: 'Ảnh mờ',
     });
   });
 });

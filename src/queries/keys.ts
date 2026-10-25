@@ -61,6 +61,7 @@ export const qk = {
     unread: () => ['notices', 'unread'] as const,
   },
   help: () => ['help'] as const,
+  idVerification: () => ['id-verification'] as const,
   /** Bàn vận hành: một gốc `ops` để đăng xuất / mất quyền thì quét được cả nhánh. */
   ops: {
     all: () => ['ops'] as const,

@@ -1081,6 +1081,50 @@ export type PostApiV1MeEmailChangeConfirmResponses = {
 
 export type PostApiV1MeEmailChangeConfirmResponse = PostApiV1MeEmailChangeConfirmResponses[keyof PostApiV1MeEmailChangeConfirmResponses];
 
+export type GetApiV1MeIdVerificationData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/id-verification';
+};
+
+export type GetApiV1MeIdVerificationErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeIdVerificationError = GetApiV1MeIdVerificationErrors[keyof GetApiV1MeIdVerificationErrors];
+
+export type GetApiV1MeIdVerificationResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            accountId: string;
+            documentType: string;
+            fullName: string;
+            status: 'pending' | 'verified' | 'rejected';
+            createdAt: string;
+            reviewedAt: string | null;
+            reason: string | null;
+        } | null;
+    };
+};
+
+export type GetApiV1MeIdVerificationResponse = GetApiV1MeIdVerificationResponses[keyof GetApiV1MeIdVerificationResponses];
+
 export type PostApiV1MeIdVerificationData = {
     body: {
         documentType: string;

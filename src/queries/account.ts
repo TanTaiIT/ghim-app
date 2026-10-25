@@ -78,13 +78,19 @@ export function useHelpTopics() {
   return useQuery({ queryKey: qk.help(), queryFn: mockApi.getHelpTopics, staleTime: Infinity });
 }
 
-/** Nộp giấy tờ không đổi gì trong cache: server không trả trạng thái xác minh trong hồ sơ hay ở đâu khác. */
+export function useMyIdVerification() {
+  return useQuery({ queryKey: qk.idVerification(), queryFn: api.getMyIdVerification });
+}
+
+/** Hồ sơ vừa nộp là hồ sơ gần nhất — ghi thẳng vào cache, màn xác minh chuyển sang "chờ duyệt" không cần tải lại. */
 export function useSubmitIdVerification() {
+  const qc = useQueryClient();
   return useMutation({
     mutationFn: (input: {
       documentType: IdDocumentType;
       documentNumber: string;
       fullName: string;
     }) => api.submitIdVerification(input),
+    onSuccess: (submission) => qc.setQueryData(qk.idVerification(), submission),
   });
 }
