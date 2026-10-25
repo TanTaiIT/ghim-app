@@ -15,14 +15,6 @@ import { qk } from './keys';
 
 /* Phía người xem: bảng tin, tìm kiếm, chi tiết, tin đã lưu. Phía người bán nằm ở `./selling`. */
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-/**
- * Tin đã lưu vẫn là dữ liệu mẫu (id dạng `l-…`) và vẫn mở màn chi tiết — id không phải uuid thì đọc từ mock.
- * Xoá nhánh này khi tin đã lưu nối backend.
- */
-const fromServer = (id: string) => UUID.test(id);
-
 /**
  * Trang chủ đọc chung request của màn tìm kiếm không bộ lọc: bấm "Xem tất cả" mở ra đúng các tin vừa thấy,
  * không tải lại. Chưa biết khu vực của người dùng (`/me` chưa có) nên "Gần bạn" là toàn sàn.
@@ -87,10 +79,7 @@ export function useListing(id: string | undefined) {
   const qc = useQueryClient();
   return useQuery({
     queryKey: qk.listings.detail(id ?? ''),
-    queryFn: () => {
-      const key = id ?? '';
-      return fromServer(key) ? api.getListing(key, lookupsFrom(qc)) : mockApi.getListing(key);
-    },
+    queryFn: () => api.getListing(id ?? '', lookupsFrom(qc)),
     enabled: Boolean(id),
   });
 }
@@ -99,10 +88,7 @@ export function useSimilar(id: string | undefined) {
   const qc = useQueryClient();
   return useQuery({
     queryKey: qk.listings.similar(id ?? ''),
-    queryFn: () => {
-      const key = id ?? '';
-      return fromServer(key) ? api.getSimilar(key, lookupsFrom(qc)) : mockApi.getSimilar(key);
-    },
+    queryFn: () => api.getSimilar(id ?? '', lookupsFrom(qc)),
     enabled: Boolean(id),
   });
 }
@@ -129,7 +115,7 @@ export function useSavedIds() {
   const authed = useIsAuthenticated();
   return useQuery({
     queryKey: qk.savedIds(),
-    queryFn: mockApi.getSavedIds,
+    queryFn: api.getSavedIds,
     enabled: authed,
     select: (ids) => new Set(ids),
   });
@@ -139,7 +125,7 @@ export function useSavedIds() {
 export function useToggleSaved() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, saved }: { id: string; saved: boolean }) => mockApi.setSaved(id, saved),
+    mutationFn: ({ id, saved }: { id: string; saved: boolean }) => api.setSaved(id, saved),
     onMutate: async ({ id, saved }) => {
       await qc.cancelQueries({ queryKey: qk.savedIds() });
       const prev = qc.getQueryData<string[]>(qk.savedIds());
@@ -157,10 +143,11 @@ export function useToggleSaved() {
 }
 
 export function useSavedListings() {
+  const qc = useQueryClient();
   const authed = useIsAuthenticated();
   return useQuery({
     queryKey: qk.listings.saved(),
-    queryFn: mockApi.getSavedListings,
+    queryFn: () => api.getSavedListings(lookupsFrom(qc)),
     enabled: authed,
   });
 }

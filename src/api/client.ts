@@ -10,6 +10,7 @@ import {
   deleteApiV1MeConversationsByConversationId,
   deleteApiV1MeConversationsByConversationIdViewing,
   deleteApiV1MeGroupMutesByGroupId,
+  deleteApiV1MeSavedListingsByListingId,
   deleteApiV1MeSessions,
   deleteApiV1MeSessionsById,
   getApiV1Categories,
@@ -40,6 +41,8 @@ import {
   getApiV1MeReports,
   getApiV1MeNotifications,
   getApiV1MeNotificationsUnreadCount,
+  getApiV1MeSavedListings,
+  getApiV1MeSavedListingsIds,
   getApiV1MeSessions,
   getApiV1MeTrust,
   getApiV1RegionsProvinces,
@@ -85,6 +88,7 @@ import {
   putApiV1MeConversationsByConversationIdViewing,
   putApiV1MeGroupMutesByGroupId,
   putApiV1MePassword,
+  putApiV1MeSavedListingsByListingId,
 } from './generated/sdk.gen';
 import type {
   GetApiV1GroupsByGroupIdResponses,
@@ -172,11 +176,7 @@ export type Readiness = { database: 'up' | 'down' };
  * dạng này để màn hình không đổi.
  */
 
-/**
- * Ảnh hiển thị. `svg` chỉ có ở dữ liệu mẫu — ảnh minh hoạ vẽ sẵn thay cho ảnh người bán tới khi backend
- * có `add-media`; lúc đó xoá nhánh này cùng `./mock-art`.
- */
-export type Picture = { uri: string } | { svg: string };
+export type Picture = { uri: string };
 
 export const CONDITIONS = ['new', 'like-new', 'used'] as const;
 
@@ -1254,6 +1254,21 @@ export const api = {
         .items,
       load,
     ),
+
+  /** Mọi mã đã lưu, kể cả tin đang không hiện: mở tin đó bằng đường link vẫn thấy trái tim đã tô. */
+  getSavedIds: (): Promise<string[]> => unwrap(getApiV1MeSavedListingsIds()),
+
+  /** Lưu tin đã lưu hay bỏ lưu tin chưa lưu đều 204 — chạm hai lần liền không thành lỗi. */
+  setSaved: (listingId: string, saved: boolean): Promise<void> =>
+    unwrapEmpty(
+      saved
+        ? putApiV1MeSavedListingsByListingId({ path: { listingId } })
+        : deleteApiV1MeSavedListingsByListingId({ path: { listingId } }),
+    ),
+
+  /** Lưu gần nhất trước. Tin thôi hiện (đã bán, hết hạn…) server bỏ khỏi trang nhưng giữ lần lưu: hiện lại thì có lại. */
+  getSavedListings: async (load: LoadLookups): Promise<ListingCard[]> =>
+    toCards((await unwrap(getApiV1MeSavedListings({ query: { limit: PAGE_SIZE } }))).items, load),
 
   /**
    * Báo lại đúng tin mình đã báo khi báo cáo cũ còn mở thì server trả 200 thay vì 201 — với người báo hai trường hợp

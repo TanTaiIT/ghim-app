@@ -20,8 +20,7 @@ function frame(body: string, defs = ''): string {
 /**
  * Tranh của bảy ô danh mục trong thiết kế, tra theo TÊN danh mục: server dùng uuid do master tạo lúc chạy,
  * không có khoá cố định nào khác để gắn tranh. Danh mục không có ô vẫn tìm được qua "Tất cả".
- * Mã màu trong tranh là điểm ảnh, không phải màu giao diện — không thuộc `@/theme` (cùng lý do với
- * `@/api/mock-art`). Mỗi tranh giữ id gradient riêng: trên web mọi `<svg>` inline chung một không gian
+ * Mã màu trong tranh là điểm ảnh, không phải màu giao diện — không thuộc `@/theme`. Mỗi tranh giữ id gradient riêng: trên web mọi `<svg>` inline chung một không gian
  * id, trùng tên thì ô sau tô bằng gradient của ô trước.
  */
 const ART: { name: string; art: string }[] = [

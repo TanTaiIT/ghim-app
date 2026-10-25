@@ -28,9 +28,9 @@ Backend: `cd ../ghim-server && pnpm dev` (cổng 3100). Bản dev hiện một �
 `/health/ready` để cho thấy đường ống app → SDK → backend → Postgres đang thông.
 
 **Dữ liệu mẫu.** Giao diện theo bộ UI "Chợ Đồ Cũ – bản làm mới" (10 màn + thanh điều hướng) đang chạy trên
-`mockApi` ở những phần chưa nối server: trợ giúp, tin đã lưu. Đăng nhập, tin đăng, đăng tin (cả đăng vào nhóm và huy
-hiệu nhóm), tin của tôi, chat (cả trả giá, Hỗ trợ Ghim), thông báo và nhóm phía thành viên đã gọi ghim-server thật.
-Công cụ quản trị nhóm (duyệt đơn, mời, gỡ, đăng thông báo nhóm) chưa có trong app.
+`mockApi` ở những phần chưa nối server: trợ giúp, tìm kiếm đã lưu. Đăng nhập, tin đăng, tin đã lưu, đăng tin (cả đăng
+vào nhóm và huy hiệu nhóm), tin của tôi, chat (cả trả giá, Hỗ trợ Ghim), thông báo, nhóm (cả quản trị nhóm) và bàn vận
+hành đã gọi ghim-server thật.
 
 ## 2. Lệnh
 
@@ -72,7 +72,7 @@ src/
   api/client.ts         gọi SDK + unwrap + domain type
   api/ops.ts            như client.ts, cho bàn vận hành (/ops/*): duyệt tin, báo cáo, giấy tờ, nhóm, hỗ trợ, danh mục
   api/group-manage.ts   như client.ts, cho chủ nhóm / điều hành viên (mọi route /groups/:id/* của quản trị)
-  api/mock*.ts          dữ liệu mẫu + tranh minh hoạ SVG — xoá dần khi backend có endpoint
+  api/mock*.ts          dữ liệu mẫu (trợ giúp, tìm kiếm đã lưu) — xoá khi backend có endpoint
   api/generated/        SDK sinh, không sửa tay
   queries/keys.ts       key factory `qk`
   queries/*.ts          hook TanStack theo domain
@@ -102,12 +102,8 @@ Không có secret nào trong repo (HARD#19); credential push/ảnh đặt ở EA
 ## 6. Việc tiếp theo
 
 - Nối backend từng phần: endpoint ra đời → `npm run api:sync` → thêm hàm vào `api` (`client.ts`) trả đúng domain
-  type đang dùng → trong `src/queries/**` đổi `mockApi.x` thành `api.x`. Hết chỗ gọi thì xoá `mock*.ts` và nhánh
-  `svg` của `Picture`/`Photo`.
-- Đăng nhập, đăng ký, xác nhận email: `useLogin` đã có, đang gọi `mockApi.login`; đổi sang `api.login` khi
-  ghim-server archive `add-identity` (refresh token đơn lượt ở `http.ts`). Phiên mẫu lưu trong SecureStore mang
-  token giả — đăng xuất một lần sau khi nối backend thật.
+  type đang dùng → trong `src/queries/**` đổi `mockApi.x` thành `api.x`. Hết chỗ gọi thì xoá `mock*.ts`.
 - Push: chưa xin token Expo. Realtime: socket.io (`src/api/realtime.ts`), chỉ để báo hiệu — dữ liệu luôn tải lại qua
   HTTP.
-- Chưa có trong thiết kế nên đang báo "sẽ có": trang người bán, sửa tin, đẩy tin (chờ giá gói), gọi trong app,
-  gửi ảnh trong chat, cài đặt. Hộp thư (tab Tin nhắn) không có trong bộ UI gốc — dựng theo thẻ của các màn khác.
+- Chưa có: đẩy tin (báo "sẽ có" — chờ giá gói), gọi trong app ("Gọi người bán" mở trình gọi của máy), gửi ảnh trong
+  chat (server chưa nhận ảnh trong tin nhắn). Hộp thư (tab Tin nhắn) không có trong bộ UI gốc — dựng theo thẻ của các màn khác.

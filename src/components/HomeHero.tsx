@@ -108,8 +108,8 @@ export function HomeHero() {
 }
 
 /**
- * Chỉ bản dev: nhắc rằng tin trên màn là dữ liệu mẫu, và đèn readiness (app → SDK → backend → Postgres)
- * vẫn chạy để biết đường ống thật đã thông trước khi đổi `mockApi` sang `api`.
+ * Chỉ bản dev: đèn readiness (app → SDK → backend → Postgres) — bảng tin trống mà đèn đỏ là server chưa chạy, không
+ * phải sàn không có tin.
  */
 function DevStatus() {
   const readiness = useReadiness();
@@ -121,14 +121,14 @@ function DevStatus() {
   return (
     <View style={styles.dev}>
       <View style={[styles.devDot, { backgroundColor: color }]} />
-      <Text style={styles.devText}>Dữ liệu mẫu · đèn = backend</Text>
+      <Text style={styles.devText}>Đèn = backend</Text>
     </View>
   );
 }
 
 /**
  * Tranh port nguyên từ bộ UI. Mã màu là điểm ảnh của tranh, không phải màu giao diện, nên không thuộc
- * `@/theme` (cùng lý do với `@/api/mock-art`). Tranh vẽ cho khung rộng 390 có đệm trên 52 của bản thiết
+ * `@/theme`. Tranh vẽ cho khung rộng 390 có đệm trên 52 của bản thiết
  * kế; dời theo đệm thật (safe-area) để ghế, quạt, điện thoại vẫn đứng cạnh khẩu hiệu và ô tìm kiếm.
  */
 const ART = { width: 390, height: 382, padTop: 52 };

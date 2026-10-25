@@ -8742,6 +8742,229 @@ export type GetApiV1MeListingsResponses = {
 
 export type GetApiV1MeListingsResponse = GetApiV1MeListingsResponses[keyof GetApiV1MeListingsResponses];
 
+export type GetApiV1MeSavedListingsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        cursor?: string;
+        limit?: number;
+    };
+    url: '/api/v1/me/saved-listings';
+};
+
+export type GetApiV1MeSavedListingsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeSavedListingsError = GetApiV1MeSavedListingsErrors[keyof GetApiV1MeSavedListingsErrors];
+
+export type GetApiV1MeSavedListingsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                ownerId: string;
+                state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+                placement: 'marketplace' | 'group_public' | 'members_only';
+                groupId: string | null;
+                title: string | null;
+                description: string | null;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                price: number | null;
+                negotiable: boolean;
+                delivery: boolean;
+                showPhone: boolean;
+                categoryId: string | null;
+                templateVersion: number | null;
+                attributes: {
+                    [key: string]: unknown;
+                };
+                provinceCode: number | null;
+                wardCode: number | null;
+                images: Array<{
+                    id: string;
+                    url: string;
+                }>;
+                badge: {
+                    groupId: string;
+                    name: string;
+                } | null;
+                firstLiveAt: string | null;
+                featuredUntil: string | null;
+                expiresAt: string | null;
+                createdAt: string;
+                updatedAt: string;
+            }>;
+            nextCursor: string | null;
+        };
+    };
+};
+
+export type GetApiV1MeSavedListingsResponse = GetApiV1MeSavedListingsResponses[keyof GetApiV1MeSavedListingsResponses];
+
+export type GetApiV1MeSavedListingsIdsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/saved-listings/ids';
+};
+
+export type GetApiV1MeSavedListingsIdsErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeSavedListingsIdsError = GetApiV1MeSavedListingsIdsErrors[keyof GetApiV1MeSavedListingsIdsErrors];
+
+export type GetApiV1MeSavedListingsIdsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<string>;
+    };
+};
+
+export type GetApiV1MeSavedListingsIdsResponse = GetApiV1MeSavedListingsIdsResponses[keyof GetApiV1MeSavedListingsIdsResponses];
+
+export type DeleteApiV1MeSavedListingsByListingIdData = {
+    body?: never;
+    path: {
+        listingId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/saved-listings/{listingId}';
+};
+
+export type DeleteApiV1MeSavedListingsByListingIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1MeSavedListingsByListingIdError = DeleteApiV1MeSavedListingsByListingIdErrors[keyof DeleteApiV1MeSavedListingsByListingIdErrors];
+
+export type DeleteApiV1MeSavedListingsByListingIdResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1MeSavedListingsByListingIdResponse = DeleteApiV1MeSavedListingsByListingIdResponses[keyof DeleteApiV1MeSavedListingsByListingIdResponses];
+
+export type PutApiV1MeSavedListingsByListingIdData = {
+    body?: never;
+    path: {
+        listingId: string;
+    };
+    query?: never;
+    url: '/api/v1/me/saved-listings/{listingId}';
+};
+
+export type PutApiV1MeSavedListingsByListingIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PutApiV1MeSavedListingsByListingIdError = PutApiV1MeSavedListingsByListingIdErrors[keyof PutApiV1MeSavedListingsByListingIdErrors];
+
+export type PutApiV1MeSavedListingsByListingIdResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type PutApiV1MeSavedListingsByListingIdResponse = PutApiV1MeSavedListingsByListingIdResponses[keyof PutApiV1MeSavedListingsByListingIdResponses];
+
 export type GetApiV1ListingsByIdSuggestionsData = {
     body?: never;
     path: {
