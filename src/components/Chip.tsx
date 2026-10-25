@@ -122,7 +122,8 @@ const styles = StyleSheet.create({
   choiceOn: { borderWidth: 1.5, borderColor: C.brand, backgroundColor: C.brandLt },
   choiceLabel: { fontFamily: F.uiSemi, fontSize: 14, color: C.ink },
   check: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 44 },
-  checkLabel: { fontFamily: F.ui, fontSize: 14, color: C.ink },
+  // Nhãn dài ("Luôn duyệt tay — …") xuống dòng trong hàng thay vì tràn khỏi mép phải.
+  checkLabel: { flex: 1, fontFamily: F.ui, fontSize: 14, lineHeight: 20, color: C.ink },
   box: {
     width: 22,
     height: 22,

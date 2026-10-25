@@ -13,7 +13,7 @@ import { formatVnd } from '@/utils/format';
 
 /**
  * Danh mục (master). Server không có sẵn danh mục nào: chưa tạo thì app người dùng không đăng tin được (bước chọn danh
- * mục trống). Đổi cài đặt máy duyệt của danh mục đã có và soạn mẫu thông tin chưa làm trên app.
+ * mục trống). Cài đặt máy duyệt và mẫu thông tin của từng danh mục sửa ở màn của nó (`/ops/category/[id]`).
  */
 export default function OpsCategories() {
   const router = useRouter();
@@ -89,6 +89,14 @@ export default function OpsCategories() {
                 </View>
                 <Text style={styles.meta}>Cài đặt máy duyệt phiên bản {item.settingsVersion}</Text>
                 <View style={styles.actions}>
+                  <BarButton
+                    compact
+                    tone="ghost"
+                    label="Cài đặt & mẫu"
+                    onPress={() =>
+                      router.push({ pathname: '/ops/category/[id]', params: { id: item.id } })
+                    }
+                  />
                   <BarButton
                     compact
                     tone="ghost"

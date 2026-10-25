@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, jest } from '@jest/globals';
-import { opsApi, taskKind, toDecisionBody } from './ops';
+import { fieldNameOf, opsApi, taskKind, templateIssue, toDecisionBody } from './ops';
 
 /** Server giả: ghi lại phương thức, đường dẫn, body của từng lượt gọi; mọi lượt trả `data`. */
 function serve(data: unknown = {}) {
@@ -19,6 +19,67 @@ function serve(data: unknown = {}) {
   });
   return calls;
 }
+
+const field = (over: Record<string, unknown> = {}) => ({
+  name: 'hang',
+  label: 'Hãng',
+  type: 'single_choice' as const,
+  required: true,
+  options: ['Apple'],
+  ...over,
+});
+
+describe('mẫu thông tin của danh mục', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('tên gợi ý từ nhãn: bỏ dấu, đ thành d, chữ thường, gạch dưới', () => {
+    expect(fieldNameOf('Năm sản xuất')).toBe('nam_san_xuat');
+    expect(fieldNameOf('  Đời máy / Model ')).toBe('doi_may_model');
+  });
+
+  it('kiểm nháp như server: nhãn, dạng tên, trùng tên, mục chọn thiếu lựa chọn', () => {
+    expect(templateIssue([field()])).toBeNull();
+    expect(templateIssue([field({ label: ' ' })])).toMatch(/thiếu nhãn/);
+    expect(templateIssue([field({ name: 'Hãng' })])).toMatch(/chữ thường không dấu/);
+    expect(templateIssue([field(), field({ label: 'Hãng khác' })])).toMatch(/trùng/);
+    expect(templateIssue([field({ options: [] })])).toMatch(/ít nhất một lựa chọn/);
+  });
+
+  it('lưu nháp: mục chữ / số không gửi options; khoá lạc quan theo baseDraftVersion', async () => {
+    const calls = serve({
+      categoryId: 'c-1',
+      draftVersion: 3,
+      fields: [],
+      updatedBy: null,
+      updatedAt: null,
+    });
+    expect(
+      await opsApi.saveTemplateDraft('c-1', 2, [
+        field(),
+        field({ name: 'nam', label: 'Năm', type: 'number', options: [] }),
+      ]),
+    ).toBe(3);
+    expect(calls[0]).toMatchObject({
+      method: 'PUT',
+      path: '/api/v1/ops/categories/c-1/template/draft',
+      body: {
+        baseDraftVersion: 2,
+        fields: [
+          {
+            name: 'hang',
+            label: 'Hãng',
+            type: 'single_choice',
+            required: true,
+            options: ['Apple'],
+          },
+          { name: 'nam', label: 'Năm', type: 'number', required: true },
+        ],
+      },
+    });
+  });
+});
 
 describe('quyền staff', () => {
   afterEach(() => {

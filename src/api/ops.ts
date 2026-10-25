@@ -1,8 +1,10 @@
-import { unwrap, unwrapEmpty, type Picture } from './client';
+import { unwrap, unwrapEmpty, type Picture, type TemplateField } from './client';
 import {
   getApiV1OpsAccounts,
   getApiV1OpsAccountsById,
   getApiV1OpsCategories,
+  getApiV1OpsCategoriesByIdTemplateDraft,
+  deleteApiV1OpsCategoriesByIdTemplateDraft,
   getApiV1OpsGroups,
   getApiV1OpsGroupsByGroupId,
   getApiV1OpsIdVerifications,
@@ -25,6 +27,9 @@ import {
   postApiV1OpsCategories,
   postApiV1OpsCategoriesByIdDisable,
   postApiV1OpsCategoriesByIdEnable,
+  postApiV1OpsCategoriesByIdTemplatePublish,
+  putApiV1OpsCategoriesByIdSettings,
+  putApiV1OpsCategoriesByIdTemplateDraft,
   postApiV1OpsGroups,
   postApiV1OpsGroupsByGroupIdClose,
   postApiV1OpsGroupsByGroupIdLock,
@@ -611,8 +616,72 @@ export type OpsCategory = {
   alwaysManual: boolean;
   groupReview: 'group' | 'platform';
   priceCap: number | null;
+  referencePrice: number | null;
   settingsVersion: number;
 };
+
+/** Năm cài đặt máy duyệt của danh mục — mỗi lần lưu là một phiên bản cài đặt mới (spec category-catalog). */
+export type CategorySettings = Pick<
+  OpsCategory,
+  'priceCap' | 'referencePrice' | 'riskLevel' | 'alwaysManual' | 'groupReview'
+>;
+
+/** `draftVersion` 0 = chưa có bản nháp; khi đó `fields` là mẫu hiện hành để sửa tiếp (server). */
+export type TemplateDraft = {
+  draftVersion: number;
+  fields: TemplateField[];
+  updatedAt: string | null;
+};
+
+export const FIELD_TYPE_LABEL: Record<TemplateField['type'], string> = {
+  text: 'Chữ',
+  number: 'Số',
+  single_choice: 'Chọn một',
+  multi_choice: 'Chọn nhiều',
+};
+
+export const isChoiceField = (type: TemplateField['type']): boolean =>
+  type === 'single_choice' || type === 'multi_choice';
+
+/** Trần của server (`TEMPLATE_FIELDS_MAX`). */
+export const TEMPLATE_FIELDS_MAX = 40;
+const FIELD_NAME = /^[a-z0-9_]{1,40}$/;
+
+/** Tên mục gợi ý từ nhãn: bỏ dấu, chữ thường, gạch dưới — đúng dạng server nhận. Tên dùng để lọc, người dùng không thấy. */
+export function fieldNameOf(label: string): string {
+  return label
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .slice(0, 40);
+}
+
+/**
+ * Lỗi đầu tiên của bản nháp theo đúng luật server kiểm (`category.schema`) — báo trước khi gửi thay vì nhận 400 chung.
+ * Luật khoá tên mục đã phát hành chỉ server biết (mọi phiên bản cũ), nên vẫn có thể nhận 409 `TEMPLATE_FIELD_NAME_LOCKED`.
+ */
+export function templateIssue(fields: readonly TemplateField[]): string | null {
+  if (fields.length > TEMPLATE_FIELDS_MAX) return `Mẫu có tối đa ${TEMPLATE_FIELDS_MAX} mục`;
+  const seen = new Set<string>();
+  for (const [i, f] of fields.entries()) {
+    const at = `Mục ${i + 1}`;
+    if (!f.label.trim()) return `${at}: thiếu nhãn`;
+    if (!FIELD_NAME.test(f.name)) return `${at}: tên chỉ gồm chữ thường không dấu, số, gạch dưới`;
+    if (seen.has(f.name)) return `${at}: tên "${f.name}" trùng mục khác`;
+    seen.add(f.name);
+    if (isChoiceField(f.type) && f.options.length === 0)
+      return `${at}: mục chọn cần ít nhất một lựa chọn`;
+  }
+  return null;
+}
+
+/** Server từ chối `options` ở mục chữ / số, và đòi có ở mục chọn. */
+const toWireField = ({ options, ...f }: TemplateField) =>
+  isChoiceField(f.type) ? { ...f, options } : f;
 
 const toCategory = (w: WireCategory): OpsCategory => ({
   id: w.id,
@@ -623,6 +692,7 @@ const toCategory = (w: WireCategory): OpsCategory => ({
   alwaysManual: w.settings.alwaysManual,
   groupReview: w.settings.groupReview,
   priceCap: w.settings.priceCap,
+  referencePrice: w.settings.referencePrice,
   settingsVersion: w.settings.version,
 });
 
@@ -831,6 +901,41 @@ export const opsApi = {
         ? postApiV1OpsCategoriesByIdEnable({ path: { id } })
         : postApiV1OpsCategoriesByIdDisable({ path: { id } }),
     ),
+
+  /** Gửi đủ năm cài đặt — server tạo phiên bản cài đặt kế tiếp; kết quả máy cũ vẫn trỏ bản nó đã dùng. */
+  setCategorySettings: (id: string, s: CategorySettings): Promise<unknown> =>
+    unwrap(putApiV1OpsCategoriesByIdSettings({ path: { id }, body: s })),
+
+  templateDraft: async (id: string): Promise<TemplateDraft> => {
+    const d = await unwrap(getApiV1OpsCategoriesByIdTemplateDraft({ path: { id } }));
+    return {
+      draftVersion: d.draftVersion,
+      fields: d.fields.map((f) => ({ ...f, options: f.options ?? [] })),
+      updatedAt: d.updatedAt,
+    };
+  },
+
+  /** Khoá lạc quan: người khác đã lưu sau `baseDraftVersion` thì server trả 409 — tải lại rồi sửa tiếp. */
+  saveTemplateDraft: async (
+    id: string,
+    baseDraftVersion: number,
+    fields: TemplateField[],
+  ): Promise<number> =>
+    (
+      await unwrap(
+        putApiV1OpsCategoriesByIdTemplateDraft({
+          path: { id },
+          body: { baseDraftVersion, fields: fields.map(toWireField) },
+        }),
+      )
+    ).draftVersion,
+
+  discardTemplateDraft: (id: string): Promise<void> =>
+    unwrapEmpty(deleteApiV1OpsCategoriesByIdTemplateDraft({ path: { id } })),
+
+  /** Bản nháp thành phiên bản mẫu kế, bất biến từ đó; tin mới điền theo nó. Trả số phiên bản. */
+  publishTemplate: async (id: string): Promise<number | null> =>
+    (await unwrap(postApiV1OpsCategoriesByIdTemplatePublish({ path: { id } }))).version,
 
   /** Server chỉ trả mã tài khoản — tên lấy từ thẻ tài khoản (`account`), staff thường chỉ vài người. */
   staff: async (categoryId: string | null): Promise<OpsStaff[]> =>
