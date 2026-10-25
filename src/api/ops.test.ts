@@ -319,6 +319,33 @@ describe('bảng số theo ngày', () => {
   });
 });
 
+describe('số liệu máy theo tháng', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('hỏi đúng route với số tháng, trả tháng và luật của server nguyên vẹn', async () => {
+    const data = {
+      months: [
+        {
+          month: '2026-10',
+          runs: 3,
+          passFull: 2,
+          passLimited: 0,
+          hold: 1,
+          low: 2,
+          medium: 0,
+          high: 1,
+        },
+      ],
+      topRules: [{ code: 'price_low', label: 'Giá thấp bất thường', runs: 1 }],
+    };
+    const calls = serve(data);
+    await expect(opsApi.machineStats(12)).resolves.toEqual(data);
+    expect(calls[0]).toMatchObject({ method: 'GET', path: '/api/v1/ops/screening/stats' });
+  });
+});
+
 describe('danh bạ tài khoản', () => {
   afterEach(() => {
     jest.restoreAllMocks();

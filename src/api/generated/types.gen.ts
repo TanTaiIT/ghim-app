@@ -10556,6 +10556,81 @@ export type PatchApiV1OpsTrustRuleArticlesByArticleIdResponses = {
 
 export type PatchApiV1OpsTrustRuleArticlesByArticleIdResponse = PatchApiV1OpsTrustRuleArticlesByArticleIdResponses[keyof PatchApiV1OpsTrustRuleArticlesByArticleIdResponses];
 
+export type GetApiV1OpsScreeningStatsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        months?: number;
+    };
+    url: '/api/v1/ops/screening/stats';
+};
+
+export type GetApiV1OpsScreeningStatsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsScreeningStatsError = GetApiV1OpsScreeningStatsErrors[keyof GetApiV1OpsScreeningStatsErrors];
+
+export type GetApiV1OpsScreeningStatsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            months: Array<{
+                month: string;
+                runs: number;
+                passFull: number;
+                passLimited: number;
+                hold: number;
+                low: number;
+                medium: number;
+                high: number;
+            }>;
+            topRules: Array<{
+                code: string;
+                label: string;
+                runs: number;
+            }>;
+        };
+    };
+};
+
+export type GetApiV1OpsScreeningStatsResponse = GetApiV1OpsScreeningStatsResponses[keyof GetApiV1OpsScreeningStatsResponses];
+
 export type GetApiV1OpsScreeningRulesData = {
     body?: never;
     path?: never;

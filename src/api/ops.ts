@@ -13,6 +13,7 @@ import {
   getApiV1OpsIdVerifications,
   getApiV1OpsReviewReasonTemplates,
   getApiV1OpsReviewStatsBoard,
+  getApiV1OpsScreeningStats,
   getApiV1OpsStatsDaily,
   getApiV1OpsReviewTasks,
   getApiV1OpsReviewTasksByTaskId,
@@ -404,6 +405,24 @@ export type ReviewBoard = {
 };
 
 /** Một ngày Việt Nam trên bảng số của master (`/ops/stats/daily`); `day` là `YYYY-MM-DD`. */
+/** Số liệu máy một tháng (ghim-server add-screening-stats); tháng không có lượt đã là số 0 từ server. */
+export type MachineMonth = {
+  month: string;
+  runs: number;
+  passFull: number;
+  passLimited: number;
+  hold: number;
+  low: number;
+  medium: number;
+  high: number;
+};
+
+export type MachineStats = {
+  /** Cũ trước, đủ số tháng đã xin. */
+  months: MachineMonth[];
+  topRules: { code: string; label: string; runs: number }[];
+};
+
 export type DayStats = {
   day: string;
   newAccounts: number;
@@ -800,6 +819,9 @@ export const opsApi = {
   /** Hôm nay trước, kể cả hôm nay đang dở; server đã điền 0 cho ngày trống. */
   dailyStats: async (days: number): Promise<DayStats[]> =>
     (await unwrap(getApiV1OpsStatsDaily({ query: { days } }))).days,
+
+  machineStats: (months: number): Promise<MachineStats> =>
+    unwrap(getApiV1OpsScreeningStats({ query: { months } })),
 
   board: async (): Promise<ReviewBoard> => {
     const d = await unwrap(getApiV1OpsReviewStatsBoard());
