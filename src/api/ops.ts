@@ -12,6 +12,7 @@ import {
   getApiV1OpsReviewTasks,
   getApiV1OpsReviewTasksByTaskId,
   getApiV1OpsScreeningRules,
+  getApiV1OpsStaff,
   getApiV1OpsSupportConversations,
   getApiV1OpsSupportConversationsByConversationId,
   getApiV1OpsSupportConversationsByConversationIdMessages,
@@ -32,6 +33,9 @@ import {
   postApiV1OpsReviewReasonTemplates,
   postApiV1OpsReviewTasksByTaskIdClaim,
   postApiV1OpsReviewTasksByTaskIdDecision,
+  postApiV1OpsStaffByAccountIdRestore,
+  putApiV1OpsStaffByAccountId,
+  deleteApiV1OpsStaffByAccountId,
   postApiV1OpsSupportConversationsByConversationIdMessages,
   postApiV1OpsSupportConversationsByConversationIdRead,
 } from './generated/sdk.gen';
@@ -44,6 +48,7 @@ import type {
   GetApiV1OpsReviewTasksByTaskIdResponses,
   GetApiV1OpsReviewTasksResponses,
   GetApiV1OpsScreeningRulesResponses,
+  GetApiV1OpsStaffResponses,
   GetApiV1OpsSupportConversationsResponses,
   GetApiV1OpsSupportConversationsByConversationIdMessagesResponses,
   GetApiV1OpsTrustAccountsByAccountIdStrikesResponses,
@@ -71,6 +76,7 @@ type WireSupportMessage =
   GetApiV1OpsSupportConversationsByConversationIdMessagesResponses[200]['data']['items'][number];
 type WireCategory = GetApiV1OpsCategoriesResponses[200]['data'][number];
 type WireDecision = PostApiV1OpsReviewTasksByTaskIdDecisionData['body'];
+type WireStaff = GetApiV1OpsStaffResponses[200]['data'][number];
 
 /** Mọi danh sách phân trang của bàn vận hành có cùng vỏ. */
 export type OpsPage<T> = { items: T[]; total: number; page: number; totalPages: number };
@@ -449,6 +455,36 @@ const toIdCheck = (w: WireIdCheck): IdCheck => ({
   reason: w.reason,
 });
 
+/* ------------------------------------ staff ----------------------------------- */
+
+export type StaffScope = WireStaff['scopes'][number];
+
+/** Ba việc toàn hệ thống — ngoài danh mục (spec staff-permissions). */
+export const STAFF_SCOPE_LABEL: Record<StaffScope, string> = {
+  support: 'Hỗ trợ người dùng',
+  user_reports: 'Báo cáo về người',
+  id_verification: 'Duyệt giấy tờ xác minh',
+};
+
+export type StaffScopeInput = { scopes: StaffScope[]; categoryIds: string[] };
+
+export type OpsStaff = StaffScopeInput & {
+  accountId: string;
+  /** Tự treo khi tài khoản bị khoá hay nhận gậy; chỉ master trả lại. */
+  suspended: boolean;
+  suspendedReason: string | null;
+  grantedAt: string;
+};
+
+const toStaff = (w: WireStaff): OpsStaff => ({
+  accountId: w.accountId,
+  scopes: w.scopes,
+  categoryIds: w.categoryIds,
+  suspended: w.status === 'suspended',
+  suspendedReason: w.suspendedReason,
+  grantedAt: w.grantedAt,
+});
+
 /* ------------------------------------ nhóm ------------------------------------ */
 
 export type OpsGroupState = WireGroup['state'];
@@ -795,4 +831,20 @@ export const opsApi = {
         ? postApiV1OpsCategoriesByIdEnable({ path: { id } })
         : postApiV1OpsCategoriesByIdDisable({ path: { id } }),
     ),
+
+  /** Server chỉ trả mã tài khoản — tên lấy từ thẻ tài khoản (`account`), staff thường chỉ vài người. */
+  staff: async (categoryId: string | null): Promise<OpsStaff[]> =>
+    (await unwrap(getApiV1OpsStaff({ query: categoryId ? { categoryId } : {} }))).map(toStaff),
+
+  /** Gửi TRỌN phạm vi: thiếu danh mục nào là thu danh mục đó (spec staff-permissions). Rỗng cả hai thì server từ chối. */
+  setStaff: async (accountId: string, scope: StaffScopeInput): Promise<OpsStaff> =>
+    toStaff(await unwrap(putApiV1OpsStaffByAccountId({ path: { accountId }, body: scope }))),
+
+  /** Có hiệu lực ngay — việc người đó đang nhận trả về hàng chờ. */
+  revokeStaff: (accountId: string): Promise<void> =>
+    unwrapEmpty(deleteApiV1OpsStaffByAccountId({ path: { accountId } })),
+
+  /** Trả đúng phạm vi lúc treo; tài khoản còn khoá thì server từ chối. */
+  restoreStaff: async (accountId: string): Promise<OpsStaff> =>
+    toStaff(await unwrap(postApiV1OpsStaffByAccountIdRestore({ path: { accountId } }))),
 };

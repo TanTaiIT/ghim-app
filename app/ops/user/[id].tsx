@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ActionBar, BarButton } from '@/components/ActionBar';
 import { Avatar } from '@/components/Avatar';
 import { InputSheet } from '@/components/InputSheet';
@@ -37,10 +37,11 @@ const KIND: Record<OpsStrike['kind'], string> = {
 /**
  * Hồ sơ một người: thẻ tài khoản (`/ops/accounts/:id` — trạng thái, email, mức tin cậy, điểm vi phạm) và lịch sử
  * cảnh cáo. Tên theo tham số từ màn trước chỉ là chỗ dựa lúc thẻ chưa tải. Master thấy đúng một nút theo trạng thái:
- * Khoá khi đang mở, Mở khoá khi đang khoá.
+ * Khoá khi đang mở, Mở khoá khi đang khoá — cạnh nút gắn / sửa quyền staff của người này.
  */
 export default function OpsUser() {
   const { id = '', name } = useLocalSearchParams<{ id: string; name?: string }>();
+  const router = useRouter();
   const toast = useToast();
   const isMaster = useMe().data?.isMaster ?? false;
   const strikes = useAccountStrikes(id);
@@ -110,6 +111,14 @@ export default function OpsUser() {
 
       {isMaster && account && (
         <ActionBar>
+          <BarButton
+            tone="ghost"
+            icon="shield"
+            label="Quyền staff"
+            onPress={() =>
+              router.push({ pathname: '/ops/staff/[id]', params: { id, name: display } })
+            }
+          />
           {account.status === 'locked' ? (
             <BarButton
               tone="ghost"

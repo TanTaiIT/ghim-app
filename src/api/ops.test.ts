@@ -20,6 +20,48 @@ function serve(data: unknown = {}) {
   return calls;
 }
 
+describe('quyền staff', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  const wire = {
+    accountId: 'u-1',
+    scopes: ['support'],
+    categoryIds: ['c-1'],
+    status: 'suspended',
+    suspendedReason: 'Tài khoản bị khoá',
+    grantedAt: '2026-10-20T00:00:00.000Z',
+  };
+
+  it('danh sách lọc theo danh mục; trạng thái thành cờ treo', async () => {
+    const calls = serve([wire]);
+    expect(await opsApi.staff('c-1')).toEqual([
+      {
+        accountId: 'u-1',
+        scopes: ['support'],
+        categoryIds: ['c-1'],
+        suspended: true,
+        suspendedReason: 'Tài khoản bị khoá',
+        grantedAt: '2026-10-20T00:00:00.000Z',
+      },
+    ]);
+    expect(calls[0]?.path).toBe('/api/v1/ops/staff');
+  });
+
+  it('gắn quyền gửi trọn phạm vi; thu là DELETE; trả lại là POST restore', async () => {
+    const calls = serve({ ...wire, status: 'active', suspendedReason: null });
+    await opsApi.setStaff('u-1', { scopes: ['support', 'user_reports'], categoryIds: [] });
+    await opsApi.revokeStaff('u-1');
+    await opsApi.restoreStaff('u-1');
+    expect(calls.map((c) => [c.method, c.path, c.body])).toEqual([
+      ['PUT', '/api/v1/ops/staff/u-1', { scopes: ['support', 'user_reports'], categoryIds: [] }],
+      ['DELETE', '/api/v1/ops/staff/u-1', null],
+      ['POST', '/api/v1/ops/staff/u-1/restore', null],
+    ]);
+  });
+});
+
 describe('loại việc quyết định nút nào hiện', () => {
   it('báo cáo thắng mọi lý do khác vì server bắt buộc report.verdict', () => {
     expect(taskKind(['machine_hold', 'report'])).toBe('report');

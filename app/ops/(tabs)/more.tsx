@@ -18,6 +18,7 @@ export default function OpsMore() {
     { icon: 'zap', label: 'Đẩy tin & doanh thu', onPress: () => router.push('/ops/promotions') },
   ];
   const master: MenuItem[] = [
+    { icon: 'shield', label: 'Staff', onPress: () => router.push('/ops/staff') },
     { icon: 'users', label: 'Nhóm', onPress: () => router.push('/ops/groups') },
     { icon: 'layers', label: 'Danh mục', onPress: () => router.push('/ops/categories') },
     { icon: 'x-octagon', label: 'Lý do từ chối mẫu', onPress: () => router.push('/ops/reasons') },
