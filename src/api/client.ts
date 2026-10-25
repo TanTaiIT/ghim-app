@@ -11,6 +11,7 @@ import {
   deleteApiV1MeConversationsByConversationIdViewing,
   deleteApiV1MeGroupMutesByGroupId,
   deleteApiV1MeSavedListingsByListingId,
+  deleteApiV1MeSavedSearchesById,
   deleteApiV1MeSessions,
   deleteApiV1MeSessionsById,
   getApiV1Categories,
@@ -37,6 +38,7 @@ import {
   putApiV1MeNotificationPreferencesByCategory,
   postApiV1MeEmailChangeConfirm,
   postApiV1MeEmailChange,
+  postApiV1MeSavedSearches,
   postApiV1MeBlocks,
   getApiV1MeReports,
   getApiV1MeNotifications,
@@ -44,6 +46,7 @@ import {
   getApiV1MeIdVerification,
   getApiV1MeSavedListings,
   getApiV1MeSavedListingsIds,
+  getApiV1MeSavedSearches,
   getApiV1MeSessions,
   getApiV1MeTrust,
   getApiV1RegionsProvinces,
@@ -102,6 +105,7 @@ import type {
   GetApiV1MeIdVerificationResponses,
   GetApiV1MeNotificationsResponses,
   GetApiV1MeResponses,
+  GetApiV1MeSavedSearchesResponses,
   GetApiV1MeTrustResponses,
   GetApiV1UsersByIdResponses,
 } from './generated/types.gen';
@@ -262,7 +266,7 @@ export type MyReport = {
   decidedAt: string | null;
 };
 
-/** Chín nhóm thông báo (spec notification/preferences); "tài khoản" luôn bật. */
+/** Mười nhóm thông báo (spec notification/preferences); "tài khoản" luôn bật. */
 export type NotificationCategory =
   | 'messages'
   | 'your_listings'
@@ -272,7 +276,8 @@ export type NotificationCategory =
   | 'trust_strikes'
   | 'group_announcements'
   | 'group_new_listings'
-  | 'support';
+  | 'support'
+  | 'saved_searches';
 
 export const NOTIFICATION_CATEGORY_LABEL: Record<NotificationCategory, string> = {
   messages: 'Tin nhắn',
@@ -284,6 +289,7 @@ export const NOTIFICATION_CATEGORY_LABEL: Record<NotificationCategory, string> =
   group_announcements: 'Thông báo của nhóm',
   group_new_listings: 'Tin mới trong nhóm',
   support: 'Hỗ trợ Ghim',
+  saved_searches: 'Tìm kiếm đã lưu',
 };
 
 export const ALWAYS_ON_NOTIFICATIONS: ReadonlySet<NotificationCategory> = new Set(['account']);
@@ -383,6 +389,23 @@ export const NO_FILTERS: SearchFilters = {
   maxPrice: null,
   attrs: {},
 };
+
+/**
+ * Lượt tìm đã lưu (ghim-server add-saved-searches): bộ lọc của màn tìm kiếm trừ `attrs` — server chưa khớp tin mới theo
+ * mẫu thông tin, nên lưu kèm mẫu là hứa điều server không làm.
+ */
+export type SavedSearch = { id: string; filters: SearchFilters; createdAt: string };
+
+/** Cùng một lượt tìm: server coi khác hoa thường, khác dấu là một — ở đây chỉ để tô nút "Đã lưu", lệch dấu thì server vẫn trả lượt cũ. */
+export function isSameSearch(a: SearchFilters, b: SearchFilters): boolean {
+  return (
+    a.q.trim().toLowerCase() === b.q.trim().toLowerCase() &&
+    a.categoryId === b.categoryId &&
+    a.provinceCode === b.provinceCode &&
+    a.minPrice === b.minPrice &&
+    a.maxPrice === b.maxPrice
+  );
+}
 
 /**
  * Server không nhận một mục lọc — 400 `VALIDATION_ERROR` kèm `details.field`: mẫu của danh mục đổi giữa hai lượt
@@ -633,6 +656,8 @@ export type NoticeKind = 'message' | 'offer' | 'listing' | 'expiring' | 'group' 
 export type NoticeTarget =
   | { screen: 'chat'; id: string }
   | { screen: 'listing'; id: string }
+  /** Mở màn tìm kiếm với bộ lọc của lượt tìm đã lưu; lượt tìm đã bị xoá thì mở tin vừa khớp. */
+  | { screen: 'search'; savedSearchId: string; listingId: string | null }
   | { screen: 'group'; id: string }
   | { screen: 'profile' }
   | { screen: 'warnings' };
@@ -783,6 +808,21 @@ function toCard(w: WireListing, lookups: Lookups): ListingCard {
     ended: w.state === 'sold' || w.state === 'expired' ? w.state : null,
   };
 }
+
+type WireSavedSearch = GetApiV1MeSavedSearchesResponses[200]['data'][number];
+
+const toSavedSearch = (w: WireSavedSearch): SavedSearch => ({
+  id: w.id,
+  createdAt: w.createdAt,
+  filters: {
+    q: w.q,
+    categoryId: w.categoryId,
+    provinceCode: w.provinceCode,
+    minPrice: w.priceMin,
+    maxPrice: w.priceMax,
+    attrs: {},
+  },
+});
 
 const provincesOf = (items: WireListing[]) => [
   ...new Set(items.flatMap((w) => (w.provinceCode === null ? [] : [w.provinceCode]))),
@@ -1061,6 +1101,7 @@ const DEAL_CATEGORIES: ReadonlySet<WireNotice['category']> = new Set([
   'messages',
   'your_listings',
   'group_new_listings',
+  'saved_searches',
 ]);
 
 const EXPIRING_TYPES: ReadonlySet<string> = new Set([
@@ -1079,7 +1120,13 @@ function kindOf(w: WireNotice): NoticeKind {
   if (w.type === 'messaging.offer.answered') return 'offer';
   if (w.category === 'messages' || w.category === 'support') return 'message';
   if (EXPIRING_TYPES.has(w.type)) return 'expiring';
-  if (w.category === 'your_listings' || w.category === 'group_new_listings') return 'listing';
+  if (
+    w.category === 'your_listings' ||
+    w.category === 'group_new_listings' ||
+    w.category === 'saved_searches'
+  ) {
+    return 'listing';
+  }
   if (w.category === 'your_groups' || w.category === 'group_announcements') return 'group';
   return 'account';
 }
@@ -1091,8 +1138,11 @@ function kindOf(w: WireNotice): NoticeKind {
  * "Cảnh cáo của tôi" — nơi duy nhất có nút khiếu nại mà câu nhắc hứa hẹn.
  */
 function targetOf(w: WireNotice): NoticeTarget | null {
-  const { conversationId, listingId } = w.data;
+  const { conversationId, listingId, savedSearchId } = w.data;
   if (conversationId) return { screen: 'chat', id: conversationId };
+  if (w.category === 'saved_searches' && savedSearchId) {
+    return { screen: 'search', savedSearchId, listingId: listingId ?? null };
+  }
   if (w.category === 'group_new_listings' && listingId) return { screen: 'listing', id: listingId };
   if (WARNING_TYPES.test(w.type)) return { screen: 'warnings' };
   if (
@@ -1293,6 +1343,28 @@ export const api = {
     ),
 
   /** Lưu gần nhất trước. Tin thôi hiện (đã bán, hết hạn…) server bỏ khỏi trang nhưng giữ lần lưu: hiện lại thì có lại. */
+  getSavedSearches: async (): Promise<SavedSearch[]> =>
+    (await unwrap(getApiV1MeSavedSearches())).map(toSavedSearch),
+
+  /** Lưu lại đúng lượt tìm đã có thì server trả lượt cũ (200), không lỗi; đủ trần thì 409 kèm câu báo. */
+  saveSearch: async (f: SearchFilters): Promise<SavedSearch> =>
+    toSavedSearch(
+      await unwrap(
+        postApiV1MeSavedSearches({
+          body: {
+            q: f.q.trim(),
+            categoryId: f.categoryId,
+            provinceCode: f.provinceCode,
+            priceMin: f.minPrice,
+            priceMax: f.maxPrice,
+          },
+        }),
+      ),
+    ),
+
+  deleteSavedSearch: (id: string): Promise<void> =>
+    unwrapEmpty(deleteApiV1MeSavedSearchesById({ path: { id } })),
+
   getSavedListings: async (load: LoadLookups): Promise<ListingCard[]> =>
     toCards((await unwrap(getApiV1MeSavedListings({ query: { limit: PAGE_SIZE } }))).items, load),
 

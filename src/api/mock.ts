@@ -16,15 +16,6 @@ const LATENCY_MS = 350;
 const wait = <T>(value: T, ms = LATENCY_MS) =>
   new Promise<T>((resolve) => setTimeout(() => resolve(value), ms));
 
-let savedSearches: string[] = [];
-
 export const mockApi = {
-  getSavedSearches: (): Promise<string[]> => wait(savedSearches, 150),
-
-  saveSearch: (q: string): Promise<void> => {
-    savedSearches = [...new Set([...savedSearches, q.trim().toLowerCase()])];
-    return wait(undefined);
-  },
-
   getHelpTopics: (): Promise<HelpTopic[]> => wait(D.HELP_TOPICS),
 };

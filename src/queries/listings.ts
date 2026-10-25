@@ -8,7 +8,6 @@ import {
   type ReportCategory,
   type SearchFilters,
 } from '@/api/client';
-import { mockApi } from '@/api/mock';
 import { useIsAuthenticated } from '@/stores/auth';
 import { lookupsFrom } from './catalog';
 import { qk } from './keys';
@@ -156,7 +155,7 @@ export function useSavedSearches() {
   const authed = useIsAuthenticated();
   return useQuery({
     queryKey: qk.savedSearches(),
-    queryFn: mockApi.getSavedSearches,
+    queryFn: api.getSavedSearches,
     enabled: authed,
   });
 }
@@ -164,7 +163,15 @@ export function useSavedSearches() {
 export function useSaveSearch() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (q: string) => mockApi.saveSearch(q),
+    mutationFn: (filters: SearchFilters) => api.saveSearch(filters),
+    onSuccess: () => qc.invalidateQueries({ queryKey: qk.savedSearches() }),
+  });
+}
+
+export function useDeleteSavedSearch() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.deleteSavedSearch(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: qk.savedSearches() }),
   });
 }

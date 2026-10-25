@@ -9009,6 +9009,219 @@ export type PutApiV1MeSavedListingsByListingIdResponses = {
 
 export type PutApiV1MeSavedListingsByListingIdResponse = PutApiV1MeSavedListingsByListingIdResponses[keyof PutApiV1MeSavedListingsByListingIdResponses];
 
+export type GetApiV1MeSavedSearchesData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/saved-searches';
+};
+
+export type GetApiV1MeSavedSearchesErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeSavedSearchesError = GetApiV1MeSavedSearchesErrors[keyof GetApiV1MeSavedSearchesErrors];
+
+export type GetApiV1MeSavedSearchesResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            id: string;
+            q: string;
+            categoryId: string | null;
+            provinceCode: number | null;
+            wardCode: number | null;
+            /**
+             * Số tiền, đơn vị đồng
+             */
+            priceMin: number | null;
+            /**
+             * Số tiền, đơn vị đồng
+             */
+            priceMax: number | null;
+            createdAt: string;
+        }>;
+    };
+};
+
+export type GetApiV1MeSavedSearchesResponse = GetApiV1MeSavedSearchesResponses[keyof GetApiV1MeSavedSearchesResponses];
+
+export type PostApiV1MeSavedSearchesData = {
+    body: {
+        q: string;
+        categoryId?: string | null;
+        provinceCode?: number | null;
+        wardCode?: number | null;
+        /**
+         * Số tiền, đơn vị đồng
+         */
+        priceMin?: number | null;
+        /**
+         * Số tiền, đơn vị đồng
+         */
+        priceMax?: number | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/saved-searches';
+};
+
+export type PostApiV1MeSavedSearchesErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1MeSavedSearchesError = PostApiV1MeSavedSearchesErrors[keyof PostApiV1MeSavedSearchesErrors];
+
+export type PostApiV1MeSavedSearchesResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            q: string;
+            categoryId: string | null;
+            provinceCode: number | null;
+            wardCode: number | null;
+            /**
+             * Số tiền, đơn vị đồng
+             */
+            priceMin: number | null;
+            /**
+             * Số tiền, đơn vị đồng
+             */
+            priceMax: number | null;
+            createdAt: string;
+        };
+    };
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            q: string;
+            categoryId: string | null;
+            provinceCode: number | null;
+            wardCode: number | null;
+            /**
+             * Số tiền, đơn vị đồng
+             */
+            priceMin: number | null;
+            /**
+             * Số tiền, đơn vị đồng
+             */
+            priceMax: number | null;
+            createdAt: string;
+        };
+    };
+};
+
+export type PostApiV1MeSavedSearchesResponse = PostApiV1MeSavedSearchesResponses[keyof PostApiV1MeSavedSearchesResponses];
+
+export type DeleteApiV1MeSavedSearchesByIdData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/me/saved-searches/{id}';
+};
+
+export type DeleteApiV1MeSavedSearchesByIdErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1MeSavedSearchesByIdError = DeleteApiV1MeSavedSearchesByIdErrors[keyof DeleteApiV1MeSavedSearchesByIdErrors];
+
+export type DeleteApiV1MeSavedSearchesByIdResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1MeSavedSearchesByIdResponse = DeleteApiV1MeSavedSearchesByIdResponses[keyof DeleteApiV1MeSavedSearchesByIdResponses];
+
 export type GetApiV1ListingsByIdSuggestionsData = {
     body?: never;
     path: {
@@ -15641,7 +15854,7 @@ export type GetApiV1MeNotificationsResponses = {
         data: {
             items: Array<{
                 id: string;
-                category: 'messages' | 'your_listings' | 'your_groups' | 'your_reports' | 'account' | 'trust_strikes' | 'group_announcements' | 'group_new_listings' | 'support';
+                category: 'messages' | 'your_listings' | 'your_groups' | 'your_reports' | 'account' | 'trust_strikes' | 'group_announcements' | 'group_new_listings' | 'support' | 'saved_searches';
                 type: string;
                 title: string;
                 body: string;
@@ -15807,7 +16020,7 @@ export type GetApiV1MeNotificationPreferencesResponses = {
         success: true;
         data: {
             categories: Array<{
-                category: 'messages' | 'your_listings' | 'your_groups' | 'your_reports' | 'account' | 'trust_strikes' | 'group_announcements' | 'group_new_listings' | 'support';
+                category: 'messages' | 'your_listings' | 'your_groups' | 'your_reports' | 'account' | 'trust_strikes' | 'group_announcements' | 'group_new_listings' | 'support' | 'saved_searches';
                 enabled: boolean;
             }>;
             mutedGroupIds: Array<string>;
@@ -15822,7 +16035,7 @@ export type PutApiV1MeNotificationPreferencesByCategoryData = {
         enabled: boolean;
     };
     path: {
-        category: 'messages' | 'your_listings' | 'your_groups' | 'your_reports' | 'account' | 'trust_strikes' | 'group_announcements' | 'group_new_listings' | 'support';
+        category: 'messages' | 'your_listings' | 'your_groups' | 'your_reports' | 'account' | 'trust_strikes' | 'group_announcements' | 'group_new_listings' | 'support' | 'saved_searches';
     };
     query?: never;
     url: '/api/v1/me/notification-preferences/{category}';

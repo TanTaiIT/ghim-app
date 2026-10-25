@@ -99,6 +99,7 @@ export default function RootLayout() {
                 <Stack.Screen name="help" />
                 <Stack.Screen name="reports" />
                 <Stack.Screen name="verify-id" />
+                <Stack.Screen name="saved-searches" />
                 <Stack.Screen name="settings" />
                 <Stack.Screen name="verify-email" />
                 <Stack.Screen name="warnings" />

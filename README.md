@@ -28,7 +28,7 @@ Backend: `cd ../ghim-server && pnpm dev` (cổng 3100). Bản dev hiện một �
 `/health/ready` để cho thấy đường ống app → SDK → backend → Postgres đang thông.
 
 **Dữ liệu mẫu.** Giao diện theo bộ UI "Chợ Đồ Cũ – bản làm mới" (10 màn + thanh điều hướng) đang chạy trên
-`mockApi` ở những phần chưa nối server: trợ giúp, tìm kiếm đã lưu. Đăng nhập, tin đăng, tin đã lưu, đăng tin (cả đăng
+`mockApi` ở phần chưa nối server: trợ giúp. Đăng nhập, tin đăng, tin đã lưu, tìm kiếm đã lưu, đăng tin (cả đăng
 vào nhóm và huy hiệu nhóm), tin của tôi, chat (cả trả giá, Hỗ trợ Ghim), thông báo, nhóm (cả quản trị nhóm) và bàn vận
 hành đã gọi ghim-server thật.
 
@@ -72,7 +72,7 @@ src/
   api/client.ts         gọi SDK + unwrap + domain type
   api/ops.ts            như client.ts, cho bàn vận hành (/ops/*): duyệt tin, báo cáo, giấy tờ, nhóm, hỗ trợ, danh mục
   api/group-manage.ts   như client.ts, cho chủ nhóm / điều hành viên (mọi route /groups/:id/* của quản trị)
-  api/mock*.ts          dữ liệu mẫu (trợ giúp, tìm kiếm đã lưu) — xoá khi backend có endpoint
+  api/mock*.ts          dữ liệu mẫu (trợ giúp) — xoá khi backend có endpoint
   api/generated/        SDK sinh, không sửa tay
   queries/keys.ts       key factory `qk`
   queries/*.ts          hook TanStack theo domain

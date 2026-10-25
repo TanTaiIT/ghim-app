@@ -86,6 +86,44 @@ describe('đọc tin đăng từ server', () => {
     setHttpAccessToken(null);
   });
 
+  it('lượt tìm đã lưu: server → bộ lọc của màn tìm kiếm (không attrs); lưu gửi bộ lọc, bỏ khoảng trắng', async () => {
+    const wire = {
+      id: 'ss-1',
+      q: 'samsung',
+      categoryId: 'c-1',
+      provinceCode: 1,
+      wardCode: null,
+      priceMin: 1_000_000,
+      priceMax: null,
+      createdAt: '2026-10-25T00:00:00.000Z',
+    };
+    const bodies: unknown[] = [];
+    jest.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      const req = input as Request;
+      if (req.method === 'POST') bodies.push(JSON.parse(await req.text()));
+      return Response.json({ success: true, data: req.method === 'POST' ? wire : [wire] });
+    });
+    const filters = {
+      q: 'samsung',
+      categoryId: 'c-1',
+      provinceCode: 1,
+      minPrice: 1_000_000,
+      maxPrice: null,
+      attrs: {},
+    };
+    expect(await api.getSavedSearches()).toEqual([
+      { id: 'ss-1', createdAt: '2026-10-25T00:00:00.000Z', filters },
+    ]);
+    await api.saveSearch({ ...filters, q: '  samsung ', attrs: { hang: ['Samsung'] } });
+    expect(bodies[0]).toEqual({
+      q: 'samsung',
+      categoryId: 'c-1',
+      provinceCode: 1,
+      priceMin: 1_000_000,
+      priceMax: null,
+    });
+  });
+
   it('tin đã lưu: đã bán, hết hạn mang nhãn kết thúc; tin đang hiện thì không', async () => {
     serve({
       '/api/v1/me/saved-listings': {
@@ -542,10 +580,18 @@ describe('thông báo', () => {
             body: 'Tài khoản đang ở mức T1.',
             data: {},
           }),
+          wireNotice({
+            id: 'n-9',
+            category: 'saved_searches',
+            type: 'listing.saved_search.match',
+            title: 'Tìm kiếm «samsung»',
+            body: '3 tin mới khớp tìm kiếm của bạn.',
+            data: { savedSearchId: 'ss-1', listingId: 'l-4' },
+          }),
         ],
         page: 1,
         limit: 100,
-        total: 8,
+        total: 9,
         totalPages: 1,
       },
     });
@@ -561,6 +607,13 @@ describe('thông báo', () => {
       ['n-6', 'system', 'message', { screen: 'chat', id: 'c-9' }, false],
       ['n-7', 'system', 'account', { screen: 'warnings' }, false],
       ['n-8', 'system', 'account', { screen: 'profile' }, false],
+      [
+        'n-9',
+        'deal',
+        'listing',
+        { screen: 'search', savedSearchId: 'ss-1', listingId: 'l-4' },
+        false,
+      ],
     ]);
     expect(notices[0]?.at).toBe('2026-10-18T09:05:00.000Z');
     // Phần chỉ xem trong app đi nguyên từ server; dòng không có thì null.

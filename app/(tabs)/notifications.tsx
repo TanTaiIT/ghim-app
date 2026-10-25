@@ -8,9 +8,11 @@ import { UnderlineTabs } from '@/components/TabStrip';
 import { useToast } from '@/components/Toast';
 import { EmptyState, Loading } from '@/components/ui';
 import { useMarkNoticesRead, useNotices } from '@/queries/account';
+import { useSavedSearches } from '@/queries/listings';
 import type { Notice, NoticeTab } from '@/api/client';
 import { useIsAuthenticated } from '@/stores/auth';
 import { C, F, S } from '@/theme';
+import { toSearchParams } from '@/utils/search-params';
 
 /** "Khuyến mãi" của bộ UI vắng cho tới khi server có gói đẩy tin — tab rỗng mãi chỉ làm người dùng đi tìm. */
 const TABS: { id: NoticeTab; label: string }[] = [
@@ -25,6 +27,7 @@ export default function Notifications() {
   const [tab, setTab] = useState<NoticeTab>('deal');
   const notices = useNotices();
   const markRead = useMarkNoticesRead();
+  const savedSearches = useSavedSearches();
   const items = notices.data?.filter((n) => n.tab === tab) ?? [];
 
   const open = ({ id, read, target }: Notice) => {
@@ -34,6 +37,12 @@ export default function Notifications() {
         return router.push(`/chat/${target.id}`);
       case 'listing':
         return router.push(`/listing/${target.id}`);
+      case 'search': {
+        const saved = savedSearches.data?.find((s) => s.id === target.savedSearchId);
+        if (saved)
+          return router.push({ pathname: '/search', params: toSearchParams(saved.filters) });
+        return target.listingId ? router.push(`/listing/${target.listingId}`) : undefined;
+      }
       case 'group':
         return router.push(`/group/${target.id}`);
       case 'profile':

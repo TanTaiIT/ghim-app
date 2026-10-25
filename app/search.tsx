@@ -16,8 +16,9 @@ import {
   useSearch,
   useToggleSaved,
 } from '@/queries/listings';
-import { NO_FILTERS, type SearchFilters } from '@/api/client';
+import { isSameSearch } from '@/api/client';
 import { C, F, R, S } from '@/theme';
+import { filtersFromParams, type SearchParams } from '@/utils/search-params';
 
 /**
  * Kết quả tìm kiếm. Thiết kế có nút sắp xếp (mới nhất / theo giá) nhưng `GET /listings` chưa nhận tham số
@@ -29,13 +30,9 @@ export default function Search() {
   const back = useBack();
   const toast = useToast();
   const guarded = useGuarded();
-  const params = useLocalSearchParams<{ q?: string; category?: string }>();
+  const params = useLocalSearchParams<SearchParams>();
   const [text, setText] = useState(params.q ?? '');
-  const [filters, setFilters] = useState<SearchFilters>({
-    ...NO_FILTERS,
-    q: params.q ?? '',
-    categoryId: params.category ?? null,
-  });
+  const [filters, setFilters] = useState(() => filtersFromParams(params));
 
   const results = useSearch(filters);
   useDropStaleFilter(results.error, filters, setFilters, toast);
@@ -45,7 +42,7 @@ export default function Search() {
   const saveSearch = useSaveSearch();
 
   const q = filters.q.trim();
-  const searchSaved = savedSearches.data?.includes(q.toLowerCase()) ?? false;
+  const searchSaved = savedSearches.data?.some((s) => isSameSearch(s.filters, filters)) ?? false;
   // Lưới hai cột: số tin lẻ thì ô cuối giãn hết bề ngang — chèn một ô trống để nó giữ nửa hàng.
   const hits = results.data ?? [];
   const cells = hits.length % 2 === 1 ? [...hits, null] : hits;
@@ -71,7 +68,7 @@ export default function Search() {
             disabled={searchSaved || saveSearch.isPending}
             onPress={() =>
               guarded(() =>
-                saveSearch.mutate(q, {
+                saveSearch.mutate(filters, {
                   onSuccess: () => toast('Đã lưu tìm kiếm'),
                   onError: (e) => toast(e.message),
                 }),
