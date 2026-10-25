@@ -3,11 +3,17 @@ import { api, type LoadLookups, type Lookups } from '@/api/client';
 import { qk } from './keys';
 
 /*
- * Dữ liệu tham chiếu của server: danh mục, tỉnh/thành, phường/xã. Đổi rất hiếm nên không tự refetch
- * (`staleTime: Infinity`); danh sách phường tải theo tỉnh vì cả nước có hàng nghìn phường.
+ * Dữ liệu tham chiếu của server: danh mục, tỉnh/thành, phường/xã. Tỉnh, phường không đổi nên không tự refetch
+ * (`staleTime: Infinity`); danh sách phường tải theo tỉnh vì cả nước có hàng nghìn phường. Danh mục thì master bật, tắt
+ * được, và spec category-catalog hứa app thấy chậm nhiều nhất 5 phút (server cũng trả `max-age=300`).
  */
 
-const categories = { queryKey: qk.categories(), queryFn: api.getCategories, staleTime: Infinity };
+const CATEGORY_STALE_MS = 5 * 60_000;
+const categories = {
+  queryKey: qk.categories(),
+  queryFn: api.getCategories,
+  staleTime: CATEGORY_STALE_MS,
+};
 const provinces = { queryKey: qk.provinces(), queryFn: api.getProvinces, staleTime: Infinity };
 const wards = (code: number) => ({
   queryKey: qk.wards(code),
