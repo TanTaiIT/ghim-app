@@ -86,6 +86,21 @@ describe('đọc tin đăng từ server', () => {
     setHttpAccessToken(null);
   });
 
+  it('tin đã lưu: đã bán, hết hạn mang nhãn kết thúc; tin đang hiện thì không', async () => {
+    serve({
+      '/api/v1/me/saved-listings': {
+        items: [
+          { ...wireListing, id: 'l-sold', state: 'sold' },
+          { ...wireListing, id: 'l-expired', state: 'expired' },
+          wireListing,
+        ],
+        nextCursor: null,
+      },
+    });
+    const cards = await api.getSavedListings(loadLookups);
+    expect(cards.map((card) => card.ended)).toEqual(['sold', 'expired', null]);
+  });
+
   it('thẻ tin: tra tên khu vực qua lookups, ảnh đầu làm bìa, chưa có người bán; bộ lọc thành query', async () => {
     const calls = serve({ '/api/v1/listings': { items: [wireListing], nextCursor: null } });
     const load = jest.fn(async (_codes: number[]) => lookups);
@@ -106,6 +121,7 @@ describe('đọc tin đăng từ server', () => {
       boosted: false,
       seller: null,
       groupName: 'Hội Nhiếp ảnh',
+      ended: null,
     });
     expect(load).toHaveBeenCalledWith([1]);
     expect(calls[0]?.url.searchParams.get('q')).toBe('bàn');
@@ -727,6 +743,7 @@ const myListing = (overrides: Partial<MyListing> = {}): MyListing => ({
   boosted: false,
   seller: null,
   groupName: null,
+  ended: null,
   state: 'live',
   views: null,
   saves: null,

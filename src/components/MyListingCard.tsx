@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import { myListingActions, type MyListing, type MyListingAction } from '@/api/client';
+import { ENDED_TAG } from './ListingCard';
 import { Photo } from './Photo';
 import { PickerSheet } from './PickerSheet';
 import { IconButton, Price, Tag } from './ui';
@@ -17,8 +18,8 @@ const LABEL: Record<Exclude<MyListing['state'], 'live'>, { label: string; tone: 
   checking: { label: 'Đang kiểm tra', tone: 'amber' },
   pending: { label: 'Chờ duyệt', tone: 'amber' },
   rejected: { label: 'Bị từ chối', tone: 'boost' },
-  expired: { label: 'Đã hết hạn', tone: 'boost' },
-  sold: { label: 'Đã bán', tone: 'neutral' },
+  expired: ENDED_TAG.expired,
+  sold: ENDED_TAG.sold,
 };
 
 function status(item: MyListing): { label: string; tone: Tone } {

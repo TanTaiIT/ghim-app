@@ -8,6 +8,12 @@ import { Price, Tag } from './ui';
 import { C, F, R, S } from '@/theme';
 import { formatAgo, formatPlace } from '@/utils/format';
 
+/** Nhãn của tin đã kết thúc — dùng chung với "Tin của tôi" để hai nơi gọi một trạng thái bằng một chữ. */
+export const ENDED_TAG = {
+  sold: { label: 'Đã bán', tone: 'neutral' },
+  expired: { label: 'Đã hết hạn', tone: 'boost' },
+} as const;
+
 /**
  * Thẻ tin dạng ô: `featured` (dải ngang Tin nổi bật, luôn mang nhãn), `grid` (lưới hai cột kết quả
  * tìm kiếm, có trái tim và người bán), `mini` (Tin tương tự — chỉ ảnh, tên, giá). Trái tim chỉ hiện khi màn truyền `onToggleSave` — mutation khởi
@@ -110,6 +116,11 @@ export function ListingRow({ item, onPress }: { item: ListingCard; onPress: () =
         <Text style={styles.meta} numberOfLines={1}>
           {formatPlace(item.place, true)} · {ago}
         </Text>
+        {item.ended && (
+          <View style={styles.ended}>
+            <Tag label={ENDED_TAG[item.ended].label} tone={ENDED_TAG[item.ended].tone} />
+          </View>
+        )}
         {item.groupName && (
           <View style={styles.group}>
             <Feather name="users" size={12} color={C.brandDark} />
@@ -169,6 +180,7 @@ const styles = StyleSheet.create({
   thumb: { width: 92, height: 92, borderRadius: R.sm },
   rowBody: { flex: 1, minWidth: 0, gap: S.xs, paddingTop: 2 },
   rowTitle: { fontFamily: F.uiSemi, fontSize: 15, lineHeight: 20, color: C.ink },
+  ended: { alignSelf: 'flex-start' },
   group: {
     alignSelf: 'flex-start',
     flexDirection: 'row',

@@ -77,6 +77,12 @@ export default function ListingDetail() {
       <ScrollView>
         <Gallery photos={l.photos} height={320} />
         <View style={styles.sheet}>
+          {l.ended && (
+            <SafetyNote
+              title={l.ended === 'sold' ? 'Tin đã bán' : 'Tin đã hết hạn'}
+              text="Người bán không còn rao tin này: không mở được hội thoại mới hay trả giá. Hội thoại đã có vẫn nhắn tiếp được."
+            />
+          )}
           <ListingSummary listing={l} />
           <SellerCard seller={l.seller} onOpen={() => router.push(`/user/${l.seller.id}`)} />
           {l.specs.length > 0 && <SpecGrid specs={l.specs} />}
@@ -155,7 +161,7 @@ export default function ListingDetail() {
               : toast('Người bán chưa thêm số điện thoại')
           }
         />
-        {l.allowOffers && (
+        {l.allowOffers && !l.ended && (
           <View style={styles.flex}>
             <OutlineButton label="Trả giá" onPress={() => chat(true)} />
           </View>

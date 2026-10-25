@@ -324,6 +324,11 @@ export type ListingCard = {
   seller: Person | null;
   /** Nhóm mà tin được đăng vào — mục "Gần bạn" gắn nhãn để người xem biết tin đến từ đâu. */
   groupName: string | null;
+  /**
+   * Tin đã bán hay hết hạn: chỉ mở được bằng đường link và còn trong "Đã lưu" (TK 15) — mọi danh sách khác chỉ có tin
+   * đang hiển thị, nên ở đó luôn null. Không mở được hội thoại mới hay trả giá.
+   */
+  ended: 'sold' | 'expired' | null;
 };
 
 /*
@@ -775,6 +780,7 @@ function toCard(w: WireListing, lookups: Lookups): ListingCard {
     boosted: w.featuredUntil !== null && Date.parse(w.featuredUntil) > Date.now(),
     seller: null,
     groupName: w.badge?.name ?? null,
+    ended: w.state === 'sold' || w.state === 'expired' ? w.state : null,
   };
 }
 
