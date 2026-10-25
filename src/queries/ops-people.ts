@@ -4,11 +4,15 @@ import { qk } from './keys';
 
 /* Người dùng trên bàn vận hành: xác minh giấy tờ, lịch sử gậy, khoá / mở khoá. */
 
+/** Hồ sơ mới đến từ người dùng, tab vẫn mở sẵn — tự tải lại mỗi phút như hàng chờ duyệt tin (`ops-review`). */
+const ID_QUEUE_REFRESH_MS = 60_000;
+
 export function useIdChecks(status: IdCheck['status'] | null) {
   return useQuery({
     queryKey: qk.ops.idChecks(status),
     queryFn: () => opsApi.idChecks(status),
     placeholderData: keepPreviousData,
+    refetchInterval: ID_QUEUE_REFRESH_MS,
   });
 }
 

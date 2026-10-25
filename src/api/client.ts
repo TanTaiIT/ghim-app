@@ -32,6 +32,7 @@ import {
   getApiV1MeGroups,
   getApiV1MeListings,
   getApiV1MeNotificationPreferences,
+  postApiV1MeIdVerification,
   putApiV1MeNotificationPreferencesByCategory,
   postApiV1MeEmailChangeConfirm,
   postApiV1MeEmailChange,
@@ -197,6 +198,39 @@ export const REPORT_CATEGORIES = [
 ] as const;
 
 export type ReportCategory = (typeof REPORT_CATEGORIES)[number];
+
+/** Loại giấy tờ người dùng chọn — server nhận chữ tự do, app đưa sẵn ba loại hay gặp. */
+export type IdDocumentType = 'CCCD' | 'CMND' | 'Hộ chiếu';
+
+export const ID_DOCUMENT_TYPES: { value: IdDocumentType; label: string; digits: number | null }[] =
+  [
+    { value: 'CCCD', label: 'Căn cước công dân', digits: 12 },
+    { value: 'CMND', label: 'Chứng minh nhân dân', digits: 9 },
+    { value: 'Hộ chiếu', label: 'Hộ chiếu', digits: null },
+  ];
+
+/**
+ * Số giấy tờ gõ sai dạng thì báo ngay, khỏi chờ người duyệt từ chối: CCCD 12 số, CMND 9 số; hộ chiếu theo luật server
+ * (4–40 ký tự). null = hợp lệ.
+ */
+export function idNumberIssue(type: IdDocumentType, number: string): string | null {
+  const value = number.trim();
+  const digits = ID_DOCUMENT_TYPES.find((t) => t.value === type)?.digits ?? null;
+  if (digits !== null) {
+    return /^\d+$/.test(value) && value.length === digits
+      ? null
+      : `${type} gồm đúng ${digits} chữ số`;
+  }
+  return value.length >= 4 && value.length <= 40 ? null : 'Số hộ chiếu từ 4 đến 40 ký tự';
+}
+
+/** Hồ sơ vừa nộp — không có số giấy tờ: server không trả lại số cho ai, kể cả người nộp (TK 27 cam kết 32). */
+export type IdSubmission = {
+  documentType: string;
+  fullName: string;
+  status: 'pending' | 'verified' | 'rejected';
+  submittedAt: string;
+};
 
 /** Báo cáo mình đã gửi: server không trả tiêu đề tin hay tên người — chỉ mã để mở lại (không lộ gì thêm cho người báo). */
 export type MyReport = {
@@ -1315,6 +1349,29 @@ export const api = {
       reportedAt: w.reportedAt,
       decidedAt: w.decidedAt,
     })),
+
+  /** Tự nguyện, không ảnh hưởng gì (spec id-verification); đang có hồ sơ chờ thì server trả 409 kèm câu báo. */
+  submitIdVerification: async (input: {
+    documentType: IdDocumentType;
+    documentNumber: string;
+    fullName: string;
+  }): Promise<IdSubmission> => {
+    const w = await unwrap(
+      postApiV1MeIdVerification({
+        body: {
+          documentType: input.documentType,
+          documentNumber: input.documentNumber.trim(),
+          fullName: input.fullName.trim(),
+        },
+      }),
+    );
+    return {
+      documentType: w.documentType,
+      fullName: w.fullName,
+      status: w.status,
+      submittedAt: w.createdAt,
+    };
+  },
 
   /** Mã gửi tới email MỚI; email cũ vẫn là email đăng nhập tới khi xác nhận (spec email-change). */
   requestEmailChange: async (email: string, currentPassword: string): Promise<void> => {

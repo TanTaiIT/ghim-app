@@ -63,6 +63,7 @@ app/                    routes (expo-router) — chỉ route + layout, export de
   post/                 đăng tin 3 bước: index → details → preview (cần phiên)
   help.tsx              trợ giúp (cần phiên)
   reports.tsx           báo cáo mình đã gửi và kết quả (cần phiên)
+  verify-id.tsx         nộp giấy tờ xác minh (CCCD, CMND, hộ chiếu) — tự nguyện, không ảnh hưởng gì (cần phiên)
   ops/                  bàn vận hành cho master, staff (cần phiên master / staff; lối vào ở Cá nhân); ops/staff/ =
                         quyền staff (master); ops/category/ = cài đặt máy duyệt + soạn, phát hành mẫu thông tin (master);
                         ops/lookup.tsx = tra mã tra cứu, gỡ đánh dấu thiết bị (master, staff hỗ trợ)

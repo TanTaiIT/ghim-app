@@ -84,14 +84,7 @@ export default function Profile() {
           } as const,
         ]
       : []),
-    {
-      icon: 'check-circle',
-      label: 'Xác minh tài khoản',
-      onPress: () =>
-        toast(
-          me.data.idVerified ? 'Tài khoản đã xác minh CCCD' : 'Xác minh giấy tờ sẽ có ở bản sau',
-        ),
-    },
+    { icon: 'check-circle', label: 'Xác minh tài khoản', onPress: () => router.push('/verify-id') },
     {
       icon: 'users',
       label: 'Nhóm của tôi',

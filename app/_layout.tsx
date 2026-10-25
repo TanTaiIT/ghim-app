@@ -98,6 +98,7 @@ export default function RootLayout() {
                 <Stack.Screen name="group/manage" />
                 <Stack.Screen name="help" />
                 <Stack.Screen name="reports" />
+                <Stack.Screen name="verify-id" />
                 <Stack.Screen name="settings" />
                 <Stack.Screen name="verify-email" />
                 <Stack.Screen name="warnings" />

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { api, type Notice } from '@/api/client';
+import { api, type IdDocumentType, type Notice } from '@/api/client';
 import { mockApi } from '@/api/mock';
 import { useIsAuthenticated } from '@/stores/auth';
 import { qk } from './keys';
@@ -76,4 +76,15 @@ export function useMarkNoticesRead() {
 
 export function useHelpTopics() {
   return useQuery({ queryKey: qk.help(), queryFn: mockApi.getHelpTopics, staleTime: Infinity });
+}
+
+/** Nộp giấy tờ không đổi gì trong cache: server không trả trạng thái xác minh trong hồ sơ hay ở đâu khác. */
+export function useSubmitIdVerification() {
+  return useMutation({
+    mutationFn: (input: {
+      documentType: IdDocumentType;
+      documentNumber: string;
+      fullName: string;
+    }) => api.submitIdVerification(input),
+  });
 }

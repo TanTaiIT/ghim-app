@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, jest } from '@jest/globals';
 import {
   api,
+  idNumberIssue,
   IMAGE_TOO_SMALL,
   myListingActions,
   NO_FILTERS,
@@ -737,6 +738,59 @@ const myListing = (overrides: Partial<MyListing> = {}): MyListing => ({
   renewal: null,
   moveUntil: null,
   ...overrides,
+});
+
+describe('xác minh giấy tờ', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('số giấy tờ: CCCD 12 số, CMND 9 số, hộ chiếu 4–40 ký tự', () => {
+    expect(idNumberIssue('CCCD', ' 079203001234 ')).toBeNull();
+    expect(idNumberIssue('CCCD', '07920300123')).toMatch(/12 chữ số/);
+    expect(idNumberIssue('CCCD', '07920300123A')).toMatch(/12 chữ số/);
+    expect(idNumberIssue('CMND', '123456789')).toBeNull();
+    expect(idNumberIssue('Hộ chiếu', 'C1234567')).toBeNull();
+    expect(idNumberIssue('Hộ chiếu', 'C12')).toMatch(/4 đến 40/);
+  });
+
+  it('nộp hồ sơ gửi số đã cắt khoảng trắng; kết quả không mang số giấy tờ', async () => {
+    const bodies: unknown[] = [];
+    jest.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      bodies.push(JSON.parse(await (input as Request).text()));
+      const data = {
+        id: 'v-1',
+        accountId: 'u-1',
+        documentType: 'CCCD',
+        fullName: 'Nguyễn Văn Tài',
+        status: 'pending',
+        createdAt: '2026-10-25T00:00:00.000Z',
+        reviewedAt: null,
+        reason: null,
+      };
+      return new Response(JSON.stringify({ success: true, data }), {
+        status: 201,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    });
+    expect(
+      await api.submitIdVerification({
+        documentType: 'CCCD',
+        documentNumber: ' 079203001234 ',
+        fullName: ' Nguyễn Văn Tài ',
+      }),
+    ).toEqual({
+      documentType: 'CCCD',
+      fullName: 'Nguyễn Văn Tài',
+      status: 'pending',
+      submittedAt: '2026-10-25T00:00:00.000Z',
+    });
+    expect(bodies[0]).toEqual({
+      documentType: 'CCCD',
+      documentNumber: '079203001234',
+      fullName: 'Nguyễn Văn Tài',
+    });
+  });
 });
 
 describe('cài đặt: chặn, thông báo, báo cáo của tôi, đổi email', () => {
