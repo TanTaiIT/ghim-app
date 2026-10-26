@@ -17,9 +17,15 @@ cp .env.example .env         # EXPO_PUBLIC_API_URL — máy thật dùng IP LAN 
 npx expo start -c --go       # quét QR bằng Expo Go; bỏ --go khi đã có development build
 ```
 
-Cần Node 24 (`.nvmrc`). App hiện chỉ dùng module có sẵn trong **Expo Go** nên chạy được ngay bằng Expo Go;
-`expo-dev-client` đã cài sẵn cho lúc thêm module native (push, kho ảnh): khi đó
-`eas build --profile development` rồi `npx expo start --dev-client`.
+Cần Node 24 (`.nvmrc`). Mọi màn chạy được bằng **Expo Go**, trừ thông báo đẩy: Expo Go bỏ push trên Android từ SDK 53.
+Muốn nhận push trên máy thật:
+
+1. `npx eas init` (đăng nhập tài khoản Expo) — ghi `extra.eas.projectId` vào `app.json`; thiếu mã này Expo không cấp
+   token, app lặng lẽ bỏ qua bước đăng ký (`src/api/push.ts`).
+2. `eas build --profile development` rồi `npx expo start --dev-client`.
+
+Đăng nhập xong app hỏi quyền thông báo và gắn token vào phiên (`PUT /me/push-token`); tắt cho riêng máy ở Cài đặt ›
+Thông báo. Bấm thông báo tin nhắn mở thẳng hội thoại, thông báo khác mở mục Thông báo.
 
 Web: `npm run web` (cần `react-native-web` + `@expo/metro-runtime`, đã có trong dependencies). Trên web phiên đăng
 nhập chỉ giữ trong bộ nhớ — tải lại trang là phải đăng nhập lại (xem `src/stores/auth.ts`).

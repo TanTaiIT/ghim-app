@@ -1198,6 +1198,22 @@ describe('cài đặt', () => {
     expect(calls[1]?.url.searchParams.get('limit')).toBe('100');
   });
 
+  it('thông báo đẩy: gắn token Expo vào phiên, thôi đẩy lên máy này', async () => {
+    const calls = record();
+
+    await api.setPushToken('ExponentPushToken[abc-123]');
+    await api.clearPushToken();
+
+    expect(calls.map(({ method, path, body }) => ({ method, path, body }))).toEqual([
+      {
+        method: 'PUT',
+        path: '/api/v1/me/push-token',
+        body: { token: 'ExponentPushToken[abc-123]' },
+      },
+      { method: 'DELETE', path: '/api/v1/me/push-token', body: null },
+    ]);
+  });
+
   it('đổi mật khẩu, đăng xuất một máy hay mọi máy khác, gỡ chặn, xoá tài khoản', async () => {
     const calls = record();
 
