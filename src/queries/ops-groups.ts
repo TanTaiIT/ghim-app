@@ -36,3 +36,5 @@ export const useLockOpsGroup = () =>
   useGroupMutation((d: { id: string; reason: string }) => opsApi.lockGroup(d));
 export const useUnlockOpsGroup = () => useGroupMutation((id: string) => opsApi.unlockGroup(id));
 export const useCloseOpsGroup = () => useGroupMutation((id: string) => opsApi.closeGroup(id));
+export const useOfferGroupOwner = () =>
+  useGroupMutation((d: { id: string; accountId: string }) => opsApi.offerGroupOwner(d));

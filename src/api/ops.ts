@@ -41,6 +41,7 @@ import {
   postApiV1OpsGroups,
   postApiV1OpsGroupsByGroupIdClose,
   postApiV1OpsGroupsByGroupIdLock,
+  postApiV1OpsGroupsByGroupIdOwnerOffers,
   postApiV1OpsGroupsByGroupIdUnlock,
   postApiV1OpsIdVerificationsByIdDecision,
   postApiV1OpsReviewReasonTemplates,
@@ -635,6 +636,14 @@ export const GROUP_STATE_LABEL: Record<OpsGroupState, string> = {
   closed: 'Đã đóng',
 };
 
+/** Trạng thái master giao chủ được (ghim-server `ASSIGNABLE`): mọi trạng thái trừ đã đóng và đang chuyển riêng tư. */
+export const OWNER_ASSIGNABLE: ReadonlySet<OpsGroupState> = new Set([
+  'pending_owner',
+  'active',
+  'ownerless',
+  'locked',
+]);
+
 export const GROUP_KIND_LABEL: Record<OpsGroupKind, string> = {
   school: 'Trường học',
   company: 'Công ty',
@@ -997,6 +1006,16 @@ export const opsApi = {
 
   closeGroup: (id: string): Promise<void> =>
     unwrapEmpty(postApiV1OpsGroupsByGroupIdClose({ path: { groupId: id } })),
+
+  /**
+   * Master giao chủ — lần đầu, nhóm thiếu chủ, hay giao đè (lời giao / lời chuyển đang chờ bị huỷ). Người nhận đồng ý
+   * trong 14 ngày; mức tin cậy xét lúc họ đồng ý, không lúc giao. Người không đủ điều kiện: 409 `GROUP_ROLE_INELIGIBLE`.
+   */
+  offerGroupOwner: async ({ id, accountId }: { id: string; accountId: string }): Promise<void> => {
+    await unwrap(
+      postApiV1OpsGroupsByGroupIdOwnerOffers({ path: { groupId: id }, body: { accountId } }),
+    );
+  },
 
   supportQueue: async (pendingOnly: boolean, pageNo = 1): Promise<OpsPage<SupportThread>> =>
     page(

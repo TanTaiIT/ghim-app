@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ActionBar, BarButton } from '@/components/ActionBar';
 import { InputSheet } from '@/components/InputSheet';
 import { OpsHeader } from '@/components/OpsHeader';
@@ -14,16 +14,17 @@ import {
   useUnlockOpsGroup,
 } from '@/queries/ops-groups';
 import { GROUP_MODE_LABEL } from '@/api/client';
-import { GROUP_KIND_LABEL, GROUP_STATE_LABEL } from '@/api/ops';
+import { GROUP_KIND_LABEL, GROUP_STATE_LABEL, OWNER_ASSIGNABLE } from '@/api/ops';
 import { C, F, R, S } from '@/theme';
 import { formatAgo } from '@/utils/format';
 
 /**
- * Hồ sơ nhóm (master): khoá tạm kèm lý do, mở khoá, đóng vĩnh viễn. Giao chủ (`owner-offers`) cần chọn một người cụ
- * thể, mà bàn vận hành chưa tìm được người dùng — để lại cho lượt có API tìm người.
+ * Hồ sơ nhóm (master): giao chủ (chọn người ở màn riêng), khoá tạm kèm lý do, mở khoá, đóng vĩnh viễn. Nhóm mới lập
+ * nằm ở "Chờ giao chủ" tới khi người được giao đồng ý — không giao thì không ai vào được nhóm.
  */
 export default function OpsGroup() {
   const { id = '' } = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
   const toast = useToast();
   const group = useOpsGroup(id);
   const lock = useLockOpsGroup();
@@ -78,6 +79,16 @@ export default function OpsGroup() {
       </ScrollView>
 
       <ActionBar note={closed ? 'Nhóm đã đóng vĩnh viễn.' : null}>
+        {OWNER_ASSIGNABLE.has(g.state) && (
+          <BarButton
+            icon="user-check"
+            label="Giao chủ"
+            disabled={busy}
+            onPress={() =>
+              router.push({ pathname: '/ops/group/owner', params: { id: g.id, name: g.name } })
+            }
+          />
+        )}
         {g.state === 'locked' ? (
           <BarButton
             icon="unlock"

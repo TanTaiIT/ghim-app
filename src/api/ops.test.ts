@@ -196,6 +196,28 @@ describe('quyền staff', () => {
   });
 });
 
+describe('nhóm', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('giao chủ: gửi mã tài khoản được chọn theo nhóm', async () => {
+    const calls = serve({
+      id: 'o-1',
+      groupId: 'g-1',
+      groupName: 'Hội Nhiếp ảnh',
+      kind: 'assignment',
+      expiresAt: '2026-11-09T00:00:00.000Z',
+    });
+
+    await opsApi.offerGroupOwner({ id: 'g-1', accountId: 'u-7' });
+
+    expect(calls).toEqual([
+      { method: 'POST', path: '/api/v1/ops/groups/g-1/owner-offers', body: { accountId: 'u-7' } },
+    ]);
+  });
+});
+
 describe('loại việc quyết định nút nào hiện', () => {
   it('báo cáo thắng mọi lý do khác vì server bắt buộc report.verdict', () => {
     expect(taskKind(['machine_hold', 'report'])).toBe('report');
