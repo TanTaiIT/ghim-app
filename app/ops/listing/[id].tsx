@@ -28,10 +28,12 @@ export default function OpsListing() {
   const [sheet, setSheet] = useState<'reason' | 'restore' | null>(null);
 
   if (listing.isPending) return <Loading />;
-  const l = listing.data;
   const hidden = listing.error instanceof ApiError && listing.error.status === 404;
+  // Lượt tải lại trả 404 thì TanStack vẫn giữ `data` của lượt trước (tin lúc còn hiện, trong cache từ trang tin): bỏ nó,
+  // kẻo màn vừa mời gỡ vừa mời khôi phục. Tên tin vẫn lấy từ đó để người xử biết đang khôi phục tin nào.
+  const l = hidden ? undefined : listing.data;
   const busy = remove.isPending || restore.isPending;
-  const name = l?.title ?? title ?? 'Tin đăng';
+  const name = listing.data?.title ?? title ?? 'Tin đăng';
 
   const note = l
     ? !l.marketplace
