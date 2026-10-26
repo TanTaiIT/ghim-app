@@ -596,6 +596,8 @@ export type Group =
       allowOutsiders: boolean;
       /** Tin sàn của thành viên mang tên nhóm — chỉ bật được ở nhóm riêng tư. */
       showNameOnMarketplace: boolean;
+      /** Tin gửi mới, gửi lại vào nhóm luôn chờ quản trị nhóm duyệt, kể cả khi máy cho qua. */
+      manualReview: boolean;
       /** Chỉ chủ nhóm và điều hành viên được biết lý do khoá. */
       lockedReason: string | null;
       /** Mã vào nhóm — chỉ chủ nhóm và điều hành viên thấy; nhóm không dùng mã thì null. */
@@ -1312,6 +1314,7 @@ function toGroup(w: WireGroupView): Group {
     boardStyle: w.boardStyle,
     allowOutsiders: w.allowOutsiders,
     showNameOnMarketplace: w.showNameOnMarketplace,
+    manualReview: w.manualReview,
     lockedReason: w.lockedReason,
     code: w.code,
     units: w.units.map(({ id, name }) => ({ id, name })),

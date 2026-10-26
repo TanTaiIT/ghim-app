@@ -100,6 +100,7 @@ export type GroupSettingsPatch = {
   allowOutsiders?: boolean;
   showNameOnMarketplace?: boolean;
   boardStyle?: 'list' | 'grid';
+  manualReview?: boolean;
 };
 
 /** Một trang đủ cho một nhóm; `total` cho biết còn bao nhiêu chưa hiện. */

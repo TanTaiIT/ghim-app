@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, jest } from '@jest/globals';
 import {
+  asksJudgment,
   fieldNameOf,
   listingIdIn,
   normalizeLookupCode,
@@ -259,6 +260,12 @@ describe('loại việc quyết định nút nào hiện', () => {
     expect(taskKind(['group_escalation', 'machine_hold'])).toBe('screen');
     expect(taskKind(['machine_restricted'])).toBe('screen');
     expect(taskKind(['sample_risk'])).toBe('screen');
+  });
+
+  it('cho đạt tin máy giữ hỏi máy đúng hay quá tay, trừ tin giữ vì nhóm duyệt tay', () => {
+    expect(asksJudgment({ reasons: ['machine_hold'], groupManual: false })).toBe(true);
+    expect(asksJudgment({ reasons: ['machine_hold'], groupManual: true })).toBe(false);
+    expect(asksJudgment({ reasons: ['sample_risk'], groupManual: false })).toBe(false);
   });
 });
 

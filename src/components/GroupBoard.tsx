@@ -83,6 +83,11 @@ export function GroupBoard({
           <Feather name="camera" size={20} color={C.brand} />
         </Pressable>
       )}
+      {onCompose && g.manualReview && (
+        <Text style={styles.manual}>
+          Nhóm duyệt mọi tin trước khi hiện — tin bạn đăng sẽ chờ quản trị nhóm duyệt.
+        </Text>
+      )}
       {listings.isPending ? (
         <Loading />
       ) : !listings.data?.length ? (
@@ -131,6 +136,7 @@ const styles = StyleSheet.create({
     backgroundColor: C.paperWarm,
   },
   composeText: { flex: 1, fontFamily: F.ui, fontSize: 14, color: C.muted },
+  manual: { marginTop: -S.xs, fontFamily: F.ui, fontSize: 12, lineHeight: 17, color: C.inkSoft },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: S.md },
   cell: { width: '47%' },
   about: { fontFamily: F.ui, fontSize: 14, lineHeight: 22, color: C.inkMid },

@@ -72,6 +72,12 @@ export function OpsTaskBody({
           />
         )}
 
+        {task.groupManual && (
+          <Note
+            icon="users"
+            text="Nhóm bật duyệt tay mọi tin — máy đã cho qua, tin chờ quản trị nhóm duyệt."
+          />
+        )}
         {task.machine && task.machine.hits.length > 0 && (
           <Section
             title={`Máy đã trúng${task.machine.score !== null ? ` · điểm ${task.machine.score}` : ''}`}
@@ -221,7 +227,7 @@ function Note({
   text,
   warn = false,
 }: {
-  icon: 'copy' | 'smartphone' | 'corner-up-right' | 'trash-2';
+  icon: 'copy' | 'smartphone' | 'corner-up-right' | 'trash-2' | 'users';
   text: string;
   warn?: boolean;
 }) {

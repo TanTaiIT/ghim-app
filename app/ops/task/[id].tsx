@@ -11,7 +11,13 @@ import { EmptyState, Loading } from '@/components/ui';
 import { useMe } from '@/queries/account';
 import { useCategories } from '@/queries/catalog';
 import { useDecideTask, useOpsTask, useReasonTemplates } from '@/queries/ops-review';
-import { JUDGMENT_OPTIONS, taskKind, type MachineJudgment, type TaskDecision } from '@/api/ops';
+import {
+  asksJudgment,
+  JUDGMENT_OPTIONS,
+  taskKind,
+  type MachineJudgment,
+  type TaskDecision,
+} from '@/api/ops';
 import { C } from '@/theme';
 import { formatDue } from '@/utils/format';
 
@@ -51,7 +57,7 @@ export default function OpsTask() {
 
   const t = task.data;
   const kind = taskKind(t.reasons);
-  const held = t.reasons.includes('machine_hold');
+  const held = asksJudgment(t);
   const onListing = t.subject === 'listing' && !t.listingDeleted;
 
   const run = (decision: TaskDecision, done: string) =>

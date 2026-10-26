@@ -15,13 +15,13 @@ import {
   useGroupReviewTask,
 } from '@/queries/group-manage';
 import { detachDecision, type GroupDecision } from '@/api/group-manage';
-import { JUDGMENT_OPTIONS, taskKind } from '@/api/ops';
+import { asksJudgment, JUDGMENT_OPTIONS, taskKind } from '@/api/ops';
 import { C } from '@/theme';
 
 type Sheet = 'judgment' | 'reason' | 'detach' | null;
 
 /**
- * Một việc của nhóm với ba lối ra: duyệt (tin máy giữ thì nói máy đúng hay quá tay), từ chối kèm lý do mẫu, gỡ khỏi
+ * Một việc của nhóm với ba lối ra: duyệt (tin máy giữ thì nói máy đúng hay quá tay, trừ tin giữ vì nhóm duyệt tay), từ chối kèm lý do mẫu, gỡ khỏi
  * nhóm — một bảng cho cả "chỉ gỡ" và "gỡ + báo vi phạm quy định sàn" (có chữ là báo), để không mở bảng này từ bảng kia.
  * Quyết xong thì về hàng chờ: việc đã đóng.
  */
@@ -47,7 +47,7 @@ export default function GroupReviewTask() {
   }
 
   const t = task.data;
-  const held = t.reasons.includes('machine_hold');
+  const held = asksJudgment(t);
   const decidable = taskKind(t.reasons) === 'screen' && t.claim !== 'taken';
   const busy = decide.isPending;
   const run = (decision: GroupDecision, done: string) =>

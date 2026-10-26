@@ -3836,6 +3836,7 @@ export type GetApiV1GroupsByGroupIdResponses = {
             boardStyle: 'list' | 'grid';
             allowOutsiders: boolean;
             showNameOnMarketplace: boolean;
+            manualReview: boolean;
             code: string | null;
             lockedReason: string | null;
             units: Array<{
@@ -6143,6 +6144,7 @@ export type PatchApiV1GroupsByGroupIdSettingsData = {
         allowOutsiders?: boolean;
         showNameOnMarketplace?: boolean;
         boardStyle?: 'list' | 'grid';
+        manualReview?: boolean;
     };
     path: {
         groupId: string;
@@ -6229,6 +6231,7 @@ export type PatchApiV1GroupsByGroupIdSettingsResponses = {
             boardStyle: 'list' | 'grid';
             allowOutsiders: boolean;
             showNameOnMarketplace: boolean;
+            manualReview: boolean;
             code: string | null;
             lockedReason: string | null;
             units: Array<{
@@ -7276,6 +7279,7 @@ export type GetApiV1OpsGroupsByGroupIdResponses = {
             boardStyle: 'list' | 'grid';
             allowOutsiders: boolean;
             showNameOnMarketplace: boolean;
+            manualReview: boolean;
             code: string | null;
             lockedReason: string | null;
             units: Array<{
@@ -11930,7 +11934,7 @@ export type GetApiV1OpsScreeningLookupsByCodeResponses = {
             trigger: 'submission' | 'recall';
             decidedAt: string;
             outcome: 'pass_full' | 'pass_limited' | 'hold';
-            cause: 'score' | 'gate' | 'image_quality' | 'always_manual' | 'device' | 'error' | 'timeout';
+            cause: 'score' | 'gate' | 'image_quality' | 'always_manual' | 'device' | 'error' | 'timeout' | 'group_manual';
             score: number | null;
             band: 'low' | 'medium' | 'high';
             tier: 'T0' | 'T1' | 'T2' | 'T3';
@@ -12046,6 +12050,7 @@ export type GetApiV1OpsReviewTasksResponses = {
                 title: string | null;
                 queue: number;
                 reasons: Array<'machine_hold' | 'machine_restricted' | 'group_escalation' | 'sample_risk' | 'sample_reviewer' | 'report' | 'report_severe' | 'appeal' | 'serious_strike' | 'permanent_review'>;
+                groupManual: boolean;
                 dueAt: string;
                 overdue: boolean;
                 level: 'unit_moderators' | 'group_moderators' | 'group_owner' | 'category_staff' | 'safety_staff' | 'master';
@@ -12139,6 +12144,7 @@ export type GetApiV1OpsReviewTasksByTaskIdResponses = {
             title: string | null;
             queue: number;
             reasons: Array<'machine_hold' | 'machine_restricted' | 'group_escalation' | 'sample_risk' | 'sample_reviewer' | 'report' | 'report_severe' | 'appeal' | 'serious_strike' | 'permanent_review'>;
+            groupManual: boolean;
             dueAt: string;
             overdue: boolean;
             level: 'unit_moderators' | 'group_moderators' | 'group_owner' | 'category_staff' | 'safety_staff' | 'master';
@@ -13022,6 +13028,7 @@ export type GetApiV1GroupsByGroupIdReviewTasksResponses = {
                 title: string | null;
                 queue: number;
                 reasons: Array<'machine_hold' | 'machine_restricted' | 'group_escalation' | 'sample_risk' | 'sample_reviewer' | 'report' | 'report_severe' | 'appeal' | 'serious_strike' | 'permanent_review'>;
+                groupManual: boolean;
                 dueAt: string;
                 overdue: boolean;
                 level: 'unit_moderators' | 'group_moderators' | 'group_owner' | 'category_staff' | 'safety_staff' | 'master';
@@ -13116,6 +13123,7 @@ export type GetApiV1GroupsByGroupIdReviewTasksByTaskIdResponses = {
             title: string | null;
             queue: number;
             reasons: Array<'machine_hold' | 'machine_restricted' | 'group_escalation' | 'sample_risk' | 'sample_reviewer' | 'report' | 'report_severe' | 'appeal' | 'serious_strike' | 'permanent_review'>;
+            groupManual: boolean;
             dueAt: string;
             overdue: boolean;
             level: 'unit_moderators' | 'group_moderators' | 'group_owner' | 'category_staff' | 'safety_staff' | 'master';

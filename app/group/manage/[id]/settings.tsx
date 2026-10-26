@@ -35,7 +35,9 @@ export default function GroupSettings() {
     );
   }
   // `key` theo lượt hồ sơ đổi: lưu xong server trả bản mới, form dựng lại từ đó thay vì giữ bản gõ dở.
-  return <SettingsForm key={`${g.mode}:${g.name}:${g.description ?? ''}`} group={g} />;
+  return (
+    <SettingsForm key={`${g.mode}:${g.name}:${g.description ?? ''}:${g.manualReview}`} group={g} />
+  );
 }
 
 /**
@@ -51,6 +53,7 @@ function SettingsForm({ group: g }: { group: ManagedGroup }) {
   const [allowOutsiders, setAllowOutsiders] = useState(g.allowOutsiders);
   const [showName, setShowName] = useState(g.showNameOnMarketplace);
   const [boardStyle, setBoardStyle] = useState(g.boardStyle);
+  const [manualReview, setManualReview] = useState(g.manualReview);
 
   const publicTarget = isPublicGroup(mode);
   const privateBoth = !publicTarget && !isPublicGroup(g.mode);
@@ -63,6 +66,7 @@ function SettingsForm({ group: g }: { group: ManagedGroup }) {
     ...(publicTarget && allowOutsiders !== g.allowOutsiders && { allowOutsiders }),
     ...(privateBoth && showName !== g.showNameOnMarketplace && { showNameOnMarketplace: showName }),
     ...(boardStyle !== g.boardStyle && { boardStyle }),
+    ...(manualReview !== g.manualReview && { manualReview }),
   };
   const dirty = Object.keys(patch).length > 0;
   const note = modeNoteOf(g.mode, mode);
@@ -129,6 +133,20 @@ function SettingsForm({ group: g }: { group: ManagedGroup }) {
               onPress={() => setBoardStyle('grid')}
             />
           </View>
+          <Text style={styles.label}>Duyệt tin</Text>
+          <Check
+            checked={manualReview}
+            label="Duyệt tay mọi tin trước khi hiện"
+            onPress={() => setManualReview((v) => !v)}
+          />
+          <Text style={styles.hint}>
+            {manualReview
+              ? 'Tin đăng mới và tin gửi lại của mọi thành viên chờ điều hành viên hoặc chủ nhóm duyệt, kể cả khi máy cho qua. Sửa tin đang hiện vẫn chỉ qua máy.'
+              : 'Máy duyệt tự động: tin máy cho qua hiện ngay, tin máy giữ mới chờ người duyệt.'}
+            {manualReview !== g.manualReview && !manualReview
+              ? ' Tin đang chờ vẫn chờ người duyệt.'
+              : ''}
+          </Text>
           <PinButton
             label="Lưu cài đặt"
             disabled={!dirty || name.trim().length === 0}
@@ -156,6 +174,7 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   content: { padding: S.lg, gap: S.md },
   label: { fontFamily: F.uiSemi, fontSize: 14, color: C.ink },
+  hint: { marginTop: -S.sm, fontFamily: F.ui, fontSize: 12, lineHeight: 17, color: C.inkSoft },
   choices: { gap: S.sm },
   note: {
     padding: S.md,

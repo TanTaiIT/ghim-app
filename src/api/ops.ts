@@ -164,6 +164,10 @@ const REPORT_REASONS: ReadonlySet<TaskReason> = new Set(['report', 'report_sever
  */
 export type TaskKind = 'screen' | 'report' | 'escalation' | 'appeal' | 'other';
 
+/** Cho đạt việc máy giữ phải nói máy đúng hay quá tay — trừ việc giữ chỉ vì nhóm bật duyệt tay. */
+export const asksJudgment = (task: Pick<OpsTask, 'reasons' | 'groupManual'>): boolean =>
+  task.reasons.includes('machine_hold') && !task.groupManual;
+
 export function taskKind(reasons: readonly TaskReason[]): TaskKind {
   if (reasons.some((r) => REPORT_REASONS.has(r))) return 'report';
   if (reasons.includes('appeal')) return 'appeal';
@@ -181,6 +185,8 @@ export type OpsTask = {
   title: string | null;
   queue: number;
   reasons: TaskReason[];
+  /** Máy đã cho qua, giữ chỉ vì nhóm bật duyệt tay — cho đạt không hỏi máy đúng hay quá tay. */
+  groupManual: boolean;
   dueAt: string;
   overdue: boolean;
   /** Việc đã leo tới bậc master — staff không còn thấy nó. */
@@ -197,6 +203,7 @@ export const toTask = (w: WireTask): OpsTask => ({
   title: w.title,
   queue: w.queue,
   reasons: w.reasons,
+  groupManual: w.groupManual,
   dueAt: w.dueAt,
   overdue: w.overdue,
   atMaster: w.level === 'master',
@@ -560,6 +567,7 @@ export const HOLD_CAUSE_LABEL: Record<WireHold['cause'], string> = {
   device: 'Đánh dấu theo thiết bị',
   error: 'Máy lỗi',
   timeout: 'Máy quá giờ',
+  group_manual: 'Nhóm duyệt tay mọi tin',
 };
 
 /** Chữ của server (`screening/ops/lookup.service`) — màn tra đánh dấu không có nhãn đi kèm như màn tra lần giữ. */

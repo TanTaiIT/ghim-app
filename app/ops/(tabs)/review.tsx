@@ -10,6 +10,7 @@ import { EmptyState, Loading } from '@/components/ui';
 import { useCategories } from '@/queries/catalog';
 import { useDecideTask, useOpsTasks, useReasonTemplates } from '@/queries/ops-review';
 import {
+  asksJudgment,
   JUDGMENT_OPTIONS,
   QUEUE_LABEL,
   taskKind,
@@ -43,7 +44,7 @@ export default function OpsReview() {
       { task: t, decision: { kind: 'pass', ...(judgment && { judgment }) } },
       { onSuccess: done(t, 'Đã duyệt'), onError: (e) => toast(e.message) },
     );
-  const approve = (t: OpsTask) => (t.reasons.includes('machine_hold') ? setApproving(t) : pass(t));
+  const approve = (t: OpsTask) => (asksJudgment(t) ? setApproving(t) : pass(t));
   const reject = (t: OpsTask) =>
     reasons.length > 0
       ? setRejecting(t)
