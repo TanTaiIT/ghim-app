@@ -1,7 +1,8 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
-import { CONDITION_LABEL, type ListingDetail, type Seller } from '@/api/client';
+import { CONDITION_LABEL, type ListingCard, type ListingDetail, type Seller } from '@/api/client';
 import { Avatar, Verified } from './Avatar';
+import { ListingTile } from './ListingCard';
 import { OutlineButton, Price, Tag, type IconName } from './ui';
 import { C, F, R, S } from '@/theme';
 import { formatAgo, formatPlace } from '@/utils/format';
@@ -81,8 +82,62 @@ export function SpecGrid({ specs }: { specs: ListingDetail['specs'] }) {
   );
 }
 
+export function ListingDescription({ text }: { text: string }) {
+  return (
+    <View style={styles.block}>
+      <Text style={styles.h2}>Mô tả</Text>
+      <Text style={styles.body}>{text}</Text>
+    </View>
+  );
+}
+
+export function SimilarRail({
+  items,
+  onOpen,
+}: {
+  items: ListingCard[];
+  onOpen: (id: string) => void;
+}) {
+  return (
+    <View style={styles.block}>
+      <Text style={styles.h2}>Tin tương tự</Text>
+      <FlatList
+        horizontal
+        data={items}
+        keyExtractor={(x) => x.id}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.rail}
+        renderItem={({ item }) => (
+          <ListingTile item={item} variant="mini" onPress={() => onOpen(item.id)} />
+        )}
+      />
+    </View>
+  );
+}
+
+/** Chỉ hiện cho người quản lý nhóm của huy hiệu: gỡ được huy hiệu, không gỡ được tin (spec group/badges). */
+export function BadgeAdminRow({ name, onRemove }: { name: string; onRemove: () => void }) {
+  return (
+    <View style={styles.badgeAdmin}>
+      <Text style={styles.badgeText}>Tin mang huy hiệu nhóm {name} mà bạn quản lý.</Text>
+      <OutlineButton compact label="Gỡ huy hiệu" onPress={onRemove} />
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   block: { gap: S.sm },
+  body: { fontFamily: F.ui, fontSize: 14, lineHeight: 22, color: C.inkMid },
+  rail: { gap: S.md },
+  badgeAdmin: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: S.md,
+    padding: S.md,
+    borderRadius: R.lg,
+    backgroundColor: C.sand,
+  },
+  badgeText: { flex: 1, fontFamily: F.ui, fontSize: 13, lineHeight: 18, color: C.inkMid },
   tags: { flexDirection: 'row', gap: 6 },
   title: { fontFamily: F.uiBlack, fontSize: 22, lineHeight: 29, color: C.ink },
   meta: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 14, rowGap: 6 },

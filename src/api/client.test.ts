@@ -3,12 +3,15 @@ import {
   api,
   idNumberIssue,
   IMAGE_TOO_SMALL,
+  managesGroup,
   myListingActions,
   NO_FILTERS,
   staleFilterField,
   unwrap,
   unwrapEmpty,
+  type GroupRole,
   type Lookups,
+  type MyGroup,
   type MyListing,
 } from './client';
 import { ApiError, setHttpAccessToken, setHttpDeviceId } from './http';
@@ -234,7 +237,12 @@ describe('đọc tin đăng từ server', () => {
     ]);
     expect(l.seller).toMatchObject({ name: 'Anh Tuấn', phone: null, rating: null });
     expect(l.category).toEqual({ id: 'c-1', name: 'Nội thất' });
-    expect(l).toMatchObject({ allowOffers: true, condition: null, views: null });
+    expect(l).toMatchObject({
+      allowOffers: true,
+      condition: null,
+      views: null,
+      badge: { groupId: 'g-1', name: 'Hội Nhiếp ảnh' },
+    });
     expect(l.photos).toEqual([{ uri: 'https://img.test/1.jpg' }]);
   });
 
@@ -1259,6 +1267,19 @@ const wireMembership = (role: string, badgeEligible: boolean) => ({
   badgeEligible,
 });
 
+const myGroup = (id: string, role: GroupRole): MyGroup => ({
+  id,
+  name: 'Hội Nhiếp ảnh',
+  initials: 'HN',
+  kind: 'community',
+  mode: 'public_open',
+  state: 'active',
+  memberCount: 1,
+  description: null,
+  role,
+  badgeEligible: true,
+});
+
 describe('nhóm', () => {
   afterEach(() => {
     jest.restoreAllMocks();
@@ -1408,6 +1429,19 @@ describe('nhóm', () => {
         },
       ],
     });
+  });
+
+  it('gỡ huy hiệu: theo nhóm và tin; chỉ chủ hay điều hành viên mới thấy nút', async () => {
+    const calls = record();
+
+    await api.removeGroupBadge('g-1', 'l-1');
+
+    expect(calls.map(({ method, path }) => ({ method, path }))).toEqual([
+      { method: 'DELETE', path: '/api/v1/groups/g-1/listing-badges/l-1' },
+    ]);
+    expect(managesGroup([myGroup('g-1', 'moderator')], 'g-1')).toBe(true);
+    expect(managesGroup([myGroup('g-1', 'member')], 'g-1')).toBe(false);
+    expect(managesGroup([myGroup('g-2', 'owner')], 'g-1')).toBe(false);
   });
 
   it('lời mời làm chủ nhóm: nhận hay từ chối theo mã lời mời', async () => {

@@ -111,6 +111,16 @@ export const useAnswerInvitation = () =>
     api.answerInvitation(id, accept),
   );
 
+/** Huy hiệu là một phần của tin: mọi màn đang hiện tin đó (chi tiết, bảng tin, tìm kiếm) đọc lại. */
+export function useRemoveGroupBadge() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ groupId, listingId }: { groupId: string; listingId: string }) =>
+      api.removeGroupBadge(groupId, listingId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: qk.listings.all() }),
+  });
+}
+
 /** Nhận làm chủ đổi vai trong nhóm đó: cả nhánh nhóm đọc lại, như mọi lượt ghi nhóm khác. */
 export const useAnswerOwnerOffer = () =>
   useGroupWrite(({ id, accept }: { id: string; accept: boolean }) =>

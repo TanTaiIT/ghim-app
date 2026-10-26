@@ -1,11 +1,19 @@
 import { useState } from 'react';
-import { FlatList, Linking, ScrollView, Share, StyleSheet, Text, View } from 'react-native';
+import { Linking, ScrollView, Share, StyleSheet, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { managesGroup } from '@/api/client';
 import { Gallery } from '@/components/Gallery';
 import { useGuarded } from '@/components/GuestGate';
-import { ListingTile } from '@/components/ListingCard';
-import { ListingSummary, SellerCard, SpecGrid } from '@/components/ListingInfo';
+import {
+  BadgeAdminRow,
+  ListingDescription,
+  ListingSummary,
+  SellerCard,
+  SimilarRail,
+  SpecGrid,
+} from '@/components/ListingInfo';
+import { ConfirmSheet } from '@/components/PickerSheet';
 import { ReportSheet } from '@/components/ReportSheet';
 import { useToast } from '@/components/Toast';
 import {
@@ -24,8 +32,9 @@ import {
   useSimilar,
   useToggleSaved,
 } from '@/queries/listings';
+import { useMyGroups, useRemoveGroupBadge } from '@/queries/groups';
 import { useOpenConversation } from '@/queries/messages';
-import { C, F, R, S } from '@/theme';
+import { C, R, S } from '@/theme';
 import { formatVnd } from '@/utils/format';
 
 export default function ListingDetail() {
@@ -36,8 +45,11 @@ export default function ListingDetail() {
   const guarded = useGuarded();
   const insets = useSafeAreaInsets();
   const [reporting, setReporting] = useState(false);
+  const [unbadging, setUnbadging] = useState(false);
 
   const listing = useListing(id);
+  const myGroups = useMyGroups();
+  const removeBadge = useRemoveGroupBadge();
   const similar = useSimilar(id);
   const savedIds = useSavedIds();
   const toggleSaved = useToggleSaved();
@@ -84,36 +96,18 @@ export default function ListingDetail() {
             />
           )}
           <ListingSummary listing={l} />
+          {l.badge && managesGroup(myGroups.data ?? [], l.badge.groupId) && (
+            <BadgeAdminRow name={l.badge.name} onRemove={() => setUnbadging(true)} />
+          )}
           <SellerCard seller={l.seller} onOpen={() => router.push(`/user/${l.seller.id}`)} />
           {l.specs.length > 0 && <SpecGrid specs={l.specs} />}
-          {l.description !== '' && (
-            <View style={styles.block}>
-              <Text style={styles.h2}>Mô tả</Text>
-              <Text style={styles.body}>{l.description}</Text>
-            </View>
-          )}
+          {l.description !== '' && <ListingDescription text={l.description} />}
           <SafetyNote
             title="Giao dịch an toàn"
             text="Kiểm tra hàng trước khi thanh toán, không chuyển khoản đặt cọc cho người lạ. Admin không bao giờ yêu cầu chuyển khoản qua tin nhắn."
           />
           {similar.data && similar.data.length > 0 && (
-            <View style={styles.block}>
-              <Text style={styles.h2}>Tin tương tự</Text>
-              <FlatList
-                horizontal
-                data={similar.data}
-                keyExtractor={(x) => x.id}
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.rail}
-                renderItem={({ item }) => (
-                  <ListingTile
-                    item={item}
-                    variant="mini"
-                    onPress={() => router.push(`/listing/${item.id}`)}
-                  />
-                )}
-              />
-            </View>
+            <SimilarRail items={similar.data} onOpen={(sid) => router.push(`/listing/${sid}`)} />
           )}
         </View>
       </ScrollView>
@@ -190,6 +184,20 @@ export default function ListingDetail() {
           )
         }
       />
+      <ConfirmSheet
+        visible={unbadging && l.badge !== null}
+        title={`Gỡ huy hiệu ${l.badge?.name ?? ''}?`}
+        confirmLabel="Gỡ huy hiệu"
+        note="Tin vẫn hiển thị; người đăng không gắn lại huy hiệu nhóm này lên tin này được nữa"
+        onClose={() => setUnbadging(false)}
+        onConfirm={() =>
+          l.badge &&
+          removeBadge.mutate(
+            { groupId: l.badge.groupId, listingId: l.id },
+            { onSuccess: () => toast('Đã gỡ huy hiệu nhóm'), onError: (e) => toast(e.message) },
+          )
+        }
+      />
     </View>
   );
 }
@@ -207,10 +215,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: R.xl,
     backgroundColor: C.paperWarm,
   },
-  block: { gap: S.sm },
-  h2: { fontFamily: F.uiBold, fontSize: 16, color: C.ink },
-  body: { fontFamily: F.ui, fontSize: 14, lineHeight: 22, color: C.inkMid },
-  rail: { gap: S.md },
   topBar: {
     position: 'absolute',
     left: S.lg,

@@ -3,6 +3,7 @@ import { File } from 'expo-file-system';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import {
   deleteApiV1GroupsByGroupIdJoinRequest,
+  deleteApiV1GroupsByGroupIdListingBadgesByListingId,
   deleteApiV1ListingsById,
   deleteApiV1Me,
   deleteApiV1MeAvatar,
@@ -361,6 +362,8 @@ export type ListingDetail = Omit<ListingCard, 'seller'> & {
   description: string;
   views: number | null;
   allowOffers: boolean;
+  /** Huy hiệu nhóm trên tin sàn chung — `groupId` để người quản lý nhóm đó gỡ được. */
+  badge: { groupId: string; name: string } | null;
 };
 
 /** Cách xếp của `GET /listings` (ghim-server add-feed-sort): mới nhất là vị trí trên bảng tin. */
@@ -537,6 +540,13 @@ export const GROUP_ROLE_TAG: Partial<Record<GroupRole, string>> = {
   owner: 'Chủ nhóm',
   moderator: 'Điều hành viên',
 };
+
+/**
+ * Mình là chủ hay điều hành viên của nhóm. Điều hành viên một đơn vị chỉ gỡ được huy hiệu trên tin của thành viên đơn
+ * vị mình — app không biết đơn vị của người đăng, nên để server quyết (403 kèm câu giải thích).
+ */
+export const managesGroup = (groups: MyGroup[], groupId: string): boolean =>
+  groups.some((g) => g.id === groupId && g.role !== 'member');
 
 export type GroupSummary = {
   id: string;
@@ -1359,6 +1369,7 @@ export const api = {
       description: w.description ?? '',
       views: null,
       allowOffers: w.negotiable,
+      badge: w.badge ? { groupId: w.badge.groupId, name: w.badge.name } : null,
     };
   },
 
@@ -1701,6 +1712,12 @@ export const api = {
           ],
     );
   },
+
+  /** Nhóm gỡ huy hiệu của mình: tin vẫn hiển thị, và không gắn lại huy hiệu nhóm này được nữa. */
+  removeGroupBadge: (groupId: string, listingId: string): Promise<void> =>
+    unwrapEmpty(
+      deleteApiV1GroupsByGroupIdListingBadgesByListingId({ path: { groupId, listingId } }),
+    ),
 
   markSold: async (id: string): Promise<void> => {
     await unwrap(postApiV1ListingsByIdSold({ path: { id } }));
