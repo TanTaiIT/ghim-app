@@ -30,6 +30,18 @@ export default function OpsMore() {
     { icon: 'sliders', label: 'Luật máy duyệt', onPress: () => router.push('/ops/rules') },
     { icon: 'slash', label: 'Cụm từ cấm', onPress: () => router.push('/ops/phrases') },
     { icon: 'bar-chart-2', label: 'Số liệu máy duyệt', onPress: () => router.push('/ops/machine') },
+    { icon: 'book', label: 'Quy định sàn', onPress: () => router.push('/ops/articles') },
+    {
+      icon: 'trending-down',
+      label: 'Thống kê duyệt',
+      onPress: () => router.push('/ops/review-stats'),
+    },
+  ];
+  const system: MenuItem[] = [
+    { icon: 'sliders', label: 'Bảng con số', onPress: () => router.push('/ops/config') },
+    { icon: 'mail', label: 'Miền email dùng một lần', onPress: () => router.push('/ops/domains') },
+    { icon: 'file-text', label: 'Nhật ký vận hành', onPress: () => router.push('/ops/audit') },
+    { icon: 'clock', label: 'Việc nền', onPress: () => router.push('/ops/jobs') },
   ];
 
   return (
@@ -41,6 +53,8 @@ export default function OpsMore() {
           <>
             <Text style={styles.section}>Chỉ master</Text>
             <MenuList items={master} />
+            <Text style={styles.section}>Quản trị hệ thống</Text>
+            <MenuList items={system} />
           </>
         )}
         <MenuList

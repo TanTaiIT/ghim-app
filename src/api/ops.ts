@@ -216,6 +216,23 @@ export type OpsStrike = {
   appeal: 'pending' | 'won' | 'lost' | 'closed' | null;
 };
 
+export const STRIKE_KIND_LABEL: Record<OpsStrike['kind'], string> = {
+  normal: 'Cảnh cáo',
+  severe: 'Cảnh cáo nặng',
+  serious: 'Vi phạm nghiêm trọng',
+};
+
+export const STRIKE_STATUS_LABEL: Record<OpsStrike['status'], string> = {
+  active: 'Đang tính',
+  expired: 'Hết hạn',
+  cancelled: 'Đã huỷ',
+  permanent: 'Khoá vĩnh viễn',
+  lifted: 'Đã gỡ khoá',
+};
+
+/** Nhận xét của staff vào hồ sơ vi phạm nghiêm trọng đang chờ master. */
+export type StrikeComment = { id: string; author: string | null; body: string; at: string };
+
 const toStrike = (w: WireStrike): OpsStrike => ({
   id: w.id,
   kind: w.kind,
@@ -263,7 +280,7 @@ export type OpsTaskDetail = OpsTask & {
   sharedDevice: { accountId: string; name: string | null }[];
   escalationNote: string | null;
   reports: OpsReport[];
-  strike: (OpsStrike & { statement: string | null }) | null;
+  strike: (OpsStrike & { statement: string | null; comments: StrikeComment[] }) | null;
   /** Đoạn hội thoại mà lượt báo trỏ tới — bằng chứng cho báo cáo gửi từ chat. */
   evidence: {
     id: string;
@@ -316,7 +333,16 @@ export function toTaskDetail(w: WireTaskDetail): OpsTaskDetail {
       categories: [...new Set(r.entries.map((e) => e.category))],
       lastAt: r.entries.reduce((max, e) => (e.reportedAt > max ? e.reportedAt : max), r.createdAt),
     })),
-    strike: w.strike && { ...toStrike(w.strike), statement: w.strike.statement },
+    strike: w.strike && {
+      ...toStrike(w.strike),
+      statement: w.strike.statement,
+      comments: w.strike.comments.map((c) => ({
+        id: c.id,
+        author: c.authorName,
+        body: c.body,
+        at: c.createdAt,
+      })),
+    },
     evidence: w.conversations.map((c) => ({
       id: c.id,
       sellerId: c.sellerId,

@@ -100,5 +100,18 @@ export const qk = {
     phrases: () => ['ops', 'phrases'] as const,
     whitelist: () => ['ops', 'whitelist'] as const,
     keywords: (categoryId: string) => ['ops', 'keywords', categoryId] as const,
+    ruleArticles: () => ['ops', 'rule-articles'] as const,
+    /** Bản hiện hành và các bản cũ chung một gốc: lưu xong thì cả hai đọc lại. */
+    configAll: () => ['ops', 'config'] as const,
+    config: () => ['ops', 'config', 'current'] as const,
+    configVersion: (version: number) => ['ops', 'config', 'version', version] as const,
+    domainsAll: () => ['ops', 'domains'] as const,
+    domains: (page: number) => ['ops', 'domains', page] as const,
+    audit: (page: number, filter: object) => ['ops', 'audit', page, filter] as const,
+    jobRuns: () => ['ops', 'job-runs'] as const,
+    reviewerStats: () => ['ops', 'review-stats', 'reviewers'] as const,
+    ruleStats: () => ['ops', 'review-stats', 'rules'] as const,
+    categorySettings: (categoryId: string, version: number) =>
+      ['ops', 'categories', 'settings', categoryId, version] as const,
   },
 };

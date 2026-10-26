@@ -7,7 +7,13 @@ import { Gallery } from './Gallery';
 import { MessagePhotos } from './MessagePhotos';
 import { OutlineButton, Price, Tag } from './ui';
 import { REPORT_CATEGORY_LABEL } from '@/api/client';
-import { QUEUE_LABEL, REASON_LABEL, hitLabel, type OpsTaskDetail } from '@/api/ops';
+import {
+  QUEUE_LABEL,
+  REASON_LABEL,
+  STRIKE_KIND_LABEL,
+  hitLabel,
+  type OpsTaskDetail,
+} from '@/api/ops';
 import { C, F, R, S } from '@/theme';
 import { formatAgo, formatDue } from '@/utils/format';
 
@@ -141,10 +147,27 @@ export function OpsTaskBody({
           <Section title="Cảnh cáo">
             <Text style={styles.text}>{task.strike.rule}</Text>
             <Text style={styles.caption}>
-              {STRIKE_KIND[task.strike.kind]} · {task.strike.points} điểm · ra{' '}
+              {STRIKE_KIND_LABEL[task.strike.kind]} · {task.strike.points} điểm · ra{' '}
               {formatAgo(task.strike.issuedAt)}
             </Text>
             {task.strike.statement && <Text style={styles.quote}>“{task.strike.statement}”</Text>}
+            {task.strike.comments.map((c) => (
+              <Text key={c.id} style={styles.caption}>
+                {c.author ?? 'Staff'} · {formatAgo(c.at)}: {c.body}
+              </Text>
+            ))}
+            {task.strike.kind === 'serious' && task.strike.status === 'active' && (
+              <OutlineButton
+                compact
+                label="Ghi nhận xét cho master"
+                onPress={() =>
+                  router.push({
+                    pathname: '/ops/note/[id]',
+                    params: { id: task.strike?.id ?? '', taskId: task.id },
+                  })
+                }
+              />
+            )}
           </Section>
         )}
 
@@ -169,12 +192,6 @@ export function OpsTaskBody({
     </View>
   );
 }
-
-const STRIKE_KIND = {
-  normal: 'Cảnh cáo',
-  severe: 'Cảnh cáo nặng',
-  serious: 'Vi phạm nghiêm trọng',
-} as const;
 
 const names = (list: { name: string | null }[]) =>
   list.map((a) => a.name ?? 'tài khoản đã xoá').join(', ');

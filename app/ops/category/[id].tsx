@@ -133,6 +133,22 @@ function CategoryForm({ category: c }: { category: OpsCategory }) {
             }
           />
 
+          <OutlineButton
+            compact
+            label={`Lịch sử cài đặt (${c.settingsVersion} phiên bản)`}
+            onPress={() =>
+              router.push({
+                pathname: '/ops/category/history/[id]',
+                params: {
+                  id: c.id,
+                  name: c.name,
+                  version: String(c.settingsVersion),
+                  latest: String(c.settingsVersion),
+                },
+              })
+            }
+          />
+
           <Text style={styles.section}>Máy duyệt riêng</Text>
           <View style={styles.card}>
             <Text style={styles.meta}>

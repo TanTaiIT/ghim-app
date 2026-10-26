@@ -7,7 +7,7 @@ import { InputSheet } from '@/components/InputSheet';
 import { OpsHeader } from '@/components/OpsHeader';
 import { ConfirmSheet } from '@/components/PickerSheet';
 import { useToast } from '@/components/Toast';
-import { EmptyState, Loading, Tag } from '@/components/ui';
+import { EmptyState, Loading, OutlineButton, Tag } from '@/components/ui';
 import { useMe } from '@/queries/account';
 import { ACCOUNT_STATUS } from '@/components/OpsAccountList';
 import {
@@ -16,23 +16,9 @@ import {
   useOpsAccount,
   useUnlockAccount,
 } from '@/queries/ops-people';
-import type { OpsStrike } from '@/api/ops';
+import { STRIKE_KIND_LABEL, STRIKE_STATUS_LABEL } from '@/api/ops';
 import { C, F, R, S } from '@/theme';
 import { daysUntil, formatAgo, formatDate } from '@/utils/format';
-
-const STATUS: Record<OpsStrike['status'], string> = {
-  active: 'Đang tính',
-  expired: 'Hết hạn',
-  cancelled: 'Đã huỷ',
-  permanent: 'Khoá vĩnh viễn',
-  lifted: 'Đã gỡ khoá',
-};
-
-const KIND: Record<OpsStrike['kind'], string> = {
-  normal: 'Cảnh cáo',
-  severe: 'Cảnh cáo nặng',
-  serious: 'Vi phạm nghiêm trọng',
-};
 
 /**
  * Hồ sơ một người: thẻ tài khoản (`/ops/accounts/:id` — trạng thái, email, mức tin cậy, điểm vi phạm) và lịch sử
@@ -85,6 +71,15 @@ export default function OpsUser() {
         </View>
 
         <Text style={styles.section}>Lịch sử cảnh cáo</Text>
+        {isMaster && (strikes.data?.length ?? 0) > 0 && (
+          <OutlineButton
+            compact
+            label="Ân xá / gỡ khoá vĩnh viễn"
+            onPress={() =>
+              router.push({ pathname: '/ops/strikes/[id]', params: { id, name: display } })
+            }
+          />
+        )}
         {strikes.isPending ? (
           <Loading />
         ) : strikes.isError ? (
@@ -95,8 +90,11 @@ export default function OpsUser() {
           strikes.data.map((s) => (
             <View key={s.id} style={styles.strike}>
               <View style={styles.tags}>
-                <Tag label={KIND[s.kind]} tone={s.kind === 'normal' ? 'neutral' : 'boost'} />
-                <Tag label={STATUS[s.status]} tone={s.inForce ? 'amber' : 'neutral'} />
+                <Tag
+                  label={STRIKE_KIND_LABEL[s.kind]}
+                  tone={s.kind === 'normal' ? 'neutral' : 'boost'}
+                />
+                <Tag label={STRIKE_STATUS_LABEL[s.status]} tone={s.inForce ? 'amber' : 'neutral'} />
                 {s.appeal && <Tag label={`Khiếu nại: ${APPEAL[s.appeal]}`} />}
               </View>
               <Text style={styles.rule}>{s.rule}</Text>
