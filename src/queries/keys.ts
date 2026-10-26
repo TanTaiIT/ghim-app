@@ -18,6 +18,7 @@ export const qk = {
   categories: () => ['categories'] as const,
   provinces: () => ['regions', 'provinces'] as const,
   wards: (provinceCode: number) => ['regions', 'wards', provinceCode] as const,
+  regionSearch: (q: string) => ['regions', 'search', q] as const,
   template: (categoryId: string) => ['categories', 'template', categoryId] as const,
   listings: {
     all: () => ['listings'] as const,

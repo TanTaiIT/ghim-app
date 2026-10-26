@@ -54,6 +54,7 @@ import {
   getApiV1MeTrust,
   getApiV1RegionsProvinces,
   getApiV1RegionsProvincesByCodeWards,
+  getApiV1RegionsSearch,
   getApiV1UsersById,
   getApiV1UsersByIdListings,
   getHealthReady,
@@ -316,6 +317,17 @@ export type Place = { ward: string | null; province: string };
 
 export type Province = { code: number; name: string };
 export type Ward = { code: number; name: string };
+
+/** Một kết quả tìm khu vực: tỉnh (`code` = mã tỉnh) hay phường (`code` = mã phường, kèm tỉnh của nó). */
+export type RegionHit = {
+  kind: 'province' | 'ward';
+  code: number;
+  name: string;
+  provinceCode: number;
+  provinceName: string;
+  /** Tên trước sáp nhập 01/07/2025 — người dùng hay gõ tên cũ, nên hiện kèm để họ nhận ra. */
+  formerNames: string[];
+};
 
 export type Person = { id: string; name: string; verified: boolean };
 
@@ -1322,6 +1334,19 @@ export const api = {
   getWards: async (provinceCode: number): Promise<Ward[]> =>
     (await unwrap(getApiV1RegionsProvincesByCodeWards({ path: { code: provinceCode } }))).map(
       ({ code, name }) => ({ code, name }),
+    ),
+
+  /** Server xếp tỉnh trước, phường sau, tối đa 50 kết quả. */
+  searchRegions: async (q: string): Promise<RegionHit[]> =>
+    (await unwrap(getApiV1RegionsSearch({ query: { q } }))).map(
+      ({ kind, code, name, provinceCode, provinceName, formerNames }) => ({
+        kind,
+        code,
+        name,
+        provinceCode,
+        provinceName,
+        formerNames,
+      }),
     ),
 
   searchListings: async (f: SearchFilters, load: LoadLookups): Promise<ListingCard[]> => {

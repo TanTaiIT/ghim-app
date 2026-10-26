@@ -7,10 +7,11 @@ import { Check } from '@/components/Chip';
 import { Field } from '@/components/Field';
 import { PickerSheet } from '@/components/PickerSheet';
 import { PlacementPicker } from '@/components/PlacementPicker';
+import { RegionSearchSheet } from '@/components/RegionSearchSheet';
 import { StepHeader, useClosePost } from '@/components/StepHeader';
 import { missingRequired, TemplateFields } from '@/components/TemplateFields';
 import { useToast } from '@/components/Toast';
-import { PinButton } from '@/components/ui';
+import { GhostButton, PinButton } from '@/components/ui';
 import { useCategoryTemplate, useProvinces, useWards } from '@/queries/catalog';
 import { useSaveDraft } from '@/queries/posting';
 import { snapshotDraft, useDraftStore } from '@/stores/draft';
@@ -28,7 +29,7 @@ export default function PostDetails() {
   const router = useRouter();
   const toast = useToast();
   const close = useClosePost();
-  const [sheet, setSheet] = useState<'province' | 'ward' | null>(null);
+  const [sheet, setSheet] = useState<'province' | 'ward' | 'search' | null>(null);
 
   const d = useDraftStore();
   const template = useCategoryTemplate(d.categoryId);
@@ -126,6 +127,7 @@ export default function PostDetails() {
             </Text>
             <Feather name="chevron-down" size={18} color={C.ink} />
           </Pressable>
+          <GhostButton label="Tìm theo tên, cả tên cũ" onPress={() => setSheet('search')} />
         </View>
 
         <PlacementPicker
@@ -162,6 +164,16 @@ export default function PostDetails() {
         ]}
         value={d.wardCode === null ? NO_WARD : String(d.wardCode)}
         onSelect={(code) => d.patch({ wardCode: code === NO_WARD ? null : Number(code) })}
+        onClose={() => setSheet(null)}
+      />
+      <RegionSearchSheet
+        visible={sheet === 'search'}
+        onPick={(hit) =>
+          d.patch({
+            provinceCode: hit.provinceCode,
+            wardCode: hit.kind === 'ward' ? hit.code : null,
+          })
+        }
         onClose={() => setSheet(null)}
       />
     </SafeAreaView>

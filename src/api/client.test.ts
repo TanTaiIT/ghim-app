@@ -338,6 +338,33 @@ describe('đọc tin đăng từ server', () => {
     await expect(api.getMe()).resolves.toMatchObject({ opsAccess: true, isMaster: true });
   });
 
+  it('tìm khu vực: gửi đúng chữ người dùng gõ, giữ tỉnh của phường và tên cũ', async () => {
+    const calls = serve({
+      '/api/v1/regions/search': [
+        {
+          kind: 'ward',
+          code: 26734,
+          name: 'Phường Bến Thành',
+          provinceCode: 79,
+          provinceName: 'TP. Hồ Chí Minh',
+          formerNames: ['Phường Phạm Ngũ Lão'],
+        },
+      ],
+    });
+
+    await expect(api.searchRegions('ben thanh')).resolves.toEqual([
+      {
+        kind: 'ward',
+        code: 26734,
+        name: 'Phường Bến Thành',
+        provinceCode: 79,
+        provinceName: 'TP. Hồ Chí Minh',
+        formerNames: ['Phường Phạm Ngũ Lão'],
+      },
+    ]);
+    expect(calls[0]?.url.searchParams.get('q')).toBe('ben thanh');
+  });
+
   it('trang người bán: hồ sơ không lộ số điện thoại, tin đang hiển thị theo trang', async () => {
     const calls = serve({
       '/api/v1/users/u-1': {

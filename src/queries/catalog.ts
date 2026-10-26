@@ -1,6 +1,9 @@
-import { useQuery, type QueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, type QueryClient } from '@tanstack/react-query';
 import { api, type LoadLookups, type Lookups } from '@/api/client';
 import { qk } from './keys';
+
+/** Một chữ cái khớp gần như mọi tên trong nước — đợi đủ hai ký tự mới hỏi server. */
+export const REGION_SEARCH_MIN = 2;
 
 /*
  * Dữ liệu tham chiếu của server: danh mục, tỉnh/thành, phường/xã. Tỉnh, phường không đổi nên không tự refetch
@@ -31,6 +34,21 @@ export function useProvinces() {
 
 export function useWards(provinceCode: number | null) {
   return useQuery({ ...wards(provinceCode ?? 0), enabled: provinceCode !== null });
+}
+
+/**
+ * Tìm theo tên mới, tên cũ hay tên gọi tắt, không cần dấu. Dữ liệu hành chính không đổi nên kết quả giữ mãi; gõ tiếp
+ * thì giữ kết quả cũ trên màn tới khi kết quả mới về, danh sách không nháy trống.
+ */
+export function useRegionSearch(q: string) {
+  const term = q.trim();
+  return useQuery({
+    queryKey: qk.regionSearch(term),
+    queryFn: () => api.searchRegions(term),
+    enabled: term.length >= REGION_SEARCH_MIN,
+    staleTime: Infinity,
+    placeholderData: keepPreviousData,
+  });
 }
 
 /** Mẫu hiện hành của danh mục — master phát hành bản mới thì lượt mở sau đọc bản mới, nên không giữ mãi. */
