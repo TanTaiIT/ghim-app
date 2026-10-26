@@ -3,6 +3,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet } from 'react-na
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Field } from '@/components/Field';
+import { ApiError } from '@/api/http';
 import { useToast } from '@/components/Toast';
 import { GhostButton, PinButton, ScreenHeader } from '@/components/ui';
 import { useLogin } from '@/queries/auth';
@@ -49,7 +50,18 @@ export default function Login() {
             label="Đăng nhập"
             disabled={!canSubmit}
             loading={login.isPending}
-            onPress={() => login.mutate(form, { onError: (e) => toast(e.message) })}
+            onPress={() =>
+              login.mutate(form, {
+                // Tài khoản bị khoá: câu của server (kèm lý do) hiện ở màn khiếu nại thay cho toast.
+                onError: (e) =>
+                  e instanceof ApiError && e.code === 'ACCOUNT_LOCKED'
+                    ? router.push({
+                        pathname: '/lock-appeal',
+                        params: { email: form.email.trim(), reason: e.message },
+                      })
+                    : toast(e.message),
+              })
+            }
           />
           <GhostButton label="Quên mật khẩu?" onPress={() => router.push('/forgot-password')} />
           {/* Thay chứ không chồng: qua lại giữa đăng nhập và đăng ký không xếp thêm màn nào. */}
@@ -57,6 +69,7 @@ export default function Login() {
             label="Chưa có tài khoản? Đăng ký"
             onPress={() => router.replace('/register')}
           />
+          <GhostButton label="Xoá tài khoản" onPress={() => router.push('/delete-account')} />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

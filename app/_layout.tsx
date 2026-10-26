@@ -86,7 +86,10 @@ export default function RootLayout() {
                 <Stack.Screen name="login" options={{ presentation: 'modal' }} />
                 <Stack.Screen name="register" options={{ presentation: 'modal' }} />
                 <Stack.Screen name="forgot-password" options={{ presentation: 'modal' }} />
+                <Stack.Screen name="delete-account" options={{ presentation: 'modal' }} />
               </Stack.Protected>
+              {/* Kênh hỗ trợ không cần phiên: mở từ màn đăng nhập (bị khoá) lẫn từ "Cảnh cáo của tôi". */}
+              <Stack.Screen name="lock-appeal" options={{ presentation: 'modal' }} />
               {/*
                * Route cần đăng nhập khai trong khối này (HARD#17). Screen không nằm đây vẫn được
                * expo-router đăng ký theo file path và mở được bằng deep link — tức không hề được bảo vệ.

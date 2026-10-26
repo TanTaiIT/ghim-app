@@ -87,6 +87,26 @@ export function useForgotPassword() {
   return useMutation({ mutationFn: (email: string) => api.forgotPassword(email) });
 }
 
+/* Kênh hỗ trợ không cần đăng nhập: khiếu nại khoá tài khoản, xin xoá tài khoản. Không mở phiên, không đụng cache. */
+
+export function useRequestLockAppealCode() {
+  return useMutation({ mutationFn: (email: string) => api.requestLockAppealCode(email) });
+}
+
+export function useFileLockAppeal() {
+  return useMutation({
+    mutationFn: ({ email, code, statement }: { email: string; code: string; statement: string }) =>
+      api.fileLockAppeal(email, code, statement),
+  });
+}
+
+export function useRequestAccountDeletion() {
+  return useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
+      api.requestAccountDeletion(email, password),
+  });
+}
+
 export function useResetPassword() {
   return useMutation({
     mutationFn: ({ email, code, password }: { email: string; code: string; password: string }) =>

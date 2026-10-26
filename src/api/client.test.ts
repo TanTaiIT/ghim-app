@@ -1075,6 +1075,53 @@ describe('đăng ký và quên mật khẩu', () => {
       },
     ]);
   });
+
+  it('kênh hỗ trợ: xin mã khiếu nại khoá, nộp khiếu nại đọc lại lý do và hạn, xin xoá tài khoản', async () => {
+    const bodies: { path: string; body: unknown }[] = [];
+    jest.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      const req = input as Request;
+      const path = new URL(req.url).pathname;
+      const text = await req.text();
+      bodies.push({ path, body: text ? JSON.parse(text) : null });
+      const data =
+        path === '/api/v1/support/serious-appeal'
+          ? {
+              strikeId: 's-1',
+              ruleText: 'Lừa đảo người mua',
+              issuedAt: '2026-10-20T00:00:00.000Z',
+              appealUntil: '2026-11-19T00:00:00.000Z',
+              appealStatus: 'pending',
+            }
+          : null;
+      return new Response(JSON.stringify({ success: true, data }), {
+        status: path === '/api/v1/support/serious-appeal' ? 201 : 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    });
+
+    await api.requestLockAppealCode(' ban@vi-du.vn ');
+    await expect(
+      api.fileLockAppeal('ban@vi-du.vn', '123456', ' Tôi không lừa ai '),
+    ).resolves.toEqual({
+      rule: 'Lừa đảo người mua',
+      issuedAt: '2026-10-20T00:00:00.000Z',
+      appealUntil: '2026-11-19T00:00:00.000Z',
+      status: 'pending',
+    });
+    await api.requestAccountDeletion(' ban@vi-du.vn', 'mat-khau-1');
+
+    expect(bodies).toEqual([
+      { path: '/api/v1/support/serious-appeal/code', body: { email: 'ban@vi-du.vn' } },
+      {
+        path: '/api/v1/support/serious-appeal',
+        body: { email: 'ban@vi-du.vn', code: '123456', statement: 'Tôi không lừa ai' },
+      },
+      {
+        path: '/api/v1/auth/deletion-requests',
+        body: { email: 'ban@vi-du.vn', password: 'mat-khau-1' },
+      },
+    ]);
+  });
 });
 
 describe('cài đặt', () => {

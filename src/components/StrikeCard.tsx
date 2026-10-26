@@ -18,7 +18,7 @@ const CANCELLED: Record<NonNullable<MyStrike['cancelCause']>, string> = {
   serious_cancel: 'Đã xoá',
 };
 
-const APPEAL: Record<NonNullable<MyStrike['appeal']>, string> = {
+export const APPEAL_LABEL: Record<NonNullable<MyStrike['appeal']>, string> = {
   pending: 'Khiếu nại đang chờ xét.',
   won: 'Khiếu nại được chấp nhận.',
   lost: 'Khiếu nại không được chấp nhận.',
@@ -42,9 +42,18 @@ function status(s: MyStrike): { label: string; tone: Tone } {
 
 /**
  * Một cảnh cáo ở "Cảnh cáo của tôi". Nút "Khiếu nại" theo đúng `appealable` của server (thường / nặng, còn hạn, chưa
- * khiếu nại) — app không tự tính hạn. Vi phạm nghiêm trọng khoá tài khoản nên khiếu nại đi qua Hỗ trợ, không qua nút.
+ * khiếu nại) — app không tự tính hạn. Vi phạm nghiêm trọng khoá tài khoản nên khiếu nại đi qua kênh hỗ trợ không cần
+ * đăng nhập (`onSeriousAppeal`), không qua nút khiếu nại thường.
  */
-export function StrikeCard({ item, onAppeal }: { item: MyStrike; onAppeal: () => void }) {
+export function StrikeCard({
+  item,
+  onAppeal,
+  onSeriousAppeal,
+}: {
+  item: MyStrike;
+  onAppeal: () => void;
+  onSeriousAppeal: () => void;
+}) {
   const s = status(item);
   const dates = item.expiresAt
     ? `Ghi ngày ${formatDate(item.issuedAt)} · hết hạn ${formatDate(item.expiresAt)}`
@@ -58,7 +67,7 @@ export function StrikeCard({ item, onAppeal }: { item: MyStrike; onAppeal: () =>
       <Text style={styles.rule}>{item.rule}</Text>
       <Text style={styles.meta}>{dates}</Text>
       {item.inForce && <Text style={styles.points}>Tính {item.points} điểm vi phạm</Text>}
-      {item.appeal && <Text style={styles.meta}>{APPEAL[item.appeal]}</Text>}
+      {item.appeal && <Text style={styles.meta}>{APPEAL_LABEL[item.appeal]}</Text>}
       {item.appealable && item.appealUntil && (
         <View style={styles.appeal}>
           <Text style={styles.meta}>Khiếu nại được tới ngày {formatDate(item.appealUntil)}.</Text>
@@ -66,7 +75,10 @@ export function StrikeCard({ item, onAppeal }: { item: MyStrike; onAppeal: () =>
         </View>
       )}
       {item.kind === 'serious' && item.status === 'active' && item.appeal === null && (
-        <Text style={styles.meta}>Khiếu nại vi phạm nghiêm trọng qua Hỗ trợ Ghim.</Text>
+        <View style={styles.appeal}>
+          <Text style={styles.meta}>Vi phạm nghiêm trọng khiếu nại qua Hỗ trợ Ghim.</Text>
+          <OutlineButton label="Khiếu nại qua Hỗ trợ" compact onPress={onSeriousAppeal} />
+        </View>
       )}
     </View>
   );

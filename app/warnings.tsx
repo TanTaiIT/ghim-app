@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { MyStrike } from '@/api/client';
 import { InputSheet } from '@/components/InputSheet';
@@ -15,6 +16,7 @@ import { formatDate } from '@/utils/format';
  * nhân và từ thông báo cảnh cáo — câu nhắc "Khiếu nại được tới ngày …" dẫn về đây.
  */
 export default function Warnings() {
+  const router = useRouter();
   const toast = useToast();
   const standing = useMyStanding();
   const appeal = useAppealStrike();
@@ -55,7 +57,13 @@ export default function Warnings() {
             </View>
           ) : null
         }
-        renderItem={({ item }) => <StrikeCard item={item} onAppeal={() => setTarget(item)} />}
+        renderItem={({ item }) => (
+          <StrikeCard
+            item={item}
+            onAppeal={() => setTarget(item)}
+            onSeriousAppeal={() => router.push('/lock-appeal')}
+          />
+        )}
         ListEmptyComponent={
           standing.isPending ? (
             <Loading />

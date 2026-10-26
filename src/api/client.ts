@@ -58,6 +58,7 @@ import {
   getHealthReady,
   patchApiV1ListingsById,
   patchApiV1Me,
+  postApiV1AuthDeletionRequests,
   postApiV1AuthForgotPassword,
   postApiV1AuthLogin,
   postApiV1AuthLogout,
@@ -92,6 +93,8 @@ import {
   postApiV1MeStrikesByStrikeIdAppeal,
   postApiV1MeSupportConversation,
   postApiV1Reports,
+  postApiV1SupportSeriousAppeal,
+  postApiV1SupportSeriousAppealCode,
   putApiV1MeAvatar,
   putApiV1MeConversationsByConversationIdViewing,
   putApiV1MeGroupMutesByGroupId,
@@ -764,6 +767,14 @@ export type MyStanding = {
 };
 
 export type Session = { accessToken: string; refreshToken: string };
+
+/** Điều kênh hỗ trợ được nói với người bị khoá: lý do, lúc khoá, hạn khiếu nại — không hơn. */
+export type LockAppealResult = {
+  rule: string;
+  issuedAt: string;
+  appealUntil: string;
+  status: NonNullable<MyStrike['appeal']>;
+};
 
 export type Registration = { email: string; password: string; displayName: string };
 
@@ -1892,6 +1903,39 @@ export const api = {
   /** Đặt lại mật khẩu thu hồi mọi phiên của tài khoản. */
   resetPassword: (email: string, code: string, password: string): Promise<void> =>
     unwrapEmpty(postApiV1AuthResetPassword({ body: { email: email.trim(), code, password } })),
+
+  /**
+   * Kênh hỗ trợ cho người bị khoá vì vi phạm nghiêm trọng, không cần đăng nhập. Server luôn trả 200 — không lộ email
+   * nào có tài khoản hay đang bị khoá; khoá vì lý do khác thì mã nào cũng bị coi là sai ở bước nộp.
+   */
+  requestLockAppealCode: (email: string): Promise<void> =>
+    unwrapEmpty(postApiV1SupportSeriousAppealCode({ body: { email: email.trim() } })),
+
+  /** Một lần, trong hạn khiếu nại (server: 409 `APPEAL_WINDOW_CLOSED`, đã nộp rồi cũng 409). */
+  fileLockAppeal: async (
+    email: string,
+    code: string,
+    statement: string,
+  ): Promise<LockAppealResult> => {
+    const w = await unwrap(
+      postApiV1SupportSeriousAppeal({
+        body: { email: email.trim(), code, statement: statement.trim() },
+      }),
+    );
+    return {
+      rule: w.ruleText,
+      issuedAt: w.issuedAt,
+      appealUntil: w.appealUntil,
+      status: w.appealStatus,
+    };
+  },
+
+  /**
+   * Xoá tài khoản bằng email + mật khẩu, không cần đăng nhập — xoá ngay như nút trong Cài đặt. Đang bị khoá hay đang là
+   * chủ nhóm thì server từ chối (409 `ACCOUNT_DELETE_BLOCKED`) kèm lý do.
+   */
+  requestAccountDeletion: (email: string, password: string): Promise<void> =>
+    unwrapEmpty(postApiV1AuthDeletionRequests({ body: { email: email.trim(), password } })),
 
   /** Mang mã máy như lượt gửi tin: server ghi dấu đăng nhập cho luật "không xử việc của tài khoản chung máy". */
   login: (email: string, password: string): Promise<Session> =>
