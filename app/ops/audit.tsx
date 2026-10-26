@@ -62,7 +62,7 @@ export default function OpsAudit() {
             <View style={styles.row}>
               <Text style={styles.action}>{item.action}</Text>
               <Text style={styles.meta}>
-                {item.byMaster ? 'Master' : 'Staff'} {item.actorId?.slice(0, 8) ?? ''} ·{' '}
+                {item.byMaster ? 'Master' : `Staff ${item.actorId?.slice(0, 8) ?? ''}`} ·{' '}
                 {formatAgo(item.at)}
               </Text>
               <Text style={styles.meta} selectable>

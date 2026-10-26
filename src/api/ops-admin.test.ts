@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, jest } from '@jest/globals';
+import { auditActionLabel, detailsLabel, jobLabel } from './admin-labels';
 import { adminApi } from './ops-admin';
 
 /** Server giả: ghi lại phương thức, đường dẫn, query, body của từng lượt gọi; mọi lượt trả `data`. */
@@ -92,5 +93,15 @@ describe('quản trị trên bàn vận hành', () => {
 
     expect(calls[0]?.query).toBe('?includeInactive=true');
     expect(articles.map((a) => a.code)).toEqual(['D1', 'D2']);
+  });
+
+  it('nhật ký và việc nền: mã của server thành chữ; mã lạ giữ nguyên', () => {
+    expect(auditActionLabel('identity.account.unlock')).toBe('Mở khoá tài khoản');
+    expect(auditActionLabel('foo.bar.baz')).toBe('foo.bar.baz');
+    expect(jobLabel('review.every-minute')).toBe('Việc duyệt: mỗi phút (nhả việc quá hạn nhận)');
+    expect(detailsLabel({ cause: 'strike', name: 'Điện thoại', empty: null })).toBe(
+      'vì: cảnh cáo · tên: Điện thoại',
+    );
+    expect(detailsLabel({})).toBeNull();
   });
 });

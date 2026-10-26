@@ -38,7 +38,7 @@ export default function OpsJobs() {
                 />
               </View>
               <Text style={styles.meta}>
-                Bắt đầu {formatAgo(item.startedAt)}
+                Bắt đầu {formatAgo(item.startedAt).toLowerCase()}
                 {item.finishedAt ? '' : ' · chưa xong'}
               </Text>
               {item.summary && (

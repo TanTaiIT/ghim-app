@@ -1,3 +1,4 @@
+import { auditActionLabel, auditTargetLabel, detailsLabel, jobLabel } from './admin-labels';
 import { unwrap, unwrapEmpty } from './client';
 import {
   deleteApiV1OpsDisposableDomainsByDomain,
@@ -108,19 +109,16 @@ export type AuditEntry = {
   at: string;
 };
 
-const toAudit = (w: WireAudit): AuditEntry => {
-  const details = w.details && Object.keys(w.details).length > 0 ? JSON.stringify(w.details) : null;
-  return {
-    id: w.id,
-    actorId: w.actorId ?? null,
-    byMaster: w.actorRole === 'master',
-    action: w.action,
-    target: `${w.targetType} ${w.targetId}`,
-    reason: w.reason ?? null,
-    details,
-    at: w.createdAt,
-  };
-};
+const toAudit = (w: WireAudit): AuditEntry => ({
+  id: w.id,
+  actorId: w.actorId ?? null,
+  byMaster: w.actorRole === 'master',
+  action: auditActionLabel(w.action),
+  target: auditTargetLabel(w.targetType, w.targetId),
+  reason: w.reason ?? null,
+  details: w.details ? detailsLabel(w.details) : null,
+  at: w.createdAt,
+});
 
 export type AuditFilter = Pick<
   NonNullable<GetApiV1OpsAuditData['query']>,
@@ -145,11 +143,11 @@ export const JOB_STATUS_LABEL: Record<JobRun['status'], string> = {
 
 const toJobRun = (w: WireJobRun): JobRun => ({
   id: w.id,
-  name: w.name,
+  name: jobLabel(w.name),
   status: w.status,
   startedAt: w.startedAt,
   finishedAt: w.finishedAt ?? null,
-  summary: w.summary && Object.keys(w.summary).length > 0 ? JSON.stringify(w.summary) : null,
+  summary: w.summary ? detailsLabel(w.summary) : null,
   error: w.error ?? null,
 });
 
