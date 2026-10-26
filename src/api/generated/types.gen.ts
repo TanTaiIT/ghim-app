@@ -11657,6 +11657,7 @@ export type GetApiV1OpsScreeningWhitelistResponses = {
         data: Array<{
             id: string;
             sourceImageId: string;
+            url: string | null;
             addedBy: string;
             addedAt: string;
         }>;
@@ -11710,6 +11711,7 @@ export type PostApiV1OpsScreeningWhitelistResponses = {
         data: {
             id: string;
             sourceImageId: string;
+            url: string | null;
             addedBy: string;
             addedAt: string;
         };
@@ -11762,6 +11764,57 @@ export type DeleteApiV1OpsScreeningWhitelistByIdResponses = {
 };
 
 export type DeleteApiV1OpsScreeningWhitelistByIdResponse = DeleteApiV1OpsScreeningWhitelistByIdResponses[keyof DeleteApiV1OpsScreeningWhitelistByIdResponses];
+
+export type GetApiV1OpsScreeningCategoriesByCategoryIdKeywordsData = {
+    body?: never;
+    path: {
+        categoryId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/screening/categories/{categoryId}/keywords';
+};
+
+export type GetApiV1OpsScreeningCategoriesByCategoryIdKeywordsErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsScreeningCategoriesByCategoryIdKeywordsError = GetApiV1OpsScreeningCategoriesByCategoryIdKeywordsErrors[keyof GetApiV1OpsScreeningCategoriesByCategoryIdKeywordsErrors];
+
+export type GetApiV1OpsScreeningCategoriesByCategoryIdKeywordsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            categoryId: string;
+            keywords: Array<string>;
+        };
+    };
+};
+
+export type GetApiV1OpsScreeningCategoriesByCategoryIdKeywordsResponse = GetApiV1OpsScreeningCategoriesByCategoryIdKeywordsResponses[keyof GetApiV1OpsScreeningCategoriesByCategoryIdKeywordsResponses];
 
 export type PutApiV1OpsScreeningCategoriesByCategoryIdKeywordsData = {
     body: {

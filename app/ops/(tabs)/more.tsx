@@ -6,7 +6,8 @@ import { useMe } from '@/queries/account';
 import { C, F, S } from '@/theme';
 
 /**
- * Công cụ vận hành ngoài bốn tab chính. Mục chỉ master dùng được (nhóm, danh mục, lý do mẫu, trợ giúp, luật và số liệu máy) ẩn với
+ * Công cụ vận hành ngoài bốn tab chính. Mục chỉ master dùng được (nhóm, danh mục, lý do mẫu, trợ giúp, luật, cụm từ cấm và
+ * số liệu máy) ẩn với
  * staff: server trả 403 cho họ, hiện mục đó chỉ để họ bấm vào một màn báo lỗi.
  */
 export default function OpsMore() {
@@ -17,6 +18,7 @@ export default function OpsMore() {
     { icon: 'help-circle', label: 'Hỗ trợ người dùng', onPress: () => router.push('/ops/support') },
     { icon: 'search', label: 'Tra mã tra cứu', onPress: () => router.push('/ops/lookup') },
     { icon: 'file-minus', label: 'Gỡ / khôi phục tin', onPress: () => router.push('/ops/listing') },
+    { icon: 'image', label: 'Danh sách trắng ảnh', onPress: () => router.push('/ops/whitelist') },
     { icon: 'zap', label: 'Đẩy tin & doanh thu', onPress: () => router.push('/ops/promotions') },
   ];
   const master: MenuItem[] = [
@@ -26,6 +28,7 @@ export default function OpsMore() {
     { icon: 'x-octagon', label: 'Lý do từ chối mẫu', onPress: () => router.push('/ops/reasons') },
     { icon: 'help-circle', label: 'Trợ giúp', onPress: () => router.push('/ops/help') },
     { icon: 'sliders', label: 'Luật máy duyệt', onPress: () => router.push('/ops/rules') },
+    { icon: 'slash', label: 'Cụm từ cấm', onPress: () => router.push('/ops/phrases') },
     { icon: 'bar-chart-2', label: 'Số liệu máy duyệt', onPress: () => router.push('/ops/machine') },
   ];
 

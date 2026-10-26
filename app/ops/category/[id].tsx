@@ -133,6 +133,23 @@ function CategoryForm({ category: c }: { category: OpsCategory }) {
             }
           />
 
+          <Text style={styles.section}>Máy duyệt riêng</Text>
+          <View style={styles.card}>
+            <Text style={styles.meta}>
+              Ngưỡng điểm, trọng số hay chế độ riêng của từng luật, và từ khoá suy ra danh mục này.
+            </Text>
+            <OutlineButton
+              compact
+              label="Luật, ngưỡng và từ khoá"
+              onPress={() =>
+                router.push({
+                  pathname: '/ops/category/screening/[id]',
+                  params: { id: c.id, name: c.name },
+                })
+              }
+            />
+          </View>
+
           <Text style={styles.section}>Mẫu thông tin</Text>
           <View style={styles.card}>
             <Text style={styles.meta}>

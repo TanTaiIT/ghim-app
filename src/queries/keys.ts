@@ -95,5 +95,10 @@ export const qk = {
     flag: (code: string) => ['ops', 'lookup', 'flag', code] as const,
     staff: (categoryId: string | null) => ['ops', 'staff', categoryId] as const,
     screeningRules: () => ['ops', 'screening-rules'] as const,
+    /** Bộ luật đầy đủ (kèm ghi đè, ngưỡng theo danh mục) — màn máy duyệt của một danh mục. */
+    screeningBook: () => ['ops', 'screening-book'] as const,
+    phrases: () => ['ops', 'phrases'] as const,
+    whitelist: () => ['ops', 'whitelist'] as const,
+    keywords: (categoryId: string) => ['ops', 'keywords', categoryId] as const,
   },
 };

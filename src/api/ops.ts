@@ -246,7 +246,8 @@ export type OpsTaskDetail = OpsTask & {
     description: string | null;
     price: number | null;
     negotiable: boolean;
-    pictures: Picture[];
+    /** `id` = mã ảnh trong kho — đưa ảnh mẫu của hãng vào danh sách trắng. */
+    pictures: (Picture & { id: string })[];
     groupName: string | null;
   } | null;
   listingDeleted: boolean;
@@ -288,7 +289,7 @@ export function toTaskDetail(w: WireTaskDetail): OpsTaskDetail {
       description: l.description,
       price: l.price,
       negotiable: l.negotiable,
-      pictures: l.images.map((i) => ({ uri: i.url })),
+      pictures: l.images.map((i) => ({ id: i.id, uri: i.url })),
       groupName: l.badge?.name ?? null,
     },
     listingDeleted: w.listingDeleted,

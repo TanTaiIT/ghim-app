@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
+import { useRouter } from 'expo-router';
 import { Avatar } from './Avatar';
 import { Gallery } from './Gallery';
 import { MessagePhotos } from './MessagePhotos';
-import { Price, Tag } from './ui';
+import { OutlineButton, Price, Tag } from './ui';
 import { REPORT_CATEGORY_LABEL } from '@/api/client';
 import { QUEUE_LABEL, REASON_LABEL, hitLabel, type OpsTaskDetail } from '@/api/ops';
 import { C, F, R, S } from '@/theme';
@@ -24,6 +25,7 @@ export function OpsTaskBody({
   category: string | null;
   onOpenPerson: (id: string, name: string | null) => void;
 }) {
+  const router = useRouter();
   const l = task.listing;
   const queue = QUEUE_LABEL[task.queue] ?? `Hàng ${task.queue}`;
   // Lý do làm nên chính hàng đó ("Máy giữ" / "Máy giữ tin", "Nhóm chuyển lên") đã nói ở nhãn hàng — bỏ để khỏi lặp.
@@ -94,6 +96,15 @@ export function OpsTaskBody({
 
         {task.duplicates.length > 0 && (
           <Note icon="copy" warn text={`Ảnh trùng tin của: ${names(task.duplicates)}`} />
+        )}
+        {l && l.pictures.length > 0 && (
+          <OutlineButton
+            compact
+            label="Ảnh mẫu của hãng → danh sách trắng"
+            onPress={() =>
+              router.push({ pathname: '/ops/whitelist/add', params: { taskId: task.id } })
+            }
+          />
         )}
         {task.sharedDevice.length > 0 && (
           <Note icon="smartphone" warn text={`Dùng chung máy với: ${names(task.sharedDevice)}`} />
