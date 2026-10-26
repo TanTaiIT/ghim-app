@@ -3,7 +3,7 @@ import Feather from '@expo/vector-icons/Feather';
 import { CONDITION_LABEL, type ListingCard, type ListingDetail, type Seller } from '@/api/client';
 import { Avatar, Verified } from './Avatar';
 import { ListingTile } from './ListingCard';
-import { OutlineButton, Price, Tag, type IconName } from './ui';
+import { IconButton, OutlineButton, Price, Tag, type IconName } from './ui';
 import { C, F, R, S } from '@/theme';
 import { formatAgo, formatPlace } from '@/utils/format';
 
@@ -115,12 +115,57 @@ export function SimilarRail({
   );
 }
 
-/** Chỉ hiện cho người quản lý nhóm của huy hiệu: gỡ được huy hiệu, không gỡ được tin (spec group/badges). */
-export function BadgeAdminRow({ name, onRemove }: { name: string; onRemove: () => void }) {
+/** Nút nổi trên ảnh: quay lại, lưu, chia sẻ, báo cáo. Lưu và báo cáo cần đăng nhập — route bọc bằng `guarded`. */
+export function ListingTopBar({
+  top,
+  saved,
+  onBack,
+  onToggleSaved,
+  onShare,
+  onReport,
+}: {
+  top: number;
+  saved: boolean;
+  onBack: () => void;
+  onToggleSaved: () => void;
+  onShare: () => void;
+  onReport: () => void;
+}) {
   return (
-    <View style={styles.badgeAdmin}>
-      <Text style={styles.badgeText}>Tin mang huy hiệu nhóm {name} mà bạn quản lý.</Text>
-      <OutlineButton compact label="Gỡ huy hiệu" onPress={onRemove} />
+    <View style={[styles.topBar, { top }]}>
+      <IconButton variant="float" icon="chevron-left" label="Quay lại" onPress={onBack} />
+      <View style={styles.topActions}>
+        <IconButton
+          variant="float"
+          icon="heart"
+          label={saved ? 'Bỏ lưu tin' : 'Lưu tin'}
+          color={saved ? C.price : C.ink}
+          onPress={onToggleSaved}
+        />
+        <IconButton variant="float" icon="share" label="Chia sẻ" onPress={onShare} />
+        <IconButton variant="float" icon="flag" label="Báo cáo tin" onPress={onReport} />
+      </View>
+    </View>
+  );
+}
+
+/**
+ * Một dòng cho người có quyền quản lý tin này mà người xem thường không thấy: quản lý nhóm của huy hiệu (gỡ huy hiệu,
+ * không gỡ được tin — spec group/badges), staff / master (mở tin ở bàn vận hành).
+ */
+export function ManageRow({
+  text,
+  actionLabel,
+  onPress,
+}: {
+  text: string;
+  actionLabel: string;
+  onPress: () => void;
+}) {
+  return (
+    <View style={styles.manage}>
+      <Text style={styles.manageText}>{text}</Text>
+      <OutlineButton compact label={actionLabel} onPress={onPress} />
     </View>
   );
 }
@@ -129,7 +174,15 @@ const styles = StyleSheet.create({
   block: { gap: S.sm },
   body: { fontFamily: F.ui, fontSize: 14, lineHeight: 22, color: C.inkMid },
   rail: { gap: S.md },
-  badgeAdmin: {
+  topBar: {
+    position: 'absolute',
+    left: S.lg,
+    right: S.lg,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  topActions: { flexDirection: 'row', gap: S.sm },
+  manage: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: S.md,
@@ -137,7 +190,7 @@ const styles = StyleSheet.create({
     borderRadius: R.lg,
     backgroundColor: C.sand,
   },
-  badgeText: { flex: 1, fontFamily: F.ui, fontSize: 13, lineHeight: 18, color: C.inkMid },
+  manageText: { flex: 1, fontFamily: F.ui, fontSize: 13, lineHeight: 18, color: C.inkMid },
   tags: { flexDirection: 'row', gap: 6 },
   title: { fontFamily: F.uiBlack, fontSize: 22, lineHeight: 29, color: C.ink },
   meta: { flexDirection: 'row', flexWrap: 'wrap', columnGap: 14, rowGap: 6 },

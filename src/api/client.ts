@@ -378,6 +378,8 @@ export type ListingDetail = Omit<ListingCard, 'seller'> & {
   allowOffers: boolean;
   /** Huy hiệu nhóm trên tin sàn chung — `groupId` để người quản lý nhóm đó gỡ được. */
   badge: { groupId: string; name: string } | null;
+  /** Tin ở sàn chung — chỉ tin sàn mới gỡ / khôi phục trực tiếp được ở bàn vận hành. */
+  marketplace: boolean;
 };
 
 /** Cách xếp của `GET /listings` (ghim-server add-feed-sort): mới nhất là vị trí trên bảng tin. */
@@ -1397,6 +1399,7 @@ export const api = {
       views: null,
       allowOffers: w.negotiable,
       badge: w.badge ? { groupId: w.badge.groupId, name: w.badge.name } : null,
+      marketplace: w.placement === 'marketplace',
     };
   },
 

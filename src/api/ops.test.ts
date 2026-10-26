@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, jest } from '@jest/globals';
 import {
   fieldNameOf,
+  listingIdIn,
   normalizeLookupCode,
   opsApi,
   taskKind,
@@ -199,6 +200,32 @@ describe('quyền staff', () => {
 describe('nhóm', () => {
   afterEach(() => {
     jest.restoreAllMocks();
+  });
+
+  it('gỡ thẳng kèm lý do mẫu, khôi phục theo mã tin; mã tin lấy được từ đường dẫn dán vào', async () => {
+    const calls = serve({
+      decisionId: 'd-1',
+      outcome: 'remove',
+      listingState: 'removed',
+      reportVerdict: null,
+      strikeId: null,
+    });
+
+    await opsApi.removeListing({ id: 'l-1', reasonTemplateId: 'r-1' });
+    await opsApi.restoreListing('l-1');
+
+    expect(calls).toEqual([
+      {
+        method: 'POST',
+        path: '/api/v1/ops/review/listings/l-1/remove',
+        body: { reasonTemplateId: 'r-1' },
+      },
+      { method: 'POST', path: '/api/v1/ops/review/listings/l-1/restore', body: null },
+    ]);
+    expect(listingIdIn('https://ghim.vn/listing/01A1312E-959F-7011-AED7-98A4AD9322D8?x=1')).toBe(
+      '01a1312e-959f-7011-aed7-98a4ad9322d8',
+    );
+    expect(listingIdIn('tin số 12')).toBeNull();
   });
 
   it('giao chủ: gửi mã tài khoản được chọn theo nhóm', async () => {

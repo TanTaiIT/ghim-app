@@ -44,6 +44,8 @@ import {
   postApiV1OpsGroupsByGroupIdOwnerOffers,
   postApiV1OpsGroupsByGroupIdUnlock,
   postApiV1OpsIdVerificationsByIdDecision,
+  postApiV1OpsReviewListingsByListingIdRemove,
+  postApiV1OpsReviewListingsByListingIdRestore,
   postApiV1OpsReviewReasonTemplates,
   postApiV1OpsReviewTasksByTaskIdClaim,
   postApiV1OpsReviewTasksByTaskIdDecision,
@@ -511,6 +513,12 @@ const toIdCheck = (w: WireIdCheck): IdCheck => ({
 export const normalizeLookupCode = (text: string): string =>
   text.replace(/[\s-]+/g, '').toUpperCase();
 
+const UUID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+
+/** Mã tin trong chữ người dùng dán vào: mã trơn hay đường dẫn có mã. Không thấy mã thì `null`. */
+export const listingIdIn = (text: string): string | null =>
+  text.match(UUID)?.[0]?.toLowerCase() ?? null;
+
 export const HOLD_OUTCOME_LABEL: Record<WireHold['outcome'], string> = {
   pass_full: 'Cho lên đủ',
   pass_limited: 'Cho lên, hạn chế hiển thị',
@@ -897,6 +905,30 @@ export const opsApi = {
   /** Mã mọi chủ đề theo thứ tự mới; danh sách vừa đổi ở nơi khác thì server trả 409 kèm câu báo. */
   reorderHelpTopics: (ids: string[]): Promise<void> =>
     unwrapEmpty(putApiV1OpsHelpOrder({ body: { ids } })),
+
+  /**
+   * Gỡ thẳng một tin sàn đang hiện, mức "sai sót" kèm lý do mẫu đang bật — không qua việc. Server chặn: staff khác danh
+   * mục (403), tin trong nhóm (409 `OUTCOME_NOT_ALLOWED`), tin đang có việc mở (409 `TASK_OPEN`, phải xử qua việc).
+   */
+  removeListing: async ({
+    id,
+    reasonTemplateId,
+  }: {
+    id: string;
+    reasonTemplateId: string;
+  }): Promise<void> => {
+    await unwrap(
+      postApiV1OpsReviewListingsByListingIdRemove({
+        path: { listingId: id },
+        body: { reasonTemplateId },
+      }),
+    );
+  },
+
+  /** Tin sàn đang bị gỡ hiện lại, ngày hiển thị chạy tiếp từ chỗ đã dừng; tin không bị gỡ: 409 `INVALID_TRANSITION`. */
+  restoreListing: async (id: string): Promise<void> => {
+    await unwrap(postApiV1OpsReviewListingsByListingIdRestore({ path: { listingId: id } }));
+  },
 
   reasonTemplates: async (): Promise<ReasonTemplate[]> =>
     (await unwrap(getApiV1OpsReviewReasonTemplates()))

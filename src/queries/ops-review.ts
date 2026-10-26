@@ -59,6 +59,26 @@ export function useDecideTask() {
   });
 }
 
+/**
+ * Gỡ thẳng / khôi phục một tin sàn: tin rời hay trở lại bảng tin, tìm kiếm, chi tiết — đọc lại cả nhánh tin; số liệu bàn
+ * vận hành cũng đổi theo quyết định mới.
+ */
+function useListingDecision<V>(fn: (v: V) => Promise<void>) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: fn,
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: qk.listings.all() });
+      void qc.invalidateQueries({ queryKey: qk.ops.all() });
+    },
+  });
+}
+
+export const useRemoveListing = () =>
+  useListingDecision((d: { id: string; reasonTemplateId: string }) => opsApi.removeListing(d));
+export const useRestoreListing = () =>
+  useListingDecision((id: string) => opsApi.restoreListing(id));
+
 /** Lý do mẫu cho "sai sót". Staff chỉ nhận lý do đang bật; master nhận cả lý do đã tắt. */
 export function useReasonTemplates() {
   return useQuery({ queryKey: qk.ops.reasons(), queryFn: opsApi.reasonTemplates });

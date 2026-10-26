@@ -6,9 +6,10 @@ import { managesGroup } from '@/api/client';
 import { Gallery } from '@/components/Gallery';
 import { useGuarded } from '@/components/GuestGate';
 import {
-  BadgeAdminRow,
   ListingDescription,
   ListingSummary,
+  ListingTopBar,
+  ManageRow,
   SellerCard,
   SimilarRail,
   SpecGrid,
@@ -32,6 +33,7 @@ import {
   useSimilar,
   useToggleSaved,
 } from '@/queries/listings';
+import { useMe } from '@/queries/account';
 import { useMyGroups, useRemoveGroupBadge } from '@/queries/groups';
 import { useOpenConversation } from '@/queries/messages';
 import { C, R, S } from '@/theme';
@@ -50,6 +52,7 @@ export default function ListingDetail() {
   const listing = useListing(id);
   const myGroups = useMyGroups();
   const removeBadge = useRemoveGroupBadge();
+  const opsAccess = useMe().data?.opsAccess ?? false;
   const similar = useSimilar(id);
   const savedIds = useSavedIds();
   const toggleSaved = useToggleSaved();
@@ -97,7 +100,18 @@ export default function ListingDetail() {
           )}
           <ListingSummary listing={l} />
           {l.badge && managesGroup(myGroups.data ?? [], l.badge.groupId) && (
-            <BadgeAdminRow name={l.badge.name} onRemove={() => setUnbadging(true)} />
+            <ManageRow
+              text={`Tin mang huy hiệu nhóm ${l.badge.name} mà bạn quản lý.`}
+              actionLabel="Gỡ huy hiệu"
+              onPress={() => setUnbadging(true)}
+            />
+          )}
+          {opsAccess && l.marketplace && !l.ended && (
+            <ManageRow
+              text="Bạn xử lý được tin này ở bàn vận hành."
+              actionLabel="Gỡ / khôi phục"
+              onPress={() => router.push(`/ops/listing/${l.id}`)}
+            />
           )}
           <SellerCard seller={l.seller} onOpen={() => router.push(`/user/${l.seller.id}`)} />
           {l.specs.length > 0 && <SpecGrid specs={l.specs} />}
@@ -112,37 +126,18 @@ export default function ListingDetail() {
         </View>
       </ScrollView>
 
-      <View style={[styles.topBar, { top: insets.top + S.xs }]}>
-        <IconButton variant="float" icon="chevron-left" label="Quay lại" onPress={back} />
-        <View style={styles.topActions}>
-          <IconButton
-            variant="float"
-            icon="heart"
-            label={saved ? 'Bỏ lưu tin' : 'Lưu tin'}
-            color={saved ? C.price : C.ink}
-            onPress={() =>
-              guarded(() =>
-                toggleSaved.mutate(
-                  { id: l.id, saved: !saved },
-                  { onError: (e) => toast(e.message) },
-                ),
-              )
-            }
-          />
-          <IconButton
-            variant="float"
-            icon="share"
-            label="Chia sẻ"
-            onPress={() => void Share.share({ message: `${l.title} – ${formatVnd(l.price)}` })}
-          />
-          <IconButton
-            variant="float"
-            icon="flag"
-            label="Báo cáo tin"
-            onPress={() => guarded(() => setReporting(true))}
-          />
-        </View>
-      </View>
+      <ListingTopBar
+        top={insets.top + S.xs}
+        saved={saved}
+        onBack={back}
+        onToggleSaved={() =>
+          guarded(() =>
+            toggleSaved.mutate({ id: l.id, saved: !saved }, { onError: (e) => toast(e.message) }),
+          )
+        }
+        onShare={() => void Share.share({ message: `${l.title} – ${formatVnd(l.price)}` })}
+        onReport={() => guarded(() => setReporting(true))}
+      />
 
       <View style={[styles.actions, { paddingBottom: insets.bottom + S.md }]}>
         <IconButton
@@ -215,14 +210,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: R.xl,
     backgroundColor: C.paperWarm,
   },
-  topBar: {
-    position: 'absolute',
-    left: S.lg,
-    right: S.lg,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  topActions: { flexDirection: 'row', gap: S.sm },
   actions: {
     flexDirection: 'row',
     alignItems: 'center',
