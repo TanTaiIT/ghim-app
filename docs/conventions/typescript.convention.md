@@ -25,7 +25,7 @@ thiếu dependency chứ không phải hỏng type — chạy `npm install` trư
 | `any` (oxlint **error**)              | `unknown` + narrow, hoặc generic                                    |
 | `@ts-ignore` / `@ts-expect-error`     | Sửa type. Nếu bất khả kháng: `@ts-expect-error` + comment lý do     |
 | `import { type X }` lẫn value import  | `import type { X } from …` riêng (oxlint `consistent-type-imports`) |
-| Non-null `!` để né `strictNullChecks` | Optional chain + fallback: `savedIds?.includes(id) ?? false`        |
+| Non-null `!` để né `strictNullChecks` | Optional chain + fallback: `savedIds.data?.has(id) ?? false`        |
 
 ---
 
@@ -52,13 +52,13 @@ Callback prop luôn có kiểu hàm tường minh: `onPress: () => void`, không
 ## 4. Domain type
 
 Kiểu wire đến từ `src/api/generated/types.gen.ts` (sinh từ OpenAPI). Chúng **không rò** lên `queries/` hay
-`app/`: `client.ts` map sang domain type khai trong chính `client.ts` (hoặc `api/db.ts` khi đủ lớn), và mọi layer
-khác `import type` từ đó.
+`app/`: file `src/api/*.ts` gọi SDK (`client.ts`, `ops.ts`, `ops-screening.ts`, `ops-admin.ts`, `group-manage.ts`) map
+sang domain type khai trong chính file đó, và mọi layer khác `import type` từ đó.
 
 - Union literal cho trạng thái hữu hạn: `status: 'live' | 'held'`. Không `string` cho tập đóng, không runtime `enum`.
 - Tập đóng cần cả giá trị lẫn type: khai mảng `as const` rồi suy type từ nó — `CONDITIONS = ['new', …] as const`,
   `type Condition = (typeof CONDITIONS)[number]`. Chuỗi từ ngoài vào (route param) qua hàm thu hẹp như
-  `toCategoryId()`, không `as`.
+  `filtersFromParams()` (`src/utils/search-params.ts`), không `as`.
 - Id của backend là uuid v7 dạng chuỗi; không ép sang số.
 
 ---
@@ -94,7 +94,7 @@ Query nhận id **phải** có `enabled: Boolean(id)` — không gửi `undefine
 
 - Generic ngắn gọn, chỉ khi thật sự đa hình. Dấu phẩy sau `<T,>` là bắt buộc trong file `.tsx`.
 - Mutation context: để TanStack suy từ giá trị `onMutate` trả về (`return { prev }` → `ctx?.prev`).
-- Type param của cache helper đặt ở generic: `qc.getQueryData<Listing[]>(qk.myListings())`.
+- Type param của cache helper đặt ở generic: `qc.getQueryData<Notice[]>(qk.notices.list())`.
 - Biến không dùng phải prefix `_` — oxlint chỉ tha pattern `^_`.
 
 ---

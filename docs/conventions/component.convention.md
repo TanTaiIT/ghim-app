@@ -9,8 +9,8 @@ trạng thái rỗng/đang tải, LOC caps, test.
 
 1. Có sẵn trong `@/components/ui` chưa? (`PinButton`, `OutlineButton`, `GhostButton`, `IconButton`, `Tag`,
    `Price`, `SectionTitle`, `SafetyNote`, `ScreenHeader`, `EmptyState`, `Loading`) hoặc file riêng (`Field`,
-   `Avatar`/`Verified`, `Chip`/`Choice`/`Check`, `Photo`, `ListingCard`, `PickerSheet`, `TabStrip`, `Toast`,
-   `GuestGate`, `ErrorScreen`).
+   `Avatar`/`Verified`, `Chip`/`Choice`/`Check`, `Photo`, `ListingCard`, `PickerSheet`/`ConfirmSheet`, `InputSheet`,
+   `ActionBar`/`BarButton`, `ActionRow`, `MenuList`, `CodeStep`, `TabStrip`, `Toast`, `GuestGate`, `ErrorScreen`).
 2. Chưa có nhưng ≥2 màn sẽ dùng → thêm vào `ui.tsx` (nếu nhỏ) hoặc file PascalCase riêng (nếu có state/animation).
 3. Chỉ một màn dùng → viết inline ngay trong route — trừ khi route vượt cap 250 dòng (HARD#11): khi đó tách khối
    thành file PascalCase trong `src/components/` (`GroupHeader`, `ListingInfo`, `PhotoGrid`), hành động vẫn đi ra
@@ -107,7 +107,8 @@ ListEmptyComponent={isLoading ? <Loading /> : <EmptyState icon="inbox" text="…
   `react-native-safe-area-context` (không phải bản của `react-native`). Màn trong tab chỉ `edges={['top']}`.
 - Màn có `FlatList` tràn viền: `useSafeAreaInsets()` rồi cộng vào `contentContainerStyle.paddingTop`.
 - Thanh cố định đáy: `paddingBottom: insets.bottom || S.lg`.
-- Android `edgeToEdgeEnabled` đang bật: không giả định thanh điều hướng có nền riêng.
+- Android luôn edge-to-edge (SDK 57 bỏ khoá `edgeToEdgeEnabled`, `app.json` không khai): không giả định thanh điều
+  hướng có nền riêng.
 
 ---
 

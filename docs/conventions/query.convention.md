@@ -7,18 +7,22 @@ optimistic update, bề mặt lỗi. Đây là layer chịu nhiều HARD rule nh
 
 ## 1. Phân vai các file
 
-| File                      | Chịu trách nhiệm                                                                     | Cấm                                                      |
-| ------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------- |
-| `src/api/http.ts`         | Base URL, Bearer token (`setHttpAccessToken`), `ApiError`, `createClientConfig`      | Import `stores/**`                                       |
-| `src/api/generated/**`    | Output của `npm run api:sync` — **không sửa tay**, oxlint và Prettier đã ignore      | Bị import ngoài `client.ts`, `ops.ts`, `group-manage.ts` |
-| `src/api/client.ts`       | Mọi hàm truy cập dữ liệu: gọi SDK, `unwrap()`, map wire → domain, domain type        | Import React / TanStack / component                      |
-| `src/api/ops.ts`          | Như `client.ts` nhưng cho bàn vận hành (`/ops/*`, master + staff): `opsApi`          | Như `client.ts`                                          |
-| `src/api/group-manage.ts` | Như `client.ts` nhưng cho quản trị nhóm (chủ nhóm, điều hành viên): `groupManageApi` | Như `client.ts`                                          |
-| `src/queries/*.ts`        | Hook `useQuery`/`useMutation`, quản lý cache                                         | Chứa business rule của màn hình                          |
+| File                       | Chịu trách nhiệm                                                                                                                | Cấm                                                                                          |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `src/api/http.ts`          | Base URL, Bearer token (`setHttpAccessToken`), `ApiError`, `createClientConfig`                                                 | Import `stores/**`                                                                           |
+| `src/api/generated/**`     | Output của `npm run api:sync` — **không sửa tay**, oxlint và Prettier đã ignore                                                 | Bị import ngoài `client.ts`, `ops.ts`, `ops-screening.ts`, `ops-admin.ts`, `group-manage.ts` |
+| `src/api/client.ts`        | Mọi hàm truy cập dữ liệu: gọi SDK, `unwrap()`, map wire → domain, domain type                                                   | Import React / TanStack / component                                                          |
+| `src/api/ops.ts`           | Như `client.ts` nhưng cho bàn vận hành (`/ops/*`, master + staff): `opsApi`                                                     | Như `client.ts`                                                                              |
+| `src/api/ops-screening.ts` | Như `ops.ts`, cho cấu hình máy duyệt (cụm từ cấm, danh sách trắng ảnh, luật / ngưỡng / từ khoá theo danh mục): `screeningApi`   | Như `client.ts`                                                                              |
+| `src/api/ops-admin.ts`     | Như `ops.ts`, cho quản trị hệ thống (gậy, quy định sàn, bảng con số, miền email, nhật ký, việc nền, thống kê duyệt): `adminApi` | Như `client.ts`                                                                              |
+| `src/api/admin-labels.ts`  | Chữ tiếng Việt cho mã nhật ký vận hành và việc nền — hàm thuần, không gọi SDK                                                   | Như `client.ts`                                                                              |
+| `src/api/group-manage.ts`  | Như `client.ts` nhưng cho quản trị nhóm (chủ nhóm, điều hành viên): `groupManageApi`                                            | Như `client.ts`                                                                              |
+| `src/queries/*.ts`         | Hook `useQuery`/`useMutation`, quản lý cache                                                                                    | Chứa business rule của màn hình                                                              |
 
 **SDK đến từ backend thật**: `npm run api:sync` đọc `http://localhost:3100/docs/json` của `ghim-server` đang chạy
 (tài liệu sinh từ chính schema Zod của nó, nên không có bản tĩnh nào để lệch). Backend thêm endpoint → chạy lại
-api:sync → thêm hàm trong `client.ts`. Một hàm mới trong `client.ts` mà không gọi SDK là dấu hiệu sai.
+api:sync → thêm hàm trong `client.ts` (hay file api cùng mảng ở bảng trên). Một hàm mới trong `client.ts` mà không gọi
+SDK là dấu hiệu sai.
 
 SDK **không throw**, nó trả `{ data, error, response }`. `unwrap()` trong `client.ts` là chỗ duy nhất đổi hai
 nhánh thành kết quả hoặc `ApiError` (có `code`, `message` tiếng Việt của server, `status`) — mọi hàm mới đi qua
@@ -64,7 +68,7 @@ export function useListing(id: string) {
 ```
 
 - `placeholderData: keepPreviousData` cho query **danh sách đổi filter liên tục**. Không dùng cho query detail.
-- Query không tham số viết một dòng: `useQuery({ queryKey: qk.health(), queryFn: api.getHealth })`.
+- Query không tham số viết một dòng: `useQuery({ queryKey: qk.health(), queryFn: api.getReadiness })`.
 - Reactive param nằm ở **key**, không `useEffect` gọi `refetch()`.
 
 **Write → `useMutation`.** `mutationFn` nhận đúng một argument; nhiều field thì gói object.
@@ -86,7 +90,7 @@ onError: (_e, _id, ctx) => {
   if (ctx?.prev) qc.setQueryData(qk.savedIds(), ctx.prev); // 3. rollback
 },
 onSettled: () => {
-  qc.invalidateQueries({ queryKey: ['saved'] });           // 4. đồng bộ lại với nguồn thật
+  qc.invalidateQueries({ queryKey: qk.savedIds() });       // 4. đồng bộ lại với nguồn thật
 },
 ```
 

@@ -14,14 +14,15 @@ app/            — routes. expo-router resolve theo file path. KHÔNG chứa g�
 src/
 ├── api/        — http.ts (base URL, token, ApiError) · client.ts (gọi SDK, unwrap, mapper, domain type)
 │                 · ops.ts (như client.ts, cho bàn vận hành `/ops/*`)
+│                 · ops-screening.ts, ops-admin.ts (như ops.ts: cấu hình máy duyệt; quản trị hệ thống)
+│                 · admin-labels.ts (chữ cho mã nhật ký vận hành, việc nền)
 │                 · group-manage.ts (như client.ts, cho chủ nhóm / điều hành viên) · realtime.ts (kênh socket.io, chỉ báo hiệu)
 │                 · generated/ (sinh)
-│                 · mock*.ts (dữ liệu mẫu tới khi backend có endpoint — xem README §4)
 ├── queries/    — TanStack hook + key factory (keys.ts)
 ├── stores/     — Zustand store cho client state sống lâu hơn màn hình
 ├── components/ — UI dùng lại, không gắn với một route cụ thể
 ├── theme/      — token màu / font / bóng / bo góc / khoảng cách
-└── utils/      — hàm thuần dùng chung (định dạng giá, thời gian) — lá, không import layer nào
+└── utils/      — hàm thuần dùng chung (định dạng giá, thời gian, tham số tìm kiếm) — lá, không import layer nào
 ```
 
 Tên layer con **không được lặp lại lồng nhau**: cấm `src/components/components/`, `src/api/api/`.
@@ -36,7 +37,7 @@ Một helper dùng một chỗ thì để ngay trong file dùng nó, đừng pro
 | Loại                      | Quy tắc đặt tên                 | Đang có                                     |
 | ------------------------- | ------------------------------- | ------------------------------------------- |
 | Route thường              | lowercase, chính là URL segment | `login.tsx`, `(tabs)/home.tsx`              |
-| Route động                | `[param].tsx`                   | (chưa có) `listing/[id].tsx`                |
+| Route động                | `[param].tsx`                   | `listing/[id].tsx`, `chat/[id].tsx`         |
 | Layout                    | `_layout.tsx`                   | `app/_layout.tsx`, `app/(tabs)/_layout.tsx` |
 | Group không ảnh hưởng URL | `(name)/`                       | `app/(tabs)/`, `app/ops/(tabs)/`            |
 | Entry redirect            | `index.tsx`                     | `app/index.tsx` → redirect `/(tabs)/home`   |
@@ -59,19 +60,20 @@ Quy tắc:
 
 ## 3. `src/**` — đặt tên file
 
-| Thư mục       | Casing     | Nội dung một file                                                                                      |
-| ------------- | ---------- | ------------------------------------------------------------------------------------------------------ |
-| `components/` | PascalCase | Một component (hoặc một cụm Provider + hook của nó)                                                    |
-| `queries/`    | lowercase  | Hook theo domain (`listings.ts`, `auth.ts`) + `keys.ts`                                                |
-| `stores/`     | lowercase  | Một store một domain (`auth.ts`)                                                                       |
-| `api/`        | lowercase  | `http.ts`, `client.ts`, `ops.ts`, `group-manage.ts`, `realtime.ts`, `generated/` (sinh, không sửa tay) |
-| `theme/`      | lowercase  | `index.ts`                                                                                             |
-| `utils/`      | lowercase  | Hàm thuần theo chủ đề (`format.ts`)                                                                    |
+| Thư mục       | Casing     | Nội dung một file                                                                                                                                             |
+| ------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `components/` | PascalCase | Một component (hoặc một cụm Provider + hook của nó)                                                                                                           |
+| `queries/`    | lowercase  | Hook theo domain (`listings.ts`, `auth.ts`) + `keys.ts`                                                                                                       |
+| `stores/`     | lowercase  | Một store một domain (`auth.ts`)                                                                                                                              |
+| `api/`        | lowercase  | `http.ts`, `client.ts`, `ops.ts`, `ops-screening.ts`, `ops-admin.ts`, `admin-labels.ts`, `group-manage.ts`, `realtime.ts`, `generated/` (sinh, không sửa tay) |
+| `theme/`      | lowercase  | `index.ts`                                                                                                                                                    |
+| `utils/`      | lowercase  | Hàm thuần theo chủ đề (`format.ts`, `search-params.ts`)                                                                                                       |
 
 - Tên file PascalCase **là tên tính năng**, không bắt buộc là tên export duy nhất: `Toast.tsx` export
   `ToastProvider` + `useToast`.
 - Ngoại lệ có chủ đích: `ui.tsx` là **barrel các primitive nhỏ** (`PinButton`, `OutlineButton`, `GhostButton`,
-  `IconButton`, `Tag`, `Price`, `SectionTitle`, `SafetyNote`, `ScreenHeader`, `EmptyState`, `Loading`), đặt lowercase để phân biệt với file-một-component. Không tạo barrel
+  `IconButton`, `Tag`, `Price`, `SectionTitle`, `SafetyNote`, `ScreenHeader`, `EmptyState`, `Loading`, cùng hook
+  `useBack`), đặt lowercase để phân biệt với file-một-component. Không tạo barrel
   thứ hai; primitive mới vào chính `ui.tsx`.
 - Tách khỏi `ui.tsx` khi component đạt **một trong hai**: cần state/animation riêng đáng kể, hoặc >60 dòng.
 - Test đặt **cạnh** file nó kiểm, cùng tên, đuôi `.test.ts(x)`: `http.test.ts` bên `http.ts`. Không có

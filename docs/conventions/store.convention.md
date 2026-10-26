@@ -14,11 +14,12 @@ Ba loại state, ba nơi ở:
 | Loại state                                    | Ở đâu                     | Ví dụ                                |
 | --------------------------------------------- | ------------------------- | ------------------------------------ |
 | **Server state** — có nguồn sự thật ở backend | TanStack Query            | tin đăng, hồ sơ, hội thoại           |
-| **Client state** — sống lâu hơn một màn hình  | Zustand (`src/stores/**`) | phiên đăng nhập                      |
+| **Client state** — sống lâu hơn một màn hình  | Zustand (`src/stores/**`) | phiên đăng nhập, nháp tin đang đăng  |
 | **UI state** — chết cùng màn hình             | `useState` tại chỗ        | text ô tìm kiếm, filter, focus, form |
 
 **Cấm nhân bản server state vào store.** Nếu một giá trị lấy được bằng `useQuery`, nó không thuộc về store.
-`useAuthStore` cố ý chỉ giữ `{ accountId, email, accessToken, refreshToken }`; hồ sơ đầy đủ đọc qua query.
+`useAuthStore` cố ý chỉ giữ `session: { accessToken, refreshToken }` và `deviceId`; hồ sơ (id, email, tên) đọc qua
+query `/me`.
 
 **Cấm dựng store cho state chỉ một màn dùng.** Store mới chỉ khi state bị **≥2 màn hình đọc** và phải **sống qua
 unmount**.
@@ -32,6 +33,7 @@ File: `src/stores/<domain>.ts`. Xem `auth.ts`.
 ```ts
 type AuthState = {
   session: Session | null;
+  deviceId: string;
   hydrated: boolean;
   signIn: (session: Session) => void;    // action nằm cùng chỗ với state nó sửa
   signOut: () => void;
@@ -53,7 +55,7 @@ export const useAuthStore = create<AuthState>()(persist((set) => ({ … }), { �
 
 ```ts
 export const useIsAuthenticated = () => useAuthStore((s) => s.session !== null);
-export const useSessionEmail = () => useAuthStore((s) => s.session?.email ?? null);
+export const useAuthHydrated = () => useAuthStore((s) => s.hydrated);
 ```
 
 Chỉ export selector **đang có call-site**. Selector phải trả về primitive hoặc reference ổn định — trả object mới
@@ -69,7 +71,7 @@ Ngoài React thì `useAuthStore.getState()` / `useAuthStore.subscribe()` — xem
 {
   name: 'ghim-auth',
   storage: createJSONStorage(() => secureStorage),      // expo-secure-store
-  partialize: (s) => ({ session: s.session }),
+  partialize: (s) => ({ session: s.session, deviceId: s.deviceId }),
   onRehydrateStorage: () => (state) => { /* bật hydrated, vứt bản ghi thiếu field */ },
 }
 ```
@@ -94,8 +96,8 @@ app/**  →  components/**  →  queries/**  →  api/**
 ```
 
 - `stores/**` **không** import `queries`, `api`, `components`, `app`. `auth.ts` tự khai `Session`.
-- `queries/**` **được** đọc/ghi store — đó là chỗ phối hợp hai layer: `useSyncAccessToken` đẩy token xuống
-  `api/http.ts`, `useSignOut` xoá phiên **và** `qc.clear()`.
+- `queries/**` **được** đọc/ghi store — đó là chỗ phối hợp hai layer: `useAuthBridge` đẩy token xuống
+  `api/http.ts` và `qc.clear()` khi phiên kết thúc; `useSignOut` xoá phiên.
 - `app/**` và `components/**` gọi selector cho việc **đọc**; việc **ghi có kèm hệ quả** đi qua hook ở `queries/**`.
 
 ---

@@ -45,7 +45,8 @@ Index **duy nhất** cho convention của repo này. Quy tắc dùng: tra ở đ
 - Màu: `C.brand`, `C.ink`… Font: `F.uiBold`… Bo góc `R.md`, khoảng cách `S.lg`, bóng `shadow`/`shadowLift`.
 - Lỗi hiện ra bằng `useToast()` từ `@/components/Toast`; lỗi query thì `EmptyState`, không toast.
 - **Không secret nào được nằm trong repo này** — kể cả `EXPO_PUBLIC_*`, thứ đó vào bundle.
-- Dữ liệu mẫu: `mockApi` (`src/api/mock.ts`) chỉ được gọi từ `src/queries/**`; nối backend thì đổi sang `api`.
+- Không còn dữ liệu mẫu: mọi màn gọi ghim-server qua `src/api/**`. Server chưa có route thì màn ghi "Chưa có API" hay
+  ẩn phần đó — không dựng lại `mockApi`.
 - SDK: `src/api/generated/**` không sửa tay; `npm run api:sync` khi `ghim-server` đang chạy ở cổng 3100.
 - Base URL của BE: `EXPO_PUBLIC_API_URL` trong `.env` (xem `.env.example`) — máy thật phải dùng IP LAN.
 - Comment tiếng Việt, WHY-only. React Compiler đang bật: không `useMemo`/`useCallback` phòng xa.

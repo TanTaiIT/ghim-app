@@ -8,15 +8,15 @@ SoT cho: theme token, `StyleSheet.create`, style động, spacing.
 
 `src/theme/index.ts` giữ:
 
-| Export    | Dùng cho                                                                                       |
-| --------- | ---------------------------------------------------------------------------------------------- |
-| `C`       | Màu: `ink*`, `muted`, `faint`, `paper*`, `line*`, `sand`, `brand*`, `price`, `boost*`, `warn*` |
-| `TONE`    | Cặp nền/chữ cho avatar chữ cái và ô danh mục (`TONE.blue.bg`…)                                 |
-| `F`       | Font Be Vietnam Pro: `ui` 400 · `uiMedium` 500 · `uiSemi` 600 · `uiBold` 700 · `uiBlack` 800   |
-| `R`       | Bo góc: `xs` 6 · `sm` 12 · `md` 16 · `lg` 20 · `xl` 28 · `full`                                |
-| `S`       | Khoảng cách bội số 4: `xs` 4 → `xxl` 32                                                        |
-| `shadow*` | Đổ bóng cross-platform (`Platform.select`); `shadowBrand` cho nút Đăng tin nổi                 |
-| `G`       | Chặng màu gradient, vẽ bằng `react-native-svg` (`<RadialGradient>` của hero trang chủ)         |
+| Export    | Dùng cho                                                                                                                                                         |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `C`       | Màu: `ink*`, `muted`, `faint`, `paper*`, `line*`, `sand`, `brand*`, `price`, `boost*`, `warn*`, `offerLine`, `promo*`, `dot`, `pin*`, `amber*`, `scrim`, `glass` |
+| `TONE`    | Cặp nền/chữ cho avatar chữ cái và ô danh mục (`TONE.blue.bg`…)                                                                                                   |
+| `F`       | Font Be Vietnam Pro: `ui` 400 · `uiMedium` 500 · `uiSemi` 600 · `uiBold` 700 · `uiBlack` 800                                                                     |
+| `R`       | Bo góc: `xs` 6 · `sm` 12 · `md` 16 · `lg` 20 · `xl` 28 · `full`                                                                                                  |
+| `S`       | Khoảng cách bội số 4: `xs` 4 → `xxl` 32                                                                                                                          |
+| `shadow*` | Đổ bóng cross-platform (`Platform.select`); `shadowBrand` cho nút Đăng tin nổi                                                                                   |
+| `G`       | Chặng màu gradient, vẽ bằng `react-native-svg` (`<RadialGradient>` của hero trang chủ)                                                                           |
 
 Quy tắc:
 
@@ -51,7 +51,7 @@ style={[styles.chip, active && { backgroundColor: C.brandLt }]}
 - Dùng `gap` cho khoảng cách giữa các con, không rải `marginRight` từng phần tử.
 - Khoảng cách lấy từ `S`; số lẻ port 1-1 từ thiết kế được viết thẳng nhưng không vào bảng `S`.
 - Vòng tròn: `borderRadius: size / 2` tính từ `size`, không hardcode cả hai.
-- `zIndex` có ba mốc: `3` chi tiết nổi trong thẻ · `5` nút nổi trên hero · `100` toast. Cần lớp mới thì chèn giữa
+- `zIndex` đang có hai mốc: `1` nút đóng trên ảnh phóng to (`MessagePhotos`) · `100` toast. Cần lớp mới thì chèn giữa
   các mốc, đừng nhảy lên `9999`.
 
 ---

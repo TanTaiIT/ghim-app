@@ -52,10 +52,13 @@ hành — gọi ghim-server thật.
 app/                    routes (expo-router) — chỉ route + layout, export default
   _layout.tsx           provider, font Be Vietnam Pro, splash, Stack.Protected (guard đăng nhập)
   index.tsx             → /(tabs)/home
-  login.tsx             chỉ khách thấy
+  login.tsx             chỉ khách thấy; cùng khối: register, forgot-password, delete-account (xoá tài khoản không cần
+                        đăng nhập)
+  lock-appeal.tsx       khiếu nại tài khoản bị khoá (không cần phiên)
   (tabs)/               Khám phá · Tin nhắn · Thông báo · Cá nhân (nút Đăng tin nổi giữa nằm ở TabBar)
   search.tsx            kết quả tìm kiếm + bộ lọc
   listing/[id].tsx      chi tiết tin
+  user/[id].tsx         trang người bán (khách xem được)
   group/[id].tsx        trang nhóm: vào theo chế độ, đơn chờ, mã nhóm, tắt tiếng, rời
   group/manage/[id]/    quản trị nhóm: hàng chờ duyệt tin của nhóm, gỡ tin khỏi nhóm, đơn xin vào, lời mời, mã, thành viên,
                         cấm, lớp, danh sách lớp, cài đặt, chuyển chủ, đóng nhóm, thông báo (chủ nhóm, điều hành viên; cần phiên)
@@ -65,14 +68,28 @@ app/                    routes (expo-router) — chỉ route + layout, export de
   help.tsx              trợ giúp (cần phiên)
   reports.tsx           báo cáo mình đã gửi và kết quả (cần phiên)
   verify-id.tsx         nộp giấy tờ xác minh (CCCD, CMND, hộ chiếu) — tự nguyện, không ảnh hưởng gì (cần phiên)
+  verify-email.tsx      nhập mã xác nhận email còn dở từ lúc đăng ký (cần phiên)
+  saved-searches.tsx    tìm kiếm đã lưu (cần phiên)
+  warnings.tsx          cảnh cáo của tôi: điểm vi phạm, khiếu nại (cần phiên)
+  settings/             ảnh đại diện, khu vực, email, mật khẩu, thiết bị, người đã chặn, thông báo (cần phiên)
   ops/                  bàn vận hành cho master, staff (cần phiên master / staff; lối vào ở Cá nhân); ops/staff/ =
-                        quyền staff (master); ops/category/ = cài đặt máy duyệt + soạn, phát hành mẫu thông tin (master);
-                        ops/lookup.tsx = tra mã tra cứu, gỡ đánh dấu thiết bị (master, staff hỗ trợ)
+                        quyền staff (master); ops/category/ = máy duyệt theo danh mục (ngưỡng, luật riêng, lịch sử, từ
+                        khoá) + soạn, phát hành mẫu thông tin (master; từ khoá cả staff của danh mục); rules, phrases,
+                        whitelist, machine, review-stats = máy duyệt chung; config, domains, audit, jobs, articles,
+                        strikes/ = quản trị hệ thống, quy định sàn (master); listing/ = gỡ / khôi phục tin;
+                        group/owner.tsx = giao chủ nhóm (master); ops/lookup.tsx = tra mã tra cứu, gỡ đánh dấu thiết bị
+                        (master, staff hỗ trợ)
 src/
   api/http.ts           base URL, token, ApiError, createClientConfig (hey-api)
   api/client.ts         gọi SDK + unwrap + domain type
   api/ops.ts            như client.ts, cho bàn vận hành (/ops/*): duyệt tin, báo cáo, giấy tờ, nhóm, hỗ trợ, danh mục
+  api/ops-screening.ts  như client.ts, cho cấu hình máy duyệt: cụm từ cấm, danh sách trắng ảnh, luật / ngưỡng / từ
+                        khoá theo danh mục
+  api/ops-admin.ts      như client.ts, cho quản trị hệ thống: gậy, quy định sàn, bảng con số, miền email, nhật ký,
+                        việc nền, thống kê duyệt
+  api/admin-labels.ts   chữ tiếng Việt cho mã của nhật ký vận hành và việc nền (không gọi SDK)
   api/group-manage.ts   như client.ts, cho chủ nhóm / điều hành viên (mọi route /groups/:id/* của quản trị)
+  api/realtime.ts       socket.io, chỉ báo hiệu
   api/generated/        SDK sinh, không sửa tay
   queries/keys.ts       key factory `qk`
   queries/*.ts          hook TanStack theo domain
@@ -81,6 +98,7 @@ src/
   components/ui.tsx     primitive nhỏ; file PascalCase cho component có state hoặc khối lớn
   theme/index.ts        C · TONE · F · R · S · shadow · G
   utils/format.ts       định dạng giá, thời gian
+  utils/search-params.ts  bộ lọc tìm kiếm ↔ tham số đường dẫn
 ```
 
 Chiều phụ thuộc một chiều: `app → components → queries → api → theme`, `stores` và `utils` là lá. Chi tiết: `AGENTS.md`.
@@ -88,10 +106,12 @@ Chiều phụ thuộc một chiều: `app → components → queries → api →
 ## 4. Backend và SDK
 
 - `src/api/generated/**` sinh bằng hey-api từ OpenAPI do ghim-server phục vụ ở `/docs/json` (dev). Backend thêm
-  endpoint → `npm run api:sync` → thêm hàm ở `src/api/client.ts` đi qua `unwrap()`.
+  endpoint → `npm run api:sync` → thêm hàm ở `src/api/client.ts` (hay module api cùng mảng, xem §6) đi qua
+  `unwrap()`.
 - Vỏ response: `{ success: true, data }` hoặc `{ success: false, error: { code, message, details } }`. `unwrap`
   ném `ApiError(code, message, status)`; màn hình toast `e.message`, rẽ nhánh theo `e.code`.
-- Endpoint cần đăng nhập mang `bearerAuth`; token được `useSyncAccessToken` đẩy từ store xuống `http.ts`.
+- Endpoint cần đăng nhập mang `bearerAuth`; token được `useAuthBridge` (`src/queries/auth.ts`) đẩy từ store xuống
+  `http.ts`.
 
 ## 5. Build và phát hành
 
@@ -101,8 +121,9 @@ Không có secret nào trong repo (HARD#19); credential push/ảnh đặt ở EA
 
 ## 6. Việc tiếp theo
 
-- Endpoint mới: `npm run api:sync` (server chạy ở 3100) → thêm hàm vào `api` (`client.ts`) hay `opsApi` (`ops.ts`)
-  trả domain type → hook trong `src/queries/**`. Sau mỗi lần sync, khởi động lại Metro với `--clear`.
+- Endpoint mới: `npm run api:sync` (server chạy ở 3100) → thêm hàm vào `api` (`client.ts`), `opsApi` (`ops.ts`),
+  `screeningApi` (`ops-screening.ts`), `adminApi` (`ops-admin.ts`) hay `groupManageApi` (`group-manage.ts`) trả
+  domain type → hook trong `src/queries/**`. Sau mỗi lần sync, khởi động lại Metro với `--clear`.
 - Push: chưa xin token Expo. Realtime: socket.io (`src/api/realtime.ts`), chỉ để báo hiệu — dữ liệu luôn tải lại qua
   HTTP.
 - Chưa có: đẩy tin (báo "sẽ có" — chờ giá gói), gọi trong app ("Gọi người bán" mở trình gọi của máy). Chat gửi được tối
