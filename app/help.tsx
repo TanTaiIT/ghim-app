@@ -151,7 +151,7 @@ export default function Help() {
               accessibilityLabel="Tìm câu hỏi"
               value={query}
               onChangeText={setQuery}
-              placeholder="Gõ câu hỏi, ví dụ: cách đẩy tin"
+              placeholder="Gõ câu hỏi, ví dụ: vì sao tin chưa hiện"
               placeholderTextColor={C.muted}
               style={styles.searchInput}
             />

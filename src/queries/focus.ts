@@ -29,3 +29,6 @@ function useRefreshOnFocus(...keys: QueryKey[]): void {
 /** Các kệ của trang Cá nhân: tin đang đăng và đã bán (chung một query), tin đã lưu. */
 export const useRefreshShelvesOnFocus = () =>
   useRefreshOnFocus(qk.listings.mine(), qk.listings.saved());
+
+/** Hồ sơ nhóm ở bàn vận hành: người được giao chủ nhận lời ở máy khác — quay về màn là thấy trạng thái mới. */
+export const useRefreshOpsGroupOnFocus = (id: string) => useRefreshOnFocus(qk.ops.group(id));

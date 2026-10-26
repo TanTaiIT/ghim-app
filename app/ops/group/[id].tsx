@@ -7,6 +7,8 @@ import { OpsHeader } from '@/components/OpsHeader';
 import { ConfirmSheet } from '@/components/PickerSheet';
 import { useToast } from '@/components/Toast';
 import { EmptyState, Loading, Tag } from '@/components/ui';
+import { useRefreshOpsGroupOnFocus } from '@/queries/focus';
+import { useOpsAccount } from '@/queries/ops-people';
 import {
   useCloseOpsGroup,
   useLockOpsGroup,
@@ -31,6 +33,10 @@ export default function OpsGroup() {
   const unlock = useUnlockOpsGroup();
   const close = useCloseOpsGroup();
   const [sheet, setSheet] = useState<'lock' | 'close' | null>(null);
+  useRefreshOpsGroupOnFocus(id);
+  // Server chỉ trả mã chủ / người được đề cử: tên đọc từ thẻ tài khoản (master xem được mọi thẻ).
+  const personId = group.data?.ownerId ?? group.data?.nomineeId ?? '';
+  const person = useOpsAccount(personId).data?.displayName;
 
   if (group.isPending) return <Loading />;
   if (group.isError) {
@@ -50,7 +56,11 @@ export default function OpsGroup() {
     ['Thành viên', String(g.memberCount)],
     [
       'Chủ nhóm',
-      g.ownerId ? 'Đã có chủ' : g.nomineeId ? 'Đang chờ người được đề cử nhận' : 'Chưa có',
+      g.ownerId
+        ? (person ?? 'Đã có chủ')
+        : g.nomineeId
+          ? `Đang chờ ${person ?? 'người được đề cử'} nhận`
+          : 'Chưa có',
     ],
     ...(g.ownerlessSince
       ? [['Thiếu chủ từ', formatAgo(g.ownerlessSince)] as [string, string]]
