@@ -15,6 +15,7 @@ import {
 } from '@/components/ui';
 import {
   useAnswerInvitation,
+  useAnswerOwnerOffer,
   useGroupCode,
   useGroupInvites,
   useGroupSearch,
@@ -28,9 +29,14 @@ import { daysUntil, groupThousands } from '@/utils/format';
 const metaOf = (g: GroupSummary) =>
   `${groupThousands(g.memberCount)} thành viên${g.description ? ` · ${g.description}` : ''}`;
 
+const OFFER_META: Record<'assignment' | 'transfer', string> = {
+  assignment: 'Ghim giao bạn làm chủ nhóm',
+  transfer: 'Chủ nhóm chuyển quyền chủ cho bạn',
+};
+
 /**
- * "Nhóm của tôi": lời mời đang chờ, nhóm đang ở, tìm nhóm công khai theo tên, tìm nhóm riêng tư bằng mã. Bộ UI
- * không có màn này — thiếu nó, người chưa ở nhóm nào không có đường vào nhóm.
+ * "Nhóm của tôi": lời mời đang chờ (nhận làm chủ, vào nhóm, danh sách lớp), nhóm đang ở, tìm nhóm công khai theo
+ * tên, tìm nhóm riêng tư bằng mã. Bộ UI không có màn này — thiếu nó, người chưa ở nhóm nào không có đường vào nhóm.
  */
 export default function MyGroups() {
   const router = useRouter();
@@ -38,6 +44,7 @@ export default function MyGroups() {
   const mine = useMyGroups();
   const invites = useGroupInvites();
   const answer = useAnswerInvitation();
+  const answerOffer = useAnswerOwnerOffer();
   const rosterJoin = useJoinFromRoster();
   const [q, setQ] = useState('');
   const search = useGroupSearch(q);
@@ -47,15 +54,53 @@ export default function MyGroups() {
 
   const open = (id: string) => router.push(`/group/${id}`);
   const fail = (e: Error) => toast(e.message);
-  const pending = answer.isPending || rosterJoin.isPending;
+  const pending = answer.isPending || answerOffer.isPending || rosterJoin.isPending;
   const invitations = invites.data?.invitations ?? [];
   const rosters = invites.data?.rosters ?? [];
+  const offers = invites.data?.ownerOffers ?? [];
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
       <ScreenHeader title="Nhóm của tôi" />
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        {invitations.length + rosters.length > 0 && <SectionTitle title="Lời mời" />}
+        {offers.length + invitations.length + rosters.length > 0 && (
+          <SectionTitle title="Lời mời" />
+        )}
+        {offers.map((o) => (
+          <GroupRow
+            key={o.id}
+            name={o.groupName}
+            initials={o.initials}
+            meta={`${OFFER_META[o.kind]} · còn ${daysUntil(o.expiresAt)} ngày`}
+          >
+            <View style={styles.actions}>
+              <View style={styles.flex}>
+                <PinButton
+                  compact
+                  label="Nhận làm chủ"
+                  disabled={pending}
+                  onPress={() =>
+                    answerOffer.mutate(
+                      { id: o.id, accept: true },
+                      {
+                        onSuccess: () => {
+                          toast(`Bạn đã là chủ nhóm ${o.groupName}`);
+                          open(o.groupId);
+                        },
+                        onError: fail,
+                      },
+                    )
+                  }
+                />
+              </View>
+              <OutlineButton
+                compact
+                label="Từ chối"
+                onPress={() => answerOffer.mutate({ id: o.id, accept: false }, { onError: fail })}
+              />
+            </View>
+          </GroupRow>
+        ))}
         {invitations.map((i) => (
           <GroupRow
             key={i.id}

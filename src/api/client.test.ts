@@ -1320,6 +1320,15 @@ describe('nhóm', () => {
         ],
         rosters: [{ groupId: 'g-4', groupName: 'THPT Hùng Vương', unitId: null }],
       },
+      '/api/v1/me/group-owner-offers': [
+        {
+          id: 'o-1',
+          groupId: 'g-5',
+          groupName: 'Hội Nhiếp ảnh',
+          kind: 'transfer',
+          expiresAt: '2026-11-03T00:00:00.000Z',
+        },
+      ],
     });
 
     expect(await api.getMyGroups()).toEqual([
@@ -1341,7 +1350,29 @@ describe('nhóm', () => {
         },
       ],
       rosters: [{ groupId: 'g-4', groupName: 'THPT Hùng Vương', initials: 'TH' }],
+      ownerOffers: [
+        {
+          id: 'o-1',
+          groupId: 'g-5',
+          groupName: 'Hội Nhiếp ảnh',
+          initials: 'HN',
+          kind: 'transfer',
+          expiresAt: '2026-11-03T00:00:00.000Z',
+        },
+      ],
     });
+  });
+
+  it('lời mời làm chủ nhóm: nhận hay từ chối theo mã lời mời', async () => {
+    const calls = record();
+
+    await api.answerOwnerOffer('o-1', true);
+    await api.answerOwnerOffer('o-2', false);
+
+    expect(calls.map(({ method, path }) => ({ method, path }))).toEqual([
+      { method: 'POST', path: '/api/v1/group-owner-offers/o-1/accept' },
+      { method: 'POST', path: '/api/v1/group-owner-offers/o-2/decline' },
+    ]);
   });
 
   it('vào nhóm: mã đi kèm khi có, kết quả là vào ngay hay thành đơn', async () => {

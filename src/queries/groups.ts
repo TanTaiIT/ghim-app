@@ -111,6 +111,12 @@ export const useAnswerInvitation = () =>
     api.answerInvitation(id, accept),
   );
 
+/** Nhận làm chủ đổi vai trong nhóm đó: cả nhánh nhóm đọc lại, như mọi lượt ghi nhóm khác. */
+export const useAnswerOwnerOffer = () =>
+  useGroupWrite(({ id, accept }: { id: string; accept: boolean }) =>
+    api.answerOwnerOffer(id, accept),
+  );
+
 /** Vào từ danh sách lớp ở "Nhóm của tôi": cùng lượt vào của trang nhóm, chỉ khác mã nhóm đi theo lượt gọi. */
 export const useJoinFromRoster = () => useGroupWrite((id: string) => api.joinGroup(id));
 

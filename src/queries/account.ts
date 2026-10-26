@@ -3,7 +3,7 @@ import { api, type IdDocumentType, type Notice } from '@/api/client';
 import { useIsAuthenticated } from '@/stores/auth';
 import { qk } from './keys';
 
-/* Dữ liệu gắn với người đang đăng nhập: hồ sơ, thông báo, trợ giúp. Trợ giúp vẫn là dữ liệu mẫu. */
+/* Dữ liệu gắn với người đang đăng nhập: hồ sơ, thông báo, trợ giúp, xác minh giấy tờ. */
 
 export function useMe() {
   const authed = useIsAuthenticated();
@@ -85,8 +85,14 @@ export function useHelpTopics() {
   return useQuery({ queryKey: qk.help(), queryFn: api.getHelpTopics });
 }
 
+/** Trang Cá nhân cũng đọc hook này, mà khách vẫn mở được trang đó — không có phiên thì không hỏi. */
 export function useMyIdVerification() {
-  return useQuery({ queryKey: qk.idVerification(), queryFn: api.getMyIdVerification });
+  const authed = useIsAuthenticated();
+  return useQuery({
+    queryKey: qk.idVerification(),
+    queryFn: api.getMyIdVerification,
+    enabled: authed,
+  });
 }
 
 /** Hồ sơ vừa nộp là hồ sơ gần nhất — ghi thẳng vào cache, màn xác minh chuyển sang "chờ duyệt" không cần tải lại. */

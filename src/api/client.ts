@@ -32,6 +32,7 @@ import {
   getApiV1MeConversationsByConversationId,
   getApiV1MeConversationsByConversationIdMessages,
   getApiV1MeGroupInvitations,
+  getApiV1MeGroupOwnerOffers,
   getApiV1MeGroups,
   getApiV1MeListings,
   getApiV1MeNotificationPreferences,
@@ -67,6 +68,8 @@ import {
   postApiV1AuthVerifyEmail,
   postApiV1GroupInvitationsByIdAccept,
   postApiV1GroupInvitationsByIdDecline,
+  postApiV1GroupOwnerOffersByIdAccept,
+  postApiV1GroupOwnerOffersByIdDecline,
   postApiV1GroupsByGroupIdConversation,
   postApiV1GroupsByGroupIdJoin,
   postApiV1GroupsByGroupIdLeave,
@@ -606,6 +609,18 @@ export type GroupInvites = {
   }[];
   /** Có tên trong danh sách lớp: bấm vào nhóm là thành viên, không cần duyệt. */
   rosters: { groupId: string; groupName: string; initials: string }[];
+  /**
+   * Lời mời nhận quyền chủ nhóm: `assignment` = master giao chủ cho nhóm đang chờ chủ, `transfer` = chủ hiện tại chuyển
+   * quyền. Hết hạn (14 ngày) mà bấm đồng ý thì server trả 409 `INVITATION_EXPIRED`.
+   */
+  ownerOffers: {
+    id: string;
+    groupId: string;
+    groupName: string;
+    initials: string;
+    kind: 'assignment' | 'transfer';
+    expiresAt: string;
+  }[];
 };
 
 /** `request` = thành đơn chờ duyệt (nhóm xét duyệt, nhóm có mã). */
@@ -691,7 +706,6 @@ export type Notice = {
 
 export type Me = Person & {
   email: string;
-  idVerified: boolean;
   memberSince: number;
   /** Tỉnh/thành người dùng tự chọn, riêng tư (ghim-server add-home-province): "Gần bạn" và bộ lọc mặc định khi tìm. */
   homeProvinceCode: number | null;
@@ -863,7 +877,6 @@ function toMe(u: WireMe): Me {
     name: u.displayName,
     verified: false,
     email: u.email,
-    idVerified: false,
     memberSince: new Date(u.joinedAt).getFullYear(),
     homeProvinceCode: u.homeProvinceCode,
     rating: null,
@@ -1603,8 +1616,19 @@ export const api = {
     toGroupSummary(await unwrap(postApiV1GroupsLookupCode({ body: { code } }))),
 
   getGroupInvites: async (): Promise<GroupInvites> => {
-    const { invitations, rosters } = await unwrap(getApiV1MeGroupInvitations());
+    const [{ invitations, rosters }, offers] = await Promise.all([
+      unwrap(getApiV1MeGroupInvitations()),
+      unwrap(getApiV1MeGroupOwnerOffers()),
+    ]);
     return {
+      ownerOffers: offers.map(({ id, groupId, groupName, kind, expiresAt }) => ({
+        id,
+        groupId,
+        groupName,
+        initials: initialsOf(groupName),
+        kind,
+        expiresAt,
+      })),
       invitations: invitations.map(({ id, groupId, groupName, expiresAt }) => ({
         id,
         groupId,
@@ -1623,6 +1647,12 @@ export const api = {
   answerInvitation: async (id: string, accept: boolean): Promise<void> => {
     if (accept) await unwrap(postApiV1GroupInvitationsByIdAccept({ path: { id } }));
     else await unwrapEmpty(postApiV1GroupInvitationsByIdDecline({ path: { id } }));
+  },
+
+  /** Từ chối thì nhóm vẫn chờ chủ (lời giao) hay vẫn thuộc chủ cũ (lời chuyển) — spec group-roles. */
+  answerOwnerOffer: async (id: string, accept: boolean): Promise<void> => {
+    if (accept) await unwrap(postApiV1GroupOwnerOffersByIdAccept({ path: { id } }));
+    else await unwrapEmpty(postApiV1GroupOwnerOffersByIdDecline({ path: { id } }));
   },
 
   /** Tắt tiếng: thông báo của nhóm vẫn vào hộp thư, chỉ không nhắc. */

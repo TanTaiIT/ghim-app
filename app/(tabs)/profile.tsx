@@ -11,7 +11,7 @@ import { ProfileHeader } from '@/components/ProfileHeader';
 import { SegmentedTabs } from '@/components/TabStrip';
 import { useToast } from '@/components/Toast';
 import { EmptyState, GhostButton, Loading } from '@/components/ui';
-import { useMe, useSetShowActivity } from '@/queries/account';
+import { useMe, useMyIdVerification, useSetShowActivity } from '@/queries/account';
 import { useSignOut } from '@/queries/auth';
 import { useRefreshShelvesOnFocus } from '@/queries/focus';
 import { useSavedListings } from '@/queries/listings';
@@ -38,6 +38,7 @@ export default function Profile() {
   const [shelf, setShelf] = useState<Shelf>('active');
 
   const me = useMe();
+  const idCheck = useMyIdVerification();
   const showActivity = useSetShowActivity();
   const active = useMyListings('active');
   const sold = useMyListings('sold');
@@ -114,6 +115,7 @@ export default function Profile() {
       <ScrollView>
         <ProfileHeader
           me={me.data}
+          verifiedDocument={idCheck.data?.status === 'verified' ? idCheck.data.documentType : null}
           active={stats.active}
           sold={stats.sold}
           onSettings={() => router.push('/settings')}

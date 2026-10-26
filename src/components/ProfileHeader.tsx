@@ -7,16 +7,19 @@ import { C, F, R, S } from '@/theme';
 
 /**
  * Đầu trang Cá nhân: danh tính và ba con số. Số tin do route đếm từ chính danh sách đang hiện. Email chưa xác nhận
- * thì nhắc ngay ở đây — tài khoản như thế bị server chặn đăng tin, tải ảnh, nhắn tin, vào nhóm.
+ * thì nhắc ngay ở đây — tài khoản như thế bị server chặn đăng tin, tải ảnh, nhắn tin, vào nhóm. `verifiedDocument` =
+ * loại giấy tờ đã được duyệt (CCCD, CMND, Hộ chiếu): `/me` không mang kết quả xác minh, route đọc riêng.
  */
 export function ProfileHeader({
   me,
+  verifiedDocument,
   active,
   sold,
   onSettings,
   onVerifyEmail,
 }: {
   me: Me;
+  verifiedDocument: string | null;
   active: number;
   sold: number;
   onSettings: () => void;
@@ -32,7 +35,8 @@ export function ProfileHeader({
             {me.verified && <Verified size={17} />}
           </View>
           <Text style={styles.small}>
-            {me.idVerified ? 'Đã xác minh CCCD · ' : ''}Thành viên từ {me.memberSince}
+            {verifiedDocument ? `Đã xác minh ${verifiedDocument} · ` : ''}Thành viên từ{' '}
+            {me.memberSince}
           </Text>
         </View>
         <IconButton variant="outline" icon="sliders" label="Cài đặt" onPress={onSettings} />
