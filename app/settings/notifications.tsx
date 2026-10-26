@@ -2,24 +2,19 @@ import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useToast } from '@/components/Toast';
 import { EmptyState, Loading, ScreenHeader } from '@/components/ui';
-import { useSetPushEnabled } from '@/queries/push';
 import { useNotificationPrefs, useSetNotificationPref } from '@/queries/settings';
 import { ALWAYS_ON_NOTIFICATIONS, NOTIFICATION_CATEGORY_LABEL } from '@/api/client';
-import { PUSH_SUPPORTED } from '@/api/push';
-import { usePushOff } from '@/stores/auth';
 import { C, F, R, S } from '@/theme';
 
 /**
  * Bật tắt từng nhóm thông báo (spec notification/preferences). Tắt chỉ thôi nhắc — thông báo vẫn vào mục Thông báo.
  * "Tài khoản" luôn bật: công tắc hiện nhưng khoá, để người dùng biết vì sao không tắt được. Tắt tiếng từng nhóm (cộng
- * đồng) nằm ở trang nhóm đó. Công tắc đầu trang là của máy này (thông báo đẩy), không phải của tài khoản.
+ * đồng) nằm ở trang nhóm đó.
  */
 export default function NotificationSettings() {
   const toast = useToast();
   const prefs = useNotificationPrefs();
   const set = useSetNotificationPref();
-  const pushOff = usePushOff();
-  const push = useSetPushEnabled();
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
@@ -30,36 +25,6 @@ export default function NotificationSettings() {
         <EmptyState icon="bell-off" text={prefs.error.message} />
       ) : (
         <ScrollView contentContainerStyle={styles.content}>
-          {PUSH_SUPPORTED && (
-            <View style={styles.card}>
-              <View style={styles.row}>
-                <View style={styles.body}>
-                  <Text style={styles.label}>Thông báo trên máy này</Text>
-                  <Text style={styles.meta}>
-                    Tắt thì máy này thôi nhắc; mọi thông báo vẫn vào mục Thông báo
-                  </Text>
-                </View>
-                <Switch
-                  accessibilityLabel="Thông báo trên máy này"
-                  value={!pushOff}
-                  disabled={push.isPending}
-                  trackColor={{ true: C.brand, false: C.lineStrong }}
-                  thumbColor={C.paperWarm}
-                  onValueChange={(enabled) =>
-                    push.mutate(enabled, {
-                      onSuccess: (ok) => {
-                        if (!ok)
-                          toast(
-                            'Máy chưa cho Ghim gửi thông báo — bật trong cài đặt của điện thoại',
-                          );
-                      },
-                      onError: (e) => toast(e.message),
-                    })
-                  }
-                />
-              </View>
-            </View>
-          )}
           <Text style={styles.note}>
             Tắt một nhóm thì thông báo của nhóm đó vẫn vào mục Thông báo, chỉ không nhắc. Muốn tắt
             tiếng riêng một nhóm cộng đồng, vào trang nhóm đó.

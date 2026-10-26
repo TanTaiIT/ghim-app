@@ -11,7 +11,6 @@ import {
   deleteApiV1MeConversationsByConversationId,
   deleteApiV1MeConversationsByConversationIdViewing,
   deleteApiV1MeGroupMutesByGroupId,
-  deleteApiV1MePushToken,
   deleteApiV1MeSavedListingsByListingId,
   deleteApiV1MeSavedSearchesById,
   deleteApiV1MeSessions,
@@ -102,7 +101,6 @@ import {
   putApiV1MeConversationsByConversationIdViewing,
   putApiV1MeGroupMutesByGroupId,
   putApiV1MePassword,
-  putApiV1MePushToken,
   putApiV1MeSavedListingsByListingId,
 } from './generated/sdk.gen';
 import type {
@@ -1487,13 +1485,6 @@ export const api = {
   },
 
   clearAvatar: async (): Promise<Me> => toMe(await unwrap(deleteApiV1MeAvatar())),
-
-  /** Gắn token Expo Push vào phiên đang dùng; token đang ở phiên khác thì server chuyển sang phiên này. */
-  setPushToken: (token: string): Promise<void> =>
-    unwrapEmpty(putApiV1MePushToken({ body: { token } })),
-
-  /** Thôi đẩy lên máy này; thông báo vẫn vào mục Thông báo. */
-  clearPushToken: (): Promise<void> => unwrapEmpty(deleteApiV1MePushToken()),
 
   /** Server thu hồi mọi phiên khác — máy này vẫn đăng nhập. */
   changePassword: (currentPassword: string, newPassword: string): Promise<void> =>

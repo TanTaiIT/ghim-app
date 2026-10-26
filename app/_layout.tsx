@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Stack, useRouter, type ErrorBoundaryProps } from 'expo-router';
+import { Stack, type ErrorBoundaryProps } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
@@ -16,7 +16,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ErrorScreen } from '@/components/ErrorScreen';
 import { ToastProvider } from '@/components/Toast';
 import { useAuthBridge } from '@/queries/auth';
-import { usePushBridge, usePushTaps } from '@/queries/push';
 import { useRealtimeBridge } from '@/queries/realtime';
 import { useAuthHydrated, useIsAuthenticated } from '@/stores/auth';
 import { C } from '@/theme';
@@ -56,24 +55,14 @@ export default function RootLayout() {
     BeVietnamPro_700Bold,
     BeVietnamPro_800ExtraBold,
   });
-  const router = useRouter();
   const isAuthenticated = useIsAuthenticated();
   const authHydrated = useAuthHydrated();
   useAuthBridge(queryClient);
   useRealtimeBridge(queryClient);
-  usePushBridge();
 
   // Font lỗi vẫn chạy tiếp, rơi về font hệ thống. Phiên phải đọc xong mới dựng Stack: guard chạy sớm
   // sẽ nháy qua màn login rồi mới nhảy vào đúng chỗ.
   const ready = (fontsLoaded || fontsError !== null) && authHydrated;
-
-  // Push chỉ mang mã hội thoại, không mang nhóm thông báo: tin nhắn mở thẳng hội thoại, chuyện khác mở mục Thông báo —
-  // ở đó có đủ dữ kiện để mở đúng màn và đánh dấu đã đọc.
-  usePushTaps(ready, (tap) =>
-    tap.conversationId
-      ? router.push(`/chat/${tap.conversationId}`)
-      : router.navigate('/(tabs)/notifications'),
-  );
 
   useEffect(() => {
     if (ready) SplashScreen.hideAsync().catch(() => {});
