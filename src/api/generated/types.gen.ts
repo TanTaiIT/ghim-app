@@ -9545,6 +9545,80 @@ export type DeleteApiV1MeSavedSearchesByIdResponses = {
 
 export type DeleteApiV1MeSavedSearchesByIdResponse = DeleteApiV1MeSavedSearchesByIdResponses[keyof DeleteApiV1MeSavedSearchesByIdResponses];
 
+export type GetApiV1ListingsFeaturedData = {
+    body?: never;
+    path?: never;
+    query?: {
+        categoryId?: string;
+    };
+    url: '/api/v1/listings/featured';
+};
+
+export type GetApiV1ListingsFeaturedErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1ListingsFeaturedError = GetApiV1ListingsFeaturedErrors[keyof GetApiV1ListingsFeaturedErrors];
+
+export type GetApiV1ListingsFeaturedResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                ownerId: string;
+                state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+                placement: 'marketplace' | 'group_public' | 'members_only';
+                groupId: string | null;
+                title: string | null;
+                description: string | null;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                price: number | null;
+                negotiable: boolean;
+                delivery: boolean;
+                showPhone: boolean;
+                categoryId: string | null;
+                templateVersion: number | null;
+                attributes: {
+                    [key: string]: unknown;
+                };
+                provinceCode: number | null;
+                wardCode: number | null;
+                images: Array<{
+                    id: string;
+                    url: string;
+                }>;
+                badge: {
+                    groupId: string;
+                    name: string;
+                } | null;
+                firstLiveAt: string | null;
+                featuredUntil: string | null;
+                expiresAt: string | null;
+                createdAt: string;
+                updatedAt: string;
+            }>;
+        };
+    };
+};
+
+export type GetApiV1ListingsFeaturedResponse = GetApiV1ListingsFeaturedResponses[keyof GetApiV1ListingsFeaturedResponses];
+
 export type GetApiV1ListingsByIdSuggestionsData = {
     body?: never;
     path: {
@@ -9718,6 +9792,91 @@ export type GetApiV1GroupsByGroupIdListingsResponses = {
 
 export type GetApiV1GroupsByGroupIdListingsResponse = GetApiV1GroupsByGroupIdListingsResponses[keyof GetApiV1GroupsByGroupIdListingsResponses];
 
+export type GetApiV1GroupsByGroupIdListingsFeaturedData = {
+    body?: never;
+    path: {
+        groupId: string;
+    };
+    query?: never;
+    url: '/api/v1/groups/{groupId}/listings/featured';
+};
+
+export type GetApiV1GroupsByGroupIdListingsFeaturedErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1GroupsByGroupIdListingsFeaturedError = GetApiV1GroupsByGroupIdListingsFeaturedErrors[keyof GetApiV1GroupsByGroupIdListingsFeaturedErrors];
+
+export type GetApiV1GroupsByGroupIdListingsFeaturedResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                ownerId: string;
+                state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+                placement: 'marketplace' | 'group_public' | 'members_only';
+                groupId: string | null;
+                title: string | null;
+                description: string | null;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                price: number | null;
+                negotiable: boolean;
+                delivery: boolean;
+                showPhone: boolean;
+                categoryId: string | null;
+                templateVersion: number | null;
+                attributes: {
+                    [key: string]: unknown;
+                };
+                provinceCode: number | null;
+                wardCode: number | null;
+                images: Array<{
+                    id: string;
+                    url: string;
+                }>;
+                badge: {
+                    groupId: string;
+                    name: string;
+                } | null;
+                firstLiveAt: string | null;
+                featuredUntil: string | null;
+                expiresAt: string | null;
+                createdAt: string;
+                updatedAt: string;
+            }>;
+        };
+    };
+};
+
+export type GetApiV1GroupsByGroupIdListingsFeaturedResponse = GetApiV1GroupsByGroupIdListingsFeaturedResponses[keyof GetApiV1GroupsByGroupIdListingsFeaturedResponses];
+
 export type GetApiV1UsersByIdListingsData = {
     body?: never;
     path: {
@@ -9874,6 +10033,261 @@ export type DeleteApiV1GroupsByGroupIdListingBadgesByListingIdResponses = {
 };
 
 export type DeleteApiV1GroupsByGroupIdListingBadgesByListingIdResponse = DeleteApiV1GroupsByGroupIdListingBadgesByListingIdResponses[keyof DeleteApiV1GroupsByGroupIdListingBadgesByListingIdResponses];
+
+export type GetApiV1ListingsByIdBoostData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/listings/{id}/boost';
+};
+
+export type GetApiV1ListingsByIdBoostErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1ListingsByIdBoostError = GetApiV1ListingsByIdBoostErrors[keyof GetApiV1ListingsByIdBoostErrors];
+
+export type GetApiV1ListingsByIdBoostResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            role: 'master' | 'staff' | 'group_owner' | 'group_moderator';
+            blocked: string | null;
+            bumpRetryAt: string | null;
+            featuredUntil: string | null;
+            featuredMaxDays: number;
+        };
+    };
+};
+
+export type GetApiV1ListingsByIdBoostResponse = GetApiV1ListingsByIdBoostResponses[keyof GetApiV1ListingsByIdBoostResponses];
+
+export type PostApiV1ListingsByIdBoostData = {
+    body: {
+        effect: 'rank_to_top';
+    } | {
+        effect: 'featured';
+        days: number;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/listings/{id}/boost';
+};
+
+export type PostApiV1ListingsByIdBoostErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1ListingsByIdBoostError = PostApiV1ListingsByIdBoostErrors[keyof PostApiV1ListingsByIdBoostErrors];
+
+export type PostApiV1ListingsByIdBoostResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            role: 'master' | 'staff' | 'group_owner' | 'group_moderator';
+            blocked: string | null;
+            bumpRetryAt: string | null;
+            featuredUntil: string | null;
+            featuredMaxDays: number;
+        };
+    };
+};
+
+export type PostApiV1ListingsByIdBoostResponse = PostApiV1ListingsByIdBoostResponses[keyof PostApiV1ListingsByIdBoostResponses];
+
+export type DeleteApiV1ListingsByIdFeaturedData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/listings/{id}/featured';
+};
+
+export type DeleteApiV1ListingsByIdFeaturedErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1ListingsByIdFeaturedError = DeleteApiV1ListingsByIdFeaturedErrors[keyof DeleteApiV1ListingsByIdFeaturedErrors];
+
+export type DeleteApiV1ListingsByIdFeaturedResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            role: 'master' | 'staff' | 'group_owner' | 'group_moderator';
+            blocked: string | null;
+            bumpRetryAt: string | null;
+            featuredUntil: string | null;
+            featuredMaxDays: number;
+        };
+    };
+};
+
+export type DeleteApiV1ListingsByIdFeaturedResponse = DeleteApiV1ListingsByIdFeaturedResponses[keyof DeleteApiV1ListingsByIdFeaturedResponses];
 
 export type GetApiV1MeTrustData = {
     body?: never;

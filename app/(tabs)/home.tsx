@@ -1,31 +1,23 @@
 import { useCallback } from 'react';
-import {
-  FlatList,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { setStatusBarStyle } from 'expo-status-bar';
 import { CategoryGrid } from '@/components/CategoryGrid';
 import { useGuardedPush } from '@/components/GuestGate';
+import { FeaturedRail } from '@/components/FeaturedRail';
 import { HomeHero } from '@/components/HomeHero';
-import { ListingRow, ListingTile } from '@/components/ListingCard';
+import { ListingRow } from '@/components/ListingCard';
 import { EmptyState, Loading, SectionTitle } from '@/components/ui';
 import { useFeatured, useHomeFilters, useNearby } from '@/queries/listings';
 import { C, F, R, S } from '@/theme';
-import { toSearchParams } from '@/utils/search-params';
 
 /** Trang chủ "Khám phá" — khách xem được (TK 6); chỉ nút đăng tin mới đòi phiên. */
 export default function Home() {
   const router = useRouter();
   const push = useGuardedPush();
   const filters = useHomeFilters();
-  const featured = useFeatured(filters);
+  const featured = useFeatured(null);
   const nearby = useNearby(filters);
   const open = (id: string) => router.push(`/listing/${id}`);
 
@@ -72,27 +64,7 @@ export default function Home() {
           </Pressable>
         </View>
 
-        {/* Chung request với "Gần bạn" nên chờ và lỗi đã hiện ở dưới; chưa có tin nổi bật thì ẩn cả mục. */}
-        {featured.data && featured.data.length > 0 && (
-          <View style={styles.section}>
-            <SectionTitle
-              title="Tin nổi bật"
-              action="Xem tất cả"
-              onAction={() => router.push({ pathname: '/search', params: toSearchParams(filters) })}
-            />
-            <FlatList
-              horizontal
-              data={featured.data}
-              keyExtractor={(l) => l.id}
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.rail}
-              style={styles.railBleed}
-              renderItem={({ item }) => (
-                <ListingTile item={item} variant="featured" onPress={() => open(item.id)} />
-              )}
-            />
-          </View>
-        )}
+        <FeaturedRail items={featured.data} onOpen={open} />
 
         <View style={styles.section}>
           <SectionTitle title="Gần bạn" />
@@ -118,9 +90,6 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: C.paper },
   main: { paddingHorizontal: S.lg, paddingTop: S.lg + 4, paddingBottom: S.xl, gap: S.xl },
   section: { gap: S.md },
-  // Dải ngang chạy tràn ra mép màn hình: kéo ra khỏi lề 16 của khối cha rồi đệm lại bên trong.
-  railBleed: { marginHorizontal: -S.lg },
-  rail: { gap: S.md, paddingHorizontal: S.lg },
   promo: {
     flexDirection: 'row',
     alignItems: 'center',

@@ -23,9 +23,11 @@ import {
   getApiV1GroupsByGroupId,
   getApiV1GroupsByGroupIdAnnouncements,
   getApiV1GroupsByGroupIdListings,
+  getApiV1GroupsByGroupIdListingsFeatured,
   getApiV1GroupsByGroupIdMembers,
   getApiV1Listings,
   getApiV1ListingsById,
+  getApiV1ListingsFeatured,
   getApiV1ListingsByIdSuggestions,
   getApiV1Me,
   getApiV1MeBlocks,
@@ -378,6 +380,8 @@ export type ListingDetail = Omit<ListingCard, 'seller'> & {
   badge: { groupId: string; name: string } | null;
   /** Tin ở sàn chung — chỉ tin sàn mới gỡ / khôi phục trực tiếp được ở bàn vận hành. */
   marketplace: boolean;
+  /** Nhóm của tin đăng trong nhóm (null với tin sàn) — quản trị nhóm đó đẩy được tin. */
+  groupId: string | null;
 };
 
 /** Cách xếp của `GET /listings` (ghim-server add-feed-sort): mới nhất là vị trí trên bảng tin. */
@@ -1372,6 +1376,14 @@ export const api = {
     return toCards(page.items, load);
   },
 
+  /** Dải "Tin nổi bật" của bảng tin sàn chung, hay của một danh mục — hạn gần hết trước, tối đa vài tin. */
+  getFeatured: async (categoryId: string | null, load: LoadLookups): Promise<ListingCard[]> => {
+    const { items } = await unwrap(
+      getApiV1ListingsFeatured({ query: { categoryId: categoryId ?? undefined } }),
+    );
+    return toCards(items, load);
+  },
+
   getListing: async (id: string, load: LoadLookups): Promise<ListingDetail> => {
     const w = await unwrap(getApiV1ListingsById({ path: { id } }));
     const [lookups, owner, template] = await Promise.all([
@@ -1401,6 +1413,7 @@ export const api = {
       allowOffers: w.negotiable,
       badge: w.badge ? { groupId: w.badge.groupId, name: w.badge.name } : null,
       marketplace: w.placement === 'marketplace',
+      groupId: w.placement === 'marketplace' ? null : w.groupId,
     };
   },
 
@@ -1619,6 +1632,14 @@ export const api = {
   getGroupListings: async (id: string, load: LoadLookups): Promise<ListingCard[]> => {
     const { items } = await unwrap(
       getApiV1GroupsByGroupIdListings({ path: { groupId: id }, query: { limit: PAGE_SIZE } }),
+    );
+    return toCards(items, load);
+  },
+
+  /** Dải "Tin nổi bật" của bảng tin nhóm — server lọc theo người xem như bảng tin nhóm. */
+  getGroupFeatured: async (id: string, load: LoadLookups): Promise<ListingCard[]> => {
+    const { items } = await unwrap(
+      getApiV1GroupsByGroupIdListingsFeatured({ path: { groupId: id } }),
     );
     return toCards(items, load);
   },

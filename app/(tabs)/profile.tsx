@@ -154,7 +154,6 @@ export default function Profile() {
                   l.state === 'draft' ? openEditor(l.id) : router.push(`/listing/${l.id}`)
                 }
                 onEdit={() => openEditor(l.id)}
-                onBoost={() => toast('Đẩy tin sẽ có khi chốt giá gói')}
                 onSold={() =>
                   markSold.mutate(l.id, {
                     onSuccess: () => toast('Đã chuyển tin sang mục Đã bán'),

@@ -34,6 +34,16 @@ export function useGroupListings(id: string, enabled: boolean) {
   });
 }
 
+/** Dải "Tin nổi bật" của bảng tin nhóm — server lọc theo người xem như bảng tin nhóm. */
+export function useGroupFeatured(id: string, enabled: boolean) {
+  const qc = useQueryClient();
+  return useQuery({
+    queryKey: qk.groups.featured(id),
+    queryFn: () => api.getGroupFeatured(id, lookupsFrom(qc)),
+    enabled,
+  });
+}
+
 export function useGroupAnnouncements(id: string, enabled: boolean) {
   return useQuery({
     queryKey: qk.groups.announcements(id),

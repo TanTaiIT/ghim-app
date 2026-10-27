@@ -4,6 +4,7 @@ import Feather from '@expo/vector-icons/Feather';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGuarded } from '@/components/GuestGate';
+import { FeaturedRail } from '@/components/FeaturedRail';
 import { ListingTile } from '@/components/ListingCard';
 import { SearchFilterBar } from '@/components/SearchFilterBar';
 import { SortChip } from '@/components/SortChip';
@@ -14,6 +15,7 @@ import {
   useSavedIds,
   useSavedSearches,
   useDropStaleFilter,
+  useFeatured,
   useSearch,
   useToggleSaved,
 } from '@/queries/listings';
@@ -42,6 +44,8 @@ export default function Search() {
   const saveSearch = useSaveSearch();
 
   const q = filters.q.trim();
+  // Trang một danh mục (chưa gõ từ khoá) có dải "Tin nổi bật" của danh mục đó; tìm kiếm thì không.
+  const featured = useFeatured(filters.categoryId, filters.categoryId !== null && q === '');
   const searchSaved = savedSearches.data?.some((s) => isSameSearch(s.filters, filters)) ?? false;
   // Lưới hai cột: số tin lẻ thì ô cuối giãn hết bề ngang — chèn một ô trống để nó giữ nửa hàng.
   const hits = results.data ?? [];
@@ -55,6 +59,9 @@ export default function Search() {
 
   const header = (
     <View style={styles.listHeader}>
+      {filters.categoryId !== null && q === '' && (
+        <FeaturedRail items={featured.data} onOpen={(id) => router.push(`/listing/${id}`)} />
+      )}
       {q !== '' && (
         <View style={styles.alert}>
           <View style={styles.alertIcon}>

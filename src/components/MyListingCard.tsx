@@ -32,7 +32,7 @@ function status(item: MyListing): { label: string; tone: Tone } {
 
 /**
  * Tin của tôi ở trang Cá nhân. Hàng nút chỉ có khi tin đang hiển thị — nháp, đang kiểm, chờ duyệt, bị từ chối
- * chưa lên sàn nên không có gì để đẩy hay đánh dấu đã bán; tin đã bán không sửa nữa. Hành động theo trạng thái
+ * chưa lên sàn nên không có gì để đánh dấu đã bán; tin đã bán không sửa nữa. Hành động theo trạng thái
  * (rút, gia hạn, chuyển, xoá) nằm sau nút "⋯", vì tin nào cũng xoá được.
  *
  * Xoá không lấy lại được nên hỏi lại ngay trên thẻ (`confirmDelete`), không mở bảng thứ hai: trên iOS, Modal mở ngay
@@ -42,7 +42,6 @@ export function MyListingCard({
   item,
   onPress,
   onEdit,
-  onBoost,
   onSold,
   onMore,
   confirmDelete,
@@ -50,7 +49,6 @@ export function MyListingCard({
   item: MyListing;
   onPress: () => void;
   onEdit: () => void;
-  onBoost: () => void;
   onSold: () => void;
   onMore: () => void;
   confirmDelete: { onConfirm: () => void; onCancel: () => void } | null;
@@ -101,14 +99,6 @@ export function MyListingCard({
         <View style={styles.actions}>
           <Pressable accessibilityRole="button" onPress={onEdit} style={[styles.btn, styles.edit]}>
             <Text style={styles.editText}>Sửa</Text>
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            onPress={onBoost}
-            style={[styles.btn, styles.boost]}
-          >
-            <Feather name="zap" size={14} color={C.boostTx} />
-            <Text style={styles.boostText}>Đẩy tin</Text>
           </Pressable>
           <Pressable accessibilityRole="button" onPress={onSold} style={[styles.btn, styles.sold]}>
             <Text style={styles.soldText}>Đã bán</Text>
@@ -201,8 +191,6 @@ const styles = StyleSheet.create({
   },
   edit: { borderWidth: 1, borderColor: C.lineStrong },
   editText: { fontFamily: F.uiSemi, fontSize: 13, color: C.ink },
-  boost: { backgroundColor: C.boost },
-  boostText: { fontFamily: F.uiBold, fontSize: 13, color: C.boostTx },
   sold: { backgroundColor: C.brandLt },
   soldText: { fontFamily: F.uiBold, fontSize: 13, color: C.brandDark },
   confirm: {

@@ -29,6 +29,9 @@ export const qk = {
     editable: (id: string) => ['listings', 'editable', id] as const,
     saved: () => ['listings', 'saved'] as const,
     bySeller: (id: string) => ['listings', 'seller', id] as const,
+    featured: (categoryId: string | null) => ['listings', 'featured', categoryId] as const,
+    /** Quyền đẩy tin của người xem với một tin (add-admin-boost). */
+    boost: (id: string) => ['listings', 'boost', id] as const,
   },
   seller: (id: string) => ['users', id] as const,
   savedIds: () => ['saved-ids'] as const,
@@ -42,6 +45,7 @@ export const qk = {
     muted: () => ['groups', 'muted'] as const,
     detail: (id: string) => ['groups', 'detail', id] as const,
     listings: (id: string) => ['groups', 'listings', id] as const,
+    featured: (id: string) => ['groups', 'featured', id] as const,
     announcements: (id: string) => ['groups', 'announcements', id] as const,
     members: (id: string) => ['groups', 'members', id] as const,
     joinRequests: (id: string) => ['groups', 'join-requests', id] as const,

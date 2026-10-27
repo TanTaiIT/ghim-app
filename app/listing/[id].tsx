@@ -3,6 +3,7 @@ import { Linking, ScrollView, Share, StyleSheet, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { managesGroup } from '@/api/client';
+import { BoostRow } from '@/components/BoostRow';
 import { Gallery } from '@/components/Gallery';
 import { useGuarded } from '@/components/GuestGate';
 import {
@@ -113,6 +114,13 @@ export default function ListingDetail() {
               onPress={() => router.push(`/ops/listing/${l.id}`)}
             />
           )}
+          <BoostRow
+            listingId={l.id}
+            groupId={l.groupId}
+            enabled={
+              opsAccess || (l.groupId !== null && managesGroup(myGroups.data ?? [], l.groupId))
+            }
+          />
           <SellerCard seller={l.seller} onOpen={() => router.push(`/user/${l.seller.id}`)} />
           {l.specs.length > 0 && <SpecGrid specs={l.specs} />}
           {l.description !== '' && <ListingDescription text={l.description} />}

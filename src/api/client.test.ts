@@ -178,6 +178,23 @@ describe('đọc tin đăng từ server', () => {
     expect(JSON.parse(calls[0]?.url.searchParams.get('attrs') ?? '')).toEqual(attrs);
   });
 
+  it('dải "Tin nổi bật" (add-admin-boost): sàn chung không gửi danh mục, danh mục gửi mã; nhóm theo đường của nhóm', async () => {
+    const featured = { ...wireListing, featuredUntil: '2099-01-01T00:00:00.000Z' };
+    const calls = serve({
+      '/api/v1/listings/featured': { items: [featured] },
+      '/api/v1/groups/g-1/listings/featured': { items: [] },
+    });
+
+    const [card] = await api.getFeatured(null, loadLookups);
+    await api.getFeatured('c-1', loadLookups);
+    const group = await api.getGroupFeatured('g-1', loadLookups);
+
+    expect(card).toMatchObject({ id: wireListing.id, boosted: true });
+    expect(calls[0]?.url.searchParams.has('categoryId')).toBe(false);
+    expect(calls[1]?.url.searchParams.get('categoryId')).toBe('c-1');
+    expect(group).toEqual([]);
+  });
+
   // Route xem tin trả theo người xem: thiếu phiên thì chủ tin không mở được nháp của mình (404).
   it('đã đăng nhập: bảng tin và tin tương tự kèm phiên; khách gọi ẩn danh', async () => {
     const calls = serve({

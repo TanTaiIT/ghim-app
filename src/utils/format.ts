@@ -64,6 +64,12 @@ export function formatAgo(iso: string, now: number = Date.now(), short = false):
 /** Ngày dd/mm/yyyy theo giờ của máy — hạn của cảnh cáo, hạn khiếu nại. */
 export const formatDate = (iso: string): string => dmy(new Date(iso));
 
+/** Mốc "HH:mm dd/mm/yyyy" theo giờ của máy — khi giờ trong ngày quan trọng (mốc đẩy tin lại được). */
+export function formatMoment(iso: string): string {
+  const d = new Date(iso);
+  return `${pad(d.getHours())}:${pad(d.getMinutes())} ${dmy(d)}`;
+}
+
 /** Vạch ngày trong khung chat: theo lịch (qua nửa đêm là sang ngày), không theo số giờ như `formatAgo`. */
 export function formatDay(iso: string, now: number = Date.now()): string {
   const d = new Date(iso);

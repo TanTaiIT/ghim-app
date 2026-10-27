@@ -2,11 +2,17 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import { GROUP_ROLE_TAG, type Group } from '@/api/client';
 import { Avatar } from './Avatar';
+import { FeaturedRail } from './FeaturedRail';
 import { ListingRow, ListingTile } from './ListingCard';
 import { MemberRow } from './MemberRow';
 import { EmptyState, Loading } from './ui';
 import { useMe } from '@/queries/account';
-import { useGroupAnnouncements, useGroupListings, useGroupMembers } from '@/queries/groups';
+import {
+  useGroupAnnouncements,
+  useGroupFeatured,
+  useGroupListings,
+  useGroupMembers,
+} from '@/queries/groups';
 import { C, F, R, S } from '@/theme';
 import { formatAgo } from '@/utils/format';
 
@@ -33,6 +39,7 @@ export function GroupBoard({
   const me = useMe();
   const manager = g.role === 'owner' || g.role === 'moderator';
   const listings = useGroupListings(g.id, tab === 'posts');
+  const featured = useGroupFeatured(g.id, tab === 'posts');
   const announcements = useGroupAnnouncements(g.id, g.role !== null);
   const members = useGroupMembers(g.id, manager && tab === 'members');
   const latest = announcements.data?.[0];
@@ -76,6 +83,7 @@ export function GroupBoard({
           </View>
         </View>
       )}
+      <FeaturedRail items={featured.data} onOpen={onOpenListing} />
       {onCompose && (
         <Pressable accessibilityRole="button" onPress={onCompose} style={styles.compose}>
           <Avatar name={me.data?.name ?? 'Bạn'} size={32} tone="brand" />

@@ -35,12 +35,21 @@ function useFeed<T>(filters: SearchFilters, select: (cards: ListingCard[]) => T)
 }
 
 const everything = (cards: ListingCard[]) => cards;
-const boostedOnly = (cards: ListingCard[]) => cards.filter((c) => c.boosted);
 
 export const useNearby = (filters: SearchFilters) => useFeed(filters, everything);
 
-/** Tin còn hạn "nổi bật" — server mới có chỗ (`featuredUntil`), gói đẩy tin chưa có nên hiện đang rỗng. */
-export const useFeatured = (filters: SearchFilters) => useFeed(filters, boostedOnly);
+/**
+ * Dải "Tin nổi bật" của bảng tin sàn chung (`categoryId` null) hay của một danh mục — người quản trị đặt (add-admin-boost).
+ * Không lọc theo khu vực: dải là của cả bảng tin.
+ */
+export function useFeatured(categoryId: string | null, enabled = true) {
+  const qc = useQueryClient();
+  return useQuery({
+    queryKey: qk.listings.featured(categoryId),
+    queryFn: () => api.getFeatured(categoryId, lookupsFrom(qc)),
+    enabled,
+  });
+}
 
 /**
  * Không có `enabled`: bộ lọc rỗng là một truy vấn hợp lệ (xem mọi tin), không phải tham số thiếu.
