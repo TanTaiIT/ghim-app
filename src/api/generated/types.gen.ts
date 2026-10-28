@@ -16800,7 +16800,7 @@ export type GetApiV1MeNotificationsResponses = {
         data: {
             items: Array<{
                 id: string;
-                category: 'messages' | 'your_listings' | 'your_groups' | 'your_reports' | 'account' | 'trust_strikes' | 'group_announcements' | 'group_new_listings' | 'support' | 'saved_searches';
+                category: 'messages' | 'your_listings' | 'your_groups' | 'your_reports' | 'account' | 'trust_strikes' | 'group_announcements' | 'group_new_listings' | 'support' | 'saved_searches' | 'wallet';
                 type: string;
                 title: string;
                 body: string;
@@ -16966,7 +16966,7 @@ export type GetApiV1MeNotificationPreferencesResponses = {
         success: true;
         data: {
             categories: Array<{
-                category: 'messages' | 'your_listings' | 'your_groups' | 'your_reports' | 'account' | 'trust_strikes' | 'group_announcements' | 'group_new_listings' | 'support' | 'saved_searches';
+                category: 'messages' | 'your_listings' | 'your_groups' | 'your_reports' | 'account' | 'trust_strikes' | 'group_announcements' | 'group_new_listings' | 'support' | 'saved_searches' | 'wallet';
                 enabled: boolean;
             }>;
             mutedGroupIds: Array<string>;
@@ -16981,7 +16981,7 @@ export type PutApiV1MeNotificationPreferencesByCategoryData = {
         enabled: boolean;
     };
     path: {
-        category: 'messages' | 'your_listings' | 'your_groups' | 'your_reports' | 'account' | 'trust_strikes' | 'group_announcements' | 'group_new_listings' | 'support' | 'saved_searches';
+        category: 'messages' | 'your_listings' | 'your_groups' | 'your_reports' | 'account' | 'trust_strikes' | 'group_announcements' | 'group_new_listings' | 'support' | 'saved_searches' | 'wallet';
     };
     query?: never;
     url: '/api/v1/me/notification-preferences/{category}';
@@ -17178,6 +17178,253 @@ export type PutApiV1MeGroupMutesByGroupIdResponses = {
 };
 
 export type PutApiV1MeGroupMutesByGroupIdResponse = PutApiV1MeGroupMutesByGroupIdResponses[keyof PutApiV1MeGroupMutesByGroupIdResponses];
+
+export type GetApiV1MeWalletData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/wallet';
+};
+
+export type GetApiV1MeWalletErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeWalletError = GetApiV1MeWalletErrors[keyof GetApiV1MeWalletErrors];
+
+export type GetApiV1MeWalletResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            balance: number;
+        };
+    };
+};
+
+export type GetApiV1MeWalletResponse = GetApiV1MeWalletResponses[keyof GetApiV1MeWalletResponses];
+
+export type GetApiV1MeWalletTransactionsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        cursor?: string;
+        limit?: number;
+    };
+    url: '/api/v1/me/wallet/transactions';
+};
+
+export type GetApiV1MeWalletTransactionsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1MeWalletTransactionsError = GetApiV1MeWalletTransactionsErrors[keyof GetApiV1MeWalletTransactionsErrors];
+
+export type GetApiV1MeWalletTransactionsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                amount: number;
+                type: 'admin_adjust' | 'product_purchase' | 'refund';
+                balanceAfter: number;
+                refs: {
+                    [key: string]: string;
+                };
+                note: string | null;
+                createdAt: string;
+            }>;
+            nextCursor: string | null;
+        };
+    };
+};
+
+export type GetApiV1MeWalletTransactionsResponse = GetApiV1MeWalletTransactionsResponses[keyof GetApiV1MeWalletTransactionsResponses];
+
+export type GetApiV1OpsWalletsByAccountIdData = {
+    body?: never;
+    path: {
+        accountId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/wallets/{accountId}';
+};
+
+export type GetApiV1OpsWalletsByAccountIdErrors = {
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsWalletsByAccountIdError = GetApiV1OpsWalletsByAccountIdErrors[keyof GetApiV1OpsWalletsByAccountIdErrors];
+
+export type GetApiV1OpsWalletsByAccountIdResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            balance: number;
+            transactions: Array<{
+                id: string;
+                amount: number;
+                type: 'admin_adjust' | 'product_purchase' | 'refund';
+                balanceAfter: number;
+                refs: {
+                    [key: string]: string;
+                };
+                note: string | null;
+                createdAt: string;
+            }>;
+        };
+    };
+};
+
+export type GetApiV1OpsWalletsByAccountIdResponse = GetApiV1OpsWalletsByAccountIdResponses[keyof GetApiV1OpsWalletsByAccountIdResponses];
+
+export type PostApiV1OpsWalletsByAccountIdAdjustData = {
+    body: {
+        amount: number;
+        reason: string;
+        idempotencyKey: string;
+    };
+    path: {
+        accountId: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/wallets/{accountId}/adjust';
+};
+
+export type PostApiV1OpsWalletsByAccountIdAdjustErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsWalletsByAccountIdAdjustError = PostApiV1OpsWalletsByAccountIdAdjustErrors[keyof PostApiV1OpsWalletsByAccountIdAdjustErrors];
+
+export type PostApiV1OpsWalletsByAccountIdAdjustResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            balance: number;
+            transaction: {
+                id: string;
+                amount: number;
+                type: 'admin_adjust' | 'product_purchase' | 'refund';
+                balanceAfter: number;
+                refs: {
+                    [key: string]: string;
+                };
+                note: string | null;
+                createdAt: string;
+            };
+        };
+    };
+};
+
+export type PostApiV1OpsWalletsByAccountIdAdjustResponse = PostApiV1OpsWalletsByAccountIdAdjustResponses[keyof PostApiV1OpsWalletsByAccountIdAdjustResponses];
 
 export type GetApiV1OpsJobsRunsData = {
     body?: never;

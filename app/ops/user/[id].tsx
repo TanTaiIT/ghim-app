@@ -7,8 +7,10 @@ import { InputSheet } from '@/components/InputSheet';
 import { OpsHeader } from '@/components/OpsHeader';
 import { ConfirmSheet } from '@/components/PickerSheet';
 import { useToast } from '@/components/Toast';
+import { WalletAdjustSheet } from '@/components/WalletAdjustSheet';
 import { EmptyState, Loading, OutlineButton, Tag } from '@/components/ui';
 import { useMe } from '@/queries/account';
+import { useAdjustWallet, useOpsWallet } from '@/queries/ops-admin';
 import { ACCOUNT_STATUS } from '@/components/OpsAccountList';
 import {
   useAccountStrikes,
@@ -16,6 +18,7 @@ import {
   useOpsAccount,
   useUnlockAccount,
 } from '@/queries/ops-people';
+import { WALLET_TYPE_LABEL } from '@/api/client';
 import { STRIKE_KIND_LABEL, STRIKE_STATUS_LABEL } from '@/api/ops';
 import { C, F, R, S } from '@/theme';
 import { daysUntil, formatAgo, formatDate } from '@/utils/format';
@@ -23,7 +26,8 @@ import { daysUntil, formatAgo, formatDate } from '@/utils/format';
 /**
  * Hồ sơ một người: thẻ tài khoản (`/ops/accounts/:id` — trạng thái, email, mức tin cậy, điểm vi phạm) và lịch sử
  * cảnh cáo. Tên theo tham số từ màn trước chỉ là chỗ dựa lúc thẻ chưa tải. Master thấy đúng một nút theo trạng thái:
- * Khoá khi đang mở, Mở khoá khi đang khoá — cạnh nút gắn / sửa quyền staff của người này.
+ * Khoá khi đang mở, Mở khoá khi đang khoá — cạnh nút gắn / sửa quyền staff của người này. Khối "Ví Xu" (add-wallet)
+ * chỉ master thấy: số dư, 20 dòng gần nhất, hộp cấp / trừ.
  */
 export default function OpsUser() {
   const { id = '', name } = useLocalSearchParams<{ id: string; name?: string }>();
@@ -33,7 +37,9 @@ export default function OpsUser() {
   const strikes = useAccountStrikes(id);
   const lock = useLockAccount();
   const unlock = useUnlockAccount();
-  const [sheet, setSheet] = useState<'lock' | 'unlock' | null>(null);
+  const [sheet, setSheet] = useState<'lock' | 'unlock' | 'wallet' | null>(null);
+  const wallet = useOpsWallet(id, isMaster);
+  const adjust = useAdjustWallet(id);
   const account = useOpsAccount(id).data;
   const display = account?.displayName || name || 'Người dùng';
   const statusTag = account ? ACCOUNT_STATUS[account.status] : null;
@@ -69,6 +75,42 @@ export default function OpsUser() {
             </Text>
           </View>
         </View>
+
+        {isMaster && (
+          <>
+            <View style={styles.sectionRow}>
+              <Text style={styles.section}>
+                Ví Xu{wallet.data ? ` · ${wallet.data.balance} Xu` : ''}
+              </Text>
+              {wallet.data && (
+                <OutlineButton compact label="Cấp / trừ Xu" onPress={() => setSheet('wallet')} />
+              )}
+            </View>
+            {wallet.isPending ? (
+              <Loading />
+            ) : wallet.isError ? (
+              <EmptyState icon="alert-circle" text={wallet.error.message} />
+            ) : wallet.data.transactions.length === 0 ? (
+              <Text style={styles.meta}>Ví chưa có biến động nào.</Text>
+            ) : (
+              wallet.data.transactions.map((t) => (
+                <View key={t.id} style={styles.strike}>
+                  <View style={styles.walletRow}>
+                    <Text style={styles.rule}>{WALLET_TYPE_LABEL[t.type]}</Text>
+                    <Text style={[styles.amount, t.amount > 0 ? styles.credit : styles.debit]}>
+                      {t.amount > 0 ? '+' : '−'}
+                      {Math.abs(t.amount)}
+                    </Text>
+                  </View>
+                  {t.note && <Text style={styles.meta}>{t.note}</Text>}
+                  <Text style={styles.meta}>
+                    {formatAgo(t.at)} · số dư sau {t.balanceAfter} Xu
+                  </Text>
+                </View>
+              ))
+            )}
+          </>
+        )}
 
         <Text style={styles.section}>Lịch sử cảnh cáo</Text>
         {isMaster && (strikes.data?.length ?? 0) > 0 && (
@@ -161,6 +203,24 @@ export default function OpsUser() {
           )
         }
       />
+      <WalletAdjustSheet
+        visible={sheet === 'wallet'}
+        name={display}
+        balance={wallet.data?.balance ?? 0}
+        busy={adjust.isPending}
+        onClose={() => setSheet(null)}
+        onSubmit={(input) =>
+          adjust.mutate(input, {
+            onSuccess: ({ balance }) => {
+              setSheet(null);
+              toast(
+                `${input.amount > 0 ? 'Đã cấp' : 'Đã trừ'} ${Math.abs(input.amount)} Xu · số dư ${balance} Xu`,
+              );
+            },
+            onError: (e) => toast(e.message),
+          })
+        }
+      />
       <ConfirmSheet
         visible={sheet === 'unlock'}
         title={`Mở khoá ${display}?`}
@@ -197,6 +257,11 @@ const styles = StyleSheet.create({
   name: { fontFamily: F.uiBold, fontSize: 17, color: C.ink },
   meta: { fontFamily: F.uiMedium, fontSize: 12, color: C.inkSoft },
   section: { marginTop: S.sm, fontFamily: F.uiBold, fontSize: 16, color: C.ink },
+  sectionRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  walletRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  amount: { fontFamily: F.uiBold, fontSize: 16 },
+  credit: { color: C.brandDark },
+  debit: { color: C.price },
   strike: {
     gap: 6,
     padding: S.md,

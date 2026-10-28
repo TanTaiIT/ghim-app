@@ -36,6 +36,11 @@ export const qk = {
   seller: (id: string) => ['users', id] as const,
   savedIds: () => ['saved-ids'] as const,
   savedSearches: () => ['saved-searches'] as const,
+  wallet: {
+    all: () => ['wallet'] as const,
+    balance: () => ['wallet', 'balance'] as const,
+    transactions: () => ['wallet', 'transactions'] as const,
+  },
   groups: {
     all: () => ['groups'] as const,
     mine: () => ['groups', 'mine'] as const,
@@ -81,6 +86,7 @@ export const qk = {
     strikes: (accountId: string) => ['ops', 'strikes', accountId] as const,
     /** Danh bạ và thẻ tài khoản chung một gốc: khoá / mở khoá đổi trạng thái ở cả hai. */
     accountsAll: () => ['ops', 'accounts'] as const,
+    wallet: (accountId: string) => ['ops', 'wallet', accountId] as const,
     accounts: (q: string, status: string | null, page: number) =>
       ['ops', 'accounts', 'list', q, status, page] as const,
     account: (id: string) => ['ops', 'accounts', 'card', id] as const,

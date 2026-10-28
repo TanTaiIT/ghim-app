@@ -4,17 +4,18 @@ import { EmptyState } from '@/components/ui';
 import { C } from '@/theme';
 
 /**
- * Đẩy tin & doanh thu. Server chưa có gói đẩy tin hay ví Xu (change `add-promotions`, `add-wallet` còn chờ — xem
- * `ghim-server/docs/KE-HOACH-GOI-DAY-TIN.md`), nên màn này giữ chỗ trong bộ màn, không có số liệu giả.
+ * Gói đẩy tin trả Xu. Ví Xu đã có (master cấp ở hồ sơ người dùng); server chưa có gói (change `add-promotions` — xem
+ * `ghim-server/docs/KE-HOACH-GOI-DAY-TIN.md`), nên màn này giữ chỗ trong bộ màn, không có số liệu giả. Không có
+ * doanh thu: Xu không mua bằng tiền (chốt 28/10/2026).
  */
 export default function OpsPromotions() {
   return (
     <View style={styles.screen}>
-      <OpsHeader back title="Đẩy tin & gói" sub="Doanh thu, cấu hình gói" />
+      <OpsHeader back title="Gói đẩy tin" sub="Cấu hình gói trả Xu" />
       <EmptyState
         icon="zap"
         title="Chưa có API"
-        text="Gói đẩy tin, doanh thu theo ngày và bật / tắt gói cần server làm xong phần gói đẩy tin và ví Xu."
+        text="Soạn gói và bật / tắt gói cần server làm xong phần gói đẩy tin. Cấp Xu cho người dùng ở hồ sơ người đó (Người dùng → chọn người)."
       />
     </View>
   );

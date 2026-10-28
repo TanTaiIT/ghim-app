@@ -1769,3 +1769,84 @@ describe('tải ảnh của tin', () => {
     expect(calls).toContain(STORAGE_URL);
   });
 });
+
+describe('ví Xu (add-wallet)', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('số dư và lịch sử: dòng sổ cái giữ số âm / dương, số dư sau, lý do; trang 50 dòng', async () => {
+    const calls = serve({
+      '/api/v1/me/wallet': { balance: 3 },
+      '/api/v1/me/wallet/transactions': {
+        items: [
+          {
+            id: 't-2',
+            amount: -2,
+            type: 'product_purchase',
+            balanceAfter: 3,
+            refs: { productCode: 'top' },
+            note: null,
+            createdAt: '2026-10-28T10:00:00.000Z',
+          },
+          {
+            id: 't-1',
+            amount: 5,
+            type: 'admin_adjust',
+            balanceAfter: 5,
+            refs: {},
+            note: 'xin qua Hỗ trợ Ghim',
+            createdAt: '2026-10-28T09:00:00.000Z',
+          },
+        ],
+        nextCursor: null,
+      },
+    });
+    expect(await api.getMyWallet()).toBe(3);
+    expect(await api.getMyWalletTransactions()).toEqual([
+      {
+        id: 't-2',
+        amount: -2,
+        type: 'product_purchase',
+        balanceAfter: 3,
+        note: null,
+        at: '2026-10-28T10:00:00.000Z',
+      },
+      {
+        id: 't-1',
+        amount: 5,
+        type: 'admin_adjust',
+        balanceAfter: 5,
+        note: 'xin qua Hỗ trợ Ghim',
+        at: '2026-10-28T09:00:00.000Z',
+      },
+    ]);
+    expect(calls[1]?.url.searchParams.get('limit')).toBe('50');
+  });
+
+  it('thông báo nhóm "ví Xu" mở màn Ví Xu', async () => {
+    serve({
+      '/api/v1/me/notifications': {
+        items: [
+          {
+            id: 'n-1',
+            category: 'wallet',
+            type: 'wallet.admin_adjust',
+            title: 'Ghim',
+            body: 'Ghim cấp cho bạn 5 Xu · số dư 5 Xu',
+            detail: null,
+            data: { transactionId: 't-1' },
+            groupId: null,
+            count: 1,
+            readAt: null,
+            createdAt: '2026-10-28T09:00:00.000Z',
+            updatedAt: '2026-10-28T09:00:00.000Z',
+          },
+        ],
+        total: 1,
+      },
+    });
+    const [notice] = await api.getNotices();
+    expect(notice?.target).toEqual({ screen: 'wallet' });
+  });
+});

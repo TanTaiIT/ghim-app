@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, jest } from '@jest/globals';
 import { auditActionLabel, detailsLabel, jobLabel } from './admin-labels';
-import { adminApi } from './ops-admin';
+import { adminApi, newIdempotencyKey } from './ops-admin';
 
 /** Server giả: ghi lại phương thức, đường dẫn, query, body của từng lượt gọi; mọi lượt trả `data`. */
 function serve(data: unknown = {}) {
@@ -103,5 +103,54 @@ describe('quản trị trên bàn vận hành', () => {
       'vì: cảnh cáo · tên: Điện thoại',
     );
     expect(detailsLabel({})).toBeNull();
+  });
+});
+
+describe('ví Xu của một người (add-wallet)', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('cấp / trừ gửi số, lý do đã cắt khoảng trắng, khoá chống lặp; đọc về số dư và dòng sổ cái', async () => {
+    const calls = serve({
+      balance: 5,
+      transaction: {
+        id: 't-1',
+        amount: 5,
+        type: 'admin_adjust',
+        balanceAfter: 5,
+        refs: {},
+        note: 'xin qua Hỗ trợ Ghim',
+        createdAt: '2026-10-28T09:00:00.000Z',
+      },
+    });
+    const result = await adminApi.adjustWallet({
+      accountId: 'u-1',
+      amount: 5,
+      reason: '  xin qua Hỗ trợ Ghim ',
+      idempotencyKey: 'abcdefgh',
+    });
+    expect(calls[0]).toMatchObject({
+      method: 'POST',
+      path: '/api/v1/ops/wallets/u-1/adjust',
+      body: { amount: 5, reason: 'xin qua Hỗ trợ Ghim', idempotencyKey: 'abcdefgh' },
+    });
+    expect(result).toEqual({
+      balance: 5,
+      transaction: {
+        id: 't-1',
+        amount: 5,
+        type: 'admin_adjust',
+        balanceAfter: 5,
+        note: 'xin qua Hỗ trợ Ghim',
+        at: '2026-10-28T09:00:00.000Z',
+      },
+    });
+  });
+
+  it('khoá chống lặp đúng dạng server nhận và khác nhau mỗi lần', () => {
+    const keys = [newIdempotencyKey(), newIdempotencyKey()];
+    for (const key of keys) expect(key).toMatch(/^[A-Za-z0-9_-]{8,64}$/);
+    expect(keys[0]).not.toBe(keys[1]);
   });
 });

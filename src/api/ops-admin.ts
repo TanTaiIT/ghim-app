@@ -1,5 +1,5 @@
 import { auditActionLabel, auditTargetLabel, detailsLabel, jobLabel } from './admin-labels';
-import { unwrap, unwrapEmpty } from './client';
+import { toWalletTransaction, unwrap, unwrapEmpty, type WalletTransaction } from './client';
 import {
   deleteApiV1OpsDisposableDomainsByDomain,
   getApiV1OpsAudit,
@@ -11,6 +11,7 @@ import {
   getApiV1OpsReviewStatsReviewers,
   getApiV1OpsReviewStatsRules,
   getApiV1OpsTrustRuleArticles,
+  getApiV1OpsWalletsByAccountId,
   patchApiV1OpsTrustRuleArticlesByArticleId,
   postApiV1OpsConfig,
   postApiV1OpsDisposableDomains,
@@ -18,6 +19,7 @@ import {
   postApiV1OpsTrustRuleArticles,
   postApiV1OpsTrustStrikesByStrikeIdComments,
   postApiV1OpsTrustStrikesByStrikeIdLift,
+  postApiV1OpsWalletsByAccountIdAdjust,
 } from './generated/sdk.gen';
 import type {
   GetApiV1OpsAuditData,
@@ -41,6 +43,16 @@ type WireDomain = GetApiV1OpsDisposableDomainsResponses[200]['data']['items'][nu
 type WireAudit = GetApiV1OpsAuditResponses[200]['data']['items'][number];
 type WireJobRun = GetApiV1OpsJobsRunsResponses[200]['data'][number];
 type WireSettings = GetApiV1OpsCategoriesByIdSettingsVersionsByVersionResponses[200]['data'];
+
+/** Ví một người nhìn từ bàn vận hành: số dư và 20 dòng gần nhất. */
+export type OpsWallet = { balance: number; transactions: WalletTransaction[] };
+
+/**
+ * Khoá chống lặp sinh một lần mỗi lần mở hộp cấp Xu (ghim-server design add-wallet mục 3): bấm lại khi mạng chậm gửi
+ * cùng khoá → server trả cùng dòng, không cộng lần hai. 8–64 ký tự `[A-Za-z0-9_-]`.
+ */
+export const newIdempotencyKey = (): string =>
+  `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}${Math.random().toString(36).slice(2, 6)}`;
 
 /** Một trang theo số trang của server (`page`, `totalPages`). */
 export type Paged<T> = { items: T[]; page: number; totalPages: number; total: number };
@@ -182,6 +194,31 @@ export type CategorySettingsVersion = {
 const PAGE = 50;
 
 export const adminApi = {
+  wallet: async (accountId: string): Promise<OpsWallet> => {
+    const w = await unwrap(getApiV1OpsWalletsByAccountId({ path: { accountId } }));
+    return { balance: w.balance, transactions: w.transactions.map(toWalletTransaction) };
+  },
+
+  /** Dương = cấp, âm = trừ; `reason` người dùng đọc được. Trừ quá số dư: server 409 `INSUFFICIENT_BALANCE`. */
+  adjustWallet: async (input: {
+    accountId: string;
+    amount: number;
+    reason: string;
+    idempotencyKey: string;
+  }): Promise<{ balance: number; transaction: WalletTransaction }> => {
+    const w = await unwrap(
+      postApiV1OpsWalletsByAccountIdAdjust({
+        path: { accountId: input.accountId },
+        body: {
+          amount: input.amount,
+          reason: input.reason.trim(),
+          idempotencyKey: input.idempotencyKey,
+        },
+      }),
+    );
+    return { balance: w.balance, transaction: toWalletTransaction(w.transaction) };
+  },
+
   /** Ân xá gậy thường / nặng đang tính của một người — trả lịch sử gậy mới. */
   amnesty: async (d: { accountId: string; strikeIds: string[]; reason: string }): Promise<void> => {
     await unwrap(

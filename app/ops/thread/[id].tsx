@@ -10,12 +10,12 @@ import {
   View,
 } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MessagePhotos } from '@/components/MessagePhotos';
 import { OpsHeader } from '@/components/OpsHeader';
 import { useToast } from '@/components/Toast';
-import { EmptyState, Loading } from '@/components/ui';
+import { EmptyState, IconButton, Loading } from '@/components/ui';
 import { useMarkSupportRead, useSendSupport, useSupportThread } from '@/queries/ops-support';
 import { C, F, R, S } from '@/theme';
 import { formatAgo } from '@/utils/format';
@@ -35,6 +35,7 @@ export default function OpsSupportThread() {
   const { id = '' } = useLocalSearchParams<{ id: string }>();
   const toast = useToast();
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const thread = useSupportThread(id);
   const send = useSendSupport();
   const { mutate: markRead } = useMarkSupportRead();
@@ -65,6 +66,20 @@ export default function OpsSupportThread() {
         back
         title={head.personName}
         sub={head.gone ? 'Đã xoá tài khoản — chỉ đọc' : 'Hội thoại hỗ trợ'}
+        right={
+          head.personId ? (
+            <IconButton
+              icon="user"
+              label="Hồ sơ người này"
+              onPress={() =>
+                router.push({
+                  pathname: '/ops/user/[id]',
+                  params: { id: head.personId ?? '', name: head.personName },
+                })
+              }
+            />
+          ) : undefined
+        }
       />
       <KeyboardAvoidingView
         style={styles.flex}

@@ -55,6 +55,8 @@ import {
   getApiV1MeSavedSearches,
   getApiV1MeSessions,
   getApiV1MeTrust,
+  getApiV1MeWallet,
+  getApiV1MeWalletTransactions,
   getApiV1RegionsProvinces,
   getApiV1RegionsProvincesByCodeWards,
   getApiV1RegionsSearch,
@@ -109,6 +111,7 @@ import {
   putApiV1MeSavedListingsByListingId,
 } from './generated/sdk.gen';
 import type {
+  GetApiV1MeWalletTransactionsResponses,
   GetApiV1GroupsByGroupIdResponses,
   GetApiV1GroupsResponses,
   GetApiV1ListingsByIdResponses,
@@ -287,7 +290,8 @@ export type NotificationCategory =
   | 'group_announcements'
   | 'group_new_listings'
   | 'support'
-  | 'saved_searches';
+  | 'saved_searches'
+  | 'wallet';
 
 export const NOTIFICATION_CATEGORY_LABEL: Record<NotificationCategory, string> = {
   messages: 'Tin nhắn',
@@ -300,6 +304,7 @@ export const NOTIFICATION_CATEGORY_LABEL: Record<NotificationCategory, string> =
   group_new_listings: 'Tin mới trong nhóm',
   support: 'Hỗ trợ Ghim',
   saved_searches: 'Tìm kiếm đã lưu',
+  wallet: 'Ví Xu',
 };
 
 export const ALWAYS_ON_NOTIFICATIONS: ReadonlySet<NotificationCategory> = new Set(['account']);
@@ -720,7 +725,9 @@ export type NoticeTarget =
   | { screen: 'search'; savedSearchId: string; listingId: string | null }
   | { screen: 'group'; id: string }
   | { screen: 'profile' }
-  | { screen: 'warnings' };
+  | { screen: 'warnings' }
+  /** Biến động ví do người khác làm (master cấp / trừ, hoàn) — mở màn Ví Xu, dòng sổ cái có lý do. */
+  | { screen: 'wallet' };
 
 export type Notice = {
   id: string;
@@ -1170,6 +1177,41 @@ const readOnlyOf = (w: WireConversation): string | null => {
   return 'Hội thoại này chỉ còn để đọc';
 };
 
+/* ---------------------------------- ví Xu ---------------------------------- */
+
+type WireWalletTransaction = GetApiV1MeWalletTransactionsResponses[200]['data']['items'][number];
+
+export type WalletTransactionType = WireWalletTransaction['type'];
+
+/** Chữ người dùng đọc trên dòng sổ cái. */
+export const WALLET_TYPE_LABEL: Record<WalletTransactionType, string> = {
+  admin_adjust: 'Ghim cấp / trừ',
+  product_purchase: 'Mua gói đẩy tin',
+  refund: 'Hoàn Xu',
+};
+
+/** Một dòng sổ cái — `amount` âm là trừ; `note` là lý do master ghi, người dùng đọc được. */
+export type WalletTransaction = {
+  id: string;
+  amount: number;
+  type: WalletTransactionType;
+  balanceAfter: number;
+  note: string | null;
+  at: string;
+};
+
+export const toWalletTransaction = (w: WireWalletTransaction): WalletTransaction => ({
+  id: w.id,
+  amount: w.amount,
+  type: w.type,
+  balanceAfter: w.balanceAfter,
+  note: w.note,
+  at: w.createdAt,
+});
+
+/** Một trang đủ cho lịch sử ví: Xu chỉ vào qua master nên vài chục dòng là nhiều. */
+const WALLET_PAGE = 50;
+
 /* -------------------------------- thông báo -------------------------------- */
 
 /** Một trang đủ cho hộp thư trên điện thoại; dòng gộp giữ số dòng nhỏ. Chưa có nút tải thêm. */
@@ -1223,6 +1265,7 @@ function targetOf(w: WireNotice): NoticeTarget | null {
   }
   if (w.category === 'group_new_listings' && listingId) return { screen: 'listing', id: listingId };
   if (WARNING_TYPES.test(w.type)) return { screen: 'warnings' };
+  if (w.category === 'wallet') return { screen: 'wallet' };
   if (
     w.category === 'your_listings' ||
     w.category === 'account' ||
@@ -1489,6 +1532,14 @@ export const api = {
   },
 
   getMe: async (): Promise<Me> => toMe(await unwrap(getApiV1Me())),
+
+  /** Ví lười trên server: chưa có biến động nào là 0 Xu. */
+  getMyWallet: async (): Promise<number> => (await unwrap(getApiV1MeWallet())).balance,
+
+  getMyWalletTransactions: async (): Promise<WalletTransaction[]> =>
+    (await unwrap(getApiV1MeWalletTransactions({ query: { limit: WALLET_PAGE } }))).items.map(
+      toWalletTransaction,
+    ),
 
   setShowActivity: async (showActivity: boolean): Promise<Me> =>
     toMe(await unwrap(patchApiV1Me({ body: { showActivity } }))),

@@ -16,6 +16,7 @@ import { useSignOut } from '@/queries/auth';
 import { useRefreshShelvesOnFocus } from '@/queries/focus';
 import { useSavedListings } from '@/queries/listings';
 import { useOpenForEdit } from '@/queries/posting';
+import { useMyWallet } from '@/queries/wallet';
 import { useMarkSold, useMyListingAction, useMyListings } from '@/queries/selling';
 import { useIsAuthenticated } from '@/stores/auth';
 import { C, F, S } from '@/theme';
@@ -43,6 +44,7 @@ export default function Profile() {
   const active = useMyListings('active');
   const sold = useMyListings('sold');
   const saved = useSavedListings();
+  const wallet = useMyWallet();
   useRefreshShelvesOnFocus();
   const markSold = useMarkSold();
   const act = useMyListingAction();
@@ -97,6 +99,11 @@ export default function Profile() {
       icon: 'alert-triangle',
       label: 'Cảnh cáo của tôi',
       onPress: () => router.push('/warnings'),
+    },
+    {
+      icon: 'credit-card',
+      label: wallet.data === undefined ? 'Ví Xu' : `Ví Xu · ${wallet.data} Xu`,
+      onPress: () => router.push('/wallet'),
     },
     { icon: 'bell', label: 'Tìm kiếm đã lưu', onPress: () => router.push('/saved-searches') },
     { icon: 'flag', label: 'Báo cáo của tôi', onPress: () => router.push('/reports') },

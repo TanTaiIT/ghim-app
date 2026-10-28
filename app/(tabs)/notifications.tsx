@@ -49,6 +49,8 @@ export default function Notifications() {
         return router.navigate('/(tabs)/profile');
       case 'warnings':
         return router.push('/warnings');
+      case 'wallet':
+        return router.push('/wallet');
     }
   };
 

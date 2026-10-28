@@ -31,6 +31,27 @@ export function useCommentStrike(taskId: string) {
   });
 }
 
+// ── VÍ XU ────────────────────────────────────────────────────────────────────────────────────────
+
+/** Chỉ master: staff nhận 403 — màn chỉ hỏi khi người xem là master. */
+export function useOpsWallet(accountId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: qk.ops.wallet(accountId),
+    queryFn: () => adminApi.wallet(accountId),
+    enabled,
+  });
+}
+
+/** Cấp / trừ xong, ví của người đó đọc lại; thông báo cho họ là việc của server. */
+export function useAdjustWallet(accountId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { amount: number; reason: string; idempotencyKey: string }) =>
+      adminApi.adjustWallet({ accountId, ...input }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: qk.ops.wallet(accountId) }),
+  });
+}
+
 // ── QUY ĐỊNH SÀN ─────────────────────────────────────────────────────────────────────────────────
 
 export function useRuleArticles() {
