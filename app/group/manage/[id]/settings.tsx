@@ -54,6 +54,7 @@ function SettingsForm({ group: g }: { group: ManagedGroup }) {
   const [showName, setShowName] = useState(g.showNameOnMarketplace);
   const [boardStyle, setBoardStyle] = useState(g.boardStyle);
   const [manualReview, setManualReview] = useState(g.manualReview);
+  const [allowPromotions, setAllowPromotions] = useState(g.allowPromotions);
 
   const publicTarget = isPublicGroup(mode);
   const privateBoth = !publicTarget && !isPublicGroup(g.mode);
@@ -67,6 +68,7 @@ function SettingsForm({ group: g }: { group: ManagedGroup }) {
     ...(privateBoth && showName !== g.showNameOnMarketplace && { showNameOnMarketplace: showName }),
     ...(boardStyle !== g.boardStyle && { boardStyle }),
     ...(manualReview !== g.manualReview && { manualReview }),
+    ...(allowPromotions !== g.allowPromotions && { allowPromotions }),
   };
   const dirty = Object.keys(patch).length > 0;
   const note = modeNoteOf(g.mode, mode);
@@ -146,6 +148,17 @@ function SettingsForm({ group: g }: { group: ManagedGroup }) {
             {manualReview !== g.manualReview && !manualReview
               ? ' Tin đang chờ vẫn chờ người duyệt.'
               : ''}
+          </Text>
+          <Text style={styles.label}>Đẩy tin</Text>
+          <Check
+            checked={allowPromotions}
+            label="Cho thành viên dùng gói đẩy tin trả Xu"
+            onPress={() => setAllowPromotions((v) => !v)}
+          />
+          <Text style={styles.hint}>
+            {allowPromotions
+              ? 'Thành viên dùng Xu để đẩy tin của mình lên đầu bảng tin nhóm hay vào dải "Tin nổi bật" của nhóm.'
+              : 'Thành viên không mua được gói cho tin trong nhóm; gói đã mua chạy tới hết hạn. Quản trị nhóm vẫn đẩy tin miễn phí.'}
           </Text>
           <PinButton
             label="Lưu cài đặt"

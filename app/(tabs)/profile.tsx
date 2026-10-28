@@ -8,6 +8,7 @@ import { ListingRow } from '@/components/ListingCard';
 import { MenuList, type MenuItem } from '@/components/MenuList';
 import { MyListingActionSheet, MyListingCard } from '@/components/MyListingCard';
 import { ProfileHeader } from '@/components/ProfileHeader';
+import { PromotionSheet } from '@/components/PromotionSheet';
 import { SegmentedTabs } from '@/components/TabStrip';
 import { useToast } from '@/components/Toast';
 import { EmptyState, GhostButton, Loading } from '@/components/ui';
@@ -45,6 +46,7 @@ export default function Profile() {
   const sold = useMyListings('sold');
   const saved = useSavedListings();
   const wallet = useMyWallet();
+  const [promoting, setPromoting] = useState<MyListing | null>(null);
   useRefreshShelvesOnFocus();
   const markSold = useMarkSold();
   const act = useMyListingAction();
@@ -161,6 +163,7 @@ export default function Profile() {
                   l.state === 'draft' ? openEditor(l.id) : router.push(`/listing/${l.id}`)
                 }
                 onEdit={() => openEditor(l.id)}
+                onBoost={() => setPromoting(l)}
                 onSold={() =>
                   markSold.mutate(l.id, {
                     onSuccess: () => toast('Đã chuyển tin sang mục Đã bán'),
@@ -192,6 +195,7 @@ export default function Profile() {
           />
         </View>
       </ScrollView>
+      <PromotionSheet listing={promoting} onClose={() => setPromoting(null)} />
       <MyListingActionSheet
         item={acting}
         onClose={() => setActing(null)}

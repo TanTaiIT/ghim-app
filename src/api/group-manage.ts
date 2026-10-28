@@ -101,6 +101,7 @@ export type GroupSettingsPatch = {
   showNameOnMarketplace?: boolean;
   boardStyle?: 'list' | 'grid';
   manualReview?: boolean;
+  allowPromotions?: boolean;
 };
 
 /** Một trang đủ cho một nhóm; `total` cho biết còn bao nhiêu chưa hiện. */

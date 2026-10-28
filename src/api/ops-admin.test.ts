@@ -148,6 +148,66 @@ describe('ví Xu của một người (add-wallet)', () => {
     });
   });
 
+  it('gói đẩy tin: đọc cả gói đã tắt; tạo gửi đúng thân; sửa theo mã chỉ gửi trường đổi', async () => {
+    const product = {
+      id: 'pp-1',
+      code: 'featured_3d',
+      name: 'Nổi bật 3 ngày',
+      description: null,
+      effect: 'featured',
+      durationDays: 3,
+      cooldownHours: 24,
+      price: 2,
+      minTier: 'T1',
+      scope: 'both',
+      active: false,
+      sort: 2,
+      createdBy: null,
+      createdAt: '2026-10-28T03:00:00.000Z',
+      updatedAt: '2026-10-28T03:00:00.000Z',
+    };
+    const listCalls = serve([product]);
+    const list = await adminApi.products();
+    jest.restoreAllMocks();
+
+    const calls = serve(product);
+    await adminApi.createProduct({
+      code: 'featured_14d',
+      name: 'Nổi bật 14 ngày',
+      effect: 'featured',
+      durationDays: 14,
+      cooldownHours: 24,
+      price: 6,
+      minTier: 'T1',
+      scope: 'both',
+    });
+    const patched = await adminApi.updateProduct('featured_3d', { price: 3 });
+
+    expect(listCalls.map(({ method, path }) => [method, path])).toEqual([
+      ['GET', '/api/v1/ops/promotions/products'],
+    ]);
+    expect(list.map((p) => [p.code, p.active])).toEqual([['featured_3d', false]]);
+    expect(calls.map(({ method, path, body }) => ({ method, path, body }))).toEqual([
+      {
+        method: 'POST',
+        path: '/api/v1/ops/promotions/products',
+        body: {
+          code: 'featured_14d',
+          name: 'Nổi bật 14 ngày',
+          effect: 'featured',
+          durationDays: 14,
+          cooldownHours: 24,
+          price: 6,
+          minTier: 'T1',
+          scope: 'both',
+        },
+      },
+      { method: 'PATCH', path: '/api/v1/ops/promotions/products/featured_3d', body: { price: 3 } },
+    ]);
+    expect(patched.active).toBe(false);
+    expect(patched).not.toHaveProperty('createdAt');
+  });
+
   it('khoá chống lặp đúng dạng server nhận và khác nhau mỗi lần', () => {
     const keys = [newIdempotencyKey(), newIdempotencyKey()];
     for (const key of keys) expect(key).toMatch(/^[A-Za-z0-9_-]{8,64}$/);

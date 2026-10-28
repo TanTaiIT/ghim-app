@@ -32,6 +32,8 @@ export const qk = {
     featured: (categoryId: string | null) => ['listings', 'featured', categoryId] as const,
     /** Quyền đẩy tin của người xem với một tin (add-admin-boost). */
     boost: (id: string) => ['listings', 'boost', id] as const,
+    /** Gói đẩy tin cho một tin của tôi (add-promotions). */
+    promotions: (id: string) => ['listings', 'promotions', id] as const,
   },
   seller: (id: string) => ['users', id] as const,
   savedIds: () => ['saved-ids'] as const,
@@ -87,6 +89,7 @@ export const qk = {
     /** Danh bạ và thẻ tài khoản chung một gốc: khoá / mở khoá đổi trạng thái ở cả hai. */
     accountsAll: () => ['ops', 'accounts'] as const,
     wallet: (accountId: string) => ['ops', 'wallet', accountId] as const,
+    products: () => ['ops', 'promotion-products'] as const,
     accounts: (q: string, status: string | null, page: number) =>
       ['ops', 'accounts', 'list', q, status, page] as const,
     account: (id: string) => ['ops', 'accounts', 'card', id] as const,

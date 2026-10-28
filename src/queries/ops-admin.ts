@@ -1,5 +1,5 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { adminApi, type AuditFilter } from '@/api/ops-admin';
+import { adminApi, type AuditFilter, type NewProduct, type ProductPatch } from '@/api/ops-admin';
 import { qk } from './keys';
 
 /* Quản trị hệ thống và quy định sàn trên bàn vận hành — xem `src/api/ops-admin.ts`. */
@@ -30,6 +30,27 @@ export function useCommentStrike(taskId: string) {
     onSuccess: () => qc.invalidateQueries({ queryKey: qk.ops.task(taskId) }),
   });
 }
+
+// ── GÓI ĐẨY TIN ──────────────────────────────────────────────────────────────────────────────────
+
+export function useOpsProducts() {
+  return useQuery({ queryKey: qk.ops.products(), queryFn: adminApi.products });
+}
+
+function useProductMutation<V>(fn: (v: V) => Promise<unknown>) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: fn,
+    onSuccess: () => qc.invalidateQueries({ queryKey: qk.ops.products() }),
+  });
+}
+
+export const useCreateProduct = () =>
+  useProductMutation((body: NewProduct) => adminApi.createProduct(body));
+export const useUpdateProduct = () =>
+  useProductMutation(({ code, patch }: { code: string; patch: ProductPatch }) =>
+    adminApi.updateProduct(code, patch),
+  );
 
 // ── VÍ XU ────────────────────────────────────────────────────────────────────────────────────────
 

@@ -3837,6 +3837,7 @@ export type GetApiV1GroupsByGroupIdResponses = {
             allowOutsiders: boolean;
             showNameOnMarketplace: boolean;
             manualReview: boolean;
+            allowPromotions: boolean;
             code: string | null;
             lockedReason: string | null;
             units: Array<{
@@ -6145,6 +6146,7 @@ export type PatchApiV1GroupsByGroupIdSettingsData = {
         showNameOnMarketplace?: boolean;
         boardStyle?: 'list' | 'grid';
         manualReview?: boolean;
+        allowPromotions?: boolean;
     };
     path: {
         groupId: string;
@@ -6232,6 +6234,7 @@ export type PatchApiV1GroupsByGroupIdSettingsResponses = {
             allowOutsiders: boolean;
             showNameOnMarketplace: boolean;
             manualReview: boolean;
+            allowPromotions: boolean;
             code: string | null;
             lockedReason: string | null;
             units: Array<{
@@ -7280,6 +7283,7 @@ export type GetApiV1OpsGroupsByGroupIdResponses = {
             allowOutsiders: boolean;
             showNameOnMarketplace: boolean;
             manualReview: boolean;
+            allowPromotions: boolean;
             code: string | null;
             lockedReason: string | null;
             units: Array<{
@@ -17425,6 +17429,456 @@ export type PostApiV1OpsWalletsByAccountIdAdjustResponses = {
 };
 
 export type PostApiV1OpsWalletsByAccountIdAdjustResponse = PostApiV1OpsWalletsByAccountIdAdjustResponses[keyof PostApiV1OpsWalletsByAccountIdAdjustResponses];
+
+export type GetApiV1ListingsByIdPromotionsData = {
+    body?: never;
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/listings/{id}/promotions';
+};
+
+export type GetApiV1ListingsByIdPromotionsErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1ListingsByIdPromotionsError = GetApiV1ListingsByIdPromotionsErrors[keyof GetApiV1ListingsByIdPromotionsErrors];
+
+export type GetApiV1ListingsByIdPromotionsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            products: Array<{
+                code: string;
+                name: string;
+                description: string | null;
+                effect: 'rank_to_top' | 'featured';
+                durationDays: number | null;
+                price: number;
+                minTier: 'T0' | 'T1' | 'T2' | 'T3';
+                purchasable: boolean;
+                reason: string | null;
+                retryAt: string | null;
+            }>;
+            running: {
+                id: string;
+                listingId: string;
+                productCode: string;
+                effect: 'rank_to_top' | 'featured';
+                price: number;
+                appliedAt: string;
+                expiresAt: string | null;
+                status: 'applied' | 'refunded';
+                refundedAt: string | null;
+            } | null;
+            balance: number;
+        };
+    };
+};
+
+export type GetApiV1ListingsByIdPromotionsResponse = GetApiV1ListingsByIdPromotionsResponses[keyof GetApiV1ListingsByIdPromotionsResponses];
+
+export type PostApiV1ListingsByIdPromotionsData = {
+    body: {
+        productCode: string;
+        idempotencyKey: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/api/v1/listings/{id}/promotions';
+};
+
+export type PostApiV1ListingsByIdPromotionsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    429: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1ListingsByIdPromotionsError = PostApiV1ListingsByIdPromotionsErrors[keyof PostApiV1ListingsByIdPromotionsErrors];
+
+export type PostApiV1ListingsByIdPromotionsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            listingId: string;
+            productCode: string;
+            effect: 'rank_to_top' | 'featured';
+            price: number;
+            appliedAt: string;
+            expiresAt: string | null;
+            status: 'applied' | 'refunded';
+            refundedAt: string | null;
+        };
+    };
+};
+
+export type PostApiV1ListingsByIdPromotionsResponse = PostApiV1ListingsByIdPromotionsResponses[keyof PostApiV1ListingsByIdPromotionsResponses];
+
+export type GetApiV1OpsPromotionsProductsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/ops/promotions/products';
+};
+
+export type GetApiV1OpsPromotionsProductsErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1OpsPromotionsProductsError = GetApiV1OpsPromotionsProductsErrors[keyof GetApiV1OpsPromotionsProductsErrors];
+
+export type GetApiV1OpsPromotionsProductsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: Array<{
+            id: string;
+            code: string;
+            name: string;
+            description: string | null;
+            effect: 'rank_to_top' | 'featured';
+            durationDays: number | null;
+            cooldownHours: number;
+            price: number;
+            minTier: 'T0' | 'T1' | 'T2' | 'T3';
+            scope: 'marketplace' | 'group' | 'both';
+            active: boolean;
+            sort: number;
+            createdAt: string;
+            updatedAt: string;
+        }>;
+    };
+};
+
+export type GetApiV1OpsPromotionsProductsResponse = GetApiV1OpsPromotionsProductsResponses[keyof GetApiV1OpsPromotionsProductsResponses];
+
+export type PostApiV1OpsPromotionsProductsData = {
+    body: {
+        code: string;
+        effect: 'rank_to_top' | 'featured';
+        name: string;
+        description?: string | null;
+        durationDays?: number | null;
+        cooldownHours: number;
+        price: number;
+        minTier: 'T0' | 'T1' | 'T2' | 'T3';
+        scope: 'marketplace' | 'group' | 'both';
+        sort?: number;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/ops/promotions/products';
+};
+
+export type PostApiV1OpsPromotionsProductsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    409: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PostApiV1OpsPromotionsProductsError = PostApiV1OpsPromotionsProductsErrors[keyof PostApiV1OpsPromotionsProductsErrors];
+
+export type PostApiV1OpsPromotionsProductsResponses = {
+    /**
+     * Default Response
+     */
+    201: {
+        success: true;
+        data: {
+            id: string;
+            code: string;
+            name: string;
+            description: string | null;
+            effect: 'rank_to_top' | 'featured';
+            durationDays: number | null;
+            cooldownHours: number;
+            price: number;
+            minTier: 'T0' | 'T1' | 'T2' | 'T3';
+            scope: 'marketplace' | 'group' | 'both';
+            active: boolean;
+            sort: number;
+            createdAt: string;
+            updatedAt: string;
+        };
+    };
+};
+
+export type PostApiV1OpsPromotionsProductsResponse = PostApiV1OpsPromotionsProductsResponses[keyof PostApiV1OpsPromotionsProductsResponses];
+
+export type PatchApiV1OpsPromotionsProductsByCodeData = {
+    body: {
+        name?: string;
+        description?: string | null;
+        durationDays?: number | null;
+        cooldownHours?: number;
+        price?: number;
+        minTier?: 'T0' | 'T1' | 'T2' | 'T3';
+        scope?: 'marketplace' | 'group' | 'both';
+        sort?: number;
+        active?: boolean;
+    };
+    path: {
+        code: string;
+    };
+    query?: never;
+    url: '/api/v1/ops/promotions/products/{code}';
+};
+
+export type PatchApiV1OpsPromotionsProductsByCodeErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    403: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+    /**
+     * Default Response
+     */
+    404: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type PatchApiV1OpsPromotionsProductsByCodeError = PatchApiV1OpsPromotionsProductsByCodeErrors[keyof PatchApiV1OpsPromotionsProductsByCodeErrors];
+
+export type PatchApiV1OpsPromotionsProductsByCodeResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            id: string;
+            code: string;
+            name: string;
+            description: string | null;
+            effect: 'rank_to_top' | 'featured';
+            durationDays: number | null;
+            cooldownHours: number;
+            price: number;
+            minTier: 'T0' | 'T1' | 'T2' | 'T3';
+            scope: 'marketplace' | 'group' | 'both';
+            active: boolean;
+            sort: number;
+            createdAt: string;
+            updatedAt: string;
+        };
+    };
+};
+
+export type PatchApiV1OpsPromotionsProductsByCodeResponse = PatchApiV1OpsPromotionsProductsByCodeResponses[keyof PatchApiV1OpsPromotionsProductsByCodeResponses];
 
 export type GetApiV1OpsJobsRunsData = {
     body?: never;

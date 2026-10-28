@@ -19,7 +19,7 @@ export default function OpsMore() {
     { icon: 'search', label: 'Tra mã tra cứu', onPress: () => router.push('/ops/lookup') },
     { icon: 'file-minus', label: 'Gỡ / khôi phục tin', onPress: () => router.push('/ops/listing') },
     { icon: 'image', label: 'Danh sách trắng ảnh', onPress: () => router.push('/ops/whitelist') },
-    { icon: 'zap', label: 'Đẩy tin & doanh thu', onPress: () => router.push('/ops/promotions') },
+    { icon: 'zap', label: 'Gói đẩy tin', onPress: () => router.push('/ops/promotions') },
   ];
   const master: MenuItem[] = [
     { icon: 'shield', label: 'Staff', onPress: () => router.push('/ops/staff') },

@@ -688,10 +688,17 @@ describe('thông báo', () => {
             body: '3 tin mới khớp tìm kiếm của bạn.',
             data: { savedSearchId: 'ss-1', listingId: 'l-4' },
           }),
+          wireNotice({
+            id: 'n-10',
+            category: 'your_listings',
+            type: 'promotion.applied',
+            body: '«Xe đạp cũ» nổi bật tới ngày 31/10/2026.',
+            data: { listingId: 'l-5', purchaseId: 'p-1' },
+          }),
         ],
         page: 1,
         limit: 100,
-        total: 9,
+        total: 10,
         totalPages: 1,
       },
     });
@@ -714,6 +721,7 @@ describe('thông báo', () => {
         { screen: 'search', savedSearchId: 'ss-1', listingId: 'l-4' },
         false,
       ],
+      ['n-10', 'deal', 'listing', { screen: 'listing', id: 'l-5' }, false],
     ]);
     expect(notices[0]?.at).toBe('2026-10-18T09:05:00.000Z');
     // Phần chỉ xem trong app đi nguyên từ server; dòng không có thì null.

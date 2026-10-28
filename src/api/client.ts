@@ -610,6 +610,8 @@ export type Group =
       showNameOnMarketplace: boolean;
       /** Tin gửi mới, gửi lại vào nhóm luôn chờ quản trị nhóm duyệt, kể cả khi máy cho qua. */
       manualReview: boolean;
+      /** Thành viên dùng được gói đẩy tin trả Xu trong nhóm (add-promotions). */
+      allowPromotions: boolean;
       /** Chỉ chủ nhóm và điều hành viên được biết lý do khoá. */
       lockedReason: string | null;
       /** Mã vào nhóm — chỉ chủ nhóm và điều hành viên thấy; nhóm không dùng mã thì null. */
@@ -1266,6 +1268,8 @@ function targetOf(w: WireNotice): NoticeTarget | null {
   if (w.category === 'group_new_listings' && listingId) return { screen: 'listing', id: listingId };
   if (WARNING_TYPES.test(w.type)) return { screen: 'warnings' };
   if (w.category === 'wallet') return { screen: 'wallet' };
+  // Gói đẩy tin (add-promotions): mở tin, nơi thấy nhãn "Nổi bật" và vị trí mới.
+  if (w.type.startsWith('promotion.') && listingId) return { screen: 'listing', id: listingId };
   if (
     w.category === 'your_listings' ||
     w.category === 'account' ||
@@ -1365,6 +1369,7 @@ function toGroup(w: WireGroupView): Group {
     allowOutsiders: w.allowOutsiders,
     showNameOnMarketplace: w.showNameOnMarketplace,
     manualReview: w.manualReview,
+    allowPromotions: w.allowPromotions,
     lockedReason: w.lockedReason,
     code: w.code,
     units: w.units.map(({ id, name }) => ({ id, name })),

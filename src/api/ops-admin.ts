@@ -11,7 +11,9 @@ import {
   getApiV1OpsReviewStatsReviewers,
   getApiV1OpsReviewStatsRules,
   getApiV1OpsTrustRuleArticles,
+  getApiV1OpsPromotionsProducts,
   getApiV1OpsWalletsByAccountId,
+  patchApiV1OpsPromotionsProductsByCode,
   patchApiV1OpsTrustRuleArticlesByArticleId,
   postApiV1OpsConfig,
   postApiV1OpsDisposableDomains,
@@ -19,6 +21,7 @@ import {
   postApiV1OpsTrustRuleArticles,
   postApiV1OpsTrustStrikesByStrikeIdComments,
   postApiV1OpsTrustStrikesByStrikeIdLift,
+  postApiV1OpsPromotionsProducts,
   postApiV1OpsWalletsByAccountIdAdjust,
 } from './generated/sdk.gen';
 import type {
@@ -28,7 +31,9 @@ import type {
   GetApiV1OpsConfigResponses,
   GetApiV1OpsDisposableDomainsResponses,
   GetApiV1OpsJobsRunsResponses,
+  GetApiV1OpsPromotionsProductsResponses,
   GetApiV1OpsTrustRuleArticlesResponses,
+  PostApiV1OpsPromotionsProductsData,
 } from './generated/types.gen';
 
 /*
@@ -43,6 +48,60 @@ type WireDomain = GetApiV1OpsDisposableDomainsResponses[200]['data']['items'][nu
 type WireAudit = GetApiV1OpsAuditResponses[200]['data']['items'][number];
 type WireJobRun = GetApiV1OpsJobsRunsResponses[200]['data'][number];
 type WireSettings = GetApiV1OpsCategoriesByIdSettingsVersionsByVersionResponses[200]['data'];
+
+type WireProduct = GetApiV1OpsPromotionsProductsResponses[200]['data'][number];
+
+/** Gói đẩy tin master soạn (add-promotions). Không xoá — chỉ tắt, vì lượt mua đã có trỏ tới nó. */
+export type OpsProduct = {
+  id: string;
+  code: string;
+  name: string;
+  description: string | null;
+  effect: WireProduct['effect'];
+  durationDays: number | null;
+  cooldownHours: number;
+  price: number;
+  minTier: WireProduct['minTier'];
+  scope: WireProduct['scope'];
+  active: boolean;
+  sort: number;
+};
+export type NewProduct = NonNullable<PostApiV1OpsPromotionsProductsData['body']>;
+export type ProductPatch = Partial<
+  Pick<
+    OpsProduct,
+    | 'name'
+    | 'description'
+    | 'durationDays'
+    | 'cooldownHours'
+    | 'price'
+    | 'minTier'
+    | 'scope'
+    | 'active'
+    | 'sort'
+  >
+>;
+
+export const PRODUCT_SCOPE_LABEL: Record<OpsProduct['scope'], string> = {
+  marketplace: 'Sàn chung',
+  group: 'Trong nhóm',
+  both: 'Sàn chung và nhóm',
+};
+
+const toProduct = (w: WireProduct): OpsProduct => ({
+  id: w.id,
+  code: w.code,
+  name: w.name,
+  description: w.description,
+  effect: w.effect,
+  durationDays: w.durationDays,
+  cooldownHours: w.cooldownHours,
+  price: w.price,
+  minTier: w.minTier,
+  scope: w.scope,
+  active: w.active,
+  sort: w.sort,
+});
 
 /** Ví một người nhìn từ bàn vận hành: số dư và 20 dòng gần nhất. */
 export type OpsWallet = { balance: number; transactions: WalletTransaction[] };
@@ -194,6 +253,15 @@ export type CategorySettingsVersion = {
 const PAGE = 50;
 
 export const adminApi = {
+  products: async (): Promise<OpsProduct[]> =>
+    (await unwrap(getApiV1OpsPromotionsProducts())).map(toProduct),
+
+  createProduct: async (body: NewProduct): Promise<OpsProduct> =>
+    toProduct(await unwrap(postApiV1OpsPromotionsProducts({ body }))),
+
+  updateProduct: async (code: string, body: ProductPatch): Promise<OpsProduct> =>
+    toProduct(await unwrap(patchApiV1OpsPromotionsProductsByCode({ path: { code }, body }))),
+
   wallet: async (accountId: string): Promise<OpsWallet> => {
     const w = await unwrap(getApiV1OpsWalletsByAccountId({ path: { accountId } }));
     return { balance: w.balance, transactions: w.transactions.map(toWalletTransaction) };
