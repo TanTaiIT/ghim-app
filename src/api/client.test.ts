@@ -1574,6 +1574,29 @@ describe('đăng nhập', () => {
     });
     expect(device).toBe('may-1');
   });
+
+  it('Google: gửi ID token, xin refresh token kiểu app, mang mã máy', async () => {
+    setHttpDeviceId('may-1');
+    let device: string | null = null;
+    let body: unknown = null;
+    jest.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      device = (input as Request).headers.get('x-device-id');
+      body = await (input as Request).json();
+      return new Response(
+        JSON.stringify({
+          success: true,
+          data: { accessToken: 'a', refreshToken: 'r', expiresIn: 900 },
+        }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
+      );
+    });
+    await expect(api.loginWithGoogle('id-token-google')).resolves.toEqual({
+      accessToken: 'a',
+      refreshToken: 'r',
+    });
+    expect(body).toEqual({ idToken: 'id-token-google', client: 'app' });
+    expect(device).toBe('may-1');
+  });
 });
 
 describe('unwrap', () => {

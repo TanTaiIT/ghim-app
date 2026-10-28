@@ -64,6 +64,7 @@ import {
   patchApiV1Me,
   postApiV1AuthDeletionRequests,
   postApiV1AuthForgotPassword,
+  postApiV1AuthGoogle,
   postApiV1AuthLogin,
   postApiV1AuthLogout,
   postApiV1AuthRefresh,
@@ -2010,6 +2011,12 @@ export const api = {
   login: (email: string, password: string): Promise<Session> =>
     unwrap(
       postApiV1AuthLogin({ headers: deviceHeaders(), body: { email, password, client: 'app' } }),
+    ).then(toSession),
+
+  /** Email chưa có tài khoản thì server tạo luôn (spec `identity/registration`) — không có bước đăng ký riêng. */
+  loginWithGoogle: (idToken: string): Promise<Session> =>
+    unwrap(
+      postApiV1AuthGoogle({ headers: deviceHeaders(), body: { idToken, client: 'app' } }),
     ).then(toSession),
 
   refresh: (refreshToken: string): Promise<Session> =>

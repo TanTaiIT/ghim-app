@@ -71,27 +71,36 @@ export function PinButton({
   );
 }
 
-/** Nút viền thương hiệu. `compact` cho nút trong thẻ (Xem trang, Đã giải quyết). */
+/** Nút viền thương hiệu. `compact` cho nút trong thẻ (Xem trang, Đã giải quyết); `loading` như `PinButton`. */
 export function OutlineButton({
   label,
   onPress,
   compact = false,
+  loading = false,
 }: {
   label: string;
   onPress: () => void;
   compact?: boolean;
+  loading?: boolean;
 }) {
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{ disabled: loading, busy: loading }}
       onPress={onPress}
+      disabled={loading}
       style={({ pressed }) => [
         styles.outline,
         compact && styles.outlineCompact,
         { opacity: pressed ? 0.7 : 1 },
       ]}
     >
-      <Text style={[styles.outlineLabel, compact && styles.labelSmall]}>{label}</Text>
+      {loading ? (
+        <ActivityIndicator color={C.brandTx} />
+      ) : (
+        <Text style={[styles.outlineLabel, compact && styles.labelSmall]}>{label}</Text>
+      )}
     </Pressable>
   );
 }

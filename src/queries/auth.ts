@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useMutation, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { api, type Registration } from '@/api/client';
+import { googleIdToken } from '@/api/google';
 import { ApiError, setHttpAccessToken, setHttpDeviceId, setSessionRefresher } from '@/api/http';
 import { useAuthStore } from '@/stores/auth';
 import { qk } from './keys';
@@ -61,6 +62,19 @@ export function useLogin() {
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       api.login(email.trim(), password),
     onSuccess: (session) => useAuthStore.getState().signIn(session),
+  });
+}
+
+/** Người dùng huỷ bảng chọn tài khoản Google: trả `null` — không lỗi, không phiên, màn đăng nhập giữ nguyên. */
+export function useGoogleLogin() {
+  return useMutation({
+    mutationFn: async () => {
+      const idToken = await googleIdToken();
+      return idToken ? api.loginWithGoogle(idToken) : null;
+    },
+    onSuccess: (session) => {
+      if (session) useAuthStore.getState().signIn(session);
+    },
   });
 }
 
