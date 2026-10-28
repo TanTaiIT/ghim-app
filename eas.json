@@ -12,6 +12,7 @@
     "preview": {
       "distribution": "internal",
       "android": { "buildType": "apk" },
+      "environment": "preview",
       "env": {
         "EXPO_PUBLIC_API_URL": "https://ghim-server.onrender.com",
         "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "468083668824-1ispsvvfpgj3ovpv6jrg5f3b4ali7mmr.apps.googleusercontent.com"

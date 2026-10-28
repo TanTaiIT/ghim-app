@@ -17,11 +17,25 @@ cp .env.example .env         # EXPO_PUBLIC_API_URL — máy thật dùng IP LAN 
 npx expo start -c --go       # quét QR bằng Expo Go; bỏ --go khi đã có development build
 ```
 
-Cần Node 24 (`.nvmrc`). App hiện chỉ dùng module có sẵn trong **Expo Go** nên chạy được ngay bằng Expo Go;
-`expo-dev-client` đã cài sẵn cho lúc thêm module native (push, kho ảnh): khi đó
-`eas build --profile development` rồi `npx expo start --dev-client`. Thông báo đẩy trên máy chờ tới lúc đó:
-`expo-notifications` đòi native module mà Expo Go trên Android không có, nên chỉ import thôi app đã chết ở màn đầu
-(gỡ 26/10/2026; server đã có `PUT/DELETE /me/push-token`).
+Cần Node 24 (`.nvmrc`). Mọi màn chạy được bằng **Expo Go**, trừ hai thứ cần bản build EAS (`eas build --profile
+preview` hay `development` rồi `npx expo start --dev-client`): đăng nhập Google và thông báo đẩy. Trong Expo Go hai
+thứ đó tự ẩn — nút Google không hiện, app không xin quyền thông báo (`src/api/google.ts`, `src/api/push.ts`).
+
+Thông báo đẩy trên Android đi qua Firebase (FCM), cần hai thứ không nằm trong repo:
+
+1. `google-services.json` (Firebase → Cài đặt dự án → app Android `vn.ahasoft.ghim`): đặt ở gốc repo cho máy dev, và
+   đưa lên EAS thành biến file mà `app.config.ts` đọc:
+
+   ```bash
+   npx eas-cli env:create --name GOOGLE_SERVICES_JSON --type file --value ./google-services.json \
+     --environment preview --visibility sensitive
+   ```
+
+2. Khoá tài khoản dịch vụ FCM V1 (Firebase → Tài khoản dịch vụ): upload ở expo.dev → Credentials → Android. Là
+   secret — không vào repo, không qua chat.
+
+Đăng nhập xong app hỏi quyền thông báo và gắn token vào phiên (`PUT /me/push-token`); tắt cho riêng máy ở Cài đặt ›
+Thông báo. Bấm thông báo tin nhắn mở thẳng hội thoại, thông báo khác mở mục Thông báo.
 
 Web: `npm run web` (cần `react-native-web` + `@expo/metro-runtime`, đã có trong dependencies). Trên web phiên đăng
 nhập chỉ giữ trong bộ nhớ — tải lại trang là phải đăng nhập lại (xem `src/stores/auth.ts`).

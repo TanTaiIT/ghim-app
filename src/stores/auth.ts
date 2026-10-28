@@ -58,6 +58,12 @@ type AuthState = {
   signIn: (session: Session) => void;
   /** Giữ `deviceId`: đăng xuất không làm máy thành máy khác. */
   signOut: () => void;
+  /**
+   * Người dùng tắt thông báo đẩy trên máy này (Cài đặt › Thông báo). Là lựa chọn của máy, không của tài khoản — sống qua
+   * đăng xuất, để lần đăng nhập sau không tự đăng ký lại token.
+   */
+  pushOff: boolean;
+  setPushOff: (off: boolean) => void;
 };
 
 export const useAuthStore = create<AuthState>()(
@@ -68,12 +74,14 @@ export const useAuthStore = create<AuthState>()(
       hydrated: false,
       signIn: (session) => set({ session }),
       signOut: () => set({ session: null }),
+      pushOff: false,
+      setPushOff: (pushOff) => set({ pushOff }),
     }),
     {
       name: 'ghim-auth',
       storage: createJSONStorage(() => secureStorage),
       // `hydrated` là cờ runtime; ghi xuống đĩa thì lần mở sau đọc lại đúng giá trị cũ (false) và app treo.
-      partialize: (s) => ({ session: s.session, deviceId: s.deviceId }),
+      partialize: (s) => ({ session: s.session, deviceId: s.deviceId, pushOff: s.pushOff }),
       // Bản 0 là phiên của dữ liệu mẫu, cầm token giả: giữ lại thì máy đã chạy bản mẫu trông như đang đăng
       // nhập trong khi backend không nhận phiên nào như thế.
       version: 1,
@@ -94,3 +102,5 @@ export const useAuthStore = create<AuthState>()(
 
 export const useIsAuthenticated = () => useAuthStore((s) => s.session !== null);
 export const useAuthHydrated = () => useAuthStore((s) => s.hydrated);
+/** Bản ghi cũ chưa có cờ này: coi như chưa tắt. */
+export const usePushOff = () => useAuthStore((s) => s.pushOff === true);
