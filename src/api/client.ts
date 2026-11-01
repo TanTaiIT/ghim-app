@@ -459,9 +459,9 @@ export function staleFilterField(error: unknown): { field: string; message: stri
   return typeof field === 'string' ? { field, message: error.message } : null;
 }
 
-/** Trạng thái của server, trừ `removed` (tin đã gỡ không hiện ở "Tin của tôi"). */
+/** Trạng thái của server, kể cả `removed`: tin bị gỡ vì sai sót người đăng sửa rồi gửi lại được. */
 export type MyListingState =
-  'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'expired' | 'sold';
+  'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'removed' | 'expired' | 'sold';
 
 export type MyListing = ListingCard & {
   state: MyListingState;
@@ -481,7 +481,16 @@ export type MyListing = ListingCard & {
   renewal: 'early' | 'expired' | null;
   /** Hạn chuyển lên chợ chung — chỉ có với tin đã rời nhóm hẳn. */
   moveUntil: string | null;
+  /**
+   * Vì sao tin bị từ chối / bị gỡ; null với trạng thái khác. Sai sót thì người đăng sửa rồi gửi lại; vi phạm thì tin
+   * là hồ sơ của cảnh cáo — server không cho sửa, người đăng khiếu nại ở Cảnh cáo của tôi.
+   */
+  fault: 'mistake' | 'violation' | null;
 };
+
+/** Bị từ chối / bị gỡ vì sai sót: thông báo bảo người đăng "sửa tin rồi gửi lại" — thẻ tin phải mở được form sửa. */
+export const canFix = (l: Pick<MyListing, 'state' | 'fault'>): boolean =>
+  (l.state === 'rejected' || l.state === 'removed') && l.fault === 'mistake';
 
 export type MyListingAction = 'withdraw' | 'renew' | 'move' | 'delete';
 
@@ -999,7 +1008,13 @@ const toAttribute = (v: unknown): AttributeValue | null =>
 function toEditable(w: WireDetail): EditableListing {
   if (!('version' in w))
     throw new ApiError('NOT_OWNER', 'Chỉ người đăng mới sửa được tin này', 403);
-  if (w.state === 'removed') throw new ApiError('NOT_EDITABLE', 'Tin đã gỡ, không sửa được', 409);
+  if ((w.state === 'rejected' || w.state === 'removed') && w.fault === 'violation') {
+    throw new ApiError(
+      'LISTING_UNDER_VIOLATION',
+      'Tin vi phạm quy định nên không sửa được — xem và khiếu nại ở Cá nhân › Cảnh cáo của tôi',
+      409,
+    );
+  }
   return {
     id: w.id,
     version: w.version,
@@ -1810,25 +1825,20 @@ export const api = {
   getMyListings: async (load: LoadLookups): Promise<MyListing[]> => {
     const { items } = await unwrap(getApiV1MeListings({ query: { limit: MY_PAGE_SIZE } }));
     const lookups = await load(provincesOf(items));
-    return items.flatMap((w) =>
-      w.state === 'removed'
-        ? []
-        : [
-            {
-              ...toCard(w, lookups),
-              state: w.state,
-              views: null,
-              saves: null,
-              expiresAt: w.expiresAt,
-              note: w.machineNotice?.message ?? w.faultReason ?? null,
-              fixes: w.machineNotice?.fixes.map((fix) => fix.message) ?? [],
-              lookupCode: w.machineNotice?.lookupCode ?? null,
-              version: w.version,
-              renewal: w.renewal,
-              moveUntil: w.moveUntil,
-            },
-          ],
-    );
+    return items.map((w) => ({
+      ...toCard(w, lookups),
+      state: w.state,
+      views: null,
+      saves: null,
+      expiresAt: w.expiresAt,
+      note: w.machineNotice?.message ?? w.faultReason ?? null,
+      fixes: w.machineNotice?.fixes.map((fix) => fix.message) ?? [],
+      lookupCode: w.machineNotice?.lookupCode ?? null,
+      version: w.version,
+      renewal: w.renewal,
+      moveUntil: w.moveUntil,
+      fault: w.state === 'rejected' || w.state === 'removed' ? w.fault : null,
+    }));
   },
 
   /** Nhóm gỡ huy hiệu của mình: tin vẫn hiển thị, và không gắn lại huy hiệu nhóm này được nữa. */
@@ -1878,16 +1888,20 @@ export const api = {
   createDraft: async (): Promise<DraftRef> => toRef(await unwrap(postApiV1Listings({ body: {} }))),
 
   /** Lưu nháp, hoặc sửa tin đã gửi — server đưa nội dung đã sửa qua máy duyệt lại. */
-  saveListing: async (ref: DraftRef, c: ListingContent): Promise<DraftRef> =>
-    toRef(
-      await unwrap(
-        patchApiV1ListingsById({
-          path: { id: ref.id },
-          headers: deviceHeaders(),
-          body: { version: ref.version, ...toContentBody(c) },
-        }),
-      ),
-    ),
+  /** `checking`: server đưa bản lưu qua máy duyệt — sửa tin đang hiển thị chỉ bật / tắt công tắc thì không. */
+  saveListing: async (
+    ref: DraftRef,
+    c: ListingContent,
+  ): Promise<DraftRef & { checking: boolean }> => {
+    const w = await unwrap(
+      patchApiV1ListingsById({
+        path: { id: ref.id },
+        headers: deviceHeaders(),
+        body: { version: ref.version, ...toContentBody(c) },
+      }),
+    );
+    return { ...toRef(w), checking: w.state === 'checking' };
+  },
 
   submitListing: async (ref: DraftRef): Promise<void> => {
     await unwrap(

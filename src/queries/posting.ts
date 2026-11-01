@@ -52,7 +52,7 @@ function ensureDraft(): Promise<DraftRef> {
   return creating;
 }
 
-async function saveContent(d: Draft): Promise<DraftRef> {
+async function saveContent(d: Draft): Promise<DraftRef & { checking: boolean }> {
   const next = await api.saveListing(await ensureDraft(), contentOf(d));
   useDraftStore.getState().patch({ version: next.version });
   return next;
@@ -85,13 +85,17 @@ export function useSaveDraft() {
   });
 }
 
-/** Nháp: lưu rồi gửi duyệt. Tin đang hiển thị: chỉ lưu — server tự đưa nội dung đã sửa qua máy duyệt. */
+/**
+ * Nháp: lưu rồi gửi duyệt. Tin đang hiển thị: chỉ lưu — server tự đưa nội dung đã sửa qua máy duyệt; trả về
+ * `checking` để câu báo không hứa "kiểm tra lại" khi người đăng chỉ bật / tắt công tắc.
+ */
 export function usePublishListing() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (d: Draft) => {
+    mutationFn: async (d: Draft): Promise<{ checking: boolean }> => {
       const ref = await saveContent(d);
       if (!d.editingLive) await api.submitListing(ref);
+      return { checking: !d.editingLive || ref.checking };
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: qk.listings.all() }),
   });
@@ -113,6 +117,7 @@ export function useOpenForEdit() {
       listingId: l.id,
       version: l.version,
       editingLive: l.state === 'live',
+      resubmitting: l.state === 'rejected' || l.state === 'removed',
       photos: l.photos.map((p) => ({
         key: `server-${p.imageId}`,
         uri: p.uri,

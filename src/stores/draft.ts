@@ -27,6 +27,11 @@ export type Draft = {
   version: number | null;
   /** Sửa tin đang hiển thị: lưu là xong, không gửi duyệt lại — server tự đưa nội dung sửa qua máy. */
   editingLive: boolean;
+  /**
+   * Sửa tin bị từ chối / bị gỡ vì sai sót: lưu có đổi nội dung là server đưa tin qua máy ngay, nên form không có
+   * "Lưu nháp" và nút cuối là "Gửi lại".
+   */
+  resubmitting: boolean;
   photos: DraftPhoto[];
   title: string;
   categoryId: string | null;
@@ -51,6 +56,7 @@ const EMPTY: Draft = {
   listingId: null,
   version: null,
   editingLive: false,
+  resubmitting: false,
   photos: [],
   title: '',
   categoryId: null,

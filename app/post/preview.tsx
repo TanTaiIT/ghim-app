@@ -13,8 +13,8 @@ import { C, F, R, S } from '@/theme';
 import { formatPlace } from '@/utils/format';
 
 /**
- * Bước 3 — xem trước như người mua sẽ thấy, tóm tắt kèm nút Sửa. Thiết kế có mục "Tăng hiển thị": gói đẩy tin
- * chưa có ở server (`add-promotions`), nên chưa hiện.
+ * Bước 3 — xem trước như người mua sẽ thấy, tóm tắt kèm nút Sửa. Mục "Tăng hiển thị" của thiết kế không đặt ở đây:
+ * gói đẩy tin chỉ mua được cho tin đang hiển thị, nên nằm ở nút "Đẩy tin" của Tin của tôi (`add-promotions`).
  */
 export default function PostPreview() {
   const router = useRouter();
@@ -48,13 +48,15 @@ export default function PostPreview() {
 
   const submit = () =>
     publish.mutate(snapshotDraft(), {
-      onSuccess: () => {
+      onSuccess: ({ checking }) => {
         useDraftStore.getState().reset();
         close();
         toast(
-          d.editingLive
-            ? 'Đã lưu thay đổi — phần nội dung sửa sẽ được kiểm tra lại'
-            : 'Đã gửi tin — đang kiểm tra, xem ở Cá nhân › Đang đăng',
+          !d.editingLive
+            ? `${d.resubmitting ? 'Đã gửi lại' : 'Đã gửi tin'} — đang kiểm tra, xem ở Cá nhân › Đang đăng`
+            : checking
+              ? 'Đã lưu thay đổi — phần nội dung sửa sẽ được kiểm tra lại'
+              : 'Đã lưu thay đổi',
         );
       },
       onError: (e) => toast(e.message),
@@ -64,7 +66,7 @@ export default function PostPreview() {
     <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
       <StepHeader
         step={3}
-        title={d.editingLive ? 'Sửa tin' : 'Đăng tin mới'}
+        title={d.editingLive || d.resubmitting ? 'Sửa tin' : 'Đăng tin mới'}
         caption="Xem trước & đăng"
       />
       <ScrollView contentContainerStyle={styles.content}>
@@ -94,7 +96,8 @@ export default function PostPreview() {
 
         <Text style={styles.small}>
           {uploading ? 'Đang tải ảnh lên, chờ xong rồi đăng. ' : ''}
-          Tin sẽ hiển thị sau khi được duyệt. Khi đăng tin, bạn đồng ý với{' '}
+          Tin được kiểm tra tự động rồi hiển thị ngay; tin cần xem kỹ sẽ chờ người duyệt. Khi đăng
+          tin, bạn đồng ý với{' '}
           <Text style={styles.link} onPress={() => router.push('/help')}>
             Quy chế hoạt động
           </Text>{' '}
@@ -104,7 +107,7 @@ export default function PostPreview() {
 
       <View style={styles.footer}>
         <PinButton
-          label={d.editingLive ? 'Lưu thay đổi' : 'Đăng tin'}
+          label={d.editingLive ? 'Lưu thay đổi' : d.resubmitting ? 'Gửi lại' : 'Đăng tin'}
           disabled={uploading || !cover}
           loading={publish.isPending}
           onPress={submit}

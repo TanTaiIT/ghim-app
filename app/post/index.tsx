@@ -30,6 +30,8 @@ export default function PostPhotos() {
   const title = useDraftStore((s) => s.title);
   const categoryId = useDraftStore((s) => s.categoryId);
   const editingLive = useDraftStore((s) => s.editingLive);
+  const resubmitting = useDraftStore((s) => s.resubmitting);
+  const editing = editingLive || resubmitting;
   const patch = useDraftStore((s) => s.patch);
   const addPhotos = useDraftStore((s) => s.addPhotos);
   const setPhoto = useDraftStore((s) => s.setPhoto);
@@ -42,7 +44,8 @@ export default function PostPhotos() {
   // Mở từ nút "Đăng tin" trong khi form còn giữ một tin đang hiển thị (bấm Sửa rồi đóng): bắt đầu tin mới,
   // không để người đăng tưởng mình đang đăng tin mới mà thật ra đang sửa tin cũ.
   useEffect(() => {
-    if (!params.edit && useDraftStore.getState().editingLive) useDraftStore.getState().reset();
+    const s = useDraftStore.getState();
+    if (!params.edit && (s.editingLive || s.resubmitting)) s.reset();
   }, [params.edit]);
 
   // Mở từ "Đăng tin vào nhóm…": chọn sẵn nhóm đó ở bước 2 — người đăng vẫn đổi được trước khi gửi. Phụ thuộc đúng
@@ -94,9 +97,9 @@ export default function PostPhotos() {
     <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
       <StepHeader
         step={1}
-        title={editingLive ? 'Sửa tin' : 'Đăng tin mới'}
+        title={editing ? 'Sửa tin' : 'Đăng tin mới'}
         caption="Ảnh & thông tin chính"
-        onSaveDraft={editingLive ? undefined : saveDraft}
+        onSaveDraft={editing ? undefined : saveDraft}
       />
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <PhotoGrid

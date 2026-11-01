@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import type { MyListing, MyListingAction } from '@/api/client';
+import { canFix, type MyListing, type MyListingAction } from '@/api/client';
 import { GuestGate } from '@/components/GuestGate';
 import { ListingRow } from '@/components/ListingCard';
 import { MenuList, type MenuItem } from '@/components/MenuList';
@@ -51,7 +51,9 @@ export default function Profile() {
   const markSold = useMarkSold();
   const act = useMyListingAction();
   const [acting, setActing] = useState<MyListing | null>(null);
-  const [deleting, setDeleting] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState<{ id: string; kind: 'delete' | 'sold' } | null>(
+    null,
+  );
   const run = (action: MyListingAction, item: MyListing) =>
     act.mutate(
       { action, item },
@@ -121,7 +123,17 @@ export default function Profile() {
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={active.isRefetching || saved.isRefetching}
+            onRefresh={() => {
+              void active.refetch();
+              void saved.refetch();
+            }}
+          />
+        }
+      >
         <ProfileHeader
           me={me.data}
           verifiedDocument={idCheck.data?.status === 'verified' ? idCheck.data.documentType : null}
@@ -160,25 +172,30 @@ export default function Profile() {
                 key={l.id}
                 item={l}
                 onPress={() =>
-                  l.state === 'draft' ? openEditor(l.id) : router.push(`/listing/${l.id}`)
+                  l.state === 'draft' || canFix(l)
+                    ? openEditor(l.id)
+                    : l.fault === 'violation'
+                      ? router.push('/warnings')
+                      : router.push(`/listing/${l.id}`)
                 }
                 onEdit={() => openEditor(l.id)}
                 onBoost={() => setPromoting(l)}
-                onSold={() =>
-                  markSold.mutate(l.id, {
-                    onSuccess: () => toast('Đã chuyển tin sang mục Đã bán'),
-                    onError: (e) => toast(e.message),
-                  })
-                }
+                onSold={() => setConfirming({ id: l.id, kind: 'sold' })}
                 onMore={() => setActing(l)}
-                confirmDelete={
-                  deleting === l.id
+                confirm={
+                  confirming?.id === l.id
                     ? {
+                        kind: confirming.kind,
                         onConfirm: () => {
-                          setDeleting(null);
-                          run('delete', l);
+                          setConfirming(null);
+                          if (confirming.kind === 'delete') run('delete', l);
+                          else
+                            markSold.mutate(l.id, {
+                              onSuccess: () => toast('Đã chuyển tin sang mục Đã bán'),
+                              onError: (e) => toast(e.message),
+                            });
                         },
-                        onCancel: () => setDeleting(null),
+                        onCancel: () => setConfirming(null),
                       }
                     : null
                 }
@@ -201,7 +218,7 @@ export default function Profile() {
         onClose={() => setActing(null)}
         onSelect={(action) => {
           if (!acting) return;
-          if (action === 'delete') setDeleting(acting.id);
+          if (action === 'delete') setConfirming({ id: acting.id, kind: 'delete' });
           else run(action, acting);
         }}
       />

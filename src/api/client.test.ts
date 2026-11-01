@@ -5,6 +5,7 @@ import {
   IMAGE_TOO_SMALL,
   managesGroup,
   myListingActions,
+  canFix,
   NO_FILTERS,
   staleFilterField,
   unwrap,
@@ -314,14 +315,15 @@ describe('đọc tin đăng từ server', () => {
     expect(bodies).toEqual([{ homeProvinceCode: 79 }, { homeProvinceCode: null }]);
   });
 
-  it('tin của tôi: giữ trạng thái của server, bỏ tin đã gỡ; hồ sơ chưa có đánh giá', async () => {
+  it('tin của tôi: giữ trạng thái của server, kể cả tin bị gỡ kèm sai sót / vi phạm; hồ sơ chưa có đánh giá', async () => {
     const calls = serve({
       '/api/v1/me/listings': {
         items: [
           { ...wireListing, id: 'a', state: 'draft', expiresAt: null },
           { ...wireListing, id: 'b', state: 'live', expiresAt: '2026-11-01T00:00:00.000Z' },
-          { ...wireListing, id: 'c', state: 'removed' },
+          { ...wireListing, id: 'c', state: 'removed', fault: 'mistake' },
           { ...wireListing, id: 'd', state: 'sold' },
+          { ...wireListing, id: 'e', state: 'rejected', fault: 'violation' },
         ],
         nextCursor: null,
       },
@@ -329,11 +331,15 @@ describe('đọc tin đăng từ server', () => {
     });
 
     const mine = await api.getMyListings(loadLookups);
-    expect(mine.map((l) => [l.id, l.state, l.expiresAt])).toEqual([
-      ['a', 'draft', null],
-      ['b', 'live', '2026-11-01T00:00:00.000Z'],
-      ['d', 'sold', wireListing.expiresAt],
+    expect(mine.map((l) => [l.id, l.state, l.expiresAt, l.fault])).toEqual([
+      ['a', 'draft', null, null],
+      ['b', 'live', '2026-11-01T00:00:00.000Z', null],
+      ['c', 'removed', wireListing.expiresAt, 'mistake'],
+      ['d', 'sold', wireListing.expiresAt, null],
+      ['e', 'rejected', wireListing.expiresAt, 'violation'],
     ]);
+    // Thông báo bảo "sửa tin rồi gửi lại": chỉ tin sai sót mới có lối sửa, tin vi phạm khiếu nại ở cảnh cáo.
+    expect(mine.map(canFix)).toEqual([false, false, true, false, false]);
     expect(calls[0]?.url.searchParams.get('limit')).toBe('100');
 
     await expect(api.getMe()).resolves.toMatchObject({
@@ -884,7 +890,7 @@ describe('lưu và gửi tin', () => {
         badgeGroupId: 'g-huy-hieu',
       },
     });
-    expect(ref).toEqual({ id: 'l-1', version: 1 });
+    expect(ref).toEqual({ id: 'l-1', version: 1, checking: false });
     expect(calls[1]).toMatchObject({
       method: 'POST',
       path: '/api/v1/listings/l-1/submit',
@@ -915,6 +921,7 @@ const myListing = (overrides: Partial<MyListing> = {}): MyListing => ({
   version: 4,
   renewal: null,
   moveUntil: null,
+  fault: null,
   ...overrides,
 });
 
@@ -1062,6 +1069,29 @@ describe('hành động trên tin của tôi', () => {
   afterEach(() => {
     jest.restoreAllMocks();
     setHttpDeviceId(null);
+  });
+
+  it('mở form sửa: tin bị gỡ vì sai sót nạp được, tin vi phạm báo sang Cảnh cáo của tôi', async () => {
+    serve({
+      '/api/v1/listings/l-gs': {
+        ...wireListing,
+        id: 'l-gs',
+        version: 2,
+        state: 'removed',
+        fault: 'mistake',
+      },
+      '/api/v1/listings/l-vp': {
+        ...wireListing,
+        id: 'l-vp',
+        version: 2,
+        state: 'removed',
+        fault: 'violation',
+      },
+    });
+    await expect(api.getEditable('l-gs')).resolves.toMatchObject({ id: 'l-gs', state: 'removed' });
+    await expect(api.getEditable('l-vp')).rejects.toMatchObject({
+      code: 'LISTING_UNDER_VIOLATION',
+    });
   });
 
   it('chỉ hành động server nhận: rút khi chờ duyệt, gia hạn khi server mở, chuyển khi còn hạn; xoá luôn có', () => {

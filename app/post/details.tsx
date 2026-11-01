@@ -18,7 +18,10 @@ import { snapshotDraft, useDraftStore } from '@/stores/draft';
 import { C, F, R, S } from '@/theme';
 import { groupThousands, parseDigits } from '@/utils/format';
 
-/** Phường/xã là tuỳ chọn — server chỉ cần tỉnh để người mua lọc được tin. */
+/**
+ * Tin sàn chung bắt buộc tỉnh và phường — server trả 400 `REGION_REQUIRED` lúc gửi (spec listing/placement § Khu vực);
+ * tin trong nhóm được bỏ trống phường. Chặn ngay ở bước này thay vì để người đăng tới bước cuối mới biết.
+ */
 const NO_WARD = 'none';
 
 /**
@@ -40,9 +43,11 @@ export default function PostDetails() {
   const fields = template.data ?? [];
   const province = provinces.data?.find((p) => p.code === d.provinceCode);
   const ward = wards.data?.find((w) => w.code === d.wardCode);
+  const wardRequired = d.placement === 'marketplace';
   const ready =
     d.price > 0 &&
     province !== undefined &&
+    (!wardRequired || ward !== undefined) &&
     template.isSuccess &&
     !missingRequired(fields, d.attributes);
 
@@ -60,9 +65,9 @@ export default function PostDetails() {
     <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
       <StepHeader
         step={2}
-        title={d.editingLive ? 'Sửa tin' : 'Đăng tin mới'}
+        title={d.editingLive || d.resubmitting ? 'Sửa tin' : 'Đăng tin mới'}
         caption="Giá, mô tả & nơi hiển thị"
-        onSaveDraft={d.editingLive ? undefined : saveDraft}
+        onSaveDraft={d.editingLive || d.resubmitting ? undefined : saveDraft}
       />
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <View style={styles.section}>
@@ -123,7 +128,7 @@ export default function PostDetails() {
           >
             <Feather name="navigation" size={18} color={C.brand} />
             <Text style={[styles.selectText, !ward && styles.placeholder]}>
-              {ward?.name ?? 'Phường / xã (không bắt buộc)'}
+              {ward?.name ?? (wardRequired ? 'Chọn phường / xã' : 'Phường / xã (không bắt buộc)')}
             </Text>
             <Feather name="chevron-down" size={18} color={C.ink} />
           </Pressable>
@@ -159,7 +164,7 @@ export default function PostDetails() {
         visible={sheet === 'ward'}
         title={`Phường / xã · ${province?.name ?? ''}`}
         options={[
-          { value: NO_WARD, label: 'Không chọn phường / xã' },
+          ...(wardRequired ? [] : [{ value: NO_WARD, label: 'Không chọn phường / xã' }]),
           ...(wards.data ?? []).map((w) => ({ value: String(w.code), label: w.name })),
         ]}
         value={d.wardCode === null ? NO_WARD : String(d.wardCode)}

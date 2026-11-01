@@ -53,7 +53,7 @@ export default function Home() {
           </View>
           <View style={styles.promoBody}>
             <Text style={styles.promoTitle}>Đăng tin miễn phí</Text>
-            <Text style={styles.promoText}>Không giới hạn số tin trong tháng.</Text>
+            <Text style={styles.promoText}>Không mất phí — tin hợp lệ lên sàn ngay.</Text>
           </View>
           <Pressable
             accessibilityRole="button"

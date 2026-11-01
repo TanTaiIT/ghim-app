@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
-import { myListingActions, type MyListing, type MyListingAction } from '@/api/client';
+import { canFix, myListingActions, type MyListing, type MyListingAction } from '@/api/client';
 import { ENDED_TAG } from './ListingCard';
 import { Photo } from './Photo';
 import { PickerSheet } from './PickerSheet';
@@ -18,6 +18,7 @@ const LABEL: Record<Exclude<MyListing['state'], 'live'>, { label: string; tone: 
   checking: { label: 'Đang kiểm tra', tone: 'amber' },
   pending: { label: 'Chờ duyệt', tone: 'amber' },
   rejected: { label: 'Bị từ chối', tone: 'boost' },
+  removed: { label: 'Bị gỡ', tone: 'boost' },
   expired: ENDED_TAG.expired,
   sold: ENDED_TAG.sold,
 };
@@ -31,12 +32,13 @@ function status(item: MyListing): { label: string; tone: Tone } {
 }
 
 /**
- * Tin của tôi ở trang Cá nhân. Hàng nút chỉ có khi tin đang hiển thị — nháp, đang kiểm, chờ duyệt, bị từ chối
- * chưa lên sàn nên không có gì để đẩy hay đánh dấu đã bán; tin đã bán không sửa nữa. Hành động theo trạng thái
- * (rút, gia hạn, chuyển, xoá) nằm sau nút "⋯", vì tin nào cũng xoá được.
+ * Tin của tôi ở trang Cá nhân. Tin đang hiển thị có Sửa / Đẩy tin / Đã bán; tin bị từ chối hay bị gỡ vì sai sót có
+ * "Sửa tin" (thông báo bảo người đăng sửa rồi gửi lại); tin vi phạm chỉ trỏ sang Cảnh cáo của tôi. Nháp, đang kiểm,
+ * chờ duyệt chưa lên sàn nên không có gì để đẩy hay đánh dấu đã bán; tin đã bán không sửa nữa. Hành động theo trạng
+ * thái (rút, gia hạn, chuyển, xoá) nằm sau nút "⋯", vì tin nào cũng xoá được.
  *
- * Xoá không lấy lại được nên hỏi lại ngay trên thẻ (`confirmDelete`), không mở bảng thứ hai: trên iOS, Modal mở ngay
- * lúc Modal trước đang đóng thường không hiện, còn `Alert` không chạy trên web.
+ * Xoá và đánh dấu đã bán không quay lại được nên hỏi lại ngay trên thẻ (`confirm`), không mở bảng thứ hai: trên iOS,
+ * Modal mở ngay lúc Modal trước đang đóng thường không hiện, còn `Alert` không chạy trên web.
  */
 export function MyListingCard({
   item,
@@ -45,7 +47,7 @@ export function MyListingCard({
   onBoost,
   onSold,
   onMore,
-  confirmDelete,
+  confirm,
 }: {
   item: MyListing;
   onPress: () => void;
@@ -54,7 +56,7 @@ export function MyListingCard({
   onBoost: () => void;
   onSold: () => void;
   onMore: () => void;
-  confirmDelete: { onConfirm: () => void; onCancel: () => void } | null;
+  confirm: ConfirmOnCard | null;
 }) {
   const s = status(item);
   return (
@@ -116,23 +118,37 @@ export function MyListingCard({
           </Pressable>
         </View>
       )}
-      {confirmDelete && (
-        <View style={styles.confirm}>
-          <Text style={styles.confirmText}>Xoá hẳn tin này? Không khôi phục được.</Text>
+      {canFix(item) && (
+        <View style={styles.actions}>
+          <Pressable accessibilityRole="button" onPress={onEdit} style={[styles.btn, styles.edit]}>
+            <Text style={styles.editText}>Sửa tin</Text>
+          </Pressable>
+        </View>
+      )}
+      {(item.state === 'rejected' || item.state === 'removed') && item.fault === 'violation' && (
+        <Text style={styles.note}>
+          Tin vi phạm quy định — xem và khiếu nại ở Cá nhân › Cảnh cáo của tôi.
+        </Text>
+      )}
+      {confirm && (
+        <View style={[styles.confirm, confirm.kind === 'sold' && styles.confirmSold]}>
+          <Text style={styles.confirmText}>{CONFIRM[confirm.kind].question}</Text>
           <View style={styles.actions}>
             <Pressable
               accessibilityRole="button"
-              onPress={confirmDelete.onCancel}
+              onPress={confirm.onCancel}
               style={[styles.btn, styles.edit]}
             >
-              <Text style={styles.editText}>Không xoá</Text>
+              <Text style={styles.editText}>{CONFIRM[confirm.kind].no}</Text>
             </Pressable>
             <Pressable
               accessibilityRole="button"
-              onPress={confirmDelete.onConfirm}
-              style={[styles.btn, styles.danger]}
+              onPress={confirm.onConfirm}
+              style={[styles.btn, confirm.kind === 'delete' ? styles.danger : styles.sold]}
             >
-              <Text style={styles.dangerText}>Xoá tin</Text>
+              <Text style={confirm.kind === 'delete' ? styles.dangerText : styles.soldText}>
+                {CONFIRM[confirm.kind].yes}
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -140,6 +156,21 @@ export function MyListingCard({
     </View>
   );
 }
+
+export type ConfirmOnCard = {
+  kind: 'delete' | 'sold';
+  onConfirm: () => void;
+  onCancel: () => void;
+};
+
+const CONFIRM: Record<ConfirmOnCard['kind'], { question: string; yes: string; no: string }> = {
+  delete: { question: 'Xoá hẳn tin này? Không khôi phục được.', yes: 'Xoá tin', no: 'Không xoá' },
+  sold: {
+    question: 'Đánh dấu đã bán? Tin rời sàn và không sửa được nữa.',
+    yes: 'Đã bán rồi',
+    no: 'Chưa bán',
+  },
+};
 
 const ACTION: Record<MyListingAction, { label: string; note: string }> = {
   withdraw: { label: 'Rút về nháp', note: 'Tin thôi chờ duyệt; sửa xong thì gửi lại' },
@@ -212,6 +243,7 @@ const styles = StyleSheet.create({
     borderRadius: R.sm,
     backgroundColor: C.pinLight,
   },
+  confirmSold: { backgroundColor: C.sand },
   confirmText: { fontFamily: F.uiSemi, fontSize: 13, color: C.ink },
   danger: { backgroundColor: C.pin },
   dangerText: { fontFamily: F.uiBold, fontSize: 13, color: C.paperWarm },

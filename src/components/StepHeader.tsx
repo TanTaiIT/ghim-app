@@ -33,7 +33,9 @@ export function StepHeader({
   if (onSaveDraft) {
     right = (
       <Pressable accessibilityRole="button" onPress={onSaveDraft} style={styles.side}>
-        <Text style={styles.save}>Lưu nháp</Text>
+        <Text style={styles.save} numberOfLines={1}>
+          Lưu nháp
+        </Text>
       </Pressable>
     );
   }
@@ -78,8 +80,8 @@ const styles = StyleSheet.create({
   },
   row: { flexDirection: 'row', alignItems: 'center' },
   title: { flex: 1, textAlign: 'center', fontFamily: F.uiBold, fontSize: 17, color: C.ink },
-  side: { width: 88, height: 44, alignItems: 'flex-end', justifyContent: 'center' },
-  save: { paddingHorizontal: S.md, fontFamily: F.uiBold, fontSize: 14, color: C.brandTx },
+  side: { width: 96, height: 44, alignItems: 'flex-end', justifyContent: 'center' },
+  save: { paddingHorizontal: S.sm, fontFamily: F.uiBold, fontSize: 14, color: C.brandTx },
   progressBlock: { paddingHorizontal: S.sm, gap: 6 },
   progress: { flexDirection: 'row', gap: 6 },
   segment: { flex: 1, height: 5, borderRadius: R.full, backgroundColor: C.line },
