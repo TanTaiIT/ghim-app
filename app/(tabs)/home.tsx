@@ -11,6 +11,7 @@ import { ListingRow } from '@/components/ListingCard';
 import { EmptyState, Loading, SectionTitle } from '@/components/ui';
 import { useFeatured, useHomeFilters, useNearby } from '@/queries/listings';
 import { C, F, R, S } from '@/theme';
+import { toSearchParams } from '@/utils/search-params';
 
 /** Trang chủ "Khám phá" — khách xem được (TK 6); chỉ nút đăng tin mới đòi phiên. */
 export default function Home() {
@@ -21,7 +22,7 @@ export default function Home() {
   const nearby = useNearby(filters);
   const open = (id: string) => router.push(`/listing/${id}`);
 
-  // Hero xanh đậm cần chữ thanh trạng thái màu sáng; rời màn thì trả lại mặc định tối của app.
+  // Hero teal cần chữ thanh trạng thái màu sáng; rời màn thì trả lại mặc định tối của app.
   useFocusEffect(
     useCallback(() => {
       setStatusBarStyle('light');
@@ -49,7 +50,7 @@ export default function Home() {
 
         <View style={styles.promo}>
           <View style={styles.promoIcon}>
-            <Feather name="tag" size={26} color={C.price} />
+            <Feather name="tag" size={26} color={C.brand} />
           </View>
           <View style={styles.promoBody}>
             <Text style={styles.promoTitle}>Đăng tin miễn phí</Text>
@@ -67,7 +68,11 @@ export default function Home() {
         <FeaturedRail items={featured.data} onOpen={open} />
 
         <View style={styles.section}>
-          <SectionTitle title="Gần bạn" />
+          <SectionTitle
+            title="Gần bạn"
+            action="Xem tất cả"
+            onAction={() => router.push({ pathname: '/search', params: toSearchParams(filters) })}
+          />
           {nearby.isPending ? (
             <Loading />
           ) : nearby.isError ? (
@@ -96,26 +101,26 @@ const styles = StyleSheet.create({
     gap: S.md,
     padding: S.lg,
     borderRadius: R.lg,
-    backgroundColor: C.promoBg,
+    backgroundColor: C.brandWash,
     borderWidth: 1,
-    borderColor: C.promoLine,
+    borderColor: C.brandLine,
   },
   promoIcon: {
     width: 48,
     height: 48,
     borderRadius: R.sm,
-    backgroundColor: C.warnLine,
+    backgroundColor: C.brandLt,
     alignItems: 'center',
     justifyContent: 'center',
   },
   promoBody: { flex: 1, gap: S.xs },
-  promoTitle: { fontFamily: F.uiBlack, fontSize: 17, color: C.warnTx },
-  promoText: { fontFamily: F.ui, fontSize: 13, color: C.boostTx },
+  promoTitle: { fontFamily: F.uiBlack, fontSize: 17, color: C.brandDark },
+  promoText: { fontFamily: F.ui, fontSize: 13, color: C.inkSoft },
   promoCta: {
     height: 44,
     paddingHorizontal: S.lg,
     borderRadius: R.sm,
-    backgroundColor: C.price,
+    backgroundColor: C.brand,
     justifyContent: 'center',
   },
   promoCtaText: { fontFamily: F.uiBold, fontSize: 14, color: C.paperWarm },

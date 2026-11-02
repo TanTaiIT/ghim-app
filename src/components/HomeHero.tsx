@@ -4,33 +4,34 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Defs, RadialGradient, Rect, Stop, SvgXml } from 'react-native-svg';
 import { Avatar, Verified } from './Avatar';
-import { useHasUnreadNotices, useMe } from '@/queries/account';
+import { useMe } from '@/queries/account';
 import { useProvinces } from '@/queries/catalog';
 import { useHomeFilters } from '@/queries/listings';
 import { useMyGroups } from '@/queries/groups';
 import { useReadiness } from '@/queries/health';
+import { useMyWallet } from '@/queries/wallet';
 import { useIsAuthenticated } from '@/stores/auth';
 import { C, F, G, R, S } from '@/theme';
 import { toSearchParams } from '@/utils/search-params';
 
 /**
- * Header xanh của trang chủ: lời chào, khẩu hiệu trên nền tranh đồ cũ, ô tìm kiếm, nhóm của tôi. Khách
- * thấy lời mời đăng nhập thay tên.
+ * Header teal của trang chủ (theme theo ảnh mẫu Travelin, 02/11/2026): lời chào kèm số Xu, avatar, khẩu hiệu giữa
+ * tranh đồ cũ, ô tìm kiếm, nhóm của tôi; đáy có hai vệt sóng sáng. Không còn nút chuông — tab Thông báo đã có chấm báo mới. Khách thấy lời mời
+ * đăng nhập thay tên và không có dòng Xu.
  */
 export function HomeHero() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const authed = useIsAuthenticated();
   const me = useMe();
+  const wallet = useMyWallet();
   const filters = useHomeFilters();
   const provinces = useProvinces();
   const groups = useMyGroups();
-  const hasNotice = useHasUnreadNotices();
   const name = me.data?.name;
 
   return (
     <View style={[styles.hero, { paddingTop: insets.top + S.lg }]}>
-      {/* `radial-gradient(140% 100% at 100% 0%)` của bản gốc: tâm góc trên phải, bán kính theo khung. */}
       <Svg style={StyleSheet.absoluteFill} width="100%" height="100%">
         <Defs>
           <RadialGradient id="hero" cx="1" cy="0" rx="1.4" ry="1" fx="1" fy="0">
@@ -41,29 +42,41 @@ export function HomeHero() {
         </Defs>
         <Rect width="100%" height="100%" fill="url(#hero)" />
       </Svg>
-      <View pointerEvents="none" style={[styles.art, { top: insets.top + S.lg - ART.padTop }]}>
+      <View pointerEvents="none" style={[styles.wave, styles.waveLeft]} />
+      <View pointerEvents="none" style={[styles.wave, styles.waveRight]} />
+      <View
+        pointerEvents="none"
+        style={[styles.art, { top: insets.top + S.lg - ART.padTop + ART.rowShift }]}
+      >
         <SvgXml xml={HERO_ART} width={ART.width} height={ART.height} />
       </View>
 
       <View style={styles.row}>
-        <Avatar name={name ?? 'G'} size={44} tone="brand" />
         <Pressable style={styles.greeting} disabled={authed} onPress={() => router.push('/login')}>
-          <Text style={styles.hello}>Xin chào,</Text>
           <View style={styles.nameRow}>
             <Text style={styles.name} numberOfLines={1}>
-              {authed ? (name ?? ' ') : 'Đăng nhập để bắt đầu'}
+              {authed ? `Xin chào, ${name ?? ''}` : 'Xin chào!'}
             </Text>
-            {me.data?.verified && <Verified size={16} />}
+            {me.data?.verified && <Verified size={18} />}
           </View>
+          {authed ? (
+            <View style={styles.xuRow}>
+              <Feather name="disc" size={16} color={C.amber} />
+              <Text style={styles.xu}>
+                {wallet.data === undefined ? 'Ví Xu' : `${wallet.data} Xu`}
+              </Text>
+            </View>
+          ) : (
+            <Text style={styles.hello}>Đăng nhập để mua bán gần nhà</Text>
+          )}
         </Pressable>
         <Pressable
           accessibilityRole="button"
-          accessibilityLabel="Thông báo"
-          onPress={() => router.navigate('/(tabs)/notifications')}
-          style={styles.bell}
+          accessibilityLabel="Cá nhân"
+          onPress={() => router.navigate('/(tabs)/profile')}
+          style={styles.avatarRing}
         >
-          <Feather name="bell" size={22} color={C.paperWarm} />
-          {hasNotice && <View style={styles.bellDot} />}
+          <Avatar name={name ?? 'G'} size={52} tone="brand" uri={me.data?.avatarUrl} />
         </Pressable>
       </View>
 
@@ -76,7 +89,7 @@ export function HomeHero() {
         onPress={() => router.push({ pathname: '/search', params: toSearchParams(filters) })}
         style={styles.search}
       >
-        <Feather name="search" size={20} color={C.ink} />
+        <Feather name="search" size={20} color={C.muted} />
         <Text style={styles.searchText}>Bạn muốn tìm gì hôm nay?</Text>
         <View style={styles.city}>
           <Feather name="map-pin" size={14} color={C.brand} />
@@ -133,21 +146,22 @@ function DevStatus() {
 }
 
 /**
- * Tranh port nguyên từ bộ UI. Mã màu là điểm ảnh của tranh, không phải màu giao diện, nên không thuộc
- * `@/theme`. Tranh vẽ cho khung rộng 390 có đệm trên 52 của bản thiết
- * kế; dời theo đệm thật (safe-area) để ghế, quạt, điện thoại vẫn đứng cạnh khẩu hiệu và ô tìm kiếm.
+ * Tranh port nguyên từ bộ UI. Mã màu là điểm ảnh của tranh, không phải màu giao diện, nên không thuộc `@/theme`.
+ * Tranh vẽ cho khung rộng 390, đệm trên 52, hàng chào cao 44; dời theo đệm thật (safe-area) và `rowShift` (hàng chào
+ * tên lớn + dòng Xu cao hơn) để ghế không đè dòng Xu mà vẫn đứng cạnh khẩu hiệu. Quầng sáng và bóng đổi từ tông xanh
+ * lá sang teal khi app chuyển theme (02/11/2026).
  */
-const ART = { width: 390, height: 382, padTop: 52 };
+const ART = { width: 390, height: 382, padTop: 52, rowShift: 18 };
 
 const HERO_ART = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 382">
   <defs>
     <filter id="hdrShadow" x="-30%" y="-30%" width="160%" height="170%">
-      <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#022C22" flood-opacity="0.38"/>
+      <feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#012F36" flood-opacity="0.38"/>
     </filter>
     <radialGradient id="hdrGlow" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0" stop-color="#34D399" stop-opacity="0.32"/>
-      <stop offset="1" stop-color="#34D399" stop-opacity="0"/>
+      <stop offset="0" stop-color="#7DD3DC" stop-opacity="0.32"/>
+      <stop offset="1" stop-color="#7DD3DC" stop-opacity="0"/>
     </radialGradient>
     <linearGradient id="hdrChair" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FDBA4D"/><stop offset="1" stop-color="#E07B0A"/></linearGradient>
     <linearGradient id="hdrScreen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A78BFA"/><stop offset="1" stop-color="#F472B6"/></linearGradient>
@@ -179,7 +193,7 @@ const HERO_ART = `
       <path d="M8 26 H36 L32 46 Q31 50 27 50 H17 Q13 50 12 46z" fill="url(#hdrPot)"/>
       <rect x="6" y="24" width="32" height="7" rx="3" fill="#FDBA74"/>
     </g>
-    <g transform="translate(236 8) rotate(9)">
+    <g transform="translate(236 -10) rotate(9)">
       <rect x="6" y="-4" width="12" height="7" rx="2" fill="#94A3B8"/>
       <rect x="40" y="-3" width="8" height="5" rx="2" fill="#E11D48"/>
       <rect x="0" y="0" width="58" height="38" rx="8" fill="#FEF3C7"/>
@@ -241,46 +255,33 @@ const HERO_ART = `
   </g>
 </svg>`;
 
+const WAVE = 360;
+
 const styles = StyleSheet.create({
   hero: {
     paddingHorizontal: S.lg,
-    paddingBottom: S.xl - 4,
-    gap: S.lg,
+    paddingBottom: S.xxl,
+    gap: S.lg + 4,
     borderBottomLeftRadius: R.xl,
     borderBottomRightRadius: R.xl,
     overflow: 'hidden',
-    backgroundColor: C.brandDark,
+    backgroundColor: C.brand,
   },
+  wave: {
+    position: 'absolute',
+    width: WAVE,
+    height: WAVE,
+    borderRadius: WAVE / 2,
+    backgroundColor: C.brandWave,
+  },
+  waveLeft: { left: -WAVE / 3, bottom: -WAVE * 0.78, opacity: 0.55 },
+  waveRight: { right: -WAVE / 2.4, bottom: -WAVE * 0.72, opacity: 0.35 },
   art: {
     position: 'absolute',
     left: '50%',
     marginLeft: -ART.width / 2,
     width: ART.width,
     height: ART.height,
-  },
-  row: { flexDirection: 'row', alignItems: 'center', gap: S.md },
-  greeting: { flex: 1, gap: 2 },
-  hello: { fontFamily: F.ui, fontSize: 13, color: C.brandLine },
-  nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  name: { flexShrink: 1, fontFamily: F.uiBold, fontSize: 17, color: C.paperWarm },
-  bell: {
-    width: 44,
-    height: 44,
-    borderRadius: R.sm,
-    backgroundColor: C.glass,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  bellDot: {
-    position: 'absolute',
-    top: 10,
-    right: 11,
-    width: 9,
-    height: 9,
-    borderRadius: R.full,
-    borderWidth: 2,
-    borderColor: C.brandDark,
-    backgroundColor: C.dot,
   },
   slogan: { height: 108, alignItems: 'center', justifyContent: 'center' },
   sloganText: {
@@ -291,17 +292,25 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: C.paperWarm,
   },
+  row: { flexDirection: 'row', alignItems: 'center', gap: S.md, zIndex: 1 },
+  greeting: { flex: 1, gap: S.xs },
+  nameRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  name: { flexShrink: 1, fontFamily: F.uiBlack, fontSize: 26, color: C.paperWarm },
+  hello: { fontFamily: F.ui, fontSize: 14, color: C.brandLine },
+  xuRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  xu: { fontFamily: F.uiSemi, fontSize: 15, color: C.amber },
+  avatarRing: { padding: 3, borderRadius: R.full, backgroundColor: C.paperWarm },
   search: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    height: 52,
+    height: 54,
     paddingLeft: S.lg,
     paddingRight: S.sm,
-    borderRadius: R.md,
+    borderRadius: R.sm,
     backgroundColor: C.paperWarm,
   },
-  searchText: { flex: 1, fontFamily: F.ui, fontSize: 15, color: C.muted },
+  searchText: { flex: 1, fontFamily: F.ui, fontSize: 16, color: C.muted },
   city: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -309,9 +318,9 @@ const styles = StyleSheet.create({
     height: 36,
     paddingHorizontal: 10,
     borderRadius: R.sm,
-    backgroundColor: C.sand,
+    backgroundColor: C.brandWash,
   },
-  cityText: { fontFamily: F.uiSemi, fontSize: 13, color: C.ink },
+  cityText: { fontFamily: F.uiSemi, fontSize: 13, color: C.brandDark },
   groups: { gap: S.sm },
   groupsTitle: { fontFamily: F.uiSemi, fontSize: 12, color: C.brandLine },
   groupRow: { flexDirection: 'row', gap: S.sm },

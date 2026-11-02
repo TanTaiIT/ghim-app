@@ -6,7 +6,9 @@ import { useHomeFilters } from '@/queries/listings';
 import { C, F, S } from '@/theme';
 import { toSearchParams } from '@/utils/search-params';
 
-const ICON = 60;
+/** Tranh danh mục nằm trong vòng tròn teal nhạt (theme theo ảnh mẫu Travelin). */
+const CIRCLE = 64;
+const ICON = 42;
 
 const grad = (id: string, from: string, to: string, down = false) =>
   `<linearGradient id="${id}" x1="0" y1="0" x2="${down ? 0 : 1}" y2="1">` +
@@ -210,7 +212,9 @@ function Tile({ label, art, onPress }: { label: string; art: string; onPress: ()
       onPress={onPress}
       style={styles.cell}
     >
-      <SvgXml xml={art} width={ICON} height={ICON} />
+      <View style={styles.circle}>
+        <SvgXml xml={art} width={ICON} height={ICON} />
+      </View>
       <Text style={styles.label} numberOfLines={1}>
         {label}
       </Text>
@@ -220,6 +224,14 @@ function Tile({ label, art, onPress }: { label: string; art: string; onPress: ()
 
 const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', rowGap: S.md },
-  cell: { width: '25%', alignItems: 'center', gap: S.xs },
-  label: { fontFamily: F.uiMedium, fontSize: 12, color: C.ink },
+  cell: { width: '25%', alignItems: 'center', gap: S.sm },
+  circle: {
+    width: CIRCLE,
+    height: CIRCLE,
+    borderRadius: CIRCLE / 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: C.brandSoft,
+  },
+  label: { fontFamily: F.uiMedium, fontSize: 13, color: C.inkMid },
 });

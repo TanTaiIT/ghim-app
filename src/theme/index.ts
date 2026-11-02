@@ -35,25 +35,29 @@ export const C = {
   /** Nền chip phụ, ô nhập, ô thông số. */
   sand: '#F1F5F9',
 
-  // ── Thương hiệu (emerald) ───────────────────────────────────────
-  /** Nút chính, liên kết, trạng thái đang chọn. */
-  brand: '#047857',
-  /** Header, chữ trên nền mint. */
-  brandDark: '#065F46',
-  /** Chặng cuối nền hero — đủ sâu để chữ trắng đứng được; không dùng cho nút hay chữ. */
-  brandDeep: '#04503D',
-  /** Chặng đầu nền hero (góc sáng). */
-  brandHi: '#0B7A5C',
+  // ── Thương hiệu (teal — theo ảnh mẫu Travelin, 02/11/2026) ─────────────────
+  /** Nút chính, liên kết, trạng thái đang chọn, nền hero trang chủ. */
+  brand: '#007A8C',
+  /** Header, chữ trên nền nhạt của thương hiệu. */
+  brandDark: '#00697A',
+  /** Màu sâu nhất của thương hiệu; không dùng cho nút hay chữ. */
+  brandDeep: '#005563',
+  /** Góc sáng của nền hero trang chủ. */
+  brandHi: '#0A8A9C',
   /** Tích xanh, viền focus, thanh tiến trình. */
-  brandBright: '#10B981',
-  /** Nền chip đang chọn, nhãn trạng thái tốt. */
-  brandLt: '#D1FAE5',
+  brandBright: '#1FA7B9',
+  /** Nền chip đang chọn, nhãn trạng thái tốt — đủ nhạt để chữ `brandDark` đạt tương phản 4.5:1. */
+  brandLt: '#D3EAED',
   /** Nền ô đang chọn lớn, thông báo chưa đọc — nhạt hơn `brandLt` để chữ thường vẫn đọc được. */
-  brandWash: '#ECFDF5',
+  brandWash: '#EEF7F8',
   /** Viền của khối `brandWash`; cũng là chữ phụ trên nền hero. */
-  brandLine: '#A7F3D0',
-  /** Chữ và biểu tượng thương hiệu trên nền sáng. */
-  brandTx: '#047857',
+  brandLine: '#C2E2E7',
+  /** Chữ và biểu tượng thương hiệu trên nền sáng (5:1 trên nền trắng). */
+  brandTx: '#007A8C',
+  /** Nền vòng tròn danh mục ở trang chủ — đậm hơn `brandLt`, chỉ đặt tranh lên, không đặt chữ (tương phản ~4:1). */
+  brandSoft: '#ADD2D7',
+  /** Vệt sóng sáng ở đáy hero trang chủ. */
+  brandWave: '#57A5B1',
 
   // ── Giá & đẩy tin (cam) ─────────────────────────────────────────
   /** Giá tiền, nút trả giá, badge đếm tin nhắn. */
@@ -68,8 +72,6 @@ export const C = {
   warnLine: '#FED7AA',
   /** Viền thẻ đề xuất giá trong chat — đậm hơn `warnLine` vì thẻ cần nổi giữa các bong bóng. */
   offerLine: '#FDBA74',
-  promoBg: '#FFF1E3',
-  promoLine: '#FBD9B5',
   /** Chấm "có thông báo mới". */
   dot: '#F97316',
 
@@ -169,6 +171,6 @@ export const shadowBrand = Platform.select({
  * `stop-color` tại call-site là cách sinh dải lệch lúc palette đổi.
  */
 export const G = {
-  /** Nền hero trang chủ: toả tròn từ góc trên phải. */
-  hero: [C.brandHi, C.brandDark, C.brandDeep],
+  /** Nền hero trang chủ: gần như phẳng, sáng nhẹ ở góc trên phải. */
+  hero: [C.brandHi, C.brand, C.brand],
 } as const;
