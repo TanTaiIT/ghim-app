@@ -64,6 +64,7 @@ const wireMe = {
   staff: false,
   nameHidden: false,
   homeProvinceCode: null,
+  personalizedSuggestions: true,
 };
 
 /** Server giả theo đường dẫn; ghi lại URL và header phiên của từng lượt gọi. */
@@ -159,6 +160,7 @@ describe('đọc tin đăng từ server', () => {
       id: wireListing.id,
       title: 'Bàn học gỗ sồi',
       price: 300000,
+      negotiable: true,
       cover: { uri: 'https://img.test/1.jpg' },
       place: { ward: 'Phường Ba Đình', province: 'Hà Nội' },
       postedAt: '2026-10-12T17:35:01.494Z',
@@ -313,6 +315,51 @@ describe('đọc tin đăng từ server', () => {
     expect((await api.setHomeProvince(79)).homeProvinceCode).toBe(79);
     expect((await api.setHomeProvince(null)).homeProvinceCode).toBeNull();
     expect(bodies).toEqual([{ homeProvinceCode: 79 }, { homeProvinceCode: null }]);
+  });
+
+  it('gợi ý cho bạn (add-home-suggestions): gửi tỉnh và con trỏ, trang đầu không có con trỏ; giữ cờ cá nhân hoá', async () => {
+    const calls = serve({
+      '/api/v1/listings/suggestions': {
+        items: [wireListing],
+        nextCursor: '20',
+        personalized: true,
+      },
+    });
+    const first = await api.getSuggestions(79, null, loadLookups);
+    await api.getSuggestions(null, '20', loadLookups);
+
+    expect(first).toMatchObject({
+      nextCursor: '20',
+      personalized: true,
+      items: [{ id: wireListing.id, negotiable: true }],
+    });
+    expect(calls[0]?.url.searchParams.get('provinceCode')).toBe('79');
+    expect(calls[0]?.url.searchParams.has('cursor')).toBe(false);
+    expect(calls[1]?.url.searchParams.has('provinceCode')).toBe(false);
+    expect(calls[1]?.url.searchParams.get('cursor')).toBe('20');
+  });
+
+  it('gợi ý theo hoạt động: PATCH /me gửi công tắc; xoá lịch sử là DELETE trả 204', async () => {
+    const seen: { method: string; path: string; body: unknown }[] = [];
+    jest.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      const req = input as Request;
+      const text = await req.text();
+      seen.push({
+        method: req.method,
+        path: new URL(req.url).pathname,
+        body: text ? JSON.parse(text) : null,
+      });
+      return req.method === 'DELETE'
+        ? new Response(null, { status: 204 })
+        : Response.json({ success: true, data: { ...wireMe, personalizedSuggestions: false } });
+    });
+
+    expect((await api.setPersonalizedSuggestions(false)).personalizedSuggestions).toBe(false);
+    await api.clearActivityHistory();
+    expect(seen).toEqual([
+      { method: 'PATCH', path: '/api/v1/me', body: { personalizedSuggestions: false } },
+      { method: 'DELETE', path: '/api/v1/me/activity-history', body: null },
+    ]);
   });
 
   it('tin của tôi: giữ trạng thái của server, kể cả tin bị gỡ kèm sai sót / vi phạm; hồ sơ chưa có đánh giá', async () => {
@@ -904,6 +951,7 @@ const myListing = (overrides: Partial<MyListing> = {}): MyListing => ({
   id: 'l-1',
   title: 'Bàn học gỗ sồi',
   price: 300000,
+  negotiable: false,
   cover: { uri: 'https://img.test/1.jpg' },
   place: { ward: null, province: 'Hà Nội' },
   postedAt: '2026-10-12T17:00:00.000Z',

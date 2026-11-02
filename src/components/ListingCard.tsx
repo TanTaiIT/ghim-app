@@ -78,7 +78,14 @@ export function ListingTile({
         <Text style={mini ? styles.titleMini : styles.title} numberOfLines={mini ? 1 : 2}>
           {item.title}
         </Text>
-        <Price value={item.price} size={mini ? 14 : 15} />
+        <View style={styles.priceRow}>
+          <Price value={item.price} size={mini ? 14 : 15} />
+          {variant === 'grid' && item.negotiable && (
+            <Text style={styles.nego} numberOfLines={1}>
+              Thương lượng
+            </Text>
+          )}
+        </View>
         {!mini && (
           <Text style={styles.meta} numberOfLines={1}>
             {meta}
@@ -98,7 +105,7 @@ export function ListingTile({
   );
 }
 
-/** Thẻ tin dạng hàng (Gần bạn, tin trong nhóm, tin đã lưu): khu vực, lúc đăng và nhãn nhóm nếu có. */
+/** Thẻ tin dạng hàng (tin trong nhóm, tin đã lưu, hồ sơ người bán): khu vực, lúc đăng và nhãn nhóm nếu có. */
 export function ListingRow({ item, onPress }: { item: ListingCard; onPress: () => void }) {
   const ago = formatAgo(item.postedAt);
   return (
@@ -166,6 +173,8 @@ const styles = StyleSheet.create({
   title: { fontFamily: F.uiSemi, fontSize: 14, lineHeight: 18, height: 36, color: C.ink },
   titleMini: { fontFamily: F.uiSemi, fontSize: 13, color: C.ink },
   meta: { flexShrink: 1, fontFamily: F.ui, fontSize: 12, color: C.muted },
+  priceRow: { flexDirection: 'row', alignItems: 'baseline', gap: S.xs },
+  nego: { flexShrink: 1, fontFamily: F.ui, fontSize: 11, color: C.muted },
   seller: { flexDirection: 'row', alignItems: 'center', gap: S.xs },
   sellerName: { flexShrink: 1, fontFamily: F.ui, fontSize: 12, color: C.inkSoft },
   row: {

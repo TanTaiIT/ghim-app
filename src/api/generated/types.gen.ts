@@ -777,6 +777,7 @@ export type GetApiV1MeResponses = {
             showActivity: boolean;
             staff: boolean;
             homeProvinceCode: number | null;
+            personalizedSuggestions: boolean;
         };
     };
 };
@@ -789,6 +790,7 @@ export type PatchApiV1MeData = {
         phone?: string | null;
         showActivity?: boolean;
         homeProvinceCode?: number | null;
+        personalizedSuggestions?: boolean;
     };
     path?: never;
     query?: never;
@@ -844,6 +846,7 @@ export type PatchApiV1MeResponses = {
             showActivity: boolean;
             staff: boolean;
             homeProvinceCode: number | null;
+            personalizedSuggestions: boolean;
         };
     };
 };
@@ -895,6 +898,7 @@ export type DeleteApiV1MeAvatarResponses = {
             showActivity: boolean;
             staff: boolean;
             homeProvinceCode: number | null;
+            personalizedSuggestions: boolean;
         };
     };
 };
@@ -961,6 +965,7 @@ export type PutApiV1MeAvatarResponses = {
             showActivity: boolean;
             staff: boolean;
             homeProvinceCode: number | null;
+            personalizedSuggestions: boolean;
         };
     };
 };
@@ -9622,6 +9627,115 @@ export type GetApiV1ListingsFeaturedResponses = {
 };
 
 export type GetApiV1ListingsFeaturedResponse = GetApiV1ListingsFeaturedResponses[keyof GetApiV1ListingsFeaturedResponses];
+
+export type GetApiV1ListingsSuggestionsData = {
+    body?: never;
+    path?: never;
+    query?: {
+        provinceCode?: number;
+        cursor?: string;
+    };
+    url: '/api/v1/listings/suggestions';
+};
+
+export type GetApiV1ListingsSuggestionsErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type GetApiV1ListingsSuggestionsError = GetApiV1ListingsSuggestionsErrors[keyof GetApiV1ListingsSuggestionsErrors];
+
+export type GetApiV1ListingsSuggestionsResponses = {
+    /**
+     * Default Response
+     */
+    200: {
+        success: true;
+        data: {
+            items: Array<{
+                id: string;
+                ownerId: string;
+                state: 'draft' | 'checking' | 'pending' | 'live' | 'rejected' | 'sold' | 'expired' | 'removed';
+                placement: 'marketplace' | 'group_public' | 'members_only';
+                groupId: string | null;
+                title: string | null;
+                description: string | null;
+                /**
+                 * Số tiền, đơn vị đồng
+                 */
+                price: number | null;
+                negotiable: boolean;
+                delivery: boolean;
+                showPhone: boolean;
+                categoryId: string | null;
+                templateVersion: number | null;
+                attributes: {
+                    [key: string]: unknown;
+                };
+                provinceCode: number | null;
+                wardCode: number | null;
+                images: Array<{
+                    id: string;
+                    url: string;
+                }>;
+                badge: {
+                    groupId: string;
+                    name: string;
+                } | null;
+                firstLiveAt: string | null;
+                featuredUntil: string | null;
+                expiresAt: string | null;
+                createdAt: string;
+                updatedAt: string;
+            }>;
+            nextCursor: string | null;
+            personalized: boolean;
+        };
+    };
+};
+
+export type GetApiV1ListingsSuggestionsResponse = GetApiV1ListingsSuggestionsResponses[keyof GetApiV1ListingsSuggestionsResponses];
+
+export type DeleteApiV1MeActivityHistoryData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/api/v1/me/activity-history';
+};
+
+export type DeleteApiV1MeActivityHistoryErrors = {
+    /**
+     * Default Response
+     */
+    401: {
+        success: false;
+        error: {
+            code: string;
+            message: string;
+            details?: unknown;
+        };
+    };
+};
+
+export type DeleteApiV1MeActivityHistoryError = DeleteApiV1MeActivityHistoryErrors[keyof DeleteApiV1MeActivityHistoryErrors];
+
+export type DeleteApiV1MeActivityHistoryResponses = {
+    /**
+     * Default Response
+     */
+    204: null;
+};
+
+export type DeleteApiV1MeActivityHistoryResponse = DeleteApiV1MeActivityHistoryResponses[keyof DeleteApiV1MeActivityHistoryResponses];
 
 export type GetApiV1ListingsByIdSuggestionsData = {
     body?: never;
