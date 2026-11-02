@@ -83,10 +83,8 @@ export const C = {
 
   /** Lớp phủ tối (đếm ảnh trên gallery, nút xoá ảnh, nền sau bottom sheet). */
   scrim: 'rgba(15,23,42,0.72)',
-  /** Nút kính trên nền tối không có gì để làm mờ (đầu màn bàn vận hành). */
+  /** Nút kính trên nền ảnh/hero. */
   glass: 'rgba(255,255,255,0.14)',
-  /** Viền sáng một nét quanh tấm kính mờ (`Glass`) — tách kính khỏi nền cùng tông. */
-  glassEdge: 'rgba(255,255,255,0.45)',
 } as const;
 
 /** Cặp nền/chữ cho ô tròn chữ cái (avatar). Avatar lấy tông theo băm tên — backend không gửi màu. */
@@ -129,9 +127,6 @@ export const R = { xs: 6, sm: 12, md: 16, lg: 20, xl: 28, full: 999 } as const;
 
 /** Khoảng cách theo bội số 4. Số lẻ port từ CSS gốc vẫn được viết thẳng, nhưng không vào bảng này. */
 export const S = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 } as const;
-
-/** Độ mờ của kính (`Glass`, thang 1–100 của expo-blur): `light` trên ảnh, `clear` trên hình minh hoạ tối. */
-export const BLUR = { light: 45, clear: 25 } as const;
 
 /**
  * Đổ bóng cross-platform. `Platform.select` trả `T | undefined` dù nhánh `default` luôn có, nên `as
