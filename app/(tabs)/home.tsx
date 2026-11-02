@@ -1,26 +1,45 @@
 import { useCallback } from 'react';
-import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
-import Feather from '@expo/vector-icons/Feather';
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { setStatusBarStyle } from 'expo-status-bar';
 import { CategoryGrid } from '@/components/CategoryGrid';
-import { useGuardedPush } from '@/components/GuestGate';
+import { useGuarded, useGuardedPush } from '@/components/GuestGate';
 import { FeaturedRail } from '@/components/FeaturedRail';
 import { HomeHero } from '@/components/HomeHero';
-import { ListingRow } from '@/components/ListingCard';
-import { EmptyState, Loading, SectionTitle } from '@/components/ui';
-import { useFeatured, useHomeFilters, useNearby } from '@/queries/listings';
-import { C, F, R, S } from '@/theme';
-import { toSearchParams } from '@/utils/search-params';
+import { PromoCarousel } from '@/components/PromoCarousel';
+import { SuggestionGrid } from '@/components/SuggestionGrid';
+import { useToast } from '@/components/Toast';
+import { useFeatured, useHomeFilters, useSavedIds, useToggleSaved } from '@/queries/listings';
+import { useSuggestions } from '@/queries/suggestions';
+import { C, S } from '@/theme';
 
-/** Trang chủ "Khám phá" — khách xem được (TK 6); chỉ nút đăng tin mới đòi phiên. */
+/**
+ * Trang chủ "Khám phá" — khách xem được (TK 6); chỉ đăng tin, đẩy tin, lưu tin mới đòi phiên. Bố cục theo ảnh mẫu
+ * 02/11/2026: banner trượt ngang, dải nổi bật thẻ ảnh lớn, "Gợi ý cho bạn" (ghim-server add-home-suggestions).
+ */
 export default function Home() {
   const router = useRouter();
   const push = useGuardedPush();
-  const filters = useHomeFilters();
+  const guarded = useGuarded();
+  const toast = useToast();
+  const { provinceCode } = useHomeFilters();
   const featured = useFeatured(null);
-  const nearby = useNearby(filters);
+  const suggestions = useSuggestions(provinceCode);
+  const savedIds = useSavedIds();
+  const toggleSaved = useToggleSaved();
   const open = (id: string) => router.push(`/listing/${id}`);
+
+  const toggle = (id: string) =>
+    guarded(() => {
+      const saved = !(savedIds.data?.has(id) ?? false);
+      toggleSaved.mutate({ id, saved }, { onError: (e) => toast(e.message) });
+    });
+
+  // Trang kế hỏng thì lưới đã có vẫn giữ — lỗi đi một đường duy nhất là toast.
+  const more = async () => {
+    const result = await suggestions.fetchNextPage();
+    if (result.isFetchNextPageError) toast(result.error.message);
+  };
 
   // Hero teal cần chữ thanh trạng thái màu sáng; rời màn thì trả lại mặc định tối của app.
   useFocusEffect(
@@ -35,10 +54,10 @@ export default function Home() {
       style={styles.screen}
       refreshControl={
         <RefreshControl
-          refreshing={featured.isRefetching || nearby.isRefetching}
+          refreshing={featured.isRefetching || suggestions.isRefetching}
           onRefresh={() => {
             void featured.refetch();
-            void nearby.refetch();
+            void suggestions.refetch();
           }}
           tintColor={C.paperWarm}
         />
@@ -48,44 +67,42 @@ export default function Home() {
       <View style={styles.main}>
         <CategoryGrid />
 
-        <View style={styles.promo}>
-          <View style={styles.promoIcon}>
-            <Feather name="tag" size={26} color={C.brand} />
-          </View>
-          <View style={styles.promoBody}>
-            <Text style={styles.promoTitle}>Đăng tin miễn phí</Text>
-            <Text style={styles.promoText}>Không mất phí — tin hợp lệ lên sàn ngay.</Text>
-          </View>
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => push('/post')}
-            style={styles.promoCta}
-          >
-            <Text style={styles.promoCtaText}>Đăng ngay</Text>
-          </Pressable>
-        </View>
+        <PromoCarousel
+          items={[
+            {
+              key: 'post',
+              icon: 'tag',
+              title: 'Đăng tin miễn phí',
+              text: 'Không mất phí — tin hợp lệ lên sàn ngay.',
+              cta: 'Đăng ngay',
+              tone: 'brand',
+              onPress: () => push('/post'),
+            },
+            {
+              key: 'boost',
+              icon: 'zap',
+              title: 'Đẩy tin bằng Xu',
+              text: 'Đưa tin lên đầu bảng tin hay vào dải Tin nổi bật.',
+              cta: 'Tin của tôi',
+              tone: 'boost',
+              onPress: () => push('/profile'),
+            },
+          ]}
+        />
 
-        <FeaturedRail items={featured.data} onOpen={open} />
+        <FeaturedRail cover items={featured.data} onOpen={open} />
 
-        <View style={styles.section}>
-          <SectionTitle
-            title="Gần bạn"
-            action="Xem tất cả"
-            onAction={() => router.push({ pathname: '/search', params: toSearchParams(filters) })}
-          />
-          {nearby.isPending ? (
-            <Loading />
-          ) : nearby.isError ? (
-            <EmptyState icon="wifi-off" text={nearby.error.message} />
-          ) : nearby.data.length === 0 ? (
-            <EmptyState
-              icon="map-pin"
-              text="Chưa có tin nào ở khu vực của bạn. Đổi khu vực trong Cài đặt để xem nơi khác."
-            />
-          ) : (
-            nearby.data.map((l) => <ListingRow key={l.id} item={l} onPress={() => open(l.id)} />)
-          )}
-        </View>
+        <SuggestionGrid
+          pages={suggestions.data?.pages}
+          pending={suggestions.isPending}
+          error={suggestions.data ? null : suggestions.error}
+          hasMore={suggestions.hasNextPage}
+          loadingMore={suggestions.isFetchingNextPage}
+          onMore={() => void more()}
+          onOpen={open}
+          saved={savedIds.data}
+          onToggleSave={toggle}
+        />
       </View>
     </ScrollView>
   );
@@ -94,34 +111,4 @@ export default function Home() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: C.paper },
   main: { paddingHorizontal: S.lg, paddingTop: S.lg + 4, paddingBottom: S.xl, gap: S.xl },
-  section: { gap: S.md },
-  promo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: S.md,
-    padding: S.lg,
-    borderRadius: R.lg,
-    backgroundColor: C.brandWash,
-    borderWidth: 1,
-    borderColor: C.brandLine,
-  },
-  promoIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: R.sm,
-    backgroundColor: C.brandLt,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  promoBody: { flex: 1, gap: S.xs },
-  promoTitle: { fontFamily: F.uiBlack, fontSize: 17, color: C.brandDark },
-  promoText: { fontFamily: F.ui, fontSize: 13, color: C.inkSoft },
-  promoCta: {
-    height: 44,
-    paddingHorizontal: S.lg,
-    borderRadius: R.sm,
-    backgroundColor: C.brand,
-    justifyContent: 'center',
-  },
-  promoCtaText: { fontFamily: F.uiBold, fontSize: 14, color: C.paperWarm },
 });

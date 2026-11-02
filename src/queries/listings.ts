@@ -4,7 +4,6 @@ import {
   api,
   NO_FILTERS,
   staleFilterField,
-  type ListingCard,
   type ReportCategory,
   type SearchFilters,
 } from '@/api/client';
@@ -16,27 +15,13 @@ import { qk } from './keys';
 /* Phía người xem: bảng tin, tìm kiếm, chi tiết, tin đã lưu. Phía người bán nằm ở `./selling`. */
 
 /**
- * Bộ lọc của trang chủ: tỉnh/thành người dùng đã chọn (add-home-province), không thì toàn quốc. Ô tìm kiếm, ô danh mục và
- * "Xem tất cả" mở màn tìm kiếm với đúng bộ lọc này.
+ * Bộ lọc của trang chủ: tỉnh/thành người dùng đã chọn (add-home-province), không thì toàn quốc. Ô tìm kiếm và ô danh mục
+ * mở màn tìm kiếm với đúng bộ lọc này; tỉnh của nó cũng là "gần bạn" của mục gợi ý.
  */
 export function useHomeFilters(): SearchFilters {
   const me = useMe();
   return { ...NO_FILTERS, provinceCode: me.data?.homeProvinceCode ?? null };
 }
-
-/** Trang chủ đọc chung request của màn tìm kiếm cùng bộ lọc: bấm "Xem tất cả" mở ra đúng các tin vừa thấy, không tải lại. */
-function useFeed<T>(filters: SearchFilters, select: (cards: ListingCard[]) => T) {
-  const qc = useQueryClient();
-  return useQuery({
-    queryKey: qk.listings.search(filters),
-    queryFn: () => api.searchListings(filters, lookupsFrom(qc)),
-    select,
-  });
-}
-
-const everything = (cards: ListingCard[]) => cards;
-
-export const useNearby = (filters: SearchFilters) => useFeed(filters, everything);
 
 /**
  * Dải "Tin nổi bật" của bảng tin sàn chung (`categoryId` null) hay của một danh mục — người quản trị đặt (add-admin-boost).

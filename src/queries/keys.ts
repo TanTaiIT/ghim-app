@@ -30,6 +30,10 @@ export const qk = {
     saved: () => ['listings', 'saved'] as const,
     bySeller: (id: string) => ['listings', 'seller', id] as const,
     featured: (categoryId: string | null) => ['listings', 'featured', categoryId] as const,
+    /** "Gợi ý cho bạn" (add-home-suggestions) — `suggestionsAll` quét mọi tỉnh khi công tắc hay lịch sử đổi. */
+    suggestionsAll: () => ['listings', 'suggestions'] as const,
+    suggestions: (provinceCode: number | null) =>
+      ['listings', 'suggestions', provinceCode] as const,
     /** Quyền đẩy tin của người xem với một tin (add-admin-boost). */
     boost: (id: string) => ['listings', 'boost', id] as const,
     /** Gói đẩy tin cho một tin của tôi (add-promotions). */

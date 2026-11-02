@@ -6,6 +6,7 @@ import {
   deleteApiV1GroupsByGroupIdListingBadgesByListingId,
   deleteApiV1ListingsById,
   deleteApiV1Me,
+  deleteApiV1MeActivityHistory,
   deleteApiV1MeAvatar,
   deleteApiV1MeBlocksByAccountId,
   deleteApiV1MeConversationsByConversationId,
@@ -29,6 +30,7 @@ import {
   getApiV1Listings,
   getApiV1ListingsById,
   getApiV1ListingsFeatured,
+  getApiV1ListingsSuggestions,
   getApiV1ListingsByIdSuggestions,
   getApiV1Me,
   getApiV1MeBlocks,
@@ -345,19 +347,27 @@ export type ListingCard = {
   id: string;
   title: string;
   price: number;
+  negotiable: boolean;
   cover: Picture;
   place: Place;
   postedAt: string;
   boosted: boolean;
   /** null khi danh sách của server chỉ mang `ownerId` — hồ sơ người bán chỉ tải ở màn chi tiết. */
   seller: Person | null;
-  /** Nhóm mà tin được đăng vào — mục "Gần bạn" gắn nhãn để người xem biết tin đến từ đâu. */
+  /** Nhóm mà tin được đăng vào — thẻ dạng hàng gắn nhãn để người xem biết tin đến từ đâu. */
   groupName: string | null;
   /**
    * Tin đã bán hay hết hạn: chỉ mở được bằng đường link và còn trong "Đã lưu" (TK 15) — mọi danh sách khác chỉ có tin
    * đang hiển thị, nên ở đó luôn null. Không mở được hội thoại mới hay trả giá.
    */
   ended: 'sold' | 'expired' | null;
+};
+
+/** `personalized` false = "được quan tâm nhiều gần bạn": khách, chưa có lịch sử, hay đã tắt "Gợi ý theo hoạt động". */
+export type SuggestionPage = {
+  items: ListingCard[];
+  nextCursor: string | null;
+  personalized: boolean;
 };
 
 /*
@@ -761,11 +771,13 @@ export type Notice = {
 export type Me = Person & {
   email: string;
   memberSince: number;
-  /** Tỉnh/thành người dùng tự chọn, riêng tư (ghim-server add-home-province): "Gần bạn" và bộ lọc mặc định khi tìm. */
+  /** Tỉnh/thành người dùng tự chọn, riêng tư (ghim-server add-home-province): phần "gần bạn" của mục gợi ý và bộ lọc mặc định khi tìm. */
   homeProvinceCode: number | null;
   rating: number | null;
   /** Hiện trạng thái hoạt động trong chat — tắt là hai chiều: mình cũng không thấy của ai. */
   showActivity: boolean;
+  /** "Gợi ý theo hoạt động": tắt thì server thôi ghi lịch sử xem / tìm và "Gợi ý cho bạn" trả như cho khách. */
+  personalizedSuggestions: boolean;
   avatarUrl: string | null;
   /** Chưa xác nhận thì đăng nhập được nhưng đăng tin, tải ảnh, nhắn tin, vào nhóm đều bị server chặn. */
   emailVerified: boolean;
@@ -884,6 +896,7 @@ function toCard(w: WireListing, lookups: Lookups): ListingCard {
     id: w.id,
     title: w.title ?? '',
     price: w.price ?? 0,
+    negotiable: w.negotiable,
     cover: w.images[0] ? toPicture(w.images[0]) : { uri: '' },
     place: lookups.place(w.provinceCode, w.wardCode),
     postedAt: w.firstLiveAt ?? w.createdAt,
@@ -943,6 +956,7 @@ function toMe(u: WireMe): Me {
     homeProvinceCode: u.homeProvinceCode,
     rating: null,
     showActivity: u.showActivity,
+    personalizedSuggestions: u.personalizedSuggestions,
     avatarUrl: u.avatarUrl,
     emailVerified: u.emailVerified,
     isMaster: u.role === 'master',
@@ -1450,6 +1464,27 @@ export const api = {
     return toCards(items, load);
   },
 
+  /**
+   * "Gợi ý cho bạn" (ghim-server add-home-suggestions), 20 tin mỗi trang. Con trỏ là chuỗi kín của server; tỉnh chỉ dùng
+   * cho phần "được quan tâm nhiều gần bạn".
+   */
+  getSuggestions: async (
+    provinceCode: number | null,
+    cursor: string | null,
+    load: LoadLookups,
+  ): Promise<SuggestionPage> => {
+    const page = await unwrap(
+      getApiV1ListingsSuggestions({
+        query: { provinceCode: provinceCode ?? undefined, cursor: cursor ?? undefined },
+      }),
+    );
+    return {
+      items: await toCards(page.items, load),
+      nextCursor: page.nextCursor,
+      personalized: page.personalized,
+    };
+  },
+
   getListing: async (id: string, load: LoadLookups): Promise<ListingDetail> => {
     const w = await unwrap(getApiV1ListingsById({ path: { id } }));
     const [lookups, owner, template] = await Promise.all([
@@ -1563,6 +1598,13 @@ export const api = {
 
   setShowActivity: async (showActivity: boolean): Promise<Me> =>
     toMe(await unwrap(patchApiV1Me({ body: { showActivity } }))),
+
+  /** Tắt không xoá lịch sử đã có — xoá là `clearActivityHistory`. */
+  setPersonalizedSuggestions: async (personalizedSuggestions: boolean): Promise<Me> =>
+    toMe(await unwrap(patchApiV1Me({ body: { personalizedSuggestions } }))),
+
+  /** Chỉ lịch sử xem và tìm; tin đã lưu, tìm kiếm đã lưu, hội thoại giữ nguyên. */
+  clearActivityHistory: (): Promise<void> => unwrapEmpty(deleteApiV1MeActivityHistory()),
 
   /** `null` = bỏ chọn, trang chủ về toàn quốc. */
   setHomeProvince: async (homeProvinceCode: number | null): Promise<Me> =>

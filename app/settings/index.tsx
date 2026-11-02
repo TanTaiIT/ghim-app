@@ -18,9 +18,13 @@ import {
 import { useMe, useSetHomeProvince } from '@/queries/account';
 import { useProvinces } from '@/queries/catalog';
 import { useDeleteAccount, useSetAvatar } from '@/queries/settings';
+import { useClearActivityHistory, useSetPersonalizedSuggestions } from '@/queries/suggestions';
 import { C, S } from '@/theme';
 
-/** Cài đặt tài khoản: ảnh đại diện, khu vực của tôi, lối vào mật khẩu / thiết bị / người đã chặn, xoá tài khoản. */
+/**
+ * Cài đặt tài khoản: ảnh đại diện, khu vực của tôi, gợi ý theo hoạt động và lịch sử của nó, lối vào mật khẩu / thiết bị /
+ * người đã chặn, xoá tài khoản.
+ */
 export default function Settings() {
   const router = useRouter();
   const toast = useToast();
@@ -31,6 +35,9 @@ export default function Settings() {
   const provinces = useProvinces();
   const setHome = useSetHomeProvince();
   const [pickingHome, setPickingHome] = useState(false);
+  const personalize = useSetPersonalizedSuggestions();
+  const clearHistory = useClearActivityHistory();
+  const [clearing, setClearing] = useState(false);
 
   /** Khung vuông vì ảnh hiện trong vòng tròn; picker trả bản gốc, nén một lần duy nhất ở `api.setAvatar`. */
   const pick = async () => {
@@ -97,6 +104,19 @@ export default function Settings() {
               onPress: () => setPickingHome(true),
             },
             {
+              icon: 'compass',
+              label: `Gợi ý theo hoạt động: ${me.data.personalizedSuggestions ? 'Bật' : 'Tắt'}`,
+              onPress: () =>
+                personalize.mutate(!me.data.personalizedSuggestions, {
+                  onError: (e) => toast(e.message),
+                }),
+            },
+            {
+              icon: 'trash-2',
+              label: 'Xoá lịch sử xem và tìm kiếm',
+              onPress: () => setClearing(true),
+            },
+            {
               icon: 'lock',
               label: 'Đổi mật khẩu',
               onPress: () => router.push('/settings/password'),
@@ -133,7 +153,7 @@ export default function Settings() {
           {
             value: 'all',
             label: 'Toàn quốc',
-            note: 'Chỉ bạn thấy khu vực đã chọn — dùng cho mục Gần bạn',
+            note: 'Chỉ bạn thấy khu vực đã chọn — dùng cho tin gần bạn ở trang chủ',
           },
           ...(provinces.data ?? []).map((p) => ({ value: String(p.code), label: p.name })),
         ]}
@@ -145,6 +165,19 @@ export default function Settings() {
           })
         }
         onClose={() => setPickingHome(false)}
+      />
+      <ConfirmSheet
+        visible={clearing}
+        title="Xoá lịch sử xem và tìm kiếm?"
+        confirmLabel="Xoá lịch sử"
+        note="Gợi ý cho bạn sẽ bắt đầu lại từ đầu. Tin đã lưu, tìm kiếm đã lưu và tin nhắn vẫn giữ nguyên"
+        onClose={() => setClearing(false)}
+        onConfirm={() =>
+          clearHistory.mutate(undefined, {
+            onSuccess: () => toast('Đã xoá lịch sử xem và tìm kiếm'),
+            onError: (e) => toast(e.message),
+          })
+        }
       />
       <ConfirmSheet
         visible={confirming}
