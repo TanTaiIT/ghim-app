@@ -17,6 +17,7 @@ SoT cho: theme token, `StyleSheet.create`, style động, spacing.
 | `S`       | Khoảng cách bội số 4: `xs` 4 → `xxl` 32                                                                                                                          |
 | `shadow*` | Đổ bóng cross-platform (`Platform.select`); `shadowBrand` cho nút Đăng tin nổi                                                                                   |
 | `G`       | Chặng màu gradient, vẽ bằng `react-native-svg` (`<RadialGradient>` của hero trang chủ)                                                                           |
+| `BLUR`    | Độ mờ của kính (`Glass`, thang 1–100 của expo-blur): `light` trên ảnh, `clear` trên hình minh hoạ tối                                                            |
 
 Quy tắc:
 
@@ -29,6 +30,10 @@ Quy tắc:
 - Gradient **luôn** `G.*`. Chặng tắt dần là alpha-0 của chính màu đó, **không** `'transparent'` — Android nội suy
   qua sắc đen.
 - Đổ bóng **luôn** `...shadow` / `...shadowLift`. Không tự viết `shadowColor + elevation` trừ khi bóng có màu riêng.
+- Kính mờ **luôn** qua `Glass` / `GlassIconButton` (`src/components/Glass.tsx`), không dùng `BlurView` trực tiếp. Phần
+  nằm sau kính bọc trong `GlassBackdrop` và truyền ref làm `target` — Android (expo-blur 57) chỉ làm mờ được nội dung
+  trong vùng đó. Chỉ bọc đúng phần sau kính (ảnh, hình minh hoạ): vùng này được ghi lại mỗi khung hình, nên không bọc
+  cả màn hay cả app (vì thế toast vẫn là nền đặc). Nền tối phẳng không có gì để làm mờ thì dùng `C.glass`.
 
 ---
 

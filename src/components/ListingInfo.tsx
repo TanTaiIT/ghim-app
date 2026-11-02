@@ -1,9 +1,11 @@
+import type { RefObject } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import { CONDITION_LABEL, type ListingCard, type ListingDetail, type Seller } from '@/api/client';
 import { Avatar, Verified } from './Avatar';
+import { GlassIconButton } from './Glass';
 import { ListingTile } from './ListingCard';
-import { IconButton, OutlineButton, Price, Tag, type IconName } from './ui';
+import { OutlineButton, Price, Tag, type IconName } from './ui';
 import { C, F, R, S } from '@/theme';
 import { formatAgo, formatPlace } from '@/utils/format';
 
@@ -115,9 +117,13 @@ export function SimilarRail({
   );
 }
 
-/** Nút nổi trên ảnh: quay lại, lưu, chia sẻ, báo cáo. Lưu và báo cáo cần đăng nhập — route bọc bằng `guarded`. */
+/**
+ * Nút kính nổi trên ảnh: quay lại, lưu, chia sẻ, báo cáo. Lưu và báo cáo cần đăng nhập — route bọc bằng `guarded`.
+ * `backdrop` là vùng ảnh + nội dung cuộn phía sau mà kính làm mờ (`GlassBackdrop` của route).
+ */
 export function ListingTopBar({
   top,
+  backdrop,
   saved,
   onBack,
   onToggleSaved,
@@ -125,6 +131,7 @@ export function ListingTopBar({
   onReport,
 }: {
   top: number;
+  backdrop: RefObject<View | null>;
   saved: boolean;
   onBack: () => void;
   onToggleSaved: () => void;
@@ -133,17 +140,17 @@ export function ListingTopBar({
 }) {
   return (
     <View style={[styles.topBar, { top }]}>
-      <IconButton variant="float" icon="chevron-left" label="Quay lại" onPress={onBack} />
+      <GlassIconButton target={backdrop} icon="chevron-left" label="Quay lại" onPress={onBack} />
       <View style={styles.topActions}>
-        <IconButton
-          variant="float"
+        <GlassIconButton
+          target={backdrop}
           icon="heart"
           label={saved ? 'Bỏ lưu tin' : 'Lưu tin'}
           color={saved ? C.price : C.ink}
           onPress={onToggleSaved}
         />
-        <IconButton variant="float" icon="share" label="Chia sẻ" onPress={onShare} />
-        <IconButton variant="float" icon="flag" label="Báo cáo tin" onPress={onReport} />
+        <GlassIconButton target={backdrop} icon="share" label="Chia sẻ" onPress={onShare} />
+        <GlassIconButton target={backdrop} icon="flag" label="Báo cáo tin" onPress={onReport} />
       </View>
     </View>
   );

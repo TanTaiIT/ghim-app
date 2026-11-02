@@ -1,9 +1,9 @@
-import type { ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import { SvgXml } from 'react-native-svg';
 import { GROUP_MODE_LABEL, isPublicGroup, type Group, type GroupState } from '@/api/client';
-import { IconButton } from './ui';
+import { GlassBackdrop, GlassIconButton } from './Glass';
 import { C, F, R, S, TONE } from '@/theme';
 import { groupThousands } from '@/utils/format';
 
@@ -34,24 +34,40 @@ export function GroupHeader({
   onManage?: () => void;
   children: ReactNode;
 }) {
+  const backdrop = useRef<View>(null);
   const note = g.visible ? STATE_NOTE[g.state] : undefined;
   const reason = g.visible && g.state === 'locked' ? g.lockedReason : null;
   return (
     <>
       <View style={styles.cover}>
-        <SvgXml xml={COVER_ART} width="100%" height="100%" />
+        <GlassBackdrop ref={backdrop} style={StyleSheet.absoluteFill}>
+          <SvgXml xml={COVER_ART} width="100%" height="100%" />
+        </GlassBackdrop>
         <View style={[styles.coverBar, { top: topInset + S.xs }]}>
-          <IconButton variant="glass" icon="chevron-left" label="Quay lại" onPress={onBack} />
+          <GlassIconButton
+            target={backdrop}
+            tone="clear"
+            icon="chevron-left"
+            label="Quay lại"
+            onPress={onBack}
+          />
           <View style={styles.coverActions}>
             {onManage && (
-              <IconButton
-                variant="glass"
+              <GlassIconButton
+                target={backdrop}
+                tone="clear"
                 icon="settings"
                 label="Quản trị nhóm"
                 onPress={onManage}
               />
             )}
-            <IconButton variant="glass" icon="share" label="Chia sẻ nhóm" onPress={onShare} />
+            <GlassIconButton
+              target={backdrop}
+              tone="clear"
+              icon="share"
+              label="Chia sẻ nhóm"
+              onPress={onShare}
+            />
           </View>
         </View>
       </View>

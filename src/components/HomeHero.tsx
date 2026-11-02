@@ -1,9 +1,11 @@
+import { useRef } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Defs, RadialGradient, Rect, Stop, SvgXml } from 'react-native-svg';
 import { Avatar, Verified } from './Avatar';
+import { Glass, GlassBackdrop } from './Glass';
 import { useHasUnreadNotices, useMe } from '@/queries/account';
 import { useProvinces } from '@/queries/catalog';
 import { useHomeFilters } from '@/queries/listings';
@@ -20,6 +22,7 @@ import { toSearchParams } from '@/utils/search-params';
 export function HomeHero() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const backdrop = useRef<View>(null);
   const authed = useIsAuthenticated();
   const me = useMe();
   const filters = useHomeFilters();
@@ -31,19 +34,21 @@ export function HomeHero() {
   return (
     <View style={[styles.hero, { paddingTop: insets.top + S.lg }]}>
       {/* `radial-gradient(140% 100% at 100% 0%)` của bản gốc: tâm góc trên phải, bán kính theo khung. */}
-      <Svg style={StyleSheet.absoluteFill} width="100%" height="100%">
-        <Defs>
-          <RadialGradient id="hero" cx="1" cy="0" rx="1.4" ry="1" fx="1" fy="0">
-            <Stop offset="0" stopColor={G.hero[0]} />
-            <Stop offset="0.5" stopColor={G.hero[1]} />
-            <Stop offset="1" stopColor={G.hero[2]} />
-          </RadialGradient>
-        </Defs>
-        <Rect width="100%" height="100%" fill="url(#hero)" />
-      </Svg>
-      <View pointerEvents="none" style={[styles.art, { top: insets.top + S.lg - ART.padTop }]}>
-        <SvgXml xml={HERO_ART} width={ART.width} height={ART.height} />
-      </View>
+      <GlassBackdrop ref={backdrop} style={StyleSheet.absoluteFill}>
+        <Svg style={StyleSheet.absoluteFill} width="100%" height="100%">
+          <Defs>
+            <RadialGradient id="hero" cx="1" cy="0" rx="1.4" ry="1" fx="1" fy="0">
+              <Stop offset="0" stopColor={G.hero[0]} />
+              <Stop offset="0.5" stopColor={G.hero[1]} />
+              <Stop offset="1" stopColor={G.hero[2]} />
+            </RadialGradient>
+          </Defs>
+          <Rect width="100%" height="100%" fill="url(#hero)" />
+        </Svg>
+        <View pointerEvents="none" style={[styles.art, { top: insets.top + S.lg - ART.padTop }]}>
+          <SvgXml xml={HERO_ART} width={ART.width} height={ART.height} />
+        </View>
+      </GlassBackdrop>
 
       <View style={styles.row}>
         <Avatar name={name ?? 'G'} size={44} tone="brand" />
@@ -62,6 +67,7 @@ export function HomeHero() {
           onPress={() => router.navigate('/(tabs)/notifications')}
           style={styles.bell}
         >
+          <Glass target={backdrop} tone="clear" style={StyleSheet.absoluteFill} />
           <Feather name="bell" size={22} color={C.paperWarm} />
           {hasNotice && <View style={styles.bellDot} />}
         </Pressable>
@@ -267,7 +273,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: R.sm,
-    backgroundColor: C.glass,
+    overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -119,8 +119,8 @@ export function GhostButton({ label, onPress }: { label: string; onPress: () => 
 }
 
 /**
- * Nút chỉ có icon, vùng chạm 44. `float` = tròn trắng có bóng (trên ảnh), `glass` = kính mờ (trên nền
- * tối), `outline` = viền mảnh (trên thẻ trắng).
+ * Nút chỉ có icon, vùng chạm 44. `glass` = lớp trong mờ trên nền tối phẳng (không có gì để làm mờ — trên ảnh
+ * hay hình minh hoạ dùng `GlassIconButton`), `outline` = viền mảnh (trên thẻ trắng).
  */
 export function IconButton({
   icon,
@@ -132,7 +132,7 @@ export function IconButton({
   icon: IconName;
   label: string;
   onPress: () => void;
-  variant?: 'plain' | 'float' | 'glass' | 'outline';
+  variant?: 'plain' | 'glass' | 'outline';
   color?: string;
 }) {
   const tint = color ?? (variant === 'glass' ? C.paperWarm : C.ink);
