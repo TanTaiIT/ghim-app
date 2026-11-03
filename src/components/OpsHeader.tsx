@@ -3,12 +3,13 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Svg, { Defs, RadialGradient, Rect, Stop } from 'react-native-svg';
 import { IconButton } from './ui';
-import { C, F, R, S } from '@/theme';
+import { C, F, G, R, S } from '@/theme';
 
 /*
- * Header tối của bàn vận hành (bộ UI "Chợ Đồ Cũ Admin"). Nền tối cố ý khác hẳn app người dùng: người duyệt bấm nhầm
- * nút "Gỡ tin" vì tưởng mình đang ở màn xem tin là lỗi đắt nhất ở khu này.
+ * Header của bàn vận hành, theo theme teal của app (03/11/2026). Nền teal sâu hơn hero trang chủ cộng nhãn vai giữ cho
+ * người duyệt biết mình đang ở khu quản trị — xem `G.ops`.
  */
 
 /** Quay lại trong khu quản trị; mở thẳng bằng đường dẫn thì về Tổng quan của khu, không văng ra app người dùng. */
@@ -31,13 +32,23 @@ export function OpsHeader({
   role?: string;
   back?: boolean;
   right?: ReactNode;
-  /** Ô thống kê, ô lọc nằm trong phần nền tối. */
+  /** Ô thống kê, ô lọc nằm trong phần nền teal. */
   children?: ReactNode;
 }) {
   const insets = useSafeAreaInsets();
   const goBack = useOpsBack();
   return (
     <View style={[styles.header, { paddingTop: insets.top + S.md }]}>
+      <Svg style={StyleSheet.absoluteFill} width="100%" height="100%">
+        <Defs>
+          <RadialGradient id="ops" cx="1" cy="0" rx="1.4" ry="1" fx="1" fy="0">
+            <Stop offset="0" stopColor={G.ops[0]} />
+            <Stop offset="0.5" stopColor={G.ops[1]} />
+            <Stop offset="1" stopColor={G.ops[2]} />
+          </RadialGradient>
+        </Defs>
+        <Rect width="100%" height="100%" fill="url(#ops)" />
+      </Svg>
       <View style={styles.row}>
         {back && (
           <IconButton icon="chevron-left" label="Quay lại" variant="glass" onPress={goBack} />
@@ -68,7 +79,7 @@ export type OpsStat = {
   onPress?: () => void;
 };
 
-/** Ba ô số trên nền tối. Ô có `onPress` mở thẳng hàng chờ tương ứng. */
+/** Ba ô số trên nền teal; số nhấn màu vàng như số Xu ở trang chủ. Ô có `onPress` mở thẳng hàng chờ tương ứng. */
 export function OpsStats({ items }: { items: OpsStat[] }) {
   return (
     <View style={styles.stats}>
@@ -80,7 +91,7 @@ export function OpsStats({ items }: { items: OpsStat[] }) {
           onPress={s.onPress}
           style={({ pressed }) => [styles.stat, pressed && { opacity: 0.7 }]}
         >
-          <Text style={[styles.statValue, s.accent && { color: C.brandBright }]}>{s.value}</Text>
+          <Text style={[styles.statValue, s.accent && { color: C.amber }]}>{s.value}</Text>
           <Text style={styles.statLabel} numberOfLines={1}>
             {s.label}
           </Text>
@@ -95,9 +106,10 @@ const styles = StyleSheet.create({
     gap: S.lg,
     paddingHorizontal: S.lg,
     paddingBottom: S.xl,
-    backgroundColor: C.ink,
+    backgroundColor: C.brandDeep,
     borderBottomLeftRadius: R.xl,
     borderBottomRightRadius: R.xl,
+    overflow: 'hidden',
   },
   row: { flexDirection: 'row', alignItems: 'center', gap: S.md },
   titles: { flex: 1, minWidth: 0, gap: 2 },
@@ -114,7 +126,7 @@ const styles = StyleSheet.create({
   },
   roleText: { fontFamily: F.uiBold, fontSize: 12, color: C.brandDark },
   title: { fontFamily: F.uiBlack, fontSize: 24, lineHeight: 30, color: C.paperWarm },
-  sub: { fontFamily: F.ui, fontSize: 13, lineHeight: 18, color: C.lineStrong },
+  sub: { fontFamily: F.ui, fontSize: 13, lineHeight: 18, color: C.brandLine },
   stats: { flexDirection: 'row', gap: S.sm },
   stat: {
     flex: 1,
@@ -122,8 +134,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: S.md,
     borderRadius: R.md,
-    backgroundColor: C.inkRaised,
+    backgroundColor: C.glass,
   },
   statValue: { fontFamily: F.uiBlack, fontSize: 20, lineHeight: 24, color: C.paperWarm },
-  statLabel: { fontFamily: F.uiMedium, fontSize: 12, color: C.lineStrong },
+  statLabel: { fontFamily: F.uiMedium, fontSize: 12, color: C.brandLine },
 });

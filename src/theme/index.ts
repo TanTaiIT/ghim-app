@@ -10,10 +10,8 @@ import { Platform } from 'react-native';
  */
 export const C = {
   // ── Chữ ─────────────────────────────────────────────────────────
-  /** Chữ chính; cũng là nền header của bàn vận hành — tối để người duyệt luôn biết mình đang ở khu quản trị. */
+  /** Chữ chính. */
   ink: '#0F172A',
-  /** Ô nổi trên nền `ink` (ô thống kê, ô tìm kiếm của header bàn vận hành). */
-  inkRaised: '#1E293B',
   /** Đoạn văn dài (mô tả, nội dung thông báo) — đậm hơn chữ phụ để đọc lâu không mỏi. */
   inkMid: '#334155',
   /** Chữ phụ, nhãn, chú thích. */
@@ -40,7 +38,7 @@ export const C = {
   brand: '#007A8C',
   /** Header, chữ trên nền nhạt của thương hiệu. */
   brandDark: '#00697A',
-  /** Màu sâu nhất của thương hiệu; không dùng cho nút hay chữ. */
+  /** Màu sâu nhất của thương hiệu, nền header bàn vận hành; không dùng cho nút hay chữ. */
   brandDeep: '#005563',
   /** Góc sáng của nền hero trang chủ. */
   brandHi: '#0A8A9C',
@@ -85,7 +83,7 @@ export const C = {
 
   /** Lớp phủ tối (đếm ảnh trên gallery, nút xoá ảnh, nền sau bottom sheet). */
   scrim: 'rgba(15,23,42,0.72)',
-  /** Nút kính trên nền ảnh/hero. */
+  /** Nút kính trên nền ảnh/hero; cũng là ô thống kê trên header bàn vận hành. */
   glass: 'rgba(255,255,255,0.14)',
 } as const;
 
@@ -173,4 +171,9 @@ export const shadowBrand = Platform.select({
 export const G = {
   /** Nền hero trang chủ: gần như phẳng, sáng nhẹ ở góc trên phải. */
   hero: [C.brandHi, C.brand, C.brand],
+  /**
+   * Nền header bàn vận hành: cùng họ teal nhưng sâu hơn hero trang chủ — người duyệt vẫn nhận ra mình đang ở khu quản
+   * trị (bấm "Gỡ tin" vì tưởng đang xem tin là lỗi đắt nhất ở đó).
+   */
+  ops: [C.brandDark, C.brandDeep, C.brandDeep],
 } as const;

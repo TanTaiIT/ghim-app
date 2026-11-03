@@ -8,7 +8,7 @@ import { ApiError } from '@/api/http';
 import { C } from '@/theme';
 
 /**
- * Bàn vận hành (master, staff) — khu riêng trong app, header tối, thanh tab riêng. Ai được vào là `/me` (master, hoặc
+ * Bàn vận hành (master, staff) — khu riêng trong app, header teal sâu, thanh tab riêng. Ai được vào là `/me` (master, hoặc
  * staff có quyền đang hiệu lực), đọc lại mỗi lần vào. Hàng chờ "mọi việc" vẫn được hỏi để nói đúng những lỗi chặn cả
  * khu (đòi xác thực hai lớp, mất mạng); riêng 403 của nó không chặn: staff chỉ có việc toàn hệ thống (hỗ trợ, báo cáo
  * về người, giấy tờ) không có hàng duyệt tin, server trả 403 cho hàng chờ mà các mục kia họ vẫn làm được.
