@@ -158,7 +158,6 @@ describe('ví Xu của một người (add-wallet)', () => {
       durationDays: 3,
       cooldownHours: 24,
       price: 2,
-      minTier: 'T1',
       scope: 'both',
       active: false,
       sort: 2,
@@ -178,7 +177,6 @@ describe('ví Xu của một người (add-wallet)', () => {
       durationDays: 14,
       cooldownHours: 24,
       price: 6,
-      minTier: 'T1',
       scope: 'both',
     });
     const patched = await adminApi.updateProduct('featured_3d', { price: 3 });
@@ -198,7 +196,6 @@ describe('ví Xu của một người (add-wallet)', () => {
           durationDays: 14,
           cooldownHours: 24,
           price: 6,
-          minTier: 'T1',
           scope: 'both',
         },
       },

@@ -28,7 +28,6 @@ export type OwnerProduct = {
   effect: PromotionEffect;
   durationDays: number | null;
   price: number;
-  minTier: string;
   purchasable: boolean;
   /** Vì sao chưa mua được; null = mua được. Server không ẩn gói (TK 4 nguyên tắc 8). */
   reason: string | null;
@@ -73,7 +72,6 @@ export const promotionApi = {
         effect: p.effect,
         durationDays: p.durationDays,
         price: p.price,
-        minTier: p.minTier,
         purchasable: p.purchasable,
         reason: p.reason,
         retryAt: p.retryAt,

@@ -17605,7 +17605,6 @@ export type GetApiV1ListingsByIdPromotionsResponses = {
                 effect: 'rank_to_top' | 'featured';
                 durationDays: number | null;
                 price: number;
-                minTier: 'T0' | 'T1' | 'T2' | 'T3';
                 purchasable: boolean;
                 reason: string | null;
                 retryAt: string | null;
@@ -17782,7 +17781,6 @@ export type GetApiV1OpsPromotionsProductsResponses = {
             durationDays: number | null;
             cooldownHours: number;
             price: number;
-            minTier: 'T0' | 'T1' | 'T2' | 'T3';
             scope: 'marketplace' | 'group' | 'both';
             active: boolean;
             sort: number;
@@ -17803,7 +17801,6 @@ export type PostApiV1OpsPromotionsProductsData = {
         durationDays?: number | null;
         cooldownHours: number;
         price: number;
-        minTier: 'T0' | 'T1' | 'T2' | 'T3';
         scope: 'marketplace' | 'group' | 'both';
         sort?: number;
     };
@@ -17887,7 +17884,6 @@ export type PostApiV1OpsPromotionsProductsResponses = {
             durationDays: number | null;
             cooldownHours: number;
             price: number;
-            minTier: 'T0' | 'T1' | 'T2' | 'T3';
             scope: 'marketplace' | 'group' | 'both';
             active: boolean;
             sort: number;
@@ -17906,7 +17902,6 @@ export type PatchApiV1OpsPromotionsProductsByCodeData = {
         durationDays?: number | null;
         cooldownHours?: number;
         price?: number;
-        minTier?: 'T0' | 'T1' | 'T2' | 'T3';
         scope?: 'marketplace' | 'group' | 'both';
         sort?: number;
         active?: boolean;
@@ -17982,7 +17977,6 @@ export type PatchApiV1OpsPromotionsProductsByCodeResponses = {
             durationDays: number | null;
             cooldownHours: number;
             price: number;
-            minTier: 'T0' | 'T1' | 'T2' | 'T3';
             scope: 'marketplace' | 'group' | 'both';
             active: boolean;
             sort: number;
