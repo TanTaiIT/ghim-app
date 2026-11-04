@@ -14,8 +14,8 @@ export const ENDED_TAG = {
 } as const;
 
 /**
- * Thẻ tin dạng ô cho dải ngang và lưới: `featured` (dải Tin nổi bật, luôn mang nhãn), `grid` (bảng tin nhóm chọn kiểu
- * lưới), `mini` (Tin tương tự — chỉ ảnh, tên, giá). Danh sách dọc dùng `ListingRow`.
+ * Thẻ tin dạng ô: `grid` (bảng tin nhóm chọn kiểu lưới), `mini` (Tin tương tự — chỉ ảnh, tên, giá). Danh sách dọc và
+ * dải Tin nổi bật dùng `ListingRow`.
  */
 export function ListingTile({
   item,
@@ -24,29 +24,22 @@ export function ListingTile({
 }: {
   item: ListingCard;
   onPress: () => void;
-  variant?: 'featured' | 'grid' | 'mini';
+  variant?: 'grid' | 'mini';
 }) {
-  const featured = variant === 'featured';
   const mini = variant === 'mini';
-  const meta = featured
-    ? formatPlace(item.place)
-    : `${formatPlace(item.place, true)} · ${formatAgo(item.postedAt, undefined, true)}`;
   return (
     <Pressable
       accessibilityRole="link"
       onPress={onPress}
       style={({ pressed }) => [
         styles.tile,
-        featured ? styles.featured : mini ? styles.mini : styles.grid,
+        mini ? styles.mini : styles.grid,
         { opacity: pressed ? 0.85 : 1 },
       ]}
     >
       <View>
-        <Photo
-          picture={item.cover}
-          style={featured ? styles.photoFeatured : mini ? styles.photoMini : styles.photoGrid}
-        />
-        {(featured || (item.boosted && !mini)) && (
+        <Photo picture={item.cover} style={mini ? styles.photoMini : styles.photoGrid} />
+        {item.boosted && !mini && (
           <View style={styles.badge}>
             <Tag label="Nổi bật" tone="boost" icon="zap" />
           </View>
@@ -66,7 +59,7 @@ export function ListingTile({
         </View>
         {!mini && (
           <Text style={styles.meta} numberOfLines={1}>
-            {meta}
+            {formatPlace(item.place, true)} · {formatAgo(item.postedAt, undefined, true)}
           </Text>
         )}
       </View>
@@ -178,10 +171,8 @@ const styles = StyleSheet.create({
     borderRadius: R.lg,
     overflow: 'hidden',
   },
-  featured: { width: 168 },
   grid: { flex: 1 },
   mini: { width: 160 },
-  photoFeatured: { height: 128 },
   photoGrid: { height: 150 },
   photoMini: { height: 104 },
   badge: { position: 'absolute', top: S.sm, left: S.sm },

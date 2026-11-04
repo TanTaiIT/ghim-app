@@ -57,7 +57,12 @@ export default function Search() {
   const header = (
     <View style={styles.listHeader}>
       {filters.categoryId !== null && q === '' && (
-        <FeaturedRail items={featured.data} onOpen={(id) => router.push(`/listing/${id}`)} />
+        <FeaturedRail
+          items={featured.data}
+          onOpen={(id) => router.push(`/listing/${id}`)}
+          saved={savedIds.data}
+          onToggleSave={toggle}
+        />
       )}
       {q !== '' && (
         <View style={styles.alert}>

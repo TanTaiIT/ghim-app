@@ -1,27 +1,34 @@
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { FlatList, StyleSheet, useWindowDimensions, View } from 'react-native';
 import type { ListingCard } from '@/api/client';
-import { ListingTile } from './ListingCard';
-import { Photo } from './Photo';
-import { SectionTitle, Tag } from './ui';
-import { C, F, R, S } from '@/theme';
-import { formatPlace, formatVnd } from '@/utils/format';
+import { ListingRow } from './ListingCard';
+import { PageDots } from './PageDots';
+import { SectionTitle } from './ui';
+import { S } from '@/theme';
 
 /**
  * Dải ngang "Tin nổi bật" ở đầu bảng tin sàn chung, danh mục, bảng tin nhóm (add-admin-boost). Rỗng thì không vẽ gì.
- * `bleed` = lề ngang của khối cha: dải chạy tràn ra mép màn hình rồi đệm lại bên trong. `cover` = thẻ ảnh lớn có chữ
- * trên ảnh — trang chủ theo ảnh mẫu 02/11/2026; màn tìm kiếm và bảng tin nhóm giữ ô nhỏ để kết quả lên sớm.
+ * Mỗi tin là đúng thẻ một dòng của danh sách, rộng bằng khối nội dung: tin trả tiền để nổi bật không được trông nhỏ hơn
+ * tin thường ngay bên dưới. Trượt từng thẻ, chấm dưới dải cho biết còn tin. `bleed` = lề ngang của khối cha: dải chạy
+ * tràn ra mép màn hình rồi đệm lại bên trong.
  */
 export function FeaturedRail({
   items,
   onOpen,
   bleed = S.lg,
-  cover = false,
+  saved,
+  onToggleSave,
 }: {
   items: ListingCard[] | undefined;
   onOpen: (id: string) => void;
   bleed?: number;
-  cover?: boolean;
+  saved?: ReadonlySet<string> | undefined;
+  onToggleSave?: (id: string) => void;
 }) {
+  const { width } = useWindowDimensions();
+  const page = width - bleed * 2;
+  const step = page + S.md;
+  const [index, setIndex] = useState(0);
   if (!items || items.length === 0) return null;
   return (
     <View style={styles.section}>
@@ -31,62 +38,29 @@ export function FeaturedRail({
         data={items}
         keyExtractor={(l) => l.id}
         showsHorizontalScrollIndicator={false}
+        snapToInterval={step}
+        decelerationRate="fast"
+        disableIntervalMomentum
+        onMomentumScrollEnd={(e) => setIndex(Math.round(e.nativeEvent.contentOffset.x / step))}
         contentContainerStyle={[styles.rail, { paddingHorizontal: bleed }]}
         style={{ marginHorizontal: -bleed }}
-        renderItem={({ item }) =>
-          cover ? (
-            <FeaturedCover item={item} onPress={() => onOpen(item.id)} />
-          ) : (
-            <ListingTile item={item} variant="featured" onPress={() => onOpen(item.id)} />
-          )
-        }
+        renderItem={({ item }) => (
+          <View style={{ width: page }}>
+            <ListingRow
+              item={item}
+              onPress={() => onOpen(item.id)}
+              saved={saved?.has(item.id) ?? false}
+              {...(onToggleSave ? { onToggleSave: () => onToggleSave(item.id) } : {})}
+            />
+          </View>
+        )}
       />
+      <PageDots ids={items.map((l) => l.id)} index={index} />
     </View>
-  );
-}
-
-function FeaturedCover({ item, onPress }: { item: ListingCard; onPress: () => void }) {
-  return (
-    <Pressable
-      accessibilityRole="link"
-      onPress={onPress}
-      style={({ pressed }) => [styles.cover, { opacity: pressed ? 0.85 : 1 }]}
-    >
-      <Photo picture={item.cover} style={styles.coverPhoto} />
-      <View style={styles.badge}>
-        <Tag label="Nổi bật" tone="boost" icon="zap" />
-      </View>
-      <View style={styles.caption}>
-        <Text style={styles.price}>{formatVnd(item.price)}</Text>
-        <Text style={styles.title} numberOfLines={1}>
-          {item.title}
-        </Text>
-        <Text style={styles.place} numberOfLines={1}>
-          {formatPlace(item.place, true)}
-        </Text>
-      </View>
-    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   section: { gap: S.md },
   rail: { gap: S.md },
-  cover: { width: 264, height: 184, borderRadius: R.lg, overflow: 'hidden' },
-  coverPhoto: { width: '100%', height: '100%' },
-  badge: { position: 'absolute', top: S.sm, left: S.sm },
-  caption: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    paddingHorizontal: S.md,
-    paddingTop: S.sm,
-    paddingBottom: S.md,
-    gap: 2,
-    backgroundColor: C.scrim,
-  },
-  price: { fontFamily: F.uiBlack, fontSize: 17, color: C.paperWarm },
-  title: { fontFamily: F.uiSemi, fontSize: 14, color: C.paperWarm },
-  place: { fontFamily: F.ui, fontSize: 12, color: C.brandLine },
 });

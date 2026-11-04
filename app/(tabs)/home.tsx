@@ -15,7 +15,7 @@ import { C, S } from '@/theme';
 
 /**
  * Trang chủ "Khám phá" — khách xem được (TK 6); chỉ đăng tin, đẩy tin, lưu tin mới đòi phiên. Bố cục theo ảnh mẫu
- * 02/11/2026: banner trượt ngang, dải nổi bật thẻ ảnh lớn, "Gợi ý cho bạn" (ghim-server add-home-suggestions).
+ * 02/11/2026: banner trượt ngang, dải nổi bật, "Gợi ý cho bạn" (ghim-server add-home-suggestions).
  */
 export default function Home() {
   const router = useRouter();
@@ -90,7 +90,12 @@ export default function Home() {
           ]}
         />
 
-        <FeaturedRail cover items={featured.data} onOpen={open} />
+        <FeaturedRail
+          items={featured.data}
+          onOpen={open}
+          saved={savedIds.data}
+          onToggleSave={toggle}
+        />
 
         <SuggestionList
           pages={suggestions.data?.pages}

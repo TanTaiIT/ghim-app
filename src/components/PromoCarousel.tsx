@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
+import { PageDots } from './PageDots';
 import { C, F, R, S } from '@/theme';
 
 export type Promo = {
@@ -77,13 +78,7 @@ export function PromoCarousel({ items, bleed = S.lg }: { items: Promo[]; bleed?:
           );
         })}
       </ScrollView>
-      {items.length > 1 && (
-        <View style={styles.dots}>
-          {items.map((p, i) => (
-            <View key={p.key} style={[styles.dot, i === index && styles.dotOn]} />
-          ))}
-        </View>
-      )}
+      <PageDots ids={items.map((p) => p.key)} index={index} />
     </View>
   );
 }
@@ -110,7 +105,4 @@ const styles = StyleSheet.create({
   text: { fontFamily: F.ui, fontSize: 13, color: C.inkSoft },
   cta: { height: 44, paddingHorizontal: S.lg, borderRadius: R.sm, justifyContent: 'center' },
   ctaText: { fontFamily: F.uiBold, fontSize: 14, color: C.paperWarm },
-  dots: { flexDirection: 'row', justifyContent: 'center', gap: 6 },
-  dot: { width: 6, height: 6, borderRadius: R.full, backgroundColor: C.lineStrong },
-  dotOn: { width: 18, backgroundColor: C.brand },
 });
