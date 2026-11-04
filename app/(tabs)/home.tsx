@@ -7,7 +7,7 @@ import { useGuarded, useGuardedPush } from '@/components/GuestGate';
 import { FeaturedRail } from '@/components/FeaturedRail';
 import { HomeHero } from '@/components/HomeHero';
 import { PromoCarousel } from '@/components/PromoCarousel';
-import { SuggestionGrid } from '@/components/SuggestionGrid';
+import { SuggestionList } from '@/components/SuggestionList';
 import { useToast } from '@/components/Toast';
 import { useFeatured, useHomeFilters, useSavedIds, useToggleSaved } from '@/queries/listings';
 import { useSuggestions } from '@/queries/suggestions';
@@ -92,7 +92,7 @@ export default function Home() {
 
         <FeaturedRail cover items={featured.data} onOpen={open} />
 
-        <SuggestionGrid
+        <SuggestionList
           pages={suggestions.data?.pages}
           pending={suggestions.isPending}
           error={suggestions.data ? null : suggestions.error}

@@ -5,7 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGuarded } from '@/components/GuestGate';
 import { FeaturedRail } from '@/components/FeaturedRail';
-import { ListingTile } from '@/components/ListingCard';
+import { ListingRow } from '@/components/ListingCard';
 import { SearchFilterBar } from '@/components/SearchFilterBar';
 import { SortChip } from '@/components/SortChip';
 import { useToast } from '@/components/Toast';
@@ -47,9 +47,6 @@ export default function Search() {
   // Trang một danh mục (chưa gõ từ khoá) có dải "Tin nổi bật" của danh mục đó; tìm kiếm thì không.
   const featured = useFeatured(filters.categoryId, filters.categoryId !== null && q === '');
   const searchSaved = savedSearches.data?.some((s) => isSameSearch(s.filters, filters)) ?? false;
-  // Lưới hai cột: số tin lẻ thì ô cuối giãn hết bề ngang — chèn một ô trống để nó giữ nửa hàng.
-  const hits = results.data ?? [];
-  const cells = hits.length % 2 === 1 ? [...hits, null] : hits;
 
   const toggle = (id: string) =>
     guarded(() => {
@@ -123,10 +120,8 @@ export default function Search() {
       </View>
 
       <FlatList
-        data={cells}
-        keyExtractor={(l, i) => l?.id ?? `pad-${i}`}
-        numColumns={2}
-        columnWrapperStyle={styles.column}
+        data={results.data ?? []}
+        keyExtractor={(l) => l.id}
         contentContainerStyle={styles.content}
         ListHeaderComponent={header}
         ListEmptyComponent={
@@ -142,18 +137,14 @@ export default function Search() {
             />
           )
         }
-        renderItem={({ item }) =>
-          item === null ? (
-            <View style={styles.pad} />
-          ) : (
-            <ListingTile
-              item={item}
-              onPress={() => router.push(`/listing/${item.id}`)}
-              saved={savedIds.data?.has(item.id) ?? false}
-              onToggleSave={() => toggle(item.id)}
-            />
-          )
-        }
+        renderItem={({ item }) => (
+          <ListingRow
+            item={item}
+            onPress={() => router.push(`/listing/${item.id}`)}
+            saved={savedIds.data?.has(item.id) ?? false}
+            onToggleSave={() => toggle(item.id)}
+          />
+        )}
       />
     </SafeAreaView>
   );
@@ -183,8 +174,6 @@ const styles = StyleSheet.create({
   },
   inputText: { flex: 1, fontFamily: F.ui, fontSize: 15, color: C.ink, paddingVertical: 0 },
   content: { flexGrow: 1, padding: S.lg, gap: S.md, backgroundColor: C.paper },
-  column: { gap: S.md },
-  pad: { flex: 1 },
   listHeader: { gap: 14, marginBottom: S.xs },
   alert: {
     flexDirection: 'row',

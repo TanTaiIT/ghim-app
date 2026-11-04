@@ -3,7 +3,6 @@ import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import type { ListingCard } from '@/api/client';
 import { Photo } from './Photo';
-import { Avatar, Verified } from './Avatar';
 import { Price, Tag } from './ui';
 import { C, F, R, S } from '@/theme';
 import { formatAgo, formatPlace } from '@/utils/format';
@@ -15,22 +14,17 @@ export const ENDED_TAG = {
 } as const;
 
 /**
- * Thẻ tin dạng ô: `featured` (dải ngang Tin nổi bật, luôn mang nhãn), `grid` (lưới hai cột kết quả
- * tìm kiếm, có trái tim và người bán), `mini` (Tin tương tự — chỉ ảnh, tên, giá). Trái tim chỉ hiện khi màn truyền `onToggleSave` — mutation khởi
- * phát từ route, không từ component (folder §6).
+ * Thẻ tin dạng ô cho dải ngang và lưới: `featured` (dải Tin nổi bật, luôn mang nhãn), `grid` (bảng tin nhóm chọn kiểu
+ * lưới), `mini` (Tin tương tự — chỉ ảnh, tên, giá). Danh sách dọc dùng `ListingRow`.
  */
 export function ListingTile({
   item,
   onPress,
   variant = 'grid',
-  saved = false,
-  onToggleSave,
 }: {
   item: ListingCard;
   onPress: () => void;
   variant?: 'featured' | 'grid' | 'mini';
-  saved?: boolean;
-  onToggleSave?: () => void;
 }) {
   const featured = variant === 'featured';
   const mini = variant === 'mini';
@@ -57,22 +51,6 @@ export function ListingTile({
             <Tag label="Nổi bật" tone="boost" icon="zap" />
           </View>
         )}
-        {onToggleSave && (
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={saved ? 'Bỏ lưu tin' : 'Lưu tin'}
-            accessibilityState={{ selected: saved }}
-            onPress={onToggleSave}
-            hitSlop={6}
-            style={styles.heart}
-          >
-            <Ionicons
-              name={saved ? 'heart' : 'heart-outline'}
-              size={17}
-              color={saved ? C.price : C.ink}
-            />
-          </Pressable>
-        )}
       </View>
       <View style={styles.body}>
         <Text style={mini ? styles.titleMini : styles.title} numberOfLines={mini ? 1 : 2}>
@@ -91,51 +69,102 @@ export function ListingTile({
             {meta}
           </Text>
         )}
-        {variant === 'grid' && item.seller && (
-          <View style={styles.seller}>
-            <Avatar name={item.seller.name} />
-            <Text style={styles.sellerName} numberOfLines={1}>
-              {item.seller.name}
-            </Text>
-            {item.seller.verified && <Verified size={13} />}
-          </View>
-        )}
       </View>
     </Pressable>
   );
 }
 
-/** Thẻ tin dạng hàng (tin trong nhóm, tin đã lưu, hồ sơ người bán): khu vực, lúc đăng và nhãn nhóm nếu có. */
-export function ListingRow({ item, onPress }: { item: ListingCard; onPress: () => void }) {
-  const ago = formatAgo(item.postedAt);
+type Chip = { icon: keyof typeof Feather.glyphMap; label: string };
+
+function chipsOf(item: ListingCard): Chip[] {
+  const chips: Chip[] = [];
+  if (item.negotiable) chips.push({ icon: 'repeat', label: 'Thương lượng' });
+  if (item.delivery) chips.push({ icon: 'truck', label: 'Giao tận nơi' });
+  if (item.groupName) chips.push({ icon: 'users', label: item.groupName });
+  return chips;
+}
+
+/**
+ * Một tin một dòng (ảnh mẫu 04/11/2026) cho mọi danh sách tin dọc: ảnh lớn toàn bề ngang mang nhãn nổi bật / đã kết
+ * thúc, chip điểm nổi bật, tiêu đề, khu vực, rồi lúc đăng và giá. Trái tim chỉ hiện khi màn truyền `onToggleSave` —
+ * mutation khởi phát từ route, không từ component (folder §6).
+ */
+export function ListingRow({
+  item,
+  onPress,
+  saved = false,
+  onToggleSave,
+}: {
+  item: ListingCard;
+  onPress: () => void;
+  saved?: boolean;
+  onToggleSave?: () => void;
+}) {
+  const chips = chipsOf(item);
   return (
     <Pressable
       accessibilityRole="link"
       onPress={onPress}
-      style={({ pressed }) => [styles.row, { opacity: pressed ? 0.85 : 1 }]}
+      style={({ pressed }) => [styles.row, { opacity: pressed ? 0.9 : 1 }]}
     >
-      <Photo picture={item.cover} style={styles.thumb} />
-      <View style={styles.rowBody}>
-        <Text style={styles.rowTitle} numberOfLines={2}>
-          {item.title}
-        </Text>
-        <Price value={item.price} />
-        <Text style={styles.meta} numberOfLines={1}>
-          {formatPlace(item.place, true)} · {ago}
-        </Text>
+      <View>
+        <Photo picture={item.cover} style={styles.cover} />
+        {item.boosted && !item.ended && (
+          <View style={styles.badge}>
+            <Tag label="Nổi bật" tone="boost" icon="zap" />
+          </View>
+        )}
         {item.ended && (
-          <View style={styles.ended}>
+          <View style={styles.endedTag}>
             <Tag label={ENDED_TAG[item.ended].label} tone={ENDED_TAG[item.ended].tone} />
           </View>
         )}
-        {item.groupName && (
-          <View style={styles.group}>
-            <Feather name="users" size={12} color={C.brandDark} />
-            <Text style={styles.groupLabel} numberOfLines={1}>
-              {item.groupName}
-            </Text>
-          </View>
+        {onToggleSave && (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={saved ? 'Bỏ lưu tin' : 'Lưu tin'}
+            accessibilityState={{ selected: saved }}
+            onPress={onToggleSave}
+            hitSlop={6}
+            style={styles.heart}
+          >
+            <Ionicons
+              name={saved ? 'heart' : 'heart-outline'}
+              size={22}
+              color={saved ? C.price : C.paperWarm}
+            />
+          </Pressable>
         )}
+      </View>
+      {chips.length > 0 && (
+        <View style={styles.chips}>
+          {chips.map((chip) => (
+            <View key={chip.label} style={styles.chip}>
+              <Feather name={chip.icon} size={14} color={C.brand} />
+              <Text style={styles.chipText} numberOfLines={1}>
+                {chip.label}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )}
+      <Text style={styles.rowTitle} numberOfLines={2}>
+        {item.title}
+      </Text>
+      <View style={styles.line}>
+        <Feather name="map-pin" size={15} color={C.muted} />
+        <Text style={styles.lineText} numberOfLines={1}>
+          {formatPlace(item.place)}
+        </Text>
+      </View>
+      <View style={styles.footer}>
+        <View style={styles.line}>
+          <Feather name="clock" size={14} color={C.muted} />
+          <Text style={styles.lineText} numberOfLines={1}>
+            {formatAgo(item.postedAt)}
+          </Text>
+        </View>
+        <Price value={item.price} size={20} />
       </View>
     </Pressable>
   );
@@ -156,18 +185,6 @@ const styles = StyleSheet.create({
   photoGrid: { height: 150 },
   photoMini: { height: 104 },
   badge: { position: 'absolute', top: S.sm, left: S.sm },
-  heart: {
-    position: 'absolute',
-    top: 6,
-    right: 6,
-    width: 32,
-    height: 32,
-    borderRadius: R.full,
-    backgroundColor: C.paperWarm,
-    opacity: 0.94,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   body: { paddingHorizontal: S.md, paddingTop: 10, paddingBottom: S.md, gap: S.xs },
   // Chiều cao cố định đúng hai dòng: các ô cùng hàng giữ giá thẳng hàng dù tiêu đề dài ngắn khác nhau.
   title: { fontFamily: F.uiSemi, fontSize: 14, lineHeight: 18, height: 36, color: C.ink },
@@ -175,31 +192,51 @@ const styles = StyleSheet.create({
   meta: { flexShrink: 1, fontFamily: F.ui, fontSize: 12, color: C.muted },
   priceRow: { flexDirection: 'row', alignItems: 'baseline', gap: S.xs },
   nego: { flexShrink: 1, fontFamily: F.ui, fontSize: 11, color: C.muted },
-  seller: { flexDirection: 'row', alignItems: 'center', gap: S.xs },
-  sellerName: { flexShrink: 1, fontFamily: F.ui, fontSize: 12, color: C.inkSoft },
   row: {
-    flexDirection: 'row',
+    padding: S.md,
     gap: S.md,
-    padding: 10,
     backgroundColor: C.paperWarm,
     borderWidth: 1,
     borderColor: C.line,
     borderRadius: R.lg,
   },
-  thumb: { width: 92, height: 92, borderRadius: R.sm },
-  rowBody: { flex: 1, minWidth: 0, gap: S.xs, paddingTop: 2 },
-  rowTitle: { fontFamily: F.uiSemi, fontSize: 15, lineHeight: 20, color: C.ink },
-  ended: { alignSelf: 'flex-start' },
-  group: {
-    alignSelf: 'flex-start',
+  cover: { width: '100%', aspectRatio: 16 / 10, borderRadius: R.md },
+  endedTag: { position: 'absolute', right: S.sm, bottom: S.sm },
+  heart: {
+    position: 'absolute',
+    top: S.sm,
+    right: S.sm,
+    width: 40,
+    height: 40,
+    borderRadius: R.full,
+    backgroundColor: C.scrim,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: S.sm },
+  chip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: S.xs,
-    height: 22,
+    gap: 6,
     maxWidth: '100%',
-    paddingHorizontal: S.sm,
+    height: 30,
+    paddingHorizontal: S.md,
     borderRadius: R.full,
-    backgroundColor: C.brandLt,
+    borderWidth: 1,
+    borderColor: C.line,
+    backgroundColor: C.sand,
   },
-  groupLabel: { flexShrink: 1, fontFamily: F.uiSemi, fontSize: 11, color: C.brandDark },
+  chipText: { flexShrink: 1, fontFamily: F.uiMedium, fontSize: 13, color: C.inkSoft },
+  rowTitle: { fontFamily: F.uiBlack, fontSize: 17, lineHeight: 23, color: C.ink },
+  line: { flexShrink: 1, flexDirection: 'row', alignItems: 'center', gap: 6 },
+  lineText: { flexShrink: 1, fontFamily: F.ui, fontSize: 14, color: C.inkSoft },
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: S.md,
+    paddingTop: S.md,
+    borderTopWidth: 1,
+    borderTopColor: C.line,
+  },
 });
