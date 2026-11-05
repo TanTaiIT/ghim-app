@@ -76,13 +76,16 @@ export function useMutedGroups() {
   });
 }
 
-/** Dưới 2 ký tự thì gần như khớp mọi nhóm — chưa hỏi server. */
-export function useGroupSearch(q: string) {
+/**
+ * Dưới 2 ký tự thì gần như khớp mọi nhóm — chưa hỏi server, TRỪ khi đã lọc theo tỉnh/thành
+ * (add-group-province): lúc đó "mọi nhóm công khai ở tỉnh Y" là một kết quả có nghĩa.
+ */
+export function useGroupSearch(q: string, provinceCode: number | null) {
   const term = q.trim();
   return useQuery({
-    queryKey: qk.groups.search(term),
-    queryFn: () => api.searchGroups(term),
-    enabled: term.length >= 2,
+    queryKey: qk.groups.search(term, provinceCode),
+    queryFn: () => api.searchGroups(term, provinceCode),
+    enabled: term.length >= 2 || provinceCode !== null,
     placeholderData: keepPreviousData,
   });
 }

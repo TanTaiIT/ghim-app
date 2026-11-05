@@ -533,6 +533,8 @@ export type ListingContent = {
   title: string;
   description: string;
   price: number;
+  /** Cho tặng: `price` = 0 là CỐ Ý → gửi 0, không đổi thành null như "chưa nhập giá". */
+  free: boolean;
   negotiable: boolean;
   categoryId: string | null;
   attributes: Record<string, AttributeValue>;
@@ -551,7 +553,7 @@ export type DraftRef = { id: string; version: number };
 
 /** Tin của chính mình dựng lại vào form: làm tiếp nháp, hay sửa tin đang hiển thị. */
 export type EditableListing = DraftRef &
-  Omit<ListingContent, 'imageIds'> & {
+  Omit<ListingContent, 'imageIds' | 'free'> & {
     state: MyListingState;
     photos: { imageId: string; uri: string }[];
   };
@@ -633,6 +635,8 @@ export type Group =
       manualReview: boolean;
       /** Thành viên dùng được gói đẩy tin trả Xu trong nhóm (add-promotions). */
       allowPromotions: boolean;
+      /** Tỉnh/thành của nhóm (ghim-server add-group-province); null = toàn quốc. */
+      province: Province | null;
       /** Chỉ chủ nhóm và điều hành viên được biết lý do khoá. */
       lockedReason: string | null;
       /** Mã vào nhóm — chỉ chủ nhóm và điều hành viên thấy; nhóm không dùng mã thì null. */
@@ -1001,7 +1005,7 @@ function toContentBody(c: ListingContent) {
   return {
     title: c.title.trim() || null,
     description: c.description.trim() || null,
-    price: c.price > 0 ? c.price : null,
+    price: c.free ? 0 : c.price > 0 ? c.price : null,
     negotiable: c.negotiable,
     categoryId: c.categoryId,
     attributes,
@@ -1402,6 +1406,7 @@ function toGroup(w: WireGroupView): Group {
     showNameOnMarketplace: w.showNameOnMarketplace,
     manualReview: w.manualReview,
     allowPromotions: w.allowPromotions,
+    province: w.province,
     lockedReason: w.lockedReason,
     code: w.code,
     units: w.units.map(({ id, name }) => ({ id, name })),
@@ -1746,8 +1751,14 @@ export const api = {
   },
 
   /** Chỉ nhóm công khai — nhóm riêng tư không bao giờ có trong kết quả tìm (spec group-modes). */
-  searchGroups: async (q: string): Promise<GroupSummary[]> =>
-    (await unwrap(getApiV1Groups({ query: { q, limit: GROUP_PAGE } }))).items.map(toGroupSummary),
+  searchGroups: async (q: string, provinceCode?: number | null): Promise<GroupSummary[]> =>
+    (
+      await unwrap(
+        getApiV1Groups({
+          query: { q, limit: GROUP_PAGE, ...(provinceCode != null && { provinceCode }) },
+        }),
+      )
+    ).items.map(toGroupSummary),
 
   getMyGroups: async (): Promise<MyGroup[]> => (await unwrap(getApiV1MeGroups())).map(toMyGroup),
 

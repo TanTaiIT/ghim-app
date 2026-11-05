@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Chip } from '@/components/Chip';
 import { Field } from '@/components/Field';
 import { GroupRow } from '@/components/GroupRow';
+import { PickerSheet } from '@/components/PickerSheet';
 import { useToast } from '@/components/Toast';
 import {
   EmptyState,
@@ -22,9 +24,12 @@ import {
   useJoinFromRoster,
   useMyGroups,
 } from '@/queries/groups';
+import { useProvinces } from '@/queries/catalog';
 import { GROUP_ROLE_TAG, type GroupSummary } from '@/api/client';
 import { C, F, S } from '@/theme';
 import { daysUntil, groupThousands } from '@/utils/format';
+
+const ANYWHERE = 'all';
 
 const metaOf = (g: GroupSummary) =>
   `${groupThousands(g.memberCount)} thành viên${g.description ? ` · ${g.description}` : ''}`;
@@ -47,7 +52,11 @@ export default function MyGroups() {
   const answerOffer = useAnswerOwnerOffer();
   const rosterJoin = useJoinFromRoster();
   const [q, setQ] = useState('');
-  const search = useGroupSearch(q);
+  const [provinceCode, setProvinceCode] = useState<number | null>(null);
+  const [pickProvince, setPickProvince] = useState(false);
+  const provinces = useProvinces();
+  const search = useGroupSearch(q, provinceCode);
+  const province = provinces.data?.find((p) => p.code === provinceCode);
   const [codeText, setCodeText] = useState('');
   const [code, setCode] = useState<string | null>(null);
   const found = useGroupCode(code);
@@ -174,6 +183,14 @@ export default function MyGroups() {
           placeholder="VD: Phụ huynh lớp 5B"
           returnKeyType="search"
         />
+        <View style={styles.filterRow}>
+          <Chip
+            chevron
+            selected={province !== undefined}
+            label={province?.name ?? 'Mọi tỉnh/thành'}
+            onPress={() => setPickProvince(true)}
+          />
+        </View>
         {search.data?.map((g) => (
           <GroupRow
             key={g.id}
@@ -184,7 +201,11 @@ export default function MyGroups() {
           />
         ))}
         {search.data?.length === 0 && (
-          <Text style={styles.hint}>Không có nhóm công khai nào khớp.</Text>
+          <Text style={styles.hint}>
+            {province
+              ? `Không có nhóm công khai nào ở ${province.name}.`
+              : 'Không có nhóm công khai nào khớp.'}
+          </Text>
         )}
 
         <SectionTitle title="Có mã nhóm?" />
@@ -220,6 +241,17 @@ export default function MyGroups() {
           />
         )}
       </ScrollView>
+      <PickerSheet
+        visible={pickProvince}
+        title="Khu vực"
+        options={[
+          { value: ANYWHERE, label: 'Mọi tỉnh/thành' },
+          ...(provinces.data ?? []).map((p) => ({ value: String(p.code), label: p.name })),
+        ]}
+        value={provinceCode === null ? ANYWHERE : String(provinceCode)}
+        onSelect={(c) => setProvinceCode(c === ANYWHERE ? null : Number(c))}
+        onClose={() => setPickProvince(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -228,6 +260,7 @@ const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: C.paper },
   content: { padding: S.lg, gap: S.md },
   flex: { flex: 1 },
+  filterRow: { flexDirection: 'row' },
   actions: { flexDirection: 'row', alignItems: 'flex-end', gap: S.sm },
   find: { paddingBottom: 2 },
   hint: { fontFamily: F.ui, fontSize: 13, lineHeight: 19, color: C.inkSoft },

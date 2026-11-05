@@ -3,7 +3,7 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 import Feather from '@expo/vector-icons/Feather';
 import { useRouter } from 'expo-router';
 import { C, F, R, S, shadow } from '@/theme';
-import { formatVnd } from '@/utils/format';
+import { formatPrice } from '@/utils/format';
 
 /*
  * Barrel các primitive nhỏ, cố ý đặt lowercase để phân biệt với file-một-component (folder §3).
@@ -158,6 +158,7 @@ const TAG = {
   boost: { bg: C.boost, fg: C.boostTx },
   neutral: { bg: C.sand, fg: C.inkMid },
   amber: { bg: C.amberLight, fg: C.boostTx },
+  free: { bg: C.freeWash, fg: C.freeTx },
 } as const;
 
 /** Nhãn nhỏ: "Nổi bật", "Như mới", trạng thái tin. */
@@ -179,9 +180,13 @@ export function Tag({
   );
 }
 
-/** Giá luôn ExtraBold, cam đậm, chữ số đều cột. */
+/** Giá luôn ExtraBold, chữ số đều cột; cam đậm, trừ tin cho tặng (`0`) → "Miễn phí" xanh lá. */
 export function Price({ value, size = 15 }: { value: number; size?: number }) {
-  return <Text style={[styles.price, { fontSize: size }]}>{formatVnd(value)}</Text>;
+  return (
+    <Text style={[value === 0 ? styles.priceFree : styles.price, { fontSize: size }]}>
+      {formatPrice(value)}
+    </Text>
+  );
 }
 
 export function SectionTitle({
@@ -303,6 +308,7 @@ const styles = StyleSheet.create({
     fontVariant: ['tabular-nums'],
     letterSpacing: -0.15,
   },
+  priceFree: { fontFamily: F.uiBlack, color: C.free, letterSpacing: -0.15 },
   section: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
   sectionTitle: { fontFamily: F.uiBold, fontSize: 18, color: C.ink },
   sectionAction: { fontFamily: F.uiSemi, fontSize: 13, color: C.brandTx },

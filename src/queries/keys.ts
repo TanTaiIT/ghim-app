@@ -50,7 +50,8 @@ export const qk = {
   groups: {
     all: () => ['groups'] as const,
     mine: () => ['groups', 'mine'] as const,
-    search: (q: string) => ['groups', 'search', q] as const,
+    search: (q: string, provinceCode: number | null) =>
+      ['groups', 'search', q, provinceCode] as const,
     code: (code: string) => ['groups', 'code', code] as const,
     invites: () => ['groups', 'invites'] as const,
     muted: () => ['groups', 'muted'] as const,

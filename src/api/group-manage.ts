@@ -102,6 +102,8 @@ export type GroupSettingsPatch = {
   boardStyle?: 'list' | 'grid';
   manualReview?: boolean;
   allowPromotions?: boolean;
+  /** Tỉnh/thành của nhóm (add-group-province); `null` để gỡ về toàn quốc. */
+  provinceCode?: number | null;
 };
 
 /** Một trang đủ cho một nhóm; `total` cho biết còn bao nhiêu chưa hiện. */

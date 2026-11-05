@@ -1,17 +1,20 @@
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { Choice } from '@/components/Chip';
+import { Chip, Choice } from '@/components/Chip';
 import { Field } from '@/components/Field';
 import { OpsHeader, useOpsBack } from '@/components/OpsHeader';
+import { PickerSheet } from '@/components/PickerSheet';
 import { useToast } from '@/components/Toast';
 import { PinButton } from '@/components/ui';
 import { useCreateOpsGroup } from '@/queries/ops-groups';
+import { useProvinces } from '@/queries/catalog';
 import { GROUP_MODE_LABEL } from '@/api/client';
 import { GROUP_KIND_LABEL, type OpsGroupKind, type OpsGroupMode } from '@/api/ops';
 import { C, F, S } from '@/theme';
 
 const KINDS = Object.keys(GROUP_KIND_LABEL) as OpsGroupKind[];
 const MODES = Object.keys(GROUP_MODE_LABEL) as OpsGroupMode[];
+const ANYWHERE = 'all';
 
 /** Lập nhóm (master). Nhóm mới ở trạng thái "chờ giao chủ" tới khi có người nhận làm chủ. */
 export default function OpsGroupNew() {
@@ -22,6 +25,10 @@ export default function OpsGroupNew() {
   const [description, setDescription] = useState('');
   const [kind, setKind] = useState<OpsGroupKind>('community');
   const [mode, setMode] = useState<OpsGroupMode>('public_review');
+  const [provinceCode, setProvinceCode] = useState<number | null>(null);
+  const [pickProvince, setPickProvince] = useState(false);
+  const provinces = useProvinces();
+  const province = provinces.data?.find((p) => p.code === provinceCode);
 
   return (
     <View style={styles.screen}>
@@ -62,13 +69,22 @@ export default function OpsGroupNew() {
               />
             ))}
           </View>
+          <Text style={styles.label}>Tỉnh/thành (tuỳ chọn)</Text>
+          <View style={styles.filterRow}>
+            <Chip
+              chevron
+              selected={province !== undefined}
+              label={province?.name ?? 'Toàn quốc'}
+              onPress={() => setPickProvince(true)}
+            />
+          </View>
           <PinButton
             label="Lập nhóm"
             disabled={name.trim().length < 2}
             loading={create.isPending}
             onPress={() =>
               create.mutate(
-                { name, kind, mode, description },
+                { name, kind, mode, description, ...(provinceCode !== null && { provinceCode }) },
                 {
                   onSuccess: () => {
                     toast(`Đã lập nhóm ${name.trim()}`);
@@ -81,6 +97,17 @@ export default function OpsGroupNew() {
           />
         </ScrollView>
       </KeyboardAvoidingView>
+      <PickerSheet
+        visible={pickProvince}
+        title="Tỉnh/thành của nhóm"
+        options={[
+          { value: ANYWHERE, label: 'Toàn quốc' },
+          ...(provinces.data ?? []).map((p) => ({ value: String(p.code), label: p.name })),
+        ]}
+        value={provinceCode === null ? ANYWHERE : String(provinceCode)}
+        onSelect={(c) => setProvinceCode(c === ANYWHERE ? null : Number(c))}
+        onClose={() => setPickProvince(false)}
+      />
     </View>
   );
 }
@@ -90,5 +117,6 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   content: { padding: S.lg, gap: S.md },
   label: { fontFamily: F.uiBold, fontSize: 15, color: C.ink },
+  filterRow: { flexDirection: 'row' },
   choices: { gap: S.sm },
 });

@@ -38,7 +38,7 @@ import { useMe } from '@/queries/account';
 import { useMyGroups, useRemoveGroupBadge } from '@/queries/groups';
 import { useOpenConversation } from '@/queries/messages';
 import { C, R, S } from '@/theme';
-import { formatVnd } from '@/utils/format';
+import { formatPrice } from '@/utils/format';
 
 export default function ListingDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -143,7 +143,7 @@ export default function ListingDetail() {
             toggleSaved.mutate({ id: l.id, saved: !saved }, { onError: (e) => toast(e.message) }),
           )
         }
-        onShare={() => void Share.share({ message: `${l.title} – ${formatVnd(l.price)}` })}
+        onShare={() => void Share.share({ message: `${l.title} – ${formatPrice(l.price)}` })}
         onReport={() => guarded(() => setReporting(true))}
       />
 

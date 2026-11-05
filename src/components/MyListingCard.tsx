@@ -69,7 +69,7 @@ export function MyListingCard({
             <Text style={[styles.title, !item.title && styles.untitled]} numberOfLines={2}>
               {item.title || 'Nháp chưa có tiêu đề'}
             </Text>
-            {item.price > 0 && <Price value={item.price} />}
+            {(item.price > 0 || item.state !== 'draft') && <Price value={item.price} />}
             {item.views !== null && item.saves !== null && (
               <View style={styles.stats}>
                 <Feather name="eye" size={14} color={C.inkSoft} />

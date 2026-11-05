@@ -19,6 +19,7 @@ const contentOf = (d: Draft): ListingContent => ({
   title: d.title,
   description: d.description,
   price: d.price,
+  free: d.free,
   negotiable: d.negotiable,
   categoryId: d.categoryId,
   attributes: d.attributes,
@@ -130,6 +131,8 @@ export function useOpenForEdit() {
       title: l.title,
       categoryId: l.categoryId,
       price: l.price,
+      // Giá 0 ở tin đã đăng = cho tặng; ở nháp = chưa nhập giá, nên không bật cờ cho tặng.
+      free: l.price === 0 && l.state !== 'draft',
       negotiable: l.negotiable,
       attributes: l.attributes,
       description: l.description,

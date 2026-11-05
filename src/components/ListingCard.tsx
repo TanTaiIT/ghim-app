@@ -27,6 +27,7 @@ export function ListingTile({
   variant?: 'grid' | 'mini';
 }) {
   const mini = variant === 'mini';
+  const free = item.price === 0;
   return (
     <Pressable
       accessibilityRole="link"
@@ -39,9 +40,10 @@ export function ListingTile({
     >
       <View>
         <Photo picture={item.cover} style={mini ? styles.photoMini : styles.photoGrid} />
-        {item.boosted && !mini && (
+        {!mini && (item.boosted || free) && (
           <View style={styles.badge}>
-            <Tag label="Nổi bật" tone="boost" icon="zap" />
+            {item.boosted && <Tag label="Nổi bật" tone="boost" icon="zap" />}
+            {free && <Tag label="Miễn phí" tone="free" icon="gift" />}
           </View>
         )}
       </View>
@@ -78,8 +80,8 @@ function chipsOf(item: ListingCard): Chip[] {
 }
 
 /**
- * Một tin một dòng (ảnh mẫu 04/11/2026) cho mọi danh sách tin dọc: ảnh lớn toàn bề ngang mang nhãn nổi bật / đã kết
- * thúc, chip điểm nổi bật, tiêu đề, khu vực, rồi lúc đăng và giá. Trái tim chỉ hiện khi màn truyền `onToggleSave` —
+ * Một tin một dòng (ảnh mẫu 04/11/2026) cho mọi danh sách tin dọc: ảnh lớn toàn bề ngang mang nhãn nổi bật / miễn phí /
+ * đã kết thúc, chip điểm nổi bật, tiêu đề, khu vực, rồi lúc đăng và giá. Trái tim chỉ hiện khi màn truyền `onToggleSave` —
  * mutation khởi phát từ route, không từ component (folder §6).
  */
 export function ListingRow({
@@ -94,6 +96,7 @@ export function ListingRow({
   onToggleSave?: () => void;
 }) {
   const chips = chipsOf(item);
+  const free = item.price === 0;
   return (
     <Pressable
       accessibilityRole="link"
@@ -102,9 +105,10 @@ export function ListingRow({
     >
       <View>
         <Photo picture={item.cover} style={styles.cover} />
-        {item.boosted && !item.ended && (
+        {(item.boosted || free) && !item.ended && (
           <View style={styles.badge}>
-            <Tag label="Nổi bật" tone="boost" icon="zap" />
+            {item.boosted && <Tag label="Nổi bật" tone="boost" icon="zap" />}
+            {free && <Tag label="Miễn phí" tone="free" icon="gift" />}
           </View>
         )}
         {item.ended && (
@@ -175,7 +179,7 @@ const styles = StyleSheet.create({
   mini: { width: 160 },
   photoGrid: { height: 150 },
   photoMini: { height: 104 },
-  badge: { position: 'absolute', top: S.sm, left: S.sm },
+  badge: { position: 'absolute', top: S.sm, left: S.sm, gap: S.xs },
   body: { paddingHorizontal: S.md, paddingTop: 10, paddingBottom: S.md, gap: S.xs },
   // Chiều cao cố định đúng hai dòng: các ô cùng hàng giữ giá thẳng hàng dù tiêu đề dài ngắn khác nhau.
   title: { fontFamily: F.uiSemi, fontSize: 14, lineHeight: 18, height: 36, color: C.ink },
