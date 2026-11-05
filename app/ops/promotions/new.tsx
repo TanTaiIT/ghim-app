@@ -11,7 +11,6 @@ import { PROMOTION_EFFECT_LABEL, type PromotionEffect } from '@/api/promotion';
 import { useCreateProduct } from '@/queries/ops-admin';
 import { C, F, S } from '@/theme';
 
-const TIERS = ['T0', 'T1', 'T2', 'T3'] as const;
 const SCOPES = ['both', 'marketplace', 'group'] as const;
 const digits = (t: string) => t.replace(/[^0-9]/g, '');
 
@@ -27,7 +26,6 @@ export default function OpsNewPromotion() {
   const [days, setDays] = useState('7');
   const [price, setPrice] = useState('');
   const [cooldown, setCooldown] = useState('24');
-  const [minTier, setMinTier] = useState<(typeof TIERS)[number]>('T1');
   const [scope, setScope] = useState<(typeof SCOPES)[number]>('both');
 
   const priceN = Number.parseInt(price, 10);
@@ -50,7 +48,6 @@ export default function OpsNewPromotion() {
       ...(effect === 'featured' ? { durationDays: daysN } : {}),
       cooldownHours: cooldownN,
       price: priceN,
-      minTier,
       scope,
     };
     create.mutate(body, {
@@ -127,12 +124,6 @@ export default function OpsNewPromotion() {
             keyboardType="number-pad"
             hint="0 = không chờ."
           />
-          <Text style={styles.label}>Mức tin cậy tối thiểu</Text>
-          <View style={styles.choices}>
-            {TIERS.map((t) => (
-              <Choice key={t} label={t} selected={minTier === t} onPress={() => setMinTier(t)} />
-            ))}
-          </View>
           <Text style={styles.label}>Phạm vi</Text>
           <View style={styles.choices}>
             {SCOPES.map((s) => (

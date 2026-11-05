@@ -61,7 +61,6 @@ export type OpsProduct = {
   durationDays: number | null;
   cooldownHours: number;
   price: number;
-  minTier: WireProduct['minTier'];
   scope: WireProduct['scope'];
   active: boolean;
   sort: number;
@@ -75,7 +74,6 @@ export type ProductPatch = Partial<
     | 'durationDays'
     | 'cooldownHours'
     | 'price'
-    | 'minTier'
     | 'scope'
     | 'active'
     | 'sort'
@@ -97,7 +95,6 @@ const toProduct = (w: WireProduct): OpsProduct => ({
   durationDays: w.durationDays,
   cooldownHours: w.cooldownHours,
   price: w.price,
-  minTier: w.minTier,
   scope: w.scope,
   active: w.active,
   sort: w.sort,

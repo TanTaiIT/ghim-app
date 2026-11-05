@@ -3,9 +3,8 @@ import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import type { ListingCard } from '@/api/client';
 import { Photo } from './Photo';
-import { Avatar, Verified } from './Avatar';
 import { Price, Tag } from './ui';
-import { C, F, R, S, shadow } from '@/theme';
+import { C, F, R, S } from '@/theme';
 import { formatAgo, formatPlace } from '@/utils/format';
 
 /** Nhãn của tin đã kết thúc — dùng chung với "Tin của tôi" để hai nơi gọi một trạng thái bằng một chữ. */
@@ -15,65 +14,106 @@ export const ENDED_TAG = {
 } as const;
 
 /**
- * Thẻ tin dạng ô: `featured` (dải ngang Tin nổi bật, luôn mang nhãn), `feed` (một cột, ảnh lớn —
- * trang chủ và kết quả tìm kiếm), `grid` (lưới hai cột), `mini` (Tin tương tự — chỉ ảnh, tên, giá).
- * Trái tim chỉ hiện khi màn truyền `onToggleSave` — mutation khởi phát từ route, không từ component (folder §6).
+ * Thẻ tin dạng ô: `grid` (bảng tin nhóm chọn kiểu lưới), `mini` (Tin tương tự — chỉ ảnh, tên, giá). Danh sách dọc và
+ * dải Tin nổi bật dùng `ListingRow`.
  */
 export function ListingTile({
   item,
   onPress,
   variant = 'grid',
-  saved = false,
-  onToggleSave,
-  sponsored = false,
 }: {
   item: ListingCard;
   onPress: () => void;
-  variant?: 'featured' | 'feed' | 'grid' | 'mini';
-  saved?: boolean;
-  onToggleSave?: () => void;
-  /** Slot tài trợ chèn trong feed: khung viền nổi bật + luôn mang nhãn "Nổi bật". */
-  sponsored?: boolean;
+  variant?: 'grid' | 'mini';
 }) {
-  const featured = variant === 'featured';
-  const feed = variant === 'feed';
   const mini = variant === 'mini';
-  // `feed` và `grid` cùng phần thân đầy đủ (giá thương lượng, người bán); chỉ khác bề ngang và cỡ ảnh.
-  const detailed = variant === 'feed' || variant === 'grid';
   const free = item.price === 0;
-  const meta = featured
-    ? formatPlace(item.place)
-    : `${formatPlace(item.place, true)} · ${formatAgo(item.postedAt, undefined, true)}`;
   return (
     <Pressable
       accessibilityRole="link"
       onPress={onPress}
       style={({ pressed }) => [
         styles.tile,
-        featured ? styles.featured : feed ? styles.feed : mini ? styles.mini : styles.grid,
-        sponsored && styles.sponsoredFrame,
+        mini ? styles.mini : styles.grid,
         { opacity: pressed ? 0.85 : 1 },
       ]}
     >
       <View>
-        <Photo
-          picture={item.cover}
-          style={
-            featured
-              ? styles.photoFeatured
-              : feed
-                ? styles.photoFeed
-                : mini
-                  ? styles.photoMini
-                  : styles.photoGrid
-          }
-        />
-        {(featured || sponsored || (item.boosted && !mini) || (free && !mini)) && (
+        <Photo picture={item.cover} style={mini ? styles.photoMini : styles.photoGrid} />
+        {!mini && (item.boosted || free) && (
           <View style={styles.badge}>
-            {(featured || sponsored || (item.boosted && !mini)) && (
-              <Tag label="Nổi bật" tone="boost" icon="zap" />
-            )}
-            {free && !mini && <Tag label="Miễn phí" tone="free" icon="gift" />}
+            {item.boosted && <Tag label="Nổi bật" tone="boost" icon="zap" />}
+            {free && <Tag label="Miễn phí" tone="free" icon="gift" />}
+          </View>
+        )}
+      </View>
+      <View style={styles.body}>
+        <Text style={mini ? styles.titleMini : styles.title} numberOfLines={mini ? 1 : 2}>
+          {item.title}
+        </Text>
+        <View style={styles.priceRow}>
+          <Price value={item.price} size={mini ? 14 : 15} />
+          {variant === 'grid' && item.negotiable && (
+            <Text style={styles.nego} numberOfLines={1}>
+              Thương lượng
+            </Text>
+          )}
+        </View>
+        {!mini && (
+          <Text style={styles.meta} numberOfLines={1}>
+            {formatPlace(item.place, true)} · {formatAgo(item.postedAt, undefined, true)}
+          </Text>
+        )}
+      </View>
+    </Pressable>
+  );
+}
+
+type Chip = { icon: keyof typeof Feather.glyphMap; label: string };
+
+function chipsOf(item: ListingCard): Chip[] {
+  const chips: Chip[] = [];
+  if (item.negotiable) chips.push({ icon: 'repeat', label: 'Thương lượng' });
+  if (item.delivery) chips.push({ icon: 'truck', label: 'Giao tận nơi' });
+  if (item.groupName) chips.push({ icon: 'users', label: item.groupName });
+  return chips;
+}
+
+/**
+ * Một tin một dòng (ảnh mẫu 04/11/2026) cho mọi danh sách tin dọc: ảnh lớn toàn bề ngang mang nhãn nổi bật / miễn phí /
+ * đã kết thúc, chip điểm nổi bật, tiêu đề, khu vực, rồi lúc đăng và giá. Trái tim chỉ hiện khi màn truyền `onToggleSave` —
+ * mutation khởi phát từ route, không từ component (folder §6).
+ */
+export function ListingRow({
+  item,
+  onPress,
+  saved = false,
+  onToggleSave,
+}: {
+  item: ListingCard;
+  onPress: () => void;
+  saved?: boolean;
+  onToggleSave?: () => void;
+}) {
+  const chips = chipsOf(item);
+  const free = item.price === 0;
+  return (
+    <Pressable
+      accessibilityRole="link"
+      onPress={onPress}
+      style={({ pressed }) => [styles.row, { opacity: pressed ? 0.9 : 1 }]}
+    >
+      <View>
+        <Photo picture={item.cover} style={styles.cover} />
+        {(item.boosted || free) && !item.ended && (
+          <View style={styles.badge}>
+            {item.boosted && <Tag label="Nổi bật" tone="boost" icon="zap" />}
+            {free && <Tag label="Miễn phí" tone="free" icon="gift" />}
+          </View>
+        )}
+        {item.ended && (
+          <View style={styles.endedTag}>
+            <Tag label={ENDED_TAG[item.ended].label} tone={ENDED_TAG[item.ended].tone} />
           </View>
         )}
         {onToggleSave && (
@@ -87,77 +127,41 @@ export function ListingTile({
           >
             <Ionicons
               name={saved ? 'heart' : 'heart-outline'}
-              size={17}
-              color={saved ? C.price : C.ink}
+              size={22}
+              color={saved ? C.price : C.paperWarm}
             />
           </Pressable>
         )}
       </View>
-      <View style={styles.body}>
-        <Text
-          style={mini ? styles.titleMini : feed ? styles.titleFeed : styles.title}
-          numberOfLines={mini ? 1 : 2}
-        >
-          {item.title}
-        </Text>
-        <View style={styles.priceRow}>
-          <Price value={item.price} size={mini ? 14 : 15} />
-          {detailed && item.negotiable && (
-            <Text style={styles.nego} numberOfLines={1}>
-              Thương lượng
-            </Text>
-          )}
+      {chips.length > 0 && (
+        <View style={styles.chips}>
+          {chips.map((chip) => (
+            <View key={chip.label} style={styles.chip}>
+              <Feather name={chip.icon} size={14} color={C.brand} />
+              <Text style={styles.chipText} numberOfLines={1}>
+                {chip.label}
+              </Text>
+            </View>
+          ))}
         </View>
-        {!mini && (
-          <Text style={styles.meta} numberOfLines={1}>
-            {meta}
-          </Text>
-        )}
-        {detailed && item.seller && (
-          <View style={styles.seller}>
-            <Avatar name={item.seller.name} />
-            <Text style={styles.sellerName} numberOfLines={1}>
-              {item.seller.name}
-            </Text>
-            {item.seller.verified && <Verified size={13} />}
-          </View>
-        )}
+      )}
+      <Text style={styles.rowTitle} numberOfLines={2}>
+        {item.title}
+      </Text>
+      <View style={styles.line}>
+        <Feather name="map-pin" size={15} color={C.muted} />
+        <Text style={styles.lineText} numberOfLines={1}>
+          {formatPlace(item.place)}
+        </Text>
       </View>
-    </Pressable>
-  );
-}
-
-/** Thẻ tin dạng hàng (tin trong nhóm, tin đã lưu, hồ sơ người bán): khu vực, lúc đăng và nhãn nhóm nếu có. */
-export function ListingRow({ item, onPress }: { item: ListingCard; onPress: () => void }) {
-  const ago = formatAgo(item.postedAt);
-  return (
-    <Pressable
-      accessibilityRole="link"
-      onPress={onPress}
-      style={({ pressed }) => [styles.row, { opacity: pressed ? 0.85 : 1 }]}
-    >
-      <Photo picture={item.cover} style={styles.thumb} />
-      <View style={styles.rowBody}>
-        <Text style={styles.rowTitle} numberOfLines={2}>
-          {item.title}
-        </Text>
-        <Price value={item.price} />
-        <Text style={styles.meta} numberOfLines={1}>
-          {formatPlace(item.place, true)} · {ago}
-        </Text>
-        {item.ended && (
-          <View style={styles.ended}>
-            <Tag label={ENDED_TAG[item.ended].label} tone={ENDED_TAG[item.ended].tone} />
-          </View>
-        )}
-        {item.groupName && (
-          <View style={styles.group}>
-            <Feather name="users" size={12} color={C.brandDark} />
-            <Text style={styles.groupLabel} numberOfLines={1}>
-              {item.groupName}
-            </Text>
-          </View>
-        )}
+      <View style={styles.footer}>
+        <View style={styles.line}>
+          <Feather name="clock" size={14} color={C.muted} />
+          <Text style={styles.lineText} numberOfLines={1}>
+            {formatAgo(item.postedAt)}
+          </Text>
+        </View>
+        <Price value={item.price} size={20} />
       </View>
     </Pressable>
   );
@@ -171,62 +175,63 @@ const styles = StyleSheet.create({
     borderRadius: R.lg,
     overflow: 'hidden',
   },
-  featured: { width: 168 },
-  feed: { width: '100%' },
   grid: { flex: 1 },
   mini: { width: 160 },
-  // Slot tài trợ: viền cam dày + bóng nhẹ để nổi hẳn khỏi thẻ thường nền phẳng.
-  sponsoredFrame: { borderColor: C.dot, borderWidth: 2, ...shadow },
-  photoFeatured: { height: 128 },
-  photoFeed: { height: 200 },
   photoGrid: { height: 150 },
   photoMini: { height: 104 },
   badge: { position: 'absolute', top: S.sm, left: S.sm, gap: S.xs },
-  heart: {
-    position: 'absolute',
-    top: 6,
-    right: 6,
-    width: 32,
-    height: 32,
-    borderRadius: R.full,
-    backgroundColor: C.paperWarm,
-    opacity: 0.94,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   body: { paddingHorizontal: S.md, paddingTop: 10, paddingBottom: S.md, gap: S.xs },
   // Chiều cao cố định đúng hai dòng: các ô cùng hàng giữ giá thẳng hàng dù tiêu đề dài ngắn khác nhau.
   title: { fontFamily: F.uiSemi, fontSize: 14, lineHeight: 18, height: 36, color: C.ink },
-  titleFeed: { fontFamily: F.uiSemi, fontSize: 16, lineHeight: 21, color: C.ink },
   titleMini: { fontFamily: F.uiSemi, fontSize: 13, color: C.ink },
   meta: { flexShrink: 1, fontFamily: F.ui, fontSize: 12, color: C.muted },
   priceRow: { flexDirection: 'row', alignItems: 'baseline', gap: S.xs },
   nego: { flexShrink: 1, fontFamily: F.ui, fontSize: 11, color: C.muted },
-  seller: { flexDirection: 'row', alignItems: 'center', gap: S.xs },
-  sellerName: { flexShrink: 1, fontFamily: F.ui, fontSize: 12, color: C.inkSoft },
   row: {
-    flexDirection: 'row',
+    padding: S.md,
     gap: S.md,
-    padding: 10,
     backgroundColor: C.paperWarm,
     borderWidth: 1,
     borderColor: C.line,
     borderRadius: R.lg,
   },
-  thumb: { width: 92, height: 92, borderRadius: R.sm },
-  rowBody: { flex: 1, minWidth: 0, gap: S.xs, paddingTop: 2 },
-  rowTitle: { fontFamily: F.uiSemi, fontSize: 15, lineHeight: 20, color: C.ink },
-  ended: { alignSelf: 'flex-start' },
-  group: {
-    alignSelf: 'flex-start',
+  cover: { width: '100%', aspectRatio: 16 / 10, borderRadius: R.md },
+  endedTag: { position: 'absolute', right: S.sm, bottom: S.sm },
+  heart: {
+    position: 'absolute',
+    top: S.sm,
+    right: S.sm,
+    width: 40,
+    height: 40,
+    borderRadius: R.full,
+    backgroundColor: C.scrim,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: S.sm },
+  chip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: S.xs,
-    height: 22,
+    gap: 6,
     maxWidth: '100%',
-    paddingHorizontal: S.sm,
+    height: 30,
+    paddingHorizontal: S.md,
     borderRadius: R.full,
-    backgroundColor: C.brandLt,
+    borderWidth: 1,
+    borderColor: C.line,
+    backgroundColor: C.sand,
   },
-  groupLabel: { flexShrink: 1, fontFamily: F.uiSemi, fontSize: 11, color: C.brandDark },
+  chipText: { flexShrink: 1, fontFamily: F.uiMedium, fontSize: 13, color: C.inkSoft },
+  rowTitle: { fontFamily: F.uiBlack, fontSize: 17, lineHeight: 23, color: C.ink },
+  line: { flexShrink: 1, flexDirection: 'row', alignItems: 'center', gap: 6 },
+  lineText: { flexShrink: 1, fontFamily: F.ui, fontSize: 14, color: C.inkSoft },
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: S.md,
+    paddingTop: S.md,
+    borderTopWidth: 1,
+    borderTopColor: C.line,
+  },
 });

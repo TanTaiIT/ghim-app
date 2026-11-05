@@ -1,18 +1,16 @@
 import { StyleSheet, Text, View } from 'react-native';
-import type { ListingCard, SuggestionPage } from '@/api/client';
-import { interleaveFeatured } from '@/utils/feed';
-import { ListingTile } from './ListingCard';
+import type { SuggestionPage } from '@/api/client';
+import { ListingRow } from './ListingCard';
 import { EmptyState, Loading, OutlineButton, SectionTitle } from './ui';
 import { C, F, S } from '@/theme';
 
 /**
- * "Gợi ý cho bạn" của trang chủ (ghim-server add-home-suggestions): một cột ảnh lớn, "Xem thêm" tải trang kế. Dòng phụ nói
- * gợi ý dựa trên gì — lịch sử của người dùng chỉ được dùng khi họ để bật "Gợi ý theo hoạt động", nên phải thấy được.
+ * "Gợi ý cho bạn" của trang chủ (ghim-server add-home-suggestions): mỗi tin một dòng, "Xem thêm" tải trang kế. Dòng phụ
+ * nói gợi ý dựa trên gì — lịch sử của người dùng chỉ được dùng khi họ để bật "Gợi ý theo hoạt động", nên phải thấy được.
  * Trái tim chỉ hiện khi route truyền `onToggleSave` (mutation khởi phát từ route, folder §6).
  */
-export function SuggestionGrid({
+export function SuggestionList({
   pages,
-  featured,
   pending,
   error,
   hasMore,
@@ -23,7 +21,6 @@ export function SuggestionGrid({
   onToggleSave,
 }: {
   pages: SuggestionPage[] | undefined;
-  featured: ListingCard[] | undefined;
   pending: boolean;
   error: Error | null;
   hasMore: boolean;
@@ -35,18 +32,6 @@ export function SuggestionGrid({
 }) {
   const items = pages?.flatMap((page) => page.items) ?? [];
   const personalized = pages?.[0]?.personalized ?? false;
-  const cells = interleaveFeatured(items, featured);
-  const tile = (item: ListingCard, sponsored: boolean) => (
-    <ListingTile
-      key={item.id}
-      item={item}
-      variant="feed"
-      sponsored={sponsored}
-      onPress={() => onOpen(item.id)}
-      saved={saved?.has(item.id) ?? false}
-      {...(onToggleSave ? { onToggleSave: () => onToggleSave(item.id) } : {})}
-    />
-  );
 
   return (
     <View style={styles.section}>
@@ -66,7 +51,15 @@ export function SuggestionGrid({
         <EmptyState icon="compass" text="Chưa có tin nào để gợi ý. Kéo xuống để tải lại." />
       ) : (
         <>
-          {cells.map((cell) => tile(cell.item, cell.sponsored))}
+          {items.map((item) => (
+            <ListingRow
+              key={item.id}
+              item={item}
+              onPress={() => onOpen(item.id)}
+              saved={saved?.has(item.id) ?? false}
+              {...(onToggleSave ? { onToggleSave: () => onToggleSave(item.id) } : {})}
+            />
+          ))}
           {hasMore && <OutlineButton label="Xem thêm" loading={loadingMore} onPress={onMore} />}
         </>
       )}

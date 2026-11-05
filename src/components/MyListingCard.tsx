@@ -61,9 +61,9 @@ export function MyListingCard({
   const s = status(item);
   return (
     <View style={styles.card}>
-      <View style={styles.top}>
+      <View>
         <Pressable accessibilityRole="link" onPress={onPress} style={styles.link}>
-          <Photo picture={item.cover} style={styles.thumb} />
+          <Photo picture={item.cover} style={styles.cover} />
           <View style={styles.body}>
             {/* Nháp được tạo ngay khi chọn ảnh đầu tiên, nên có thể chưa có tiêu đề hay giá. */}
             <Text style={[styles.title, !item.title && styles.untitled]} numberOfLines={2}>
@@ -78,7 +78,6 @@ export function MyListingCard({
                 <Text style={styles.stat}>{item.saves}</Text>
               </View>
             )}
-            <Tag label={s.label} tone={s.tone} />
             {item.note && <Text style={styles.note}>{item.note}</Text>}
             {item.fixes.map((fix) => (
               <Text key={fix} style={styles.fix}>
@@ -93,12 +92,17 @@ export function MyListingCard({
             )}
           </View>
         </Pressable>
-        <IconButton
-          icon="more-horizontal"
-          label="Thao tác khác"
-          color={C.inkSoft}
-          onPress={onMore}
-        />
+        <View style={styles.status}>
+          <Tag label={s.label} tone={s.tone} />
+        </View>
+        <View style={styles.more}>
+          <IconButton
+            icon="more-horizontal"
+            label="Thao tác khác"
+            variant="float"
+            onPress={onMore}
+          />
+        </View>
       </View>
       {item.state === 'live' && (
         <View style={styles.actions}>
@@ -210,11 +214,13 @@ const styles = StyleSheet.create({
     borderColor: C.line,
     backgroundColor: C.paperWarm,
   },
-  top: { flexDirection: 'row', alignItems: 'flex-start' },
-  link: { flex: 1, flexDirection: 'row', gap: S.md },
-  thumb: { width: 76, height: 76, borderRadius: R.sm },
-  body: { flex: 1, minWidth: 0, gap: 3 },
-  title: { fontFamily: F.uiSemi, fontSize: 14, color: C.ink },
+  link: { gap: S.md },
+  cover: { width: '100%', aspectRatio: 16 / 10, borderRadius: R.md },
+  // Nhãn nằm trên ảnh nhưng không chặn cú chạm mở tin.
+  status: { position: 'absolute', top: S.sm, left: S.sm, pointerEvents: 'none' },
+  more: { position: 'absolute', top: S.sm, right: S.sm },
+  body: { gap: S.xs },
+  title: { fontFamily: F.uiBlack, fontSize: 17, lineHeight: 23, color: C.ink },
   untitled: { color: C.muted },
   stats: { flexDirection: 'row', alignItems: 'center', gap: S.xs },
   stat: { marginRight: S.sm, fontFamily: F.ui, fontSize: 12, color: C.inkSoft },

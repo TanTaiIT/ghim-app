@@ -75,7 +75,6 @@ export default function OpsPromotions() {
                   label={p.active ? 'Đang bật' : 'Đã tắt'}
                   tone={p.active ? 'brand' : 'neutral'}
                 />
-                <Tag label={`Từ ${p.minTier}`} />
               </View>
               <Text style={styles.name}>
                 {p.name} · {p.price} Xu

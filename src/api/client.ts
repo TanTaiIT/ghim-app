@@ -348,6 +348,8 @@ export type ListingCard = {
   title: string;
   price: number;
   negotiable: boolean;
+  /** Người bán nhận giao hàng — chip "Giao tận nơi" trên thẻ tin. */
+  delivery: boolean;
   cover: Picture;
   place: Place;
   postedAt: string;
@@ -901,6 +903,7 @@ function toCard(w: WireListing, lookups: Lookups): ListingCard {
     title: w.title ?? '',
     price: w.price ?? 0,
     negotiable: w.negotiable,
+    delivery: w.delivery,
     cover: w.images[0] ? toPicture(w.images[0]) : { uri: '' },
     place: lookups.place(w.provinceCode, w.wardCode),
     postedAt: w.firstLiveAt ?? w.createdAt,

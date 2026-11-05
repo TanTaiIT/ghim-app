@@ -5,7 +5,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGuarded } from '@/components/GuestGate';
 import { FeaturedRail } from '@/components/FeaturedRail';
-import { ListingTile } from '@/components/ListingCard';
+import { ListingRow } from '@/components/ListingCard';
 import { SearchFilterBar } from '@/components/SearchFilterBar';
 import { SortChip } from '@/components/SortChip';
 import { useToast } from '@/components/Toast';
@@ -20,7 +20,6 @@ import {
   useToggleSaved,
 } from '@/queries/listings';
 import { isSameSearch } from '@/api/client';
-import { interleaveFeatured } from '@/utils/feed';
 import { C, F, R, S } from '@/theme';
 import { filtersFromParams, type SearchParams } from '@/utils/search-params';
 
@@ -48,10 +47,6 @@ export default function Search() {
   // Trang một danh mục (chưa gõ từ khoá) có dải "Tin nổi bật" của danh mục đó; tìm kiếm thì không.
   const featured = useFeatured(filters.categoryId, filters.categoryId !== null && q === '');
   const searchSaved = savedSearches.data?.some((s) => isSameSearch(s.filters, filters)) ?? false;
-  const hits = results.data ?? [];
-  // Chèn tin nổi bật của danh mục vào feed; dải cover ở header vẫn hiện (phơi hai chỗ). Tìm từ khoá thì
-  // `featured` rỗng (query tắt) nên không chèn.
-  const cells = interleaveFeatured(hits, featured.data);
 
   const toggle = (id: string) =>
     guarded(() => {
@@ -62,7 +57,12 @@ export default function Search() {
   const header = (
     <View style={styles.listHeader}>
       {filters.categoryId !== null && q === '' && (
-        <FeaturedRail cover items={featured.data} onOpen={(id) => router.push(`/listing/${id}`)} />
+        <FeaturedRail
+          items={featured.data}
+          onOpen={(id) => router.push(`/listing/${id}`)}
+          saved={savedIds.data}
+          onToggleSave={toggle}
+        />
       )}
       {q !== '' && (
         <View style={styles.alert}>
@@ -125,8 +125,8 @@ export default function Search() {
       </View>
 
       <FlatList
-        data={cells}
-        keyExtractor={(c) => c.item.id}
+        data={results.data ?? []}
+        keyExtractor={(l) => l.id}
         contentContainerStyle={styles.content}
         ListHeaderComponent={header}
         ListEmptyComponent={
@@ -142,14 +142,12 @@ export default function Search() {
             />
           )
         }
-        renderItem={({ item: cell }) => (
-          <ListingTile
-            item={cell.item}
-            variant="feed"
-            sponsored={cell.sponsored}
-            onPress={() => router.push(`/listing/${cell.item.id}`)}
-            saved={savedIds.data?.has(cell.item.id) ?? false}
-            onToggleSave={() => toggle(cell.item.id)}
+        renderItem={({ item }) => (
+          <ListingRow
+            item={item}
+            onPress={() => router.push(`/listing/${item.id}`)}
+            saved={savedIds.data?.has(item.id) ?? false}
+            onToggleSave={() => toggle(item.id)}
           />
         )}
       />
