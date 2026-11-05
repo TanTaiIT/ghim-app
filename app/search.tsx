@@ -5,11 +5,13 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useGuarded } from '@/components/GuestGate';
 import { FeaturedRail } from '@/components/FeaturedRail';
+import { GroupPickerSheet } from '@/components/GroupPickerSheet';
 import { ListingRow } from '@/components/ListingCard';
 import { SearchFilterBar } from '@/components/SearchFilterBar';
 import { SortChip } from '@/components/SortChip';
 import { useToast } from '@/components/Toast';
 import { EmptyState, IconButton, Loading, useBack } from '@/components/ui';
+import { useGroupListings } from '@/queries/groups';
 import {
   useSaveSearch,
   useSavedIds,
@@ -19,7 +21,7 @@ import {
   useSearch,
   useToggleSaved,
 } from '@/queries/listings';
-import { isSameSearch } from '@/api/client';
+import { type GroupSummary, isSameSearch } from '@/api/client';
 import { C, F, R, S } from '@/theme';
 import { filtersFromParams, type SearchParams } from '@/utils/search-params';
 
@@ -35,8 +37,13 @@ export default function Search() {
   const params = useLocalSearchParams<SearchParams>();
   const [text, setText] = useState(params.q ?? '');
   const [filters, setFilters] = useState(() => filtersFromParams(params));
+  // Chọn một nhóm thì màn đổi sang bảng tin của nhóm (tin nhóm không nằm ở chợ chung — add-group-province).
+  const [group, setGroup] = useState<GroupSummary | null>(null);
+  const [pickingGroup, setPickingGroup] = useState(false);
 
   const results = useSearch(filters);
+  const groupListings = useGroupListings(group?.id ?? '', group !== null);
+  const list = group ? groupListings : results;
   useDropStaleFilter(results.error, filters, setFilters, toast);
   const savedIds = useSavedIds();
   const toggleSaved = useToggleSaved();
@@ -54,7 +61,15 @@ export default function Search() {
       toggleSaved.mutate({ id, saved }, { onError: (e) => toast(e.message) });
     });
 
-  const header = (
+  const header = group ? (
+    <View style={styles.listHeader}>
+      <View style={styles.resultBar}>
+        <Text style={styles.resultText} numberOfLines={1}>
+          Tin trong nhóm <Text style={styles.resultQ}>{group.name}</Text>
+        </Text>
+      </View>
+    </View>
+  ) : (
     <View style={styles.listHeader}>
       {filters.categoryId !== null && q === '' && (
         <FeaturedRail
@@ -121,19 +136,26 @@ export default function Search() {
             />
           </View>
         </View>
-        <SearchFilterBar filters={filters} onChange={setFilters} />
+        <SearchFilterBar
+          filters={filters}
+          onChange={setFilters}
+          groupName={group?.name ?? null}
+          onPickGroup={() => setPickingGroup(true)}
+        />
       </View>
 
       <FlatList
-        data={results.data ?? []}
+        data={list.data ?? []}
         keyExtractor={(l) => l.id}
         contentContainerStyle={styles.content}
         ListHeaderComponent={header}
         ListEmptyComponent={
-          results.isPending ? (
+          list.isPending ? (
             <Loading />
-          ) : results.isError ? (
-            <EmptyState icon="wifi-off" text={results.error.message} />
+          ) : list.isError ? (
+            <EmptyState icon="wifi-off" text={list.error.message} />
+          ) : group ? (
+            <EmptyState icon="users" title="Nhóm chưa có tin" text="Nhóm này chưa đăng tin nào." />
           ) : (
             <EmptyState
               icon="search"
@@ -150,6 +172,15 @@ export default function Search() {
             onToggleSave={() => toggle(item.id)}
           />
         )}
+      />
+
+      <GroupPickerSheet
+        visible={pickingGroup}
+        selectedId={group?.id ?? null}
+        provinceCode={filters.provinceCode}
+        onSelect={setGroup}
+        onClear={() => setGroup(null)}
+        onClose={() => setPickingGroup(false)}
       />
     </SafeAreaView>
   );

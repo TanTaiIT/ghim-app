@@ -34,9 +34,14 @@ type Sheet = 'province' | 'price' | 'category' | 'attrs' | null;
 export function SearchFilterBar({
   filters,
   onChange,
+  groupName,
+  onPickGroup,
 }: {
   filters: SearchFilters;
   onChange: (next: SearchFilters) => void;
+  /** Tên nhóm đang xem tin (add-group-province); null = đang xem chợ chung. Bỏ qua nếu màn không cho chọn nhóm. */
+  groupName?: string | null;
+  onPickGroup?: () => void;
 }) {
   const [sheet, setSheet] = useState<Sheet>(null);
   const categories = useCategories();
@@ -64,6 +69,15 @@ export function SearchFilterBar({
             label={count > 0 ? `Bộ lọc · ${count}` : 'Bộ lọc'}
             onPress={() => onChange({ ...NO_FILTERS, q: filters.q })}
           />
+          {onPickGroup && (
+            <Chip
+              chevron
+              icon="users"
+              selected={Boolean(groupName)}
+              label={groupName ?? 'Nhóm'}
+              onPress={onPickGroup}
+            />
+          )}
           {category && (
             <Chip selected chevron label={category.name} onPress={() => setSheet('category')} />
           )}
