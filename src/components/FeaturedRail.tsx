@@ -4,12 +4,12 @@ import { ListingTile } from './ListingCard';
 import { Photo } from './Photo';
 import { SectionTitle, Tag } from './ui';
 import { C, F, R, S } from '@/theme';
-import { formatPlace, formatVnd } from '@/utils/format';
+import { formatPlace, formatPrice } from '@/utils/format';
 
 /**
  * Dải ngang "Tin nổi bật" ở đầu bảng tin sàn chung, danh mục, bảng tin nhóm (add-admin-boost). Rỗng thì không vẽ gì.
  * `bleed` = lề ngang của khối cha: dải chạy tràn ra mép màn hình rồi đệm lại bên trong. `cover` = thẻ ảnh lớn có chữ
- * trên ảnh — trang chủ theo ảnh mẫu 02/11/2026; màn tìm kiếm và bảng tin nhóm giữ ô nhỏ để kết quả lên sớm.
+ * trên ảnh — trang chủ và trang danh mục dùng ảnh lớn cho nổi; bảng tin nhóm giữ ô nhỏ để kết quả lên sớm.
  */
 export function FeaturedRail({
   items,
@@ -57,7 +57,7 @@ function FeaturedCover({ item, onPress }: { item: ListingCard; onPress: () => vo
         <Tag label="Nổi bật" tone="boost" icon="zap" />
       </View>
       <View style={styles.caption}>
-        <Text style={styles.price}>{formatVnd(item.price)}</Text>
+        <Text style={styles.price}>{formatPrice(item.price)}</Text>
         <Text style={styles.title} numberOfLines={1}>
           {item.title}
         </Text>

@@ -36,6 +36,8 @@ export type Draft = {
   title: string;
   categoryId: string | null;
   price: number;
+  /** Cho tặng: `price` = 0 là CỐ Ý (cho tặng), không phải "chưa nhập". Chỉ dùng ở form; không gửi lên server. */
+  free: boolean;
   negotiable: boolean;
   /** Theo `name` của ô trong mẫu thông số danh mục; ô chọn nhiều là mảng. */
   attributes: Record<string, string | string[]>;
@@ -61,6 +63,7 @@ const EMPTY: Draft = {
   title: '',
   categoryId: null,
   price: 0,
+  free: false,
   negotiable: true,
   attributes: {},
   description: '',

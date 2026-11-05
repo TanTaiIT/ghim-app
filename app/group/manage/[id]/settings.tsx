@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Check, Choice } from '@/components/Chip';
+import { Check, Chip, Choice } from '@/components/Chip';
 import { Field } from '@/components/Field';
+import { PickerSheet } from '@/components/PickerSheet';
 import { useToast } from '@/components/Toast';
 import { EmptyState, Loading, PinButton, ScreenHeader } from '@/components/ui';
 import { useUpdateGroupSettings } from '@/queries/group-manage';
+import { useProvinces } from '@/queries/catalog';
 import { useGroup } from '@/queries/groups';
 import {
   managerOf,
@@ -36,9 +38,14 @@ export default function GroupSettings() {
   }
   // `key` theo lượt hồ sơ đổi: lưu xong server trả bản mới, form dựng lại từ đó thay vì giữ bản gõ dở.
   return (
-    <SettingsForm key={`${g.mode}:${g.name}:${g.description ?? ''}:${g.manualReview}`} group={g} />
+    <SettingsForm
+      key={`${g.mode}:${g.name}:${g.description ?? ''}:${g.manualReview}:${g.province?.code ?? ''}`}
+      group={g}
+    />
   );
 }
+
+const ANYWHERE = 'all';
 
 /**
  * Form dựng từ hồ sơ hiện có, chỉ gửi khoá đã đổi. Hai công tắc theo luật server: "nhận tin người ngoài" chỉ ở nhóm
@@ -55,6 +62,10 @@ function SettingsForm({ group: g }: { group: ManagedGroup }) {
   const [boardStyle, setBoardStyle] = useState(g.boardStyle);
   const [manualReview, setManualReview] = useState(g.manualReview);
   const [allowPromotions, setAllowPromotions] = useState(g.allowPromotions);
+  const [provinceCode, setProvinceCode] = useState<number | null>(g.province?.code ?? null);
+  const [pickProvince, setPickProvince] = useState(false);
+  const provinces = useProvinces();
+  const province = provinces.data?.find((p) => p.code === provinceCode);
 
   const publicTarget = isPublicGroup(mode);
   const privateBoth = !publicTarget && !isPublicGroup(g.mode);
@@ -69,6 +80,7 @@ function SettingsForm({ group: g }: { group: ManagedGroup }) {
     ...(boardStyle !== g.boardStyle && { boardStyle }),
     ...(manualReview !== g.manualReview && { manualReview }),
     ...(allowPromotions !== g.allowPromotions && { allowPromotions }),
+    ...(provinceCode !== (g.province?.code ?? null) && { provinceCode }),
   };
   const dirty = Object.keys(patch).length > 0;
   const note = modeNoteOf(g.mode, mode);
@@ -122,6 +134,19 @@ function SettingsForm({ group: g }: { group: ManagedGroup }) {
               onPress={() => setShowName((v) => !v)}
             />
           )}
+          <Text style={styles.label}>Tỉnh/thành (tuỳ chọn)</Text>
+          <View style={styles.filterRow}>
+            <Chip
+              chevron
+              selected={province !== undefined}
+              label={province?.name ?? 'Toàn quốc'}
+              onPress={() => setPickProvince(true)}
+            />
+          </View>
+          <Text style={styles.hint}>
+            Gắn tỉnh/thành để người dùng tìm nhóm theo khu vực. Không chọn = toàn quốc; không ràng
+            buộc tỉnh của tin đăng trong nhóm.
+          </Text>
           <Text style={styles.label}>Kiểu bảng tin</Text>
           <View style={styles.choices}>
             <Choice
@@ -178,6 +203,17 @@ function SettingsForm({ group: g }: { group: ManagedGroup }) {
           />
         </ScrollView>
       </KeyboardAvoidingView>
+      <PickerSheet
+        visible={pickProvince}
+        title="Tỉnh/thành của nhóm"
+        options={[
+          { value: ANYWHERE, label: 'Toàn quốc' },
+          ...(provinces.data ?? []).map((p) => ({ value: String(p.code), label: p.name })),
+        ]}
+        value={provinceCode === null ? ANYWHERE : String(provinceCode)}
+        onSelect={(c) => setProvinceCode(c === ANYWHERE ? null : Number(c))}
+        onClose={() => setPickProvince(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -188,6 +224,7 @@ const styles = StyleSheet.create({
   content: { padding: S.lg, gap: S.md },
   label: { fontFamily: F.uiSemi, fontSize: 14, color: C.ink },
   hint: { marginTop: -S.sm, fontFamily: F.ui, fontSize: 12, lineHeight: 17, color: C.inkSoft },
+  filterRow: { flexDirection: 'row' },
   choices: { gap: S.sm },
   note: {
     padding: S.md,

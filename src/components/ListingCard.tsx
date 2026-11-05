@@ -5,7 +5,7 @@ import type { ListingCard } from '@/api/client';
 import { Photo } from './Photo';
 import { Avatar, Verified } from './Avatar';
 import { Price, Tag } from './ui';
-import { C, F, R, S } from '@/theme';
+import { C, F, R, S, shadow } from '@/theme';
 import { formatAgo, formatPlace } from '@/utils/format';
 
 /** Nhãn của tin đã kết thúc — dùng chung với "Tin của tôi" để hai nơi gọi một trạng thái bằng một chữ. */
@@ -15,9 +15,9 @@ export const ENDED_TAG = {
 } as const;
 
 /**
- * Thẻ tin dạng ô: `featured` (dải ngang Tin nổi bật, luôn mang nhãn), `grid` (lưới hai cột kết quả
- * tìm kiếm, có trái tim và người bán), `mini` (Tin tương tự — chỉ ảnh, tên, giá). Trái tim chỉ hiện khi màn truyền `onToggleSave` — mutation khởi
- * phát từ route, không từ component (folder §6).
+ * Thẻ tin dạng ô: `featured` (dải ngang Tin nổi bật, luôn mang nhãn), `feed` (một cột, ảnh lớn —
+ * trang chủ và kết quả tìm kiếm), `grid` (lưới hai cột), `mini` (Tin tương tự — chỉ ảnh, tên, giá).
+ * Trái tim chỉ hiện khi màn truyền `onToggleSave` — mutation khởi phát từ route, không từ component (folder §6).
  */
 export function ListingTile({
   item,
@@ -25,15 +25,22 @@ export function ListingTile({
   variant = 'grid',
   saved = false,
   onToggleSave,
+  sponsored = false,
 }: {
   item: ListingCard;
   onPress: () => void;
-  variant?: 'featured' | 'grid' | 'mini';
+  variant?: 'featured' | 'feed' | 'grid' | 'mini';
   saved?: boolean;
   onToggleSave?: () => void;
+  /** Slot tài trợ chèn trong feed: khung viền nổi bật + luôn mang nhãn "Nổi bật". */
+  sponsored?: boolean;
 }) {
   const featured = variant === 'featured';
+  const feed = variant === 'feed';
   const mini = variant === 'mini';
+  // `feed` và `grid` cùng phần thân đầy đủ (giá thương lượng, người bán); chỉ khác bề ngang và cỡ ảnh.
+  const detailed = variant === 'feed' || variant === 'grid';
+  const free = item.price === 0;
   const meta = featured
     ? formatPlace(item.place)
     : `${formatPlace(item.place, true)} · ${formatAgo(item.postedAt, undefined, true)}`;
@@ -43,18 +50,30 @@ export function ListingTile({
       onPress={onPress}
       style={({ pressed }) => [
         styles.tile,
-        featured ? styles.featured : mini ? styles.mini : styles.grid,
+        featured ? styles.featured : feed ? styles.feed : mini ? styles.mini : styles.grid,
+        sponsored && styles.sponsoredFrame,
         { opacity: pressed ? 0.85 : 1 },
       ]}
     >
       <View>
         <Photo
           picture={item.cover}
-          style={featured ? styles.photoFeatured : mini ? styles.photoMini : styles.photoGrid}
+          style={
+            featured
+              ? styles.photoFeatured
+              : feed
+                ? styles.photoFeed
+                : mini
+                  ? styles.photoMini
+                  : styles.photoGrid
+          }
         />
-        {(featured || (item.boosted && !mini)) && (
+        {(featured || sponsored || (item.boosted && !mini) || (free && !mini)) && (
           <View style={styles.badge}>
-            <Tag label="Nổi bật" tone="boost" icon="zap" />
+            {(featured || sponsored || (item.boosted && !mini)) && (
+              <Tag label="Nổi bật" tone="boost" icon="zap" />
+            )}
+            {free && !mini && <Tag label="Miễn phí" tone="free" icon="gift" />}
           </View>
         )}
         {onToggleSave && (
@@ -75,12 +94,15 @@ export function ListingTile({
         )}
       </View>
       <View style={styles.body}>
-        <Text style={mini ? styles.titleMini : styles.title} numberOfLines={mini ? 1 : 2}>
+        <Text
+          style={mini ? styles.titleMini : feed ? styles.titleFeed : styles.title}
+          numberOfLines={mini ? 1 : 2}
+        >
           {item.title}
         </Text>
         <View style={styles.priceRow}>
           <Price value={item.price} size={mini ? 14 : 15} />
-          {variant === 'grid' && item.negotiable && (
+          {detailed && item.negotiable && (
             <Text style={styles.nego} numberOfLines={1}>
               Thương lượng
             </Text>
@@ -91,7 +113,7 @@ export function ListingTile({
             {meta}
           </Text>
         )}
-        {variant === 'grid' && item.seller && (
+        {detailed && item.seller && (
           <View style={styles.seller}>
             <Avatar name={item.seller.name} />
             <Text style={styles.sellerName} numberOfLines={1}>
@@ -150,12 +172,16 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   featured: { width: 168 },
+  feed: { width: '100%' },
   grid: { flex: 1 },
   mini: { width: 160 },
+  // Slot tài trợ: viền cam dày + bóng nhẹ để nổi hẳn khỏi thẻ thường nền phẳng.
+  sponsoredFrame: { borderColor: C.dot, borderWidth: 2, ...shadow },
   photoFeatured: { height: 128 },
+  photoFeed: { height: 200 },
   photoGrid: { height: 150 },
   photoMini: { height: 104 },
-  badge: { position: 'absolute', top: S.sm, left: S.sm },
+  badge: { position: 'absolute', top: S.sm, left: S.sm, gap: S.xs },
   heart: {
     position: 'absolute',
     top: 6,
@@ -171,6 +197,7 @@ const styles = StyleSheet.create({
   body: { paddingHorizontal: S.md, paddingTop: 10, paddingBottom: S.md, gap: S.xs },
   // Chiều cao cố định đúng hai dòng: các ô cùng hàng giữ giá thẳng hàng dù tiêu đề dài ngắn khác nhau.
   title: { fontFamily: F.uiSemi, fontSize: 14, lineHeight: 18, height: 36, color: C.ink },
+  titleFeed: { fontFamily: F.uiSemi, fontSize: 16, lineHeight: 21, color: C.ink },
   titleMini: { fontFamily: F.uiSemi, fontSize: 13, color: C.ink },
   meta: { flexShrink: 1, fontFamily: F.ui, fontSize: 12, color: C.muted },
   priceRow: { flexDirection: 'row', alignItems: 'baseline', gap: S.xs },

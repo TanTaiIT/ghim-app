@@ -20,6 +20,7 @@ import {
   useToggleSaved,
 } from '@/queries/listings';
 import { isSameSearch } from '@/api/client';
+import { interleaveFeatured } from '@/utils/feed';
 import { C, F, R, S } from '@/theme';
 import { filtersFromParams, type SearchParams } from '@/utils/search-params';
 
@@ -47,9 +48,10 @@ export default function Search() {
   // Trang một danh mục (chưa gõ từ khoá) có dải "Tin nổi bật" của danh mục đó; tìm kiếm thì không.
   const featured = useFeatured(filters.categoryId, filters.categoryId !== null && q === '');
   const searchSaved = savedSearches.data?.some((s) => isSameSearch(s.filters, filters)) ?? false;
-  // Lưới hai cột: số tin lẻ thì ô cuối giãn hết bề ngang — chèn một ô trống để nó giữ nửa hàng.
   const hits = results.data ?? [];
-  const cells = hits.length % 2 === 1 ? [...hits, null] : hits;
+  // Chèn tin nổi bật của danh mục vào feed; dải cover ở header vẫn hiện (phơi hai chỗ). Tìm từ khoá thì
+  // `featured` rỗng (query tắt) nên không chèn.
+  const cells = interleaveFeatured(hits, featured.data);
 
   const toggle = (id: string) =>
     guarded(() => {
@@ -60,7 +62,7 @@ export default function Search() {
   const header = (
     <View style={styles.listHeader}>
       {filters.categoryId !== null && q === '' && (
-        <FeaturedRail items={featured.data} onOpen={(id) => router.push(`/listing/${id}`)} />
+        <FeaturedRail cover items={featured.data} onOpen={(id) => router.push(`/listing/${id}`)} />
       )}
       {q !== '' && (
         <View style={styles.alert}>
@@ -124,9 +126,7 @@ export default function Search() {
 
       <FlatList
         data={cells}
-        keyExtractor={(l, i) => l?.id ?? `pad-${i}`}
-        numColumns={2}
-        columnWrapperStyle={styles.column}
+        keyExtractor={(c) => c.item.id}
         contentContainerStyle={styles.content}
         ListHeaderComponent={header}
         ListEmptyComponent={
@@ -142,18 +142,16 @@ export default function Search() {
             />
           )
         }
-        renderItem={({ item }) =>
-          item === null ? (
-            <View style={styles.pad} />
-          ) : (
-            <ListingTile
-              item={item}
-              onPress={() => router.push(`/listing/${item.id}`)}
-              saved={savedIds.data?.has(item.id) ?? false}
-              onToggleSave={() => toggle(item.id)}
-            />
-          )
-        }
+        renderItem={({ item: cell }) => (
+          <ListingTile
+            item={cell.item}
+            variant="feed"
+            sponsored={cell.sponsored}
+            onPress={() => router.push(`/listing/${cell.item.id}`)}
+            saved={savedIds.data?.has(cell.item.id) ?? false}
+            onToggleSave={() => toggle(cell.item.id)}
+          />
+        )}
       />
     </SafeAreaView>
   );
@@ -183,8 +181,6 @@ const styles = StyleSheet.create({
   },
   inputText: { flex: 1, fontFamily: F.ui, fontSize: 15, color: C.ink, paddingVertical: 0 },
   content: { flexGrow: 1, padding: S.lg, gap: S.md, backgroundColor: C.paper },
-  column: { gap: S.md },
-  pad: { flex: 1 },
   listHeader: { gap: 14, marginBottom: S.xs },
   alert: {
     flexDirection: 'row',

@@ -94,6 +94,7 @@ export default function Home() {
 
         <SuggestionGrid
           pages={suggestions.data?.pages}
+          featured={featured.data}
           pending={suggestions.isPending}
           error={suggestions.data ? null : suggestions.error}
           hasMore={suggestions.hasNextPage}

@@ -47,6 +47,12 @@ export function GroupBoard({
   if (tab === 'about') {
     return (
       <View style={styles.body}>
+        {g.province && (
+          <View style={styles.locationRow}>
+            <Feather name="map-pin" size={14} color={C.inkSoft} />
+            <Text style={styles.location}>{g.province.name}</Text>
+          </View>
+        )}
         <Text style={styles.about}>{g.description ?? 'Nhóm chưa có mô tả.'}</Text>
         {announcements.data?.map((a) => (
           <View key={a.id} style={styles.announcement}>
@@ -148,6 +154,8 @@ const styles = StyleSheet.create({
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: S.md },
   cell: { width: '47%' },
   about: { fontFamily: F.ui, fontSize: 14, lineHeight: 22, color: C.inkMid },
+  locationRow: { flexDirection: 'row', alignItems: 'center', gap: S.xs },
+  location: { fontFamily: F.uiSemi, fontSize: 14, color: C.inkMid },
   announcement: {
     gap: S.xs,
     padding: S.md,

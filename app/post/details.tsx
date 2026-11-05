@@ -45,7 +45,7 @@ export default function PostDetails() {
   const ward = wards.data?.find((w) => w.code === d.wardCode);
   const wardRequired = d.placement === 'marketplace';
   const ready =
-    d.price > 0 &&
+    (d.free || d.price > 0) &&
     province !== undefined &&
     (!wardRequired || ward !== undefined) &&
     template.isSuccess &&
@@ -72,23 +72,37 @@ export default function PostDetails() {
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <View style={styles.section}>
           <Text style={styles.h2}>Giá bán</Text>
-          <View style={styles.price}>
-            <TextInput
-              accessibilityLabel="Giá bán"
-              value={d.price > 0 ? groupThousands(d.price) : ''}
-              onChangeText={(t) => d.patch({ price: parseDigits(t) })}
-              keyboardType="number-pad"
-              placeholder="0"
-              placeholderTextColor={C.muted}
-              style={styles.priceInput}
-            />
-            <Text style={styles.unit}>đ</Text>
-          </View>
+          {d.free ? (
+            <View style={styles.freeBox}>
+              <Feather name="gift" size={18} color={C.free} />
+              <Text style={styles.freeText}>Miễn phí — cho tặng</Text>
+            </View>
+          ) : (
+            <View style={styles.price}>
+              <TextInput
+                accessibilityLabel="Giá bán"
+                value={d.price > 0 ? groupThousands(d.price) : ''}
+                onChangeText={(t) => d.patch({ price: parseDigits(t) })}
+                keyboardType="number-pad"
+                placeholder="0"
+                placeholderTextColor={C.muted}
+                style={styles.priceInput}
+              />
+              <Text style={styles.unit}>đ</Text>
+            </View>
+          )}
           <Check
-            label="Cho phép người mua trả giá"
-            checked={d.negotiable}
-            onPress={() => d.patch({ negotiable: !d.negotiable })}
+            label="Cho tặng miễn phí"
+            checked={d.free}
+            onPress={() => d.patch({ free: !d.free, price: 0, negotiable: d.free })}
           />
+          {!d.free && (
+            <Check
+              label="Cho phép người mua trả giá"
+              checked={d.negotiable}
+              onPress={() => d.patch({ negotiable: !d.negotiable })}
+            />
+          )}
         </View>
 
         {fields.length > 0 && (
@@ -201,6 +215,18 @@ const styles = StyleSheet.create({
   },
   priceInput: { flex: 1, fontFamily: F.uiBlack, fontSize: 17, color: C.price, paddingVertical: 0 },
   unit: { fontFamily: F.uiBold, fontSize: 15, color: C.inkSoft },
+  freeBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: S.sm,
+    height: 50,
+    paddingHorizontal: 14,
+    borderRadius: R.md,
+    borderWidth: 1.5,
+    borderColor: C.free,
+    backgroundColor: C.freeWash,
+  },
+  freeText: { fontFamily: F.uiBold, fontSize: 15, color: C.freeTx },
   select: {
     flexDirection: 'row',
     alignItems: 'center',

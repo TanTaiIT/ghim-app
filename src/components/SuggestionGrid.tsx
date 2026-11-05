@@ -1,16 +1,18 @@
 import { StyleSheet, Text, View } from 'react-native';
 import type { ListingCard, SuggestionPage } from '@/api/client';
+import { interleaveFeatured } from '@/utils/feed';
 import { ListingTile } from './ListingCard';
 import { EmptyState, Loading, OutlineButton, SectionTitle } from './ui';
 import { C, F, S } from '@/theme';
 
 /**
- * "Gợi ý cho bạn" của trang chủ (ghim-server add-home-suggestions): lưới hai cột, "Xem thêm" tải trang kế. Dòng phụ nói
+ * "Gợi ý cho bạn" của trang chủ (ghim-server add-home-suggestions): một cột ảnh lớn, "Xem thêm" tải trang kế. Dòng phụ nói
  * gợi ý dựa trên gì — lịch sử của người dùng chỉ được dùng khi họ để bật "Gợi ý theo hoạt động", nên phải thấy được.
  * Trái tim chỉ hiện khi route truyền `onToggleSave` (mutation khởi phát từ route, folder §6).
  */
 export function SuggestionGrid({
   pages,
+  featured,
   pending,
   error,
   hasMore,
@@ -21,6 +23,7 @@ export function SuggestionGrid({
   onToggleSave,
 }: {
   pages: SuggestionPage[] | undefined;
+  featured: ListingCard[] | undefined;
   pending: boolean;
   error: Error | null;
   hasMore: boolean;
@@ -32,14 +35,13 @@ export function SuggestionGrid({
 }) {
   const items = pages?.flatMap((page) => page.items) ?? [];
   const personalized = pages?.[0]?.personalized ?? false;
-  const rows: [ListingCard, ListingCard | undefined][] = [];
-  for (let i = 0; i < items.length; i += 2) {
-    const left = items[i];
-    if (left) rows.push([left, items[i + 1]]);
-  }
-  const tile = (item: ListingCard) => (
+  const cells = interleaveFeatured(items, featured);
+  const tile = (item: ListingCard, sponsored: boolean) => (
     <ListingTile
+      key={item.id}
       item={item}
+      variant="feed"
+      sponsored={sponsored}
       onPress={() => onOpen(item.id)}
       saved={saved?.has(item.id) ?? false}
       {...(onToggleSave ? { onToggleSave: () => onToggleSave(item.id) } : {})}
@@ -60,16 +62,11 @@ export function SuggestionGrid({
         <Loading />
       ) : error ? (
         <EmptyState icon="wifi-off" text={error.message} />
-      ) : rows.length === 0 ? (
+      ) : items.length === 0 ? (
         <EmptyState icon="compass" text="Chưa có tin nào để gợi ý. Kéo xuống để tải lại." />
       ) : (
         <>
-          {rows.map(([left, right]) => (
-            <View key={left.id} style={styles.row}>
-              {tile(left)}
-              {right ? tile(right) : <View style={styles.pad} />}
-            </View>
-          ))}
+          {cells.map((cell) => tile(cell.item, cell.sponsored))}
           {hasMore && <OutlineButton label="Xem thêm" loading={loadingMore} onPress={onMore} />}
         </>
       )}
@@ -81,6 +78,4 @@ const styles = StyleSheet.create({
   section: { gap: S.md },
   head: { gap: 2 },
   note: { fontFamily: F.ui, fontSize: 13, color: C.muted },
-  row: { flexDirection: 'row', gap: S.md },
-  pad: { flex: 1 },
 });

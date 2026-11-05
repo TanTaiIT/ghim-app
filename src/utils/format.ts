@@ -26,6 +26,11 @@ export function formatVnd(value: number): string {
   return `${groupThousands(value)} đ`;
 }
 
+/** Giá tin đăng: `0` = cho tặng → "Miễn phí". Khác `formatVnd` (ví, giao dịch) vốn luôn in số. */
+export function formatPrice(value: number): string {
+  return value === 0 ? 'Miễn phí' : formatVnd(value);
+}
+
 /** Ô nhập giá: "13.900.000 đ" → 13900000. Chuỗi không có chữ số nào → 0. */
 export function parseDigits(text: string): number {
   const digits = text.replace(/\D/g, '');

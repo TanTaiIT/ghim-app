@@ -75,6 +75,14 @@ export const C = {
   /** Chấm "có thông báo mới". */
   dot: '#F97316',
 
+  // ── Cho tặng (miễn phí) ─────────────────────────────────────────
+  /** Chữ & biểu tượng "Miễn phí" — xanh lá, tách hẳn khỏi cam của giá tiền. */
+  free: '#16A34A',
+  /** Nền nhãn "Miễn phí". */
+  freeWash: '#DCFCE7',
+  /** Chữ trên nền `freeWash` (tương phản ≥ 4.5:1). */
+  freeTx: '#166534',
+
   // ── Trạng thái ──────────────────────────────────────────────────
   /** Lỗi, nút huỷ. */
   pin: '#E5484D',
